@@ -1,0 +1,10 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+
+    paths:
+        - app/
+
+    # Mulai dari level 1 agar tidak tenggelam dalam ratusan error sekaligus
+    level: 2

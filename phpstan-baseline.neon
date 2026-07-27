@@ -1,0 +1,229 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$file_path\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/AnnouncementController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:notify\(\)\.$#'
+			identifier: method.notFound
+			count: 6
+			path: app/Http/Controllers/ApprovalController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\DocumentAttachment\:\:\$document\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/DocumentController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:notify\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/DocumentController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$department\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Finance/InvoiceController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:notify\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Finance/LoanController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$approved_budget\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Finance/PurchaseOrderController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$department\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Finance/PurchaseOrderController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$department\.$#'
+			identifier: property.notFound
+			count: 9
+			path: app/Http/Controllers/LeaveApprovalController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/LeaveApprovalController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:deductLeaveBalance\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/LeaveApprovalController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:hasAnyRole\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/LeaveApprovalController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:hasRole\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: app/Http/Controllers/LeaveApprovalController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:incrementSickLeave\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/LeaveApprovalController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$approved_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mail/DocumentApprovalMail.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$approver_role\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Mail/DocumentApprovalMail.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 6
+			path: app/Mail/LeaveRequestMail.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$director_role\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Department.php
+
+		-
+			message: '#^Unsafe access to private property App\\Models\\Department\:\:\$cacheKey through static\:\:\.$#'
+			identifier: staticClassAccess.privateProperty
+			count: 3
+			path: app/Models/Department.php
+
+		-
+			message: '#^Unsafe access to private property App\\Models\\Department\:\:\$cacheTTL through static\:\:\.$#'
+			identifier: staticClassAccess.privateProperty
+			count: 1
+			path: app/Models/Department.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/LeaveRequest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$position\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/LeaveRequest.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:hasAnyRole\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/LeaveRequest.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:hasRole\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Models/LeaveRequest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Policies/DocumentPolicy.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Policies/DocumentPolicy.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:role\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: app/Providers/SidebarServiceProvider.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$approver_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/ApprovalWorkflowService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$approver_role\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/ApprovalWorkflowService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$approved_amount\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/EmailNotificationService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$approver\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Services/EmailNotificationService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$email\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Services/EmailNotificationService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Services/EmailNotificationService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$department\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/LeaveNotificationService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$email\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Services/LeaveNotificationService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/LeaveNotificationService.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:hasAnyRole\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/LeaveNotificationService.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:hasRole\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: app/Services/LeaveNotificationService.php
