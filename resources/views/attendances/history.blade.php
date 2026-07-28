@@ -135,6 +135,12 @@
                     </tbody>
                 </table>
             </div>
+            
+            @if($attendances->hasPages())
+                <div class="mt-4">
+                    {{ $attendances->links() }}
+                </div>
+            @endif
         </x-ui.card>
 
         {{-- Back to attendance --}}

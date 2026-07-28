@@ -226,13 +226,28 @@ class AttendanceController extends Controller
         $month = (int) $request->get('month', now()->month);
         $year = (int) $request->get('year', now()->year);
 
-        $attendances = Attendance::forUser($user->id)
+        $allAttendances = Attendance::forUser($user->id)
             ->whereMonth('date', $month)
             ->whereYear('date', $year)
             ->orderBy('date', 'desc')
             ->orderBy('created_at', 'desc')
             ->get()
             ->groupBy(fn($a) => $a->date->format('Y-m-d'));
+
+        $page = \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPage('page');
+        $perPage = 10;
+        $offset = ($page - 1) * $perPage;
+
+        $attendances = new \Illuminate\Pagination\LengthAwarePaginator(
+            $allAttendances->slice($offset, $perPage),
+            $allAttendances->count(),
+            $perPage,
+            $page,
+            [
+                'path' => \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPath(),
+                'query' => $request->query()
+            ]
+        );
 
         // Monthly stats
         $checkIns = Attendance::forUser($user->id)
@@ -273,8 +288,23 @@ class AttendanceController extends Controller
         $year = (int) $request->get('year', now()->year);
         $department = $request->get('department');
 
-        $reportData = $this->getReportData($user, $month, $year, $department);
+        $reportDataCollection = $this->getReportData($user, $month, $year, $department);
         $departments = $this->getDepartmentsList();
+
+        $page = \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPage('page');
+        $perPage = 10;
+        $offset = ($page - 1) * $perPage;
+
+        $reportData = new \Illuminate\Pagination\LengthAwarePaginator(
+            $reportDataCollection->slice($offset, $perPage),
+            $reportDataCollection->count(),
+            $perPage,
+            $page,
+            [
+                'path' => \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPath(),
+                'query' => $request->query()
+            ]
+        );
 
         return view('attendances.report', compact('reportData', 'month', 'year', 'department', 'departments'));
     }

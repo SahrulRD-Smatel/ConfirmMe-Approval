@@ -481,6 +481,12 @@ class DocumentController extends Controller
 
         ApprovalLog::log($document, 'deleted', 'Dokumen dihapus');
 
+        // Hapus notifikasi terkait untuk menghindari error 404 jika di-klik
+        \Illuminate\Support\Facades\DB::table('notifications')
+            ->where('data', 'LIKE', '%"document_id":' . $document->id . ',%')
+            ->orWhere('data', 'LIKE', '%"document_id":' . $document->id . '}%')
+            ->delete();
+
         return redirect()->route('documents.index')
             ->with('success', 'Dokumen berhasil dihapus!');
     }
