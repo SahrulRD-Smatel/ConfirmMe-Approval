@@ -506,36 +506,62 @@ class DatabaseSeeder extends Seeder
                 'code' => 'PROCUREMENT',
                 'description' => 'Template untuk pengajuan pengadaan barang/peralatan',
                 'approval_type' => 'po',
+                'fields' => [
+                    'title' => 'Pengajuan Pengadaan Barang/Peralatan',
+                    'description' => 'Permohonan persetujuan pengadaan barang/peralatan kantor sesuai kebutuhan operasional.',
+                    'priority' => 'normal',
+                    'vendor_name' => 'PT Supplier Indonesia',
+                    'item_description' => '1. Nama Barang x jumlah unit @ Rp harga_satuan',
+                ],
             ],
             [
                 'name' => 'Reimbursement',
                 'code' => 'REIMBURSEMENT',
                 'description' => 'Template untuk pengajuan penggantian biaya',
                 'approval_type' => 'invoice',
+                'fields' => [
+                    'title' => 'Pengajuan Reimbursement',
+                    'description' => 'Permohonan penggantian biaya operasional yang telah dikeluarkan.',
+                    'priority' => 'normal',
+                ],
             ],
             [
                 'name' => 'Perjalanan Dinas',
                 'code' => 'BUSINESS_TRIP',
                 'description' => 'Template untuk pengajuan perjalanan dinas',
                 'approval_type' => 'only',
-            ],
-            [
-                'name' => 'Cuti Karyawan',
-                'code' => 'LEAVE_REQUEST',
-                'description' => 'Template untuk pengajuan cuti',
-                'approval_type' => 'only',
+                'fields' => [
+                    'title' => 'Pengajuan Perjalanan Dinas',
+                    'description' => 'Permohonan persetujuan perjalanan dinas untuk keperluan operasional perusahaan.',
+                    'priority' => 'normal',
+                    'document_category' => 'surat_tugas',
+                ],
             ],
             [
                 'name' => 'Pembelian Bulk',
                 'code' => 'BULK_PURCHASE',
                 'description' => 'Template untuk pengajuan pembelian dalam jumlah besar',
                 'approval_type' => 'po',
+                'fields' => [
+                    'title' => 'Pengajuan Pembelian Bulk',
+                    'description' => 'Permohonan persetujuan pembelian dalam jumlah besar untuk kebutuhan operasional.',
+                    'priority' => 'high',
+                    'vendor_name' => 'PT Distributor Utama',
+                    'item_description' => '1. Nama Barang x jumlah unit @ Rp harga_satuan',
+                ],
             ],
             [
                 'name' => 'Pinjaman Karyawan',
                 'code' => 'EMPLOYEE_LOAN',
                 'description' => 'Template untuk pengajuan pinjaman karyawan - wajib persetujuan Presiden Direktur',
                 'approval_type' => 'loan',
+                'fields' => [
+                    'title' => 'Pengajuan Pinjaman Karyawan',
+                    'description' => 'Permohonan pinjaman karyawan dengan skema potong gaji bulanan.',
+                    'priority' => 'normal',
+                    'loan_type' => 'darurat',
+                    'loan_reason' => 'Kebutuhan mendesak untuk keperluan pribadi/keluarga.',
+                ],
             ],
         ];
 

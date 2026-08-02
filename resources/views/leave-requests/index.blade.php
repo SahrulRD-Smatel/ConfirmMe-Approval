@@ -68,17 +68,17 @@
                                             <td class="px-4 py-3 text-gray-500 max-w-xs truncate">{{ $leave->reason }}</td>
                                             <td class="px-4 py-3">
                                                 <span class="px-2 py-1 rounded-full text-xs font-medium
-                                                                                                {{ match ($leave->status) {
-                                'pending' => 'bg-yellow-100 text-yellow-800',
-                                'pending_hr' => 'bg-orange-100 text-orange-800',
-                                'approved' => 'bg-green-100 text-green-800',
-                                'rejected' => 'bg-red-100 text-red-800',
-                                default => 'bg-gray-100 text-gray-800'
-                            } }}">
+                                                    {{ match ($leave->status) {
+                                                        'pending', 'pending_supervisor', 'pending_manager' => 'bg-yellow-100 text-yellow-800',
+                                                        'pending_hrd', 'pending_hr', 'pending_hr_final' => 'bg-orange-100 text-orange-800',
+                                                        'approved' => 'bg-green-100 text-green-800',
+                                                        'rejected' => 'bg-red-100 text-red-800',
+                                                        default => 'bg-gray-100 text-gray-800'
+                                                    } }}">
                                                     {{ $leave->status_label }}
                                                 </span>
-                                                @if(in_array($leave->status, ['pending', 'pending_hr']))
-                                                    <p class="text-xs text-gray-400 mt-1">Approver: {{ $leave->approver_info }}</p>
+                                                @if(!in_array($leave->status, ['approved', 'rejected']))
+                                                    <p class="text-xs text-gray-400 mt-1">{{ $leave->approver_info }}</p>
                                                 @endif
                                             </td>
                                             <td class="px-4 py-3 text-right">

@@ -102,80 +102,31 @@
                 </div>
 
                 <!-- Template Selector (Auto-Fill) -->
-                <div class="md:col-span-2" x-data="{
-                    selectedTemplate: '',
-                    templateName: '',
-                    filledFields: [],
-                    loading: false,
-                    async loadTemplate() {
-                        if (!this.selectedTemplate) {
-                            this.templateName = '';
-                            this.filledFields = [];
-                            return;
-                        }
-                        this.loading = true;
-                        try {
-                            const res = await fetch('/documents/template-data/' + this.selectedTemplate);
-                            if (!res.ok) throw new Error('Not found');
-                            const data = await res.json();
-                            this.templateName = data.name;
-                            this.filledFields = [];
-
-                            // Auto-select approval type
-                            if (data.approval_type) {
-                                $dispatch('set-approval-type', data.approval_type);
-                            }
-
-                            // Auto-fill fields
-                            const fields = data.fields || {};
-                            for (const [key, value] of Object.entries(fields)) {
-                                if (!value) continue;
-                                const el = document.querySelector('[name=\"' + key + '\"]');
-                                if (el) {
-                                    if (el.tagName === 'SELECT') {
-                                        el.value = value;
-                                    } else if (el.tagName === 'TEXTAREA') {
-                                        el.value = value;
-                                    } else {
-                                        el.value = value;
-                                    }
-                                    el.dispatchEvent(new Event('input', { bubbles: true }));
-                                    el.dispatchEvent(new Event('change', { bubbles: true }));
-                                    this.filledFields.push(key);
-                                }
-                            }
-                        } catch (e) {
-                            console.error('Template load error:', e);
-                        }
-                        this.loading = false;
-                    }
-                }">
+                <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         <x-icon name="sparkles" class="w-4 h-4 inline text-amber-500" />
                         Gunakan Template (Opsional)
                     </label>
                     <div class="flex gap-3">
-                        <select x-model="selectedTemplate" @change="loadTemplate()"
-                            name="template"
+                        <select id="templateSelector" name="template"
                             class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
                             <option value="">— Tanpa Template (isi manual) —</option>
                             @foreach($templates as $tpl)
-                                <option value="{{ $tpl->code }}">{{ $tpl->name }} — {{ $tpl->approval_type_label }}</option>
+                                <option value="{{ $tpl->code }}" data-type="{{ $tpl->approval_type }}">{{ $tpl->name }} — {{ $tpl->approval_type_label }}</option>
                             @endforeach
                         </select>
-                        <div x-show="loading" class="flex items-center">
+                        <div id="templateLoading" class="flex items-center" style="display:none">
                             <svg class="animate-spin h-5 w-5 text-primary-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                             </svg>
                         </div>
                     </div>
-                    <div x-show="filledFields.length > 0" x-transition
-                        class="mt-2 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                    <div id="templateSuccess" class="mt-2 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg" style="display:none">
                         <p class="text-sm text-green-700 dark:text-green-300 flex items-center gap-2">
                             <x-icon name="check-circle" class="w-4 h-4" />
-                            <span>Template <strong x-text="templateName"></strong> diterapkan!</span>
-                            <span class="text-xs text-green-500" x-text="filledFields.length + ' field terisi otomatis'"></span>
+                            <span>Template <strong id="templateAppliedName"></strong> diterapkan!</span>
+                            <span class="text-xs text-green-500" id="templateFieldCount"></span>
                         </p>
                     </div>
                 </div>
@@ -562,7 +513,7 @@
 
     @push('scripts')
         <script>
-            // Fi        le upload preview
+            // File upload preview
             document.getElementById('attachments').addEventListener('change', function (e) {
                 const fileList = document.getElementById('file-list');
                 fileList.innerHTML = '';
@@ -582,6 +533,89 @@
                     fileList.appendChild(div);
                 });
             });
+
+            // Template filtering & auto-fill
+            (function() {
+                const templateSelect = document.getElementById('templateSelector');
+                const templateLoading = document.getElementById('templateLoading');
+                const templateSuccess = document.getElementById('templateSuccess');
+                const templateAppliedName = document.getElementById('templateAppliedName');
+                const templateFieldCount = document.getElementById('templateFieldCount');
+
+                if (!templateSelect) return;
+
+                // Filter template options based on current approval type
+                function filterTemplates() {
+                    const checkedRadio = document.querySelector('input[name="approval_type"]:checked');
+                    const currentType = checkedRadio ? checkedRadio.value : '';
+
+                    Array.from(templateSelect.options).forEach(opt => {
+                        if (opt.value === '') return; // skip default option
+                        const optType = opt.getAttribute('data-type');
+                        if (optType === currentType) {
+                            opt.style.display = '';
+                            opt.disabled = false;
+                        } else {
+                            opt.style.display = 'none';
+                            opt.disabled = true;
+                        }
+                    });
+
+                    // Reset selection when type changes
+                    templateSelect.value = '';
+                    templateSuccess.style.display = 'none';
+                }
+
+                // Load template data and auto-fill form
+                async function loadTemplate() {
+                    const code = templateSelect.value;
+                    if (!code) {
+                        templateSuccess.style.display = 'none';
+                        return;
+                    }
+
+                    templateLoading.style.display = 'flex';
+                    try {
+                        const res = await fetch('/documents/template-data/' + code);
+                        if (!res.ok) throw new Error('Not found');
+                        const data = await res.json();
+
+                        let filledCount = 0;
+                        const fields = data.fields || {};
+
+                        for (const [key, value] of Object.entries(fields)) {
+                            if (!value) continue;
+                            const el = document.querySelector('[name="' + key + '"]');
+                            if (el) {
+                                el.value = value;
+                                el.dispatchEvent(new Event('input', { bubbles: true }));
+                                el.dispatchEvent(new Event('change', { bubbles: true }));
+                                filledCount++;
+                            }
+                        }
+
+                        if (filledCount > 0) {
+                            templateAppliedName.textContent = data.name;
+                            templateFieldCount.textContent = filledCount + ' field terisi otomatis';
+                            templateSuccess.style.display = 'block';
+                        }
+                    } catch (e) {
+                        console.error('Template load error:', e);
+                    }
+                    templateLoading.style.display = 'none';
+                }
+
+                // Listen to approval type radio changes
+                document.querySelectorAll('input[name="approval_type"]').forEach(radio => {
+                    radio.addEventListener('change', filterTemplates);
+                });
+
+                // Listen to template select changes
+                templateSelect.addEventListener('change', loadTemplate);
+
+                // Initial filter on page load
+                filterTemplates();
+            })();
         </script>
     @endpush
 </x-app-layout>

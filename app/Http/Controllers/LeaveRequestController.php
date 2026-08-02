@@ -24,6 +24,7 @@ class LeaveRequestController extends Controller
     public function index()
     {
         $leaveRequests = auth()->user()->leaveRequests()
+            ->with('currentApprover')
             ->latest()
             ->paginate(10);
 
