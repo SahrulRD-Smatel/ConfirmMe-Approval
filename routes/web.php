@@ -43,8 +43,19 @@ Route::get('/verify/{hash}', [VerificationController::class, 'show'])->name('ver
 
 
 
+// Account Pending Route (auth only — no role/active check needed here)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/account/pending', function () {
+        // If user already has roles, redirect to dashboard
+        if (auth()->user()->roles->isNotEmpty()) {
+            return redirect()->route('dashboard');
+        }
+        return view('auth.account-pending');
+    })->name('account.pending');
+});
+
 // Authenticated Routes
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'active', 'has_role'])->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

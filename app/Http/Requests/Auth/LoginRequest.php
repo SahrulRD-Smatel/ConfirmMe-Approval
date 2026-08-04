@@ -49,6 +49,18 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        // Block login for inactive users
+        $user = Auth::user();
+        if (!$user->is_active) {
+            Auth::logout();
+
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'email' => 'Akun Anda telah dinonaktifkan. Silakan hubungi administrator.',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

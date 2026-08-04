@@ -81,8 +81,8 @@
             </x-sidebar-section>
         @endif
 
-        {{-- Absensi - All users except admin & presiden_direktur --}}
-        @if(!auth()->user()->hasAnyRole(['admin', 'presiden_direktur']))
+        {{-- Absensi - Users with roles (except admin & presiden_direktur) --}}
+        @if(!auth()->user()->hasAnyRole(['admin', 'presiden_direktur']) && auth()->user()->roles->isNotEmpty())
             <x-sidebar-section title="Absensi" :collapsed="$sidebarCollapsed ?? false">
                 <x-sidebar-link :href="route('attendance.index')" :active="request()->routeIs('attendance.index')"
                     icon="clock">
