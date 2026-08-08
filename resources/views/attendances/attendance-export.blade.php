@@ -122,6 +122,9 @@
         .badge-orange { background: #ffedd5; color: #9a3412; }
         .badge-blue { background: #dbeafe; color: #1e40af; }
         .badge-yellow { background: #fef3c7; color: #92400e; }
+        .badge-purple { background: #f3e8ff; color: #6b21a8; }
+        .badge-pink { background: #fce7f3; color: #9d174d; }
+        .badge-gray { background: #e5e7eb; color: #374151; }
 
         .footer {
             margin-top: 30px;
@@ -213,6 +216,9 @@
                 <th class="text-center">Terlambat</th>
                 <th class="text-center">WFH</th>
                 <th class="text-center">Pulang Awal</th>
+                <th class="text-center">Cuti Tahunan</th>
+                <th class="text-center">Sakit</th>
+                <th class="text-center">Tanpa Gaji</th>
             </tr>
         </thead>
         <tbody>
@@ -236,10 +242,19 @@
                     <td class="text-center">
                         <span class="badge badge-yellow">{{ $data['early_leave'] }}</span>
                     </td>
+                    <td class="text-center">
+                        <span class="badge badge-purple">{{ $data['leave_annual'] }}</span>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge badge-pink">{{ $data['leave_sick'] }}</span>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge badge-gray">{{ $data['leave_unpaid'] }}</span>
+                    </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="10" class="text-center" style="padding: 20px;">
+                    <td colspan="13" class="text-center" style="padding: 20px;">
                         Tidak ada data absensi untuk periode ini.
                     </td>
                 </tr>

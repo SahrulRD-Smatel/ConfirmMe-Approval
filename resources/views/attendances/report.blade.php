@@ -183,6 +183,9 @@
                             <th class="px-4 py-3 text-center font-semibold">Terlambat</th>
                             <th class="px-4 py-3 text-center font-semibold">WFH</th>
                             <th class="px-4 py-3 text-center font-semibold">Pulang Awal</th>
+                            <th class="px-4 py-3 text-center font-semibold">Cuti Tahunan</th>
+                            <th class="px-4 py-3 text-center font-semibold">Sakit</th>
+                            <th class="px-4 py-3 text-center font-semibold">Tanpa Gaji</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
@@ -219,10 +222,25 @@
                                         {{ $data['early_leave'] }}
                                     </span>
                                 </td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full {{ $data['leave_annual'] > 0 ? 'bg-purple-50 text-purple-700' : 'bg-gray-50 text-gray-400' }} font-bold text-xs">
+                                        {{ $data['leave_annual'] }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full {{ $data['leave_sick'] > 0 ? 'bg-pink-50 text-pink-700' : 'bg-gray-50 text-gray-400' }} font-bold text-xs">
+                                        {{ $data['leave_sick'] }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full {{ $data['leave_unpaid'] > 0 ? 'bg-gray-200 text-gray-700' : 'bg-gray-50 text-gray-400' }} font-bold text-xs">
+                                        {{ $data['leave_unpaid'] }}
+                                    </span>
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-6 py-12 text-center">
+                                <td colspan="10" class="px-6 py-12 text-center">
                                     <div class="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mx-auto mb-2">
                                         <x-icon name="users" class="w-6 h-6 text-gray-300" />
                                     </div>

@@ -15,7 +15,7 @@
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
         <x-ui.stat-card title="Sisa Cuti Tahunan" :value="auth()->user()->annual_leave_balance ?? 12" icon="calendar" color="primary" />
         <x-ui.stat-card title="Hari Sakit (Digunakan)" :value="auth()->user()->sick_leave_used ?? 0" icon="heart" color="danger" />
-        <x-ui.stat-card title="Menunggu Persetujuan" :value="$leaveRequests->whereIn('status', ['pending', 'pending_hr'])->count()" icon="clock" color="warning" />
+        <x-ui.stat-card title="Menunggu Persetujuan" :value="auth()->user()->leaveRequests()->pending()->count()" icon="clock" color="warning" />
     </div>
 
     <x-ui.card>

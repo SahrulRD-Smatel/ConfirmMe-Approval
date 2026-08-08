@@ -26,14 +26,19 @@ class NotificationController extends Controller
         $notification->markAsRead();
 
         $url = $notification->data['url'] ?? null;
+        $documentId = $notification->data['document_id'] ?? null;
 
-        // If URL points to /approvals/{id}, redirect to /documents/{id} instead
-        // because approval URLs become invalid after the user is no longer the current approver
-        if ($url && preg_match('#/approvals/(\d+)#', $url, $matches)) {
-            $documentId = $matches[1];
+        if ($documentId) {
             $document = \App\Models\Document::find($documentId);
+            
+            // If the document is missing (deleted), clean up the notification and redirect back
+            if (!$document) {
+                $notification->delete();
+                return redirect()->back()->with('error', 'Dokumen tidak ditemukan atau sudah dihapus.');
+            }
 
-            if ($document) {
+            // If URL points to /approvals/{id}, redirect to /documents/{id} instead
+            if ($url && preg_match('#/approvals/(\d+)#', $url, $matches)) {
                 return redirect()->route('documents.show', $document);
             }
         }

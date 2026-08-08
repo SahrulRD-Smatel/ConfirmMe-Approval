@@ -110,8 +110,8 @@ Route::middleware(['auth', 'verified', 'active', 'has_role'])->group(function ()
     Route::get('/archive', [ArchiveController::class, 'index'])->name('archive.index');
     Route::get('/archive/{document}', [ArchiveController::class, 'show'])->name('archive.show');
 
-    // Approvals (For approvers: supervisor, manager, hrd, division directors, presiden, finance, purchasing, direktur_operasional, hrd_coordinator)
-    Route::prefix('approvals')->name('approvals.')->middleware('role:supervisor|manager|hrd|hrd_coordinator|purchasing|direktur_hr|direktur_finance|direktur_it|direktur_sales|direktur_operasional|presiden_direktur|finance')->group(function () {
+    // Approvals (For approvers: supervisor, manager, hrd, division directors, presiden, finance, purchasing, direktur_operasional)
+    Route::prefix('approvals')->name('approvals.')->middleware('role:supervisor|manager|hrd|purchasing|direktur_hr|direktur_finance|direktur_it|direktur_sales|direktur_operasional|presiden_direktur|finance')->group(function () {
         Route::get('/', [ApprovalController::class, 'index'])->name('index');
         Route::get('/history', [ApprovalController::class, 'history'])->name('history');
         Route::get('/bulk', [ApprovalController::class, 'bulk'])->name('bulk');
@@ -238,6 +238,10 @@ Route::middleware(['auth', 'verified', 'active', 'has_role'])->group(function ()
         Route::get('/report/import-template', [AttendanceController::class, 'downloadImportTemplate'])->name('import-template');
         Route::get('/locations', [AttendanceController::class, 'locations'])->name('locations');
         Route::post('/locations', [AttendanceController::class, 'storeLocation'])->name('locations.store');
+    });
+    // Leave Reports
+    Route::prefix('leave-reports')->name('leave-reports.')->middleware('role:admin|hrd|hrd_coordinator|direktur_hr|presiden_direktur|manager')->group(function () {
+        Route::get('/', [\App\Http\Controllers\LeaveReportController::class, 'index'])->name('index');
     });
 });
 

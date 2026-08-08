@@ -429,6 +429,9 @@ class AttendanceController extends Controller
                 'Terlambat',
                 'WFH',
                 'Pulang Awal',
+                'Cuti Tahunan',
+                'Sakit',
+                'Tanpa Gaji',
             ]);
 
             // Data rows
@@ -444,6 +447,9 @@ class AttendanceController extends Controller
                     $data['late'],
                     $data['wfh'],
                     $data['early_leave'],
+                    $data['leave_annual'],
+                    $data['leave_sick'],
+                    $data['leave_unpaid'],
                 ]);
             }
 
@@ -487,6 +493,9 @@ class AttendanceController extends Controller
                 'Terlambat' => $data['late'],
                 'WFH' => $data['wfh'],
                 'Pulang Awal' => $data['early_leave'],
+                'Cuti Tahunan' => $data['leave_annual'],
+                'Sakit' => $data['leave_sick'],
+                'Tanpa Gaji' => $data['leave_unpaid'],
             ];
         });
 
@@ -798,12 +807,21 @@ class AttendanceController extends Controller
     private function getReportData($user, int $month, int $year, ?string $department)
     {
         $usersQuery = User::where('is_active', true)
-            ->with(['attendances' => function ($q) use ($month, $year) {
-                $q->whereMonth('date', $month)
-                    ->whereYear('date', $year)
-                    ->orderBy('date')
-                    ->orderBy('created_at');
-            }]);
+            ->with([
+                'attendances' => function ($q) use ($month, $year) {
+                    $q->whereMonth('date', $month)
+                        ->whereYear('date', $year)
+                        ->orderBy('date')
+                        ->orderBy('created_at');
+                },
+                'leaveRequests' => function ($q) use ($month, $year) {
+                    $startOfMonth = \Carbon\Carbon::create($year, $month, 1)->startOfMonth();
+                    $endOfMonth = \Carbon\Carbon::create($year, $month, 1)->endOfMonth();
+                    $q->where('status', 'approved')
+                      ->where('start_date', '<=', $endOfMonth->format('Y-m-d'))
+                      ->where('end_date', '>=', $startOfMonth->format('Y-m-d'));
+                }
+            ]);
 
         // Filter by department
         if ($department) {
@@ -814,9 +832,27 @@ class AttendanceController extends Controller
 
         $users = $usersQuery->orderBy('name')->get();
 
-        return $users->map(function ($u) {
+        return $users->map(function ($u) use ($month, $year) {
             $checkIns = $u->attendances->where('type', 'check_in');
             $checkOuts = $u->attendances->where('type', 'check_out');
+
+            $startOfMonth = \Carbon\Carbon::create($year, $month, 1)->startOfMonth();
+            $endOfMonth = \Carbon\Carbon::create($year, $month, 1)->endOfMonth();
+
+            $leaveAnnual = 0;
+            $leaveSick = 0;
+            $leaveUnpaid = 0;
+            
+            foreach ($u->leaveRequests as $leave) {
+                $leaveStart = \Carbon\Carbon::parse($leave->start_date)->startOfDay()->max($startOfMonth);
+                $leaveEnd = \Carbon\Carbon::parse($leave->end_date)->startOfDay()->min($endOfMonth);
+                if ($leaveStart->lte($leaveEnd)) {
+                    $days = $leaveStart->diffInDays($leaveEnd) + 1;
+                    if ($leave->type === 'annual') $leaveAnnual += $days;
+                    elseif ($leave->type === 'sick') $leaveSick += $days;
+                    elseif ($leave->type === 'unpaid') $leaveUnpaid += $days;
+                }
+            }
 
             return [
                 'user' => $u,
@@ -825,6 +861,9 @@ class AttendanceController extends Controller
                 'late' => $checkIns->where('status', 'late')->count(),
                 'wfh' => $checkIns->where('is_wfh', true)->count(),
                 'early_leave' => $checkOuts->where('status', 'early_leave')->count(),
+                'leave_annual' => $leaveAnnual,
+                'leave_sick' => $leaveSick,
+                'leave_unpaid' => $leaveUnpaid,
             ];
         });
     }

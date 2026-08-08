@@ -156,11 +156,27 @@ class User extends Authenticatable
     }
 
     /**
-     * Get remaining annual leave
+     * Get remaining annual leave (raw from database)
      */
     public function getRemainingLeaveAttribute(): int
     {
         return $this->annual_leave_balance ?? 12;
+    }
+
+    /**
+     * Get effective annual leave balance (accounting for pending annual leaves)
+     */
+    public function getEffectiveAnnualLeaveBalanceAttribute(): int
+    {
+        $rawBalance = $this->annual_leave_balance ?? 12;
+        
+        $pendingAnnualLeaveDays = $this->leaveRequests()
+            ->pending()
+            ->where('type', 'annual')
+            ->get()
+            ->sum('duration');
+            
+        return max(0, $rawBalance - $pendingAnnualLeaveDays);
     }
 
     /**

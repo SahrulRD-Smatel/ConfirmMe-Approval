@@ -317,7 +317,9 @@ class LeaveApprovalController extends Controller
         }
 
         $currentStep = $leaveRequest->current_step ?? 1;
-        $nextStep = $currentStep + 1;
+        
+        // After Step 1 (Atasan/Supervisor), it should go straight to Step 3 (HRD), skipping Manager
+        $nextStep = $currentStep === 1 ? 3 : $currentStep + 1;
 
         // If we've passed step 4, approve fully
         if ($nextStep > 4) {
@@ -327,14 +329,18 @@ class LeaveApprovalController extends Controller
         // Find next approver
         $nextApprover = $this->findApproverForStep($leaveRequest, $nextStep);
 
-        // If no approver for next step, try subsequent steps
-        while (!$nextApprover && $nextStep < 4) {
+        // Auto-skip steps if there is no approver OR if the next approver is the exact same user who just approved
+        while (($nextApprover === null || $nextApprover->id === $user->id) && $nextStep <= 4) {
+            if ($nextStep === 4) {
+                $nextStep++;
+                break;
+            }
             $nextStep++;
             $nextApprover = $this->findApproverForStep($leaveRequest, $nextStep);
         }
 
-        // If still no approver after step 4, finalize
-        if (!$nextApprover && $nextStep >= 4) {
+        // If we've passed step 4, finalize
+        if ($nextStep > 4) {
             return $this->finalizeApproval($leaveRequest, $user);
         }
 
@@ -360,6 +366,8 @@ class LeaveApprovalController extends Controller
             default => 'approver berikutnya',
         };
 
+        \Illuminate\Support\Facades\Cache::forget("sidebar_badges_{$user->id}");
+
         return back()->with('success', "Cuti disetujui. Menunggu persetujuan {$stepLabel}.");
     }
 
@@ -384,6 +392,8 @@ class LeaveApprovalController extends Controller
         } catch (\Exception $e) {
             \Log::warning('Failed to send leave approved notification: ' . $e->getMessage());
         }
+
+        \Illuminate\Support\Facades\Cache::forget("sidebar_badges_{$approver->id}");
 
         return back()->with('success', 'Cuti disetujui sepenuhnya.');
     }
@@ -418,6 +428,8 @@ class LeaveApprovalController extends Controller
         } catch (\Exception $e) {
             \Log::warning('Failed to send leave rejection notification: ' . $e->getMessage());
         }
+
+        \Illuminate\Support\Facades\Cache::forget("sidebar_badges_{$user->id}");
 
         return back()->with('success', 'Pengajuan cuti ditolak.');
     }

@@ -96,8 +96,8 @@
         @endif
 
         {{-- Approval Menu - Role-based matching route middleware:
-        supervisor|manager|hrd|hrd_coordinator|purchasing|direktur_*|presiden_direktur|finance --}}
-        @if(auth()->user()->hasAnyRole(['supervisor', 'manager', 'hrd', 'hrd_coordinator', 'purchasing', 'direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional', 'presiden_direktur', 'finance']))
+        supervisor|manager|hrd|purchasing|direktur_*|presiden_direktur|finance --}}
+        @if(auth()->user()->hasAnyRole(['supervisor', 'manager', 'hrd', 'purchasing', 'direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional', 'presiden_direktur', 'finance']))
             {{-- Presiden Direktur uses Executive section instead --}}
             @if(!auth()->user()->hasRole('presiden_direktur'))
                 <x-sidebar-section title="Approval" :collapsed="$sidebarCollapsed ?? false">
@@ -229,12 +229,16 @@
             </x-sidebar-section>
         @endif
 
-        {{-- Attendance Admin - HRD, Admin, Manager, Directors --}}
+        {{-- Attendance & Leave Admin - HRD, Admin, Manager, Directors --}}
         @if(auth()->user()->hasAnyRole(['admin', 'hrd', 'hrd_coordinator', 'direktur_hr', 'presiden_direktur', 'manager']))
-            <x-sidebar-section title="Kelola Absensi" :collapsed="$sidebarCollapsed ?? false">
+            <x-sidebar-section title="Kelola Karyawan" :collapsed="$sidebarCollapsed ?? false">
                 <x-sidebar-link :href="route('attendance-admin.report')" :active="request()->routeIs('attendance-admin.report')"
                     icon="chart-bar-square">
                     Laporan Absensi
+                </x-sidebar-link>
+                <x-sidebar-link :href="route('leave-reports.index')" :active="request()->routeIs('leave-reports.*')"
+                    icon="document-duplicate">
+                    Laporan Cuti
                 </x-sidebar-link>
                 @if(auth()->user()->hasAnyRole(['admin', 'hrd', 'direktur_hr']))
                     <x-sidebar-link :href="route('attendance-admin.locations')" :active="request()->routeIs('attendance-admin.locations')"

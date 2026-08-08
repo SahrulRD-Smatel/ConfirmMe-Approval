@@ -39,7 +39,7 @@ class LeaveRequestController extends Controller
         $user = auth()->user();
 
         return view('leave-requests.create', [
-            'leaveBalance' => $user->annual_leave_balance ?? 12,
+            'leaveBalance' => $user->effective_annual_leave_balance,
             'sickLeaveUsed' => $user->sick_leave_used ?? 0,
         ]);
     }
@@ -64,8 +64,8 @@ class LeaveRequestController extends Controller
 
         // Check leave balance for annual leave
         $user = auth()->user();
-        if ($validated['type'] === 'annual' && $duration > ($user->annual_leave_balance ?? 12)) {
-            return back()->withErrors(['type' => 'Sisa cuti tahunan Anda tidak mencukupi.'])->withInput();
+        if ($validated['type'] === 'annual' && $duration > $user->effective_annual_leave_balance) {
+            return back()->withErrors(['type' => 'Sisa cuti tahunan Anda (termasuk yang sedang diproses) tidak mencukupi.'])->withInput();
         }
 
         // Handle file upload
