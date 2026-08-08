@@ -826,7 +826,7 @@ class AttendanceController extends Controller
         // Filter by department
         if ($department) {
             $usersQuery->where('department', $department);
-        } elseif ($user->hasRole('manager') && !$user->hasAnyRole(['admin', 'hrd', 'direktur_hr'])) {
+        } elseif ($user->hasRole('manager') && !$user->hasAnyRole(['admin', 'hrd', 'direktur_hr']) && $user->department !== 'Finance') {
             $usersQuery->where('department', $user->department);
         }
 

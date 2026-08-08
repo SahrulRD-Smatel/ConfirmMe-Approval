@@ -230,8 +230,6 @@
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Pinjaman
                 Karyawan</h2>
-            <a href="{{ route('finance.loans.index') }}" class="text-sm text-primary-600 hover:underline">Kelola
-                Pinjaman →</a>
         </div>
 
         <x-ui.card>
@@ -255,7 +253,7 @@
                     <p class="text-xl font-bold text-green-600">{{ $loanStats['total_disbursed'] == 0 ? 'Rp 0' : 'Rp ' . number_format($loanStats['total_disbursed'] / 1000000, 1, ',', '.') . ' Jt' }}</p>
                 </div>
                 <div class="px-4 flex items-center justify-end">
-                    <x-ui.button href="{{ route('finance.loans.index') }}" size="sm" variant="secondary">Detail
+                    <x-ui.button href="{{ route('finance.loans.index') }}" size="sm" variant="primary">Detail
                         Loans</x-ui.button>
                 </div>
             </div>

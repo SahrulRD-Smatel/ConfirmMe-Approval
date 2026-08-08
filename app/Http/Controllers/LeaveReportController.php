@@ -41,7 +41,7 @@ class LeaveReportController extends Controller
             $query->whereHas('user', function ($q) use ($department) {
                 $q->where('department', $department);
             });
-        } elseif ($user->hasRole('manager') && !$user->hasAnyRole(['admin', 'hrd', 'direktur_hr'])) {
+        } elseif ($user->hasRole('manager') && !$user->hasAnyRole(['admin', 'hrd', 'direktur_hr']) && $user->department !== 'Finance') {
             $query->whereHas('user', function ($q) use ($user) {
                 $q->where('department', $user->department);
             });
