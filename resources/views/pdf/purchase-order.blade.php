@@ -196,6 +196,7 @@
 
         /* Footer */
         .footer {
+            clear: both;
             margin-top: 30px;
             display: table;
             width: 100%;

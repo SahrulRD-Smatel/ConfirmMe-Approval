@@ -8,6 +8,7 @@ use App\Models\EmployeeLoan;
 use App\Models\User;
 use App\Models\WorkflowChain;
 use App\Models\WorkflowSetting;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class ApprovalWorkflowService
@@ -170,6 +171,15 @@ class ApprovalWorkflowService
             $currentApproval->reject($comment);
             $this->rejectDocument($document, $comment);
         }
+
+        // Invalidate sidebar badge cache for current approver
+        Cache::forget("sidebar_badges_{$approver->id}");
+
+        // Also invalidate for the next approver (if any) so their count updates
+        $document->refresh();
+        if ($document->current_approver_id) {
+            Cache::forget("sidebar_badges_{$document->current_approver_id}");
+        }
     }
 
     /**
@@ -248,7 +258,7 @@ class ApprovalWorkflowService
             $currentApproval->update([
                 'status' => 'revision_requested',
                 'comment' => $comment,
-                'responded_at' => now(),
+                'action_at' => now(),
             ]);
         }
 
@@ -287,7 +297,7 @@ class ApprovalWorkflowService
             $revisionApproval->update([
                 'status' => 'pending',
                 'comment' => null,
-                'responded_at' => null,
+                'action_at' => null,
             ]);
 
             // Set current approver back to the revision requester
@@ -298,6 +308,9 @@ class ApprovalWorkflowService
                 'revision_requested_by' => null,
                 'revision_requested_at' => null,
             ]);
+
+            // Invalidate sidebar badge cache for the approver
+            Cache::forget("sidebar_badges_{$revisionApproval->approver_id}");
 
             // Send notification to the approver that document has been revised
             $this->emailNotificationService->sendApprovalNotification($document, 'pending_approval');
