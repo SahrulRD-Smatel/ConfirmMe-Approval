@@ -192,7 +192,7 @@
             <h2 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">Halaman Tidak Ditemukan</h2>
 
             <p class="text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto leading-relaxed">
-                Robot kami sudah mencari ke mana-mana, tapi halaman yang Anda cari tidak bisa ditemukan. Mungkin sudah dipindahkan atau dihapus.
+                Robot kami sudah mencari ke mana-mana, tapi halaman yang Kamu cari tidak bisa ditemukan. Mungkin sudah dipindahkan atau dihapus.
             </p>
 
             {{-- Actions --}}
