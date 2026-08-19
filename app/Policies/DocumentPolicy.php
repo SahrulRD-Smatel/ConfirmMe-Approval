@@ -140,8 +140,8 @@ class DocumentPolicy
             return false;
         }
 
-        // Only draft documents can be updated
-        return $document->status === 'draft';
+        // Only draft or revision documents can be updated
+        return in_array($document->status, ['draft', 'revision']);
     }
 
     /**
@@ -159,7 +159,7 @@ class DocumentPolicy
             return false;
         }
 
-        // Only draft documents can be deleted
+        // Only draft documents can be deleted (revision documents should be edited, not deleted)
         return $document->status === 'draft';
     }
 
@@ -178,8 +178,8 @@ class DocumentPolicy
             return false;
         }
 
-        // Only draft documents can be submitted
-        return $document->status === 'draft';
+        // Only draft or revision documents can be submitted
+        return in_array($document->status, ['draft', 'revision']);
     }
 
     /**

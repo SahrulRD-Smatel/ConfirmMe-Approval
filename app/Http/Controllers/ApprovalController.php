@@ -245,7 +245,7 @@ class ApprovalController extends Controller
                 'revision_requested',
                 $document,
                 "Dokumen \"{$document->title}\" perlu direvisi. Catatan: " . $validated['comment'],
-                route('documents.edit', $document)
+                route('documents.show', $document)
             ));
         } catch (\Exception $e) {
             \Log::warning('Failed to send revision notification: ' . $e->getMessage());
