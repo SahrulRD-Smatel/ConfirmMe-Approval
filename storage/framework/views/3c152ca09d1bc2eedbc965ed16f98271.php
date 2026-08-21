@@ -39,7 +39,7 @@
 <?php endif; ?>
             </a>
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
                     <?php echo e(isset($template) ? 'Edit Template' : 'Buat Template'); ?>
 
                 </h1>
@@ -114,12 +114,12 @@
                 Informasi Template
             </h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Template <span class="text-danger-500">*</span></label>
                     <input type="text" name="name" value="<?php echo e(old('name', $template->name ?? '')); ?>" required
                         placeholder="contoh: PO Langganan Cloud Bulanan"
-                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['name'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -134,7 +134,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kode <span class="text-danger-500">*</span></label>
                     <input type="text" name="code" value="<?php echo e(old('code', $template->code ?? '')); ?>" required
                         placeholder="contoh: PO-CLOUD" maxlength="50"
-                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 uppercase">
+                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10 uppercase">
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['code'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -148,7 +148,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Jenis Approval <span class="text-danger-500">*</span></label>
                     <select name="approval_type" required x-model="approvalType"
-                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
                         <option value="only">Approval Only (Memo, SOP, Surat Tugas)</option>
                         <option value="po">Approval to PO (Purchase Order)</option>
                         <option value="invoice">Approval to Invoice (Tagihan)</option>
@@ -159,7 +159,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Deskripsi Template</label>
                     <textarea name="description" rows="2" placeholder="Deskripsi singkat kapan template ini digunakan..."
-                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"><?php echo e(old('description', $template->description ?? '')); ?></textarea>
+                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"><?php echo e(old('description', $template->description ?? '')); ?></textarea>
                 </div>
 
                 <div>
@@ -167,7 +167,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                         <input type="hidden" name="is_active" value="0">
                         <input type="checkbox" name="is_active" value="1" <?php echo e(old('is_active', $template->is_active ?? true) ? 'checked' : ''); ?>
 
-                            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500/20">
                         <span class="text-sm text-gray-700 dark:text-gray-300">Template Aktif</span>
                     </label>
                 </div>
@@ -223,18 +223,18 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
             </h2>
             <p class="text-sm text-gray-500 mb-4">Field ini akan otomatis terisi saat user memilih template</p>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Default Judul</label>
                     <input type="text" name="fields[title]" value="<?php echo e($fields['title'] ?? ''); ?>"
                         placeholder="contoh: Pengajuan Pembelian Server Cloud"
-                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
                     <p class="mt-1 text-xs text-gray-400">Judul yang otomatis terisi, user bisa mengedit</p>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Default Prioritas</label>
                     <select name="fields[priority]"
-                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
                         <option value="">— Tidak diisi —</option>
                         <option value="low" <?php echo e(($fields['priority'] ?? '') === 'low' ? 'selected' : ''); ?>>Rendah</option>
                         <option value="normal" <?php echo e(($fields['priority'] ?? '') === 'normal' ? 'selected' : ''); ?>>Normal</option>
@@ -246,7 +246,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Default Deskripsi</label>
                     <textarea name="fields[description]" rows="3"
                         placeholder="Boilerplate teks yang otomatis terisi..."
-                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"><?php echo e($fields['description'] ?? ''); ?></textarea>
+                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"><?php echo e($fields['description'] ?? ''); ?></textarea>
                 </div>
             </div>
          <?php echo $__env->renderComponent(); ?>
@@ -300,13 +300,13 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                     Default Values — Dokumen Administratif
                 </h2>
                 <p class="text-sm text-gray-500 mb-4">Khusus untuk tipe "Approval Only"</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Default Kategori</label>
                         <input type="text" name="fields[document_category]" list="category_options"
                             value="<?php echo e($fields['document_category'] ?? ''); ?>"
                             placeholder="Contoh: Surat Perjalanan Dinas"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
                         <datalist id="category_options">
                             <option value="Memo Internal">
                             <option value="SOP / Kebijakan">
@@ -317,7 +317,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Default Departemen Terkait</label>
                         <select name="fields[related_department]"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
                             <option value="">— Tidak diisi —</option>
                             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = \App\Models\Department::allActive(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $dept): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                                 <option value="<?php echo e($dept->name); ?>" <?php echo e(($fields['related_department'] ?? '') === $dept->name ? 'selected' : ''); ?>><?php echo e($dept->name); ?></option>
@@ -377,30 +377,30 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                     Default Values — Purchase Order
                 </h2>
                 <p class="text-sm text-gray-500 mb-4">Khusus untuk tipe "Approval to PO"</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Default Nama Vendor</label>
                         <input type="text" name="fields[vendor_name]" value="<?php echo e($fields['vendor_name'] ?? ''); ?>"
                             placeholder="contoh: PT Amazon Web Services"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Default NPWP Vendor</label>
                         <input type="text" name="fields[vendor_npwp]" value="<?php echo e($fields['vendor_npwp'] ?? ''); ?>"
                             placeholder="XX.XXX.XXX.X-XXX.XXX"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
                     </div>
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Default Rincian Barang/Jasa</label>
                         <textarea name="fields[item_description]" rows="3"
                             placeholder="1. Cloud Server x 1 unit @ Rp 5.000.000&#10;2. Domain & SSL x 1 paket @ Rp 500.000"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"><?php echo e($fields['item_description'] ?? ''); ?></textarea>
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"><?php echo e($fields['item_description'] ?? ''); ?></textarea>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Default Kode Anggaran</label>
                         <input type="text" name="fields[budget_code]" value="<?php echo e($fields['budget_code'] ?? ''); ?>"
                             placeholder="contoh: IT-2026-CLOUD"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
                     </div>
                 </div>
              <?php echo $__env->renderComponent(); ?>
@@ -455,24 +455,24 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                     Default Values — Invoice
                 </h2>
                 <p class="text-sm text-gray-500 mb-4">Khusus untuk tipe "Approval to Invoice"</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Default Nama Vendor</label>
                         <input type="text" name="fields[vendor_name_invoice]" value="<?php echo e($fields['vendor_name_invoice'] ?? ''); ?>"
                             placeholder="contoh: PT Telkom Indonesia"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Default Rekening Tujuan</label>
                         <input type="text" name="fields[bank_account]" value="<?php echo e($fields['bank_account'] ?? ''); ?>"
                             placeholder="BCA - 1234567890 a.n. PT Vendor"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Default No. Faktur Pajak</label>
                         <input type="text" name="fields[tax_invoice]" value="<?php echo e($fields['tax_invoice'] ?? ''); ?>"
                             placeholder="010.000-26.00000001"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
                     </div>
                 </div>
              <?php echo $__env->renderComponent(); ?>
@@ -527,11 +527,11 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                     Default Values — Pinjaman
                 </h2>
                 <p class="text-sm text-gray-500 mb-4">Khusus untuk tipe "Employee Loan"</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Default Jenis Pinjaman</label>
                         <select name="fields[loan_type]"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
                             <option value="">— Tidak diisi —</option>
                             <option value="darurat" <?php echo e(($fields['loan_type'] ?? '') === 'darurat' ? 'selected' : ''); ?>>Pinjaman Darurat</option>
                             <option value="pendidikan" <?php echo e(($fields['loan_type'] ?? '') === 'pendidikan' ? 'selected' : ''); ?>>Pinjaman Pendidikan</option>
@@ -543,7 +543,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Default Cicilan</label>
                         <select name="fields[installment_count]"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
                             <option value="">— Tidak diisi —</option>
                             <option value="3" <?php echo e(($fields['installment_count'] ?? '') === '3' ? 'selected' : ''); ?>>3 Bulan</option>
                             <option value="6" <?php echo e(($fields['installment_count'] ?? '') === '6' ? 'selected' : ''); ?>>6 Bulan</option>
@@ -555,7 +555,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Default Alasan</label>
                         <textarea name="fields[loan_reason]" rows="2"
                             placeholder="Boilerplate alasan pinjaman..."
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"><?php echo e($fields['loan_reason'] ?? ''); ?></textarea>
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"><?php echo e($fields['loan_reason'] ?? ''); ?></textarea>
                     </div>
                 </div>
              <?php echo $__env->renderComponent(); ?>
@@ -569,6 +569,197 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 <?php unset($__componentOriginaldae4cd48acb67888a4631e1ba48f2f93); ?>
 <?php endif; ?>
         </div>
+        
+        <?php if (isset($component)) { $__componentOriginaldae4cd48acb67888a4631e1ba48f2f93 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginaldae4cd48acb67888a4631e1ba48f2f93 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.ui.card','data' => ['xData' => '{
+            dynamicFields: '.e(Js::from($fields['dynamic_fields'] ?? [])).',
+            addField() {
+                this.dynamicFields.push({
+                    id: Date.now().toString(),
+                    name: \'\',
+                    label: \'\',
+                    type: \'text\',
+                    required: true,
+                    options: \'\',
+                    columns: \'\'
+                });
+            },
+            removeField(index) {
+                this.dynamicFields.splice(index, 1);
+            }
+        }']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('ui.card'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['x-data' => '{
+            dynamicFields: '.e(Js::from($fields['dynamic_fields'] ?? [])).',
+            addField() {
+                this.dynamicFields.push({
+                    id: Date.now().toString(),
+                    name: \'\',
+                    label: \'\',
+                    type: \'text\',
+                    required: true,
+                    options: \'\',
+                    columns: \'\'
+                });
+            },
+            removeField(index) {
+                this.dynamicFields.splice(index, 1);
+            }
+        }']); ?>
+<?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
+
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                    <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon','data' => ['name' => 'queue-list','class' => 'w-5 h-5 text-pink-500']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('icon'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['name' => 'queue-list','class' => 'w-5 h-5 text-pink-500']); ?>
+<?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
+
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginalce262628e3a8d44dc38fd1f3965181bc)): ?>
+<?php $attributes = $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc; ?>
+<?php unset($__attributesOriginalce262628e3a8d44dc38fd1f3965181bc); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginalce262628e3a8d44dc38fd1f3965181bc)): ?>
+<?php $component = $__componentOriginalce262628e3a8d44dc38fd1f3965181bc; ?>
+<?php unset($__componentOriginalce262628e3a8d44dc38fd1f3965181bc); ?>
+<?php endif; ?>
+                    Dynamic Form Builder
+                </h2>
+                <button type="button" @click="addField"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-pink-50 text-pink-600 hover:bg-pink-100 rounded-xl text-sm font-medium transition-colors">
+                    <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon','data' => ['name' => 'plus','class' => 'w-4 h-4']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('icon'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['name' => 'plus','class' => 'w-4 h-4']); ?>
+<?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
+
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginalce262628e3a8d44dc38fd1f3965181bc)): ?>
+<?php $attributes = $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc; ?>
+<?php unset($__attributesOriginalce262628e3a8d44dc38fd1f3965181bc); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginalce262628e3a8d44dc38fd1f3965181bc)): ?>
+<?php $component = $__componentOriginalce262628e3a8d44dc38fd1f3965181bc; ?>
+<?php unset($__componentOriginalce262628e3a8d44dc38fd1f3965181bc); ?>
+<?php endif; ?> Tambah Field
+                </button>
+            </div>
+            
+            <p class="text-sm text-gray-500 mb-4">
+                Tambahkan input khusus yang akan diisi oleh user saat menggunakan template ini. 
+                Field ini akan otomatis muncul pada form pengajuan dokumen.
+            </p>
+
+            <div class="space-y-4">
+                <template x-for="(field, index) in dynamicFields" :key="field.id">
+                    <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800 relative group">
+                        <button type="button" @click="removeField(index)" class="absolute top-3 right-3 text-gray-400 hover:text-danger-500 transition-colors tooltip" data-tip="Hapus Field">
+                            <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon','data' => ['name' => 'trash','class' => 'w-5 h-5']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('icon'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['name' => 'trash','class' => 'w-5 h-5']); ?>
+<?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
+
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginalce262628e3a8d44dc38fd1f3965181bc)): ?>
+<?php $attributes = $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc; ?>
+<?php unset($__attributesOriginalce262628e3a8d44dc38fd1f3965181bc); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginalce262628e3a8d44dc38fd1f3965181bc)): ?>
+<?php $component = $__componentOriginalce262628e3a8d44dc38fd1f3965181bc; ?>
+<?php unset($__componentOriginalce262628e3a8d44dc38fd1f3965181bc); ?>
+<?php endif; ?>
+                        </button>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pr-8">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Label Input <span class="text-danger-500">*</span></label>
+                                <input type="text" x-model="field.label" :name="`fields[dynamic_fields][${index}][label]`" required placeholder="Cth: Nama Pengemudi" class="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Field Name (Internal) <span class="text-danger-500">*</span></label>
+                                <input type="text" x-model="field.name" :name="`fields[dynamic_fields][${index}][name]`" required placeholder="cth: nama_pengemudi" class="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                                <p class="text-[10px] text-gray-500 mt-1">Tanpa spasi, gunakan huruf kecil dan underscore</p>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Tipe Input <span class="text-danger-500">*</span></label>
+                                <select x-model="field.type" :name="`fields[dynamic_fields][${index}][type]`" required class="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                                    <option value="text">Teks Pendek</option>
+                                    <option value="textarea">Teks Panjang</option>
+                                    <option value="number">Angka</option>
+                                    <option value="date">Tanggal</option>
+                                    <option value="time">Jam</option>
+                                    <option value="select">Dropdown (Pilihan)</option>
+                                    <option value="file">Upload File/Foto</option>
+                                    <option value="table">Tabel Dinamis</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center mt-5">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="hidden" :name="`fields[dynamic_fields][${index}][required]`" value="0">
+                                    <input type="checkbox" x-model="field.required" :name="`fields[dynamic_fields][${index}][required]`" value="1" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500 w-4 h-4">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Wajib Diisi (Required)</span>
+                                </label>
+                            </div>
+                            
+                            <!-- Options for Select -->
+                            <div x-show="field.type === 'select'" class="md:col-span-2 lg:col-span-4 mt-2">
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Opsi Dropdown <span class="text-gray-400 font-normal">(Pisahkan dengan koma)</span></label>
+                                <input type="text" x-model="field.options" :name="`fields[dynamic_fields][${index}][options]`" placeholder="Cth: Innova, Avanza, Xpander" class="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                            </div>
+                            
+                            <!-- Columns for Table -->
+                            <div x-show="field.type === 'table'" class="md:col-span-2 lg:col-span-4 mt-2">
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Kolom Tabel <span class="text-gray-400 font-normal">(Pisahkan dengan koma)</span></label>
+                                <input type="text" x-model="field.columns" :name="`fields[dynamic_fields][${index}][columns]`" placeholder="Cth: Nama Barang, Jumlah, Harga" class="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                
+                <div x-show="dynamicFields.length === 0" class="text-center py-6 border-2 border-dashed border-gray-200/80 dark:border-gray-700/80 rounded-xl">
+                    <p class="text-sm text-gray-500 mb-2">Belum ada input khusus (dynamic field) untuk template ini.</p>
+                </div>
+            </div>
+         <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginaldae4cd48acb67888a4631e1ba48f2f93)): ?>
+<?php $attributes = $__attributesOriginaldae4cd48acb67888a4631e1ba48f2f93; ?>
+<?php unset($__attributesOriginaldae4cd48acb67888a4631e1ba48f2f93); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginaldae4cd48acb67888a4631e1ba48f2f93)): ?>
+<?php $component = $__componentOriginaldae4cd48acb67888a4631e1ba48f2f93; ?>
+<?php unset($__componentOriginaldae4cd48acb67888a4631e1ba48f2f93); ?>
+<?php endif; ?>
 
         
         <?php if (isset($component)) { $__componentOriginaldae4cd48acb67888a4631e1ba48f2f93 = $component; } ?>
@@ -610,7 +801,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                     Susunan Approver (Wajib)
                 </h2>
                 <button type="button" @click="addWorkflow"
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-lg text-sm font-medium transition-colors">
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-xl text-sm font-medium transition-colors">
                     <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon','data' => ['name' => 'plus','class' => 'w-4 h-4']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -651,7 +842,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 
             <div class="space-y-3" x-show="workflows.length > 0">
                 <template x-for="(role, index) in workflows" :key="index">
-                    <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl relative group">
+                    <div class="flex items-center gap-3 p-3 bg-gray-50/80 dark:bg-gray-800 border border-gray-200/80 dark:border-gray-700/80 rounded-xl relative group">
                         <!-- Step Indicator -->
                         <div class="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center shrink-0">
                             <span class="text-indigo-600 dark:text-indigo-400 font-bold text-sm" x-text="index + 1"></span>
@@ -660,7 +851,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                         <!-- Role Select -->
                         <div class="flex-1">
                             <select x-model="workflows[index]" :name="`workflow[${index + 1}]`" required
-                                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
                                 <option value="" disabled>-- Pilih Approver --</option>
                                 <optgroup label="Berdasarkan Role/Jabatan">
                                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $roles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $roleData): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
@@ -681,7 +872,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 
                         <!-- Remove Button -->
                         <button type="button" @click="removeWorkflow(index)"
-                            class="p-2 text-gray-400 hover:text-danger-500 hover:bg-danger-50 rounded-lg transition-colors"
+                            class="p-2 text-gray-400 hover:text-danger-500 hover:bg-danger-50 rounded-xl transition-colors"
                             title="Hapus">
                             <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc = $attributes; } ?>
@@ -710,7 +901,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                 </template>
             </div>
 
-            <div x-show="workflows.length === 0" class="text-center py-6 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
+            <div x-show="workflows.length === 0" class="text-center py-6 border-2 border-dashed border-gray-200/80 dark:border-gray-700/80 rounded-xl">
                 <p class="text-sm text-gray-500">Belum ada approver yang ditambahkan.</p>
                 <button type="button" @click="addWorkflow" class="mt-2 text-indigo-600 hover:text-indigo-700 text-sm font-medium">
                     + Tambah Approver Pertama
@@ -728,7 +919,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 <?php endif; ?>
 
         
-        <div class="flex items-center justify-end gap-4">
+        <div class="flex flex-wrap items-center justify-end gap-3">
             <?php if (isset($component)) { $__componentOriginala8bb031a483a05f647cb99ed3a469847 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginala8bb031a483a05f647cb99ed3a469847 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.ui.button','data' => ['type' => 'button','variant' => 'secondary','href' => ''.e(route('admin.templates.index')).'']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>

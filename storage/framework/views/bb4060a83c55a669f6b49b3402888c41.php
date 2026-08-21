@@ -357,9 +357,18 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                     <div x-show="groupOpen" x-collapse>
                         <div class="p-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-y-4 gap-x-8">
                             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $groupPerms; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $perm): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
-                                <?php $hasPerm = isset($role) ? $role->hasPermissionTo($perm) : false; ?>
+                                <?php 
+                                    $hasPerm = isset($role) ? $role->hasPermissionTo($perm) : false; 
+                                    $isAction = in_array($perm, ['edit-document', 'delete-document', 'submit-document', 'reject-document', 'print-document', 'view-all-documents', 'view-department-documents', 'view-finance-documents', 'export-reports']);
+                                    $badgeLabel = $isAction ? 'FITUR' : 'MENU';
+                                    $badgeClass = $isAction ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-400';
+                                ?>
                                 <label class="flex items-center justify-between group cursor-pointer p-3 rounded-xl hover:bg-primary-50/60 dark:hover:bg-gray-800/80/50 transition-colors border border-transparent hover:border-gray-100 dark:hover:border-gray-700/50">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors"><?php echo e(str_replace('-', ' ', $perm)); ?></span>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors flex items-center gap-2">
+                                        <?php echo e(str_replace('-', ' ', $perm)); ?>
+
+                                        <span class="px-1.5 py-0.5 rounded text-[9px] font-bold <?php echo e($badgeClass); ?>"><?php echo e($badgeLabel); ?></span>
+                                    </span>
                                     <div class="relative inline-flex items-center">
                                         <input type="checkbox" name="permissions[]" value="<?php echo e($perm); ?>" class="sr-only peer" <?php echo e($hasPerm ? 'checked' : ''); ?>>
                                         <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500"></div>

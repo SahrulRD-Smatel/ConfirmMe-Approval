@@ -148,6 +148,9 @@ class DocumentController extends Controller
                 'documents.*.installment_count' => 'nullable|integer|min:1',
                 'documents.*.repayment_start' => 'nullable|string',
                 'documents.*.loan_reason' => 'nullable|string',
+                'documents.*.metadata' => 'nullable|array',
+                'documents.*.metadata_files' => 'nullable|array',
+                'documents.*.metadata_files.*' => 'nullable|file|max:10240',
                 
                 // Attachments are indexed by document index
                 'attachments' => 'nullable|array|max:10',
@@ -183,18 +186,18 @@ class DocumentController extends Controller
                 }
 
                 // Build metadata based on approval type
-                $metadata = [];
+                $metadata = $docData['metadata'] ?? []; // Start with dynamic metadata from builder
                 switch ($docData['approval_type']) {
                     case 'only':
-                        $metadata = [
+                        $metadata = array_merge($metadata, [
                             'document_category' => $docData['document_category'] ?? null,
                             'effective_date' => $docData['effective_date'] ?? null,
                             'expiry_date' => $docData['expiry_date'] ?? null,
                             'related_department' => $docData['related_department'] ?? null,
-                        ];
+                        ]);
                         break;
                     case 'po':
-                        $metadata = [
+                        $metadata = array_merge($metadata, [
                             'vendor_name' => $docData['vendor_name'] ?? null,
                             'vendor_npwp' => $docData['vendor_npwp'] ?? null,
                             'item_description' => $docData['item_description'] ?? null,
@@ -202,10 +205,10 @@ class DocumentController extends Controller
                             'tax_amount' => $docData['tax_amount'] ?? 0,
                             'budget_code' => $docData['budget_code'] ?? null,
                             'expected_delivery' => $docData['expected_delivery'] ?? null,
-                        ];
+                        ]);
                         break;
                     case 'invoice':
-                        $metadata = [
+                        $metadata = array_merge($metadata, [
                             'invoice_number' => $docData['invoice_number'] ?? null,
                             'invoice_date' => $docData['invoice_date'] ?? null,
                             'related_po_number' => $docData['related_po_number'] ?? null,
@@ -214,16 +217,16 @@ class DocumentController extends Controller
                             'payment_due_date' => $docData['payment_due_date'] ?? null,
                             'bank_account' => $docData['bank_account'] ?? null,
                             'tax_invoice' => $docData['tax_invoice'] ?? null,
-                        ];
+                        ]);
                         break;
                     case 'loan':
-                        $metadata = [
+                        $metadata = array_merge($metadata, [
                             'loan_type' => $docData['loan_type'] ?? null,
                             'loan_amount' => $docData['loan_amount'] ?? 0,
                             'installment_count' => $docData['installment_count'] ?? 1,
                             'repayment_start' => $docData['repayment_start'] ?? null,
                             'loan_reason' => $docData['loan_reason'] ?? null,
-                        ];
+                        ]);
                         break;
                 }
 
@@ -284,6 +287,31 @@ class DocumentController extends Controller
                             \Log::error("Failed to upload file for doc index {$index}: " . $e->getMessage());
                         }
                     }
+                }
+                
+                // Handle dynamic file uploads
+                if ($request->hasFile("documents.{$index}.metadata_files")) {
+                    $dynamicFiles = $request->file("documents.{$index}.metadata_files");
+                    foreach ($dynamicFiles as $fieldName => $file) {
+                        try {
+                            if (!$file || !($file instanceof \Illuminate\Http\UploadedFile) || !$file->isValid()) continue;
+                            $tempPath = $file->getRealPath() ?: $file->getPathname() ?: $file->path();
+                            if (empty($tempPath) || !file_exists($tempPath)) continue;
+
+                            $extension = $file->getClientOriginalExtension();
+                            $filename = uniqid() . '_df_' . time() . '.' . $extension;
+                            $storagePath = 'documents/' . $document->id . '/' . $filename;
+                            
+                            $contents = file_get_contents($tempPath);
+                            if ($contents !== false && Storage::disk('public')->put($storagePath, $contents)) {
+                                $metadata[$fieldName] = $storagePath;
+                            }
+                        } catch (\Exception $e) {
+                            \Log::error("Failed to upload dynamic file for doc index {$index}: " . $e->getMessage());
+                        }
+                    }
+                    // Update metadata with the new file paths
+                    $document->update(['metadata' => $metadata]);
                 }
                 
                 // Automatically assign workflow based on template or legacy rules
@@ -393,6 +421,9 @@ class DocumentController extends Controller
             'installment_count' => 'nullable|integer|min:1',
             'repayment_start' => 'nullable|string',
             'loan_reason' => 'nullable|string',
+            'metadata' => 'nullable|array',
+            'metadata_files' => 'nullable|array',
+            'metadata_files.*' => 'nullable|file|max:10240',
             'attachments' => 'nullable|array',
             'attachments.*' => 'nullable|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png',
         ];
@@ -400,18 +431,28 @@ class DocumentController extends Controller
         $validated = $request->validate($rules);
         $this->sanitizeMoneyFields($request, ['subtotal', 'tax_amount', 'invoice_amount', 'loan_amount']);
 
-        $metadata = [];
+        $metadata = $validated['metadata'] ?? []; // Start with dynamic metadata
+        
+        // Preserve existing dynamic file paths in metadata if not overwritten
+        if (is_array($document->metadata)) {
+            foreach ($document->metadata as $key => $value) {
+                if (!isset($metadata[$key]) && is_string($value) && str_starts_with($value, 'documents/')) {
+                    $metadata[$key] = $value;
+                }
+            }
+        }
+
         switch ($validated['approval_type']) {
             case 'only':
-                $metadata = [
+                $metadata = array_merge($metadata, [
                     'document_category' => $request->input('document_category'),
                     'effective_date' => $request->input('effective_date'),
                     'expiry_date' => $request->input('expiry_date'),
                     'related_department' => $request->input('related_department'),
-                ];
+                ]);
                 break;
             case 'po':
-                $metadata = [
+                $metadata = array_merge($metadata, [
                     'vendor_name' => $request->input('vendor_name'),
                     'vendor_npwp' => $request->input('vendor_npwp'),
                     'item_description' => $request->input('item_description'),
@@ -419,10 +460,10 @@ class DocumentController extends Controller
                     'tax_amount' => $request->input('tax_amount'),
                     'budget_code' => $request->input('budget_code'),
                     'expected_delivery' => $request->input('expected_delivery'),
-                ];
+                ]);
                 break;
             case 'invoice':
-                $metadata = [
+                $metadata = array_merge($metadata, [
                     'invoice_number' => $request->input('invoice_number'),
                     'invoice_date' => $request->input('invoice_date'),
                     'related_po_number' => $request->input('related_po_number'),
@@ -431,16 +472,16 @@ class DocumentController extends Controller
                     'payment_due_date' => $request->input('payment_due_date'),
                     'bank_account' => $request->input('bank_account'),
                     'tax_invoice' => $request->input('tax_invoice'),
-                ];
+                ]);
                 break;
             case 'loan':
-                $metadata = [
+                $metadata = array_merge($metadata, [
                     'loan_type' => $request->input('loan_type'),
                     'loan_amount' => $request->input('loan_amount'),
                     'installment_count' => $request->input('installment_count'),
                     'repayment_start' => $request->input('repayment_start'),
                     'loan_reason' => $request->input('loan_reason'),
-                ];
+                ]);
                 break;
         }
 
@@ -495,6 +536,30 @@ class DocumentController extends Controller
                     \Log::error('Failed to upload file during update: ' . $e->getMessage());
                 }
             }
+        }
+
+        // Handle dynamic file uploads on edit
+        if ($request->hasFile('metadata_files')) {
+            $dynamicFiles = $request->file('metadata_files');
+            foreach ($dynamicFiles as $fieldName => $file) {
+                try {
+                    if (!$file || !($file instanceof \Illuminate\Http\UploadedFile) || !$file->isValid()) continue;
+                    $tempPath = $file->getRealPath() ?: $file->getPathname() ?: $file->path();
+                    if (empty($tempPath) || !file_exists($tempPath)) continue;
+
+                    $extension = $file->getClientOriginalExtension();
+                    $filename = uniqid() . '_df_' . time() . '.' . $extension;
+                    $storagePath = 'documents/' . $document->id . '/' . $filename;
+                    
+                    $contents = file_get_contents($tempPath);
+                    if ($contents !== false && Storage::disk('public')->put($storagePath, $contents)) {
+                        $metadata[$fieldName] = $storagePath;
+                    }
+                } catch (\Exception $e) {
+                    \Log::error("Failed to upload dynamic file during update: " . $e->getMessage());
+                }
+            }
+            $document->update(['metadata' => $metadata]);
         }
 
         return redirect()->route('documents.show', $document)

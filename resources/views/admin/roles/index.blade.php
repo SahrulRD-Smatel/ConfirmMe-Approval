@@ -116,16 +116,29 @@
                                     @foreach($groupPerms as $perm)
                                         @php $hasPerm = in_array($perm, $rolePerms); @endphp
                                         <div class="flex items-start gap-3 text-sm group/item">
+                                            @php 
+                                                $isAction = in_array($perm, ['edit-document', 'delete-document', 'submit-document', 'reject-document', 'print-document', 'view-all-documents', 'view-department-documents', 'view-finance-documents', 'export-reports']);
+                                                $badgeLabel = $isAction ? 'FITUR' : 'MENU';
+                                                $badgeClass = $hasPerm 
+                                                    ? ($isAction ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-400')
+                                                    : 'bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500';
+                                            @endphp
                                             @if($hasPerm)
                                                 <div class="mt-0.5 w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center flex-shrink-0">
                                                     <x-icon name="check" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                                                 </div>
-                                                <span class="text-gray-900 dark:text-gray-100 font-medium">{{ str_replace('-', ' ', $perm) }}</span>
+                                                <span class="text-gray-900 dark:text-gray-100 font-medium flex items-center gap-2">
+                                                    {{ str_replace('-', ' ', $perm) }}
+                                                    <span class="px-1.5 py-0.5 rounded text-[9px] font-bold {{ $badgeClass }}">{{ $badgeLabel }}</span>
+                                                </span>
                                             @else
                                                 <div class="mt-0.5 w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
                                                     <x-icon name="x-mark" class="w-3.5 h-3.5 text-gray-400" />
                                                 </div>
-                                                <span class="text-gray-400 dark:text-gray-500">{{ str_replace('-', ' ', $perm) }}</span>
+                                                <span class="text-gray-400 dark:text-gray-500 flex items-center gap-2">
+                                                    {{ str_replace('-', ' ', $perm) }}
+                                                    <span class="px-1.5 py-0.5 rounded text-[9px] font-bold {{ $badgeClass }}">{{ $badgeLabel }}</span>
+                                                </span>
                                             @endif
                                         </div>
                                     @endforeach

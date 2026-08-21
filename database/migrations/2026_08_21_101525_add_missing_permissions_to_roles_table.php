@@ -25,7 +25,7 @@ return new class extends Migration
         }
 
         // Assign them to admin role
-        $admin = Role::findByName('admin', 'web');
+        $admin = Role::where('name', 'admin')->first();
         if ($admin) {
             $admin->givePermissionTo($permissions);
         }

@@ -105,6 +105,8 @@ class DatabaseSeeder extends Seeder
                 'view-all-documents',
                 'view-reports',
                 'export-reports',
+                'manage-attendance',
+                'view-attendance',
             ],
             'manager' => [
                 'create-document',
@@ -131,6 +133,8 @@ class DatabaseSeeder extends Seeder
                 'view-all-documents',
                 'view-reports',
                 'export-reports',
+                'manage-attendance',
+                'view-attendance',
             ],
             'direktur_finance' => [
                 'create-document',
@@ -236,6 +240,8 @@ class DatabaseSeeder extends Seeder
                 'approve-document',
                 'reject-document',
                 'view-reports',
+                'manage-attendance',
+                'view-attendance',
             ],
         ];
 
@@ -572,6 +578,33 @@ class DatabaseSeeder extends Seeder
                     'priority' => 'normal',
                     'loan_type' => 'darurat',
                     'loan_reason' => 'Kebutuhan mendesak untuk keperluan pribadi/keluarga.',
+                ],
+            ],
+            [
+                'name' => 'Peminjaman Kendaraan Operasional',
+                'code' => 'VEHICLE_LOAN',
+                'description' => 'Template untuk permohonan peminjaman mobil operasional',
+                'approval_type' => 'only',
+                'fields' => [
+                    'title' => 'Permohonan Peminjaman Mobil Operasional',
+                    'description' => 'Permohonan untuk peminjaman mobil operasional perusahaan sesuai SOP.',
+                    'priority' => 'normal',
+                    'document_category' => 'peminjaman_aset',
+                    'dynamic_fields' => [
+                        ['name' => 'nama_peminjam', 'label' => 'Nama Peminjam', 'type' => 'text', 'required' => true],
+                        ['name' => 'nip', 'label' => 'NIP', 'type' => 'text', 'required' => true],
+                        ['name' => 'posisi_divisi', 'label' => 'Posisi/Divisi', 'type' => 'text', 'required' => true],
+                        ['name' => 'dipakai_tanggal', 'label' => 'Dipakai Tanggal', 'type' => 'date', 'required' => true],
+                        ['name' => 'jam_berangkat', 'label' => 'Jam Berangkat', 'type' => 'time', 'required' => true],
+                        ['name' => 'kembali_tanggal', 'label' => 'Kembali Tanggal', 'type' => 'date', 'required' => true],
+                        ['name' => 'jam_kembali', 'label' => 'Jam Kembali', 'type' => 'time', 'required' => true],
+                        ['name' => 'jenis_mobil', 'label' => 'Jenis Mobil', 'type' => 'select', 'required' => true, 'options' => "Kijang Innova Plat Genap\nKijang Innova Plat Ganjil\nAvanza Plat Genap\nAvanza Plat Ganjil"],
+                        ['name' => 'pengemudi', 'label' => 'Pengemudi', 'type' => 'text', 'required' => true],
+                        ['name' => 'nomor_sim_a', 'label' => 'Nomor SIM A', 'type' => 'text', 'required' => true],
+                        ['name' => 'kebutuhan_project', 'label' => 'Kebutuhan/Project', 'type' => 'textarea', 'required' => true],
+                        ['name' => 'lampiran_sim', 'label' => 'Lampiran SIM A', 'type' => 'file', 'required' => true],
+                        ['name' => 'data_penumpang', 'label' => 'Data Penumpang dalam Mobil', 'type' => 'table', 'columns' => 'Nama Penumpang', 'required' => false],
+                    ],
                 ],
             ],
         ];

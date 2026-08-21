@@ -274,6 +274,13 @@ Tambah Role <?php echo $__env->renderComponent(); ?>
                                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $groupPerms; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $perm): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                                         <?php $hasPerm = in_array($perm, $rolePerms); ?>
                                         <div class="flex items-start gap-3 text-sm group/item">
+                                            <?php 
+                                                $isAction = in_array($perm, ['edit-document', 'delete-document', 'submit-document', 'reject-document', 'print-document', 'view-all-documents', 'view-department-documents', 'view-finance-documents', 'export-reports']);
+                                                $badgeLabel = $isAction ? 'FITUR' : 'MENU';
+                                                $badgeClass = $hasPerm 
+                                                    ? ($isAction ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-400')
+                                                    : 'bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500';
+                                            ?>
                                             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($hasPerm): ?>
                                                 <div class="mt-0.5 w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center flex-shrink-0">
                                                     <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
@@ -299,7 +306,11 @@ Tambah Role <?php echo $__env->renderComponent(); ?>
 <?php unset($__componentOriginalce262628e3a8d44dc38fd1f3965181bc); ?>
 <?php endif; ?>
                                                 </div>
-                                                <span class="text-gray-900 dark:text-gray-100 font-medium"><?php echo e(str_replace('-', ' ', $perm)); ?></span>
+                                                <span class="text-gray-900 dark:text-gray-100 font-medium flex items-center gap-2">
+                                                    <?php echo e(str_replace('-', ' ', $perm)); ?>
+
+                                                    <span class="px-1.5 py-0.5 rounded text-[9px] font-bold <?php echo e($badgeClass); ?>"><?php echo e($badgeLabel); ?></span>
+                                                </span>
                                             <?php else: ?>
                                                 <div class="mt-0.5 w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
                                                     <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
@@ -325,7 +336,11 @@ Tambah Role <?php echo $__env->renderComponent(); ?>
 <?php unset($__componentOriginalce262628e3a8d44dc38fd1f3965181bc); ?>
 <?php endif; ?>
                                                 </div>
-                                                <span class="text-gray-400 dark:text-gray-500"><?php echo e(str_replace('-', ' ', $perm)); ?></span>
+                                                <span class="text-gray-400 dark:text-gray-500 flex items-center gap-2">
+                                                    <?php echo e(str_replace('-', ' ', $perm)); ?>
+
+                                                    <span class="px-1.5 py-0.5 rounded text-[9px] font-bold <?php echo e($badgeClass); ?>"><?php echo e($badgeLabel); ?></span>
+                                                </span>
                                             <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                         </div>
                                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>

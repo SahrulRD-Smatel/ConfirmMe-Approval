@@ -16,7 +16,7 @@
      <?php $__env->slot('header', null, []); ?> 
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in-down">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">Laporan & Statistik</h1>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Laporan & Statistik</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     Ringkasan performa dan aktivitas dokumen
                 </p>
@@ -97,7 +97,7 @@
      <?php $__env->endSlot(); ?>
 
     <!-- Statistics Cards -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <div class="mb-7 grid grid-cols-2 gap-4 md:grid-cols-4">
         <div
             class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl p-4 text-white shadow-lg transform hover:-translate-y-1 transition duration-300">
             <div class="flex justify-between items-start">
@@ -105,7 +105,7 @@
                     <p class="text-indigo-100 text-xs font-medium uppercase tracking-wider">Total Dokumen</p>
                     <p class="text-3xl font-bold mt-1"><?php echo e(number_format($stats['total'])); ?></p>
                 </div>
-                <div class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
                     <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon','data' => ['name' => 'document-text','class' => 'w-6 h-6 text-white']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -144,7 +144,7 @@
                     <p class="text-green-100 text-xs font-medium uppercase tracking-wider">Disetujui</p>
                     <p class="text-3xl font-bold mt-1"><?php echo e(number_format($stats['approved'])); ?></p>
                 </div>
-                <div class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
                     <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon','data' => ['name' => 'check-circle','class' => 'w-6 h-6 text-white']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -181,7 +181,7 @@
                     <p class="text-red-100 text-xs font-medium uppercase tracking-wider">Ditolak</p>
                     <p class="text-3xl font-bold mt-1"><?php echo e(number_format($stats['rejected'])); ?></p>
                 </div>
-                <div class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
                     <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon','data' => ['name' => 'x-circle','class' => 'w-6 h-6 text-white']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -218,7 +218,7 @@
                     <p class="text-yellow-100 text-xs font-medium uppercase tracking-wider">Pending</p>
                     <p class="text-3xl font-bold mt-1"><?php echo e(number_format($stats['pending'])); ?></p>
                 </div>
-                <div class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
                     <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon','data' => ['name' => 'clock','class' => 'w-6 h-6 text-white']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -249,19 +249,19 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+    <div class="mb-7 grid grid-cols-1 gap-5 lg:grid-cols-3">
         <!-- Main Chart -->
         <div
-            class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Tren Dokumen Departemen</h2>
+            class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200/80 dark:border-gray-700/80 shadow-soft">
+            <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Tren Dokumen Departemen</h2>
             <div class="h-64">
                 <canvas id="deptChart"></canvas>
             </div>
         </div>
 
         <!-- Secondary Chart -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Komposisi Dokumen</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200/80 dark:border-gray-700/80 shadow-soft">
+            <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Komposisi Dokumen</h2>
             <div class="h-64 flex items-center justify-center">
                 <canvas id="typeChart"></canvas>
             </div>
@@ -269,15 +269,15 @@
     </div>
 
     <!-- Recent Activity Table -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm">
+    <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200/80 dark:border-gray-700/80 shadow-soft">
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Aktivitas Terbaru</h2>
             <span class="text-xs text-gray-500">5 Dokumen Terakhir</span>
         </div>
 
         <div class="overflow-hidden">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-800">
+            <table class="min-w-[760px] w-full divide-y divide-gray-200/80 dark:divide-gray-700/80">
+                <thead class="bg-gray-50/80 dark:bg-gray-800">
                     <tr>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider rounded-l-lg">Dokumen</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">User</th>
@@ -287,7 +287,7 @@
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $recentDocuments; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $doc): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition duration-150 group cursor-pointer"
+                        <tr class="hover:bg-primary-50/60 dark:hover:bg-gray-700/50 transition duration-150 group cursor-pointer"
                             onclick="window.location='<?php echo e(route('documents.show', $doc)); ?>'">
                             <td class="px-4 py-3 font-medium text-gray-900 dark:text-white group-hover:text-primary-600">
                                 <?php echo e($doc->title); ?>

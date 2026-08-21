@@ -77,7 +77,9 @@
                 color: '<?php echo e($tpl->approval_type === 'only' ? 'blue' : ($tpl->approval_type === 'loan' ? 'pink' : 'emerald')); ?>',
                 defaultTitle: '<?php echo e(addslashes($tpl->fields['title'] ?? '')); ?>',
                 defaultDesc: '<?php echo e(addslashes($tpl->fields['description'] ?? '')); ?>',
-                defaultCategory: '<?php echo e(addslashes($tpl->fields['document_category'] ?? '')); ?>'
+                defaultCategory: '<?php echo e(addslashes($tpl->fields['document_category'] ?? '')); ?>',
+                dynamicFields: <?php echo e(Js::from($tpl->fields['dynamic_fields'] ?? [])); ?>
+
             },
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         ],
@@ -511,10 +513,141 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- DYNAMIC FIELDS -->
+                                <div x-show="selectedTemplate && selectedTemplate.dynamicFields && selectedTemplate.dynamicFields.length > 0" class="pt-6 border-t border-gray-100 dark:border-gray-700">
+                                    <h4 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Informasi Spesifik</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                        <template x-for="field in (selectedTemplate?.dynamicFields || [])" :key="field.name">
+                                            <div :class="['textarea', 'table'].includes(field.type) ? 'md:col-span-2' : ''">
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                    <span x-text="field.label"></span>
+                                                    <span x-show="field.required == '1'" class="text-danger-500">*</span>
+                                                </label>
+                                                
+                                                <!-- Text / Number / Date / Time -->
+                                                <template x-if="['text', 'number', 'date', 'time'].includes(field.type)">
+                                                    <input :type="field.type" :name="`documents[${index}][metadata][${field.name}]`" :required="field.required == '1'"
+                                                        class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10">
+                                                </template>
+
+                                                <!-- Textarea -->
+                                                <template x-if="field.type === 'textarea'">
+                                                    <textarea :name="`documents[${index}][metadata][${field.name}]`" rows="3" :required="field.required == '1'"
+                                                        class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10"></textarea>
+                                                </template>
+
+                                                <!-- Select -->
+                                                <template x-if="field.type === 'select'">
+                                                    <select :name="`documents[${index}][metadata][${field.name}]`" :required="field.required == '1'"
+                                                        class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10">
+                                                        <option value="">-- Pilih --</option>
+                                                        <template x-for="opt in (field.options ? field.options.split(',').map(s=>s.trim()) : [])">
+                                                            <option :value="opt" x-text="opt"></option>
+                                                        </template>
+                                                    </select>
+                                                </template>
+
+                                                <!-- File -->
+                                                <template x-if="field.type === 'file'">
+                                                    <input type="file" :name="`documents[${index}][metadata_files][${field.name}]`" :required="field.required == '1'"
+                                                        class="block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100">
+                                                </template>
+
+                                                <!-- Table -->
+                                                <template x-if="field.type === 'table'">
+                                                    <div class="bg-gray-50/50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden"
+                                                         x-data="{
+                                                            rows: [{}],
+                                                            addRow() { this.rows.push({}); },
+                                                            removeRow(rIndex) { if(this.rows.length > 1) this.rows.splice(rIndex, 1); },
+                                                            getCols(colsStr) { return colsStr ? colsStr.split(',').map(s=>s.trim()) : []; }
+                                                         }">
+                                                        <div class="overflow-x-auto">
+                                                            <table class="w-full text-sm text-left">
+                                                                <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
+                                                                    <tr>
+                                                                        <template x-for="col in getCols(field.columns)">
+                                                                            <th class="px-4 py-3" x-text="col"></th>
+                                                                        </template>
+                                                                        <th class="px-4 py-3 w-16 text-center">Aksi</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <template x-for="(row, rIndex) in rows">
+                                                                        <tr class="border-b dark:border-gray-700">
+                                                                            <template x-for="col in getCols(field.columns)">
+                                                                                <td class="p-2">
+                                                                                    <input type="text" :name="`documents[${index}][metadata][${field.name}][${rIndex}][${col}]`" :placeholder="col" :required="field.required == '1'"
+                                                                                        class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                                                                </td>
+                                                                            </template>
+                                                                            <td class="p-2 text-center">
+                                                                                <button type="button" @click="removeRow(rIndex)" class="text-danger-500 hover:text-danger-700" title="Hapus Baris">
+                                                                                    <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon','data' => ['name' => 'trash','class' => 'w-4 h-4 mx-auto']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('icon'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['name' => 'trash','class' => 'w-4 h-4 mx-auto']); ?>
+<?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
+
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginalce262628e3a8d44dc38fd1f3965181bc)): ?>
+<?php $attributes = $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc; ?>
+<?php unset($__attributesOriginalce262628e3a8d44dc38fd1f3965181bc); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginalce262628e3a8d44dc38fd1f3965181bc)): ?>
+<?php $component = $__componentOriginalce262628e3a8d44dc38fd1f3965181bc; ?>
+<?php unset($__componentOriginalce262628e3a8d44dc38fd1f3965181bc); ?>
+<?php endif; ?>
+                                                                                </button>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </template>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="p-3 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                                                            <button type="button" @click="addRow" class="text-xs font-semibold text-primary-600 hover:text-primary-700 flex items-center gap-1">
+                                                                <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon','data' => ['name' => 'plus','class' => 'w-3 h-3']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('icon'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['name' => 'plus','class' => 'w-3 h-3']); ?>
+<?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
+
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginalce262628e3a8d44dc38fd1f3965181bc)): ?>
+<?php $attributes = $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc; ?>
+<?php unset($__attributesOriginalce262628e3a8d44dc38fd1f3965181bc); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginalce262628e3a8d44dc38fd1f3965181bc)): ?>
+<?php $component = $__componentOriginalce262628e3a8d44dc38fd1f3965181bc; ?>
+<?php unset($__componentOriginalce262628e3a8d44dc38fd1f3965181bc); ?>
+<?php endif; ?> Tambah Baris
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
 
                                 <!-- ATTACHMENTS -->
                                 <div class="pt-6 border-t border-gray-100 dark:border-gray-700" x-data="{ files: [] }">
-                                    <h4 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Lampiran</h4>
+                                    <h4 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Lampiran Tambahan <span class="lowercase normal-case font-medium">(Opsional)</span></h4>
                                     <label class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl cursor-pointer bg-gray-50/80 dark:bg-gray-800/50 hover:bg-gray-100 transition-colors">
                                         <div class="flex flex-col items-center justify-center pt-5 pb-6">
                                             <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
@@ -539,7 +672,7 @@
 <?php $component = $__componentOriginalce262628e3a8d44dc38fd1f3965181bc; ?>
 <?php unset($__componentOriginalce262628e3a8d44dc38fd1f3965181bc); ?>
 <?php endif; ?>
-                                            <p class="text-sm text-gray-500"><span class="font-semibold text-primary-600">Pilih File Lampiran</span> untuk Dokumen #<span x-text="index+1"></span></p>
+                                            <p class="text-sm text-gray-500"><span class="font-semibold text-primary-600">Pilih File Tambahan</span> (Jika ada) untuk Dokumen #<span x-text="index+1"></span></p>
                                         </div>
                                         <input :name="`attachments[${index}][]`" type="file" multiple class="hidden" @change="files = Array.from($event.target.files)" />
                                     </label>

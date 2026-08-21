@@ -275,6 +275,98 @@
                 </div>
             </x-ui.card>
         </div>
+        {{-- Dynamic Form Builder --}}
+        <x-ui.card x-data="{
+            dynamicFields: {{ Js::from($fields['dynamic_fields'] ?? []) }},
+            addField() {
+                this.dynamicFields.push({
+                    id: Date.now().toString(),
+                    name: '',
+                    label: '',
+                    type: 'text',
+                    required: true,
+                    options: '',
+                    columns: ''
+                });
+            },
+            removeField(index) {
+                this.dynamicFields.splice(index, 1);
+            }
+        }">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                    <x-icon name="queue-list" class="w-5 h-5 text-pink-500" />
+                    Dynamic Form Builder
+                </h2>
+                <button type="button" @click="addField"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-pink-50 text-pink-600 hover:bg-pink-100 rounded-xl text-sm font-medium transition-colors">
+                    <x-icon name="plus" class="w-4 h-4" /> Tambah Field
+                </button>
+            </div>
+            
+            <p class="text-sm text-gray-500 mb-4">
+                Tambahkan input khusus yang akan diisi oleh user saat menggunakan template ini. 
+                Field ini akan otomatis muncul pada form pengajuan dokumen.
+            </p>
+
+            <div class="space-y-4">
+                <template x-for="(field, index) in dynamicFields" :key="field.id">
+                    <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800 relative group">
+                        <button type="button" @click="removeField(index)" class="absolute top-3 right-3 text-gray-400 hover:text-danger-500 transition-colors tooltip" data-tip="Hapus Field">
+                            <x-icon name="trash" class="w-5 h-5" />
+                        </button>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pr-8">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Label Input <span class="text-danger-500">*</span></label>
+                                <input type="text" x-model="field.label" :name="`fields[dynamic_fields][${index}][label]`" required placeholder="Cth: Nama Pengemudi" class="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Field Name (Internal) <span class="text-danger-500">*</span></label>
+                                <input type="text" x-model="field.name" :name="`fields[dynamic_fields][${index}][name]`" required placeholder="cth: nama_pengemudi" class="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                                <p class="text-[10px] text-gray-500 mt-1">Tanpa spasi, gunakan huruf kecil dan underscore</p>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Tipe Input <span class="text-danger-500">*</span></label>
+                                <select x-model="field.type" :name="`fields[dynamic_fields][${index}][type]`" required class="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                                    <option value="text">Teks Pendek</option>
+                                    <option value="textarea">Teks Panjang</option>
+                                    <option value="number">Angka</option>
+                                    <option value="date">Tanggal</option>
+                                    <option value="time">Jam</option>
+                                    <option value="select">Dropdown (Pilihan)</option>
+                                    <option value="file">Upload File/Foto</option>
+                                    <option value="table">Tabel Dinamis</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center mt-5">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="hidden" :name="`fields[dynamic_fields][${index}][required]`" value="0">
+                                    <input type="checkbox" x-model="field.required" :name="`fields[dynamic_fields][${index}][required]`" value="1" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500 w-4 h-4">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Wajib Diisi (Required)</span>
+                                </label>
+                            </div>
+                            
+                            <!-- Options for Select -->
+                            <div x-show="field.type === 'select'" class="md:col-span-2 lg:col-span-4 mt-2">
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Opsi Dropdown <span class="text-gray-400 font-normal">(Pisahkan dengan koma)</span></label>
+                                <input type="text" x-model="field.options" :name="`fields[dynamic_fields][${index}][options]`" placeholder="Cth: Innova, Avanza, Xpander" class="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                            </div>
+                            
+                            <!-- Columns for Table -->
+                            <div x-show="field.type === 'table'" class="md:col-span-2 lg:col-span-4 mt-2">
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Kolom Tabel <span class="text-gray-400 font-normal">(Pisahkan dengan koma)</span></label>
+                                <input type="text" x-model="field.columns" :name="`fields[dynamic_fields][${index}][columns]`" placeholder="Cth: Nama Barang, Jumlah, Harga" class="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                
+                <div x-show="dynamicFields.length === 0" class="text-center py-6 border-2 border-dashed border-gray-200/80 dark:border-gray-700/80 rounded-xl">
+                    <p class="text-sm text-gray-500 mb-2">Belum ada input khusus (dynamic field) untuk template ini.</p>
+                </div>
+            </div>
+        </x-ui.card>
 
         {{-- Workflow / Approver Chain --}}
         <x-ui.card>
