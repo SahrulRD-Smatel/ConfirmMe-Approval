@@ -1,48 +1,127 @@
 <x-app-layout>
-    <x-slot name="title">{{ isset($role) ? 'Edit Role' : 'Tambah Role' }}</x-slot>
+    <x-slot name="title">{{ isset($role) ? 'Konfigurasi Hak Akses' : 'Tambah Role Baru' }}</x-slot>
     
     <x-slot name="header">
         <div class="flex items-center gap-4">
-            <a href="{{ route('admin.roles.index') }}" class="text-gray-500 hover:text-gray-700 dark:text-gray-400">
+            <a href="{{ route('admin.roles.index') }}" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-gray-800 text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 shadow-sm transition-colors">
                 <x-icon name="arrow-left" class="w-5 h-5" />
             </a>
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">
-                {{ isset($role) ? 'Edit Role: ' . ucfirst($role->name) : 'Tambah Role' }}
-            </h1>
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">
+                    {{ isset($role) ? 'Konfigurasi Hak Akses' : 'Tambah Role Baru' }}
+                </h1>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    {{ isset($role) ? 'Atur modul dan fitur apa saja yang dapat diakses oleh '.role_label($role->name) : 'Buat peran baru dan tentukan hak aksesnya.' }}
+                </p>
+            </div>
         </div>
     </x-slot>
 
-    <form action="{{ isset($role) ? route('admin.roles.update', $role) : route('admin.roles.store') }}" method="POST" class="max-w-2xl">
+    <form action="{{ isset($role) ? route('admin.roles.update', $role) : route('admin.roles.store') }}" method="POST">
         @csrf
         @if(isset($role)) @method('PUT') @endif
         
-        <x-ui.card class="space-y-6">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Role <span class="text-danger-500">*</span></label>
-                <input type="text" name="name" value="{{ old('name', $role->name ?? '') }}" required
-                       {{ isset($role) && in_array($role->name, ['admin', 'staff', 'supervisor', 'hrd', 'direktur', 'finance']) ? 'readonly' : '' }}
-                       class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
-                @error('name')<p class="mt-1 text-sm text-danger-600">{{ $message }}</p>@enderror
-            </div>
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 xl:gap-8 relative">
             
-            <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Permissions</label>
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-64 overflow-y-auto p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                    @foreach($permissions as $permission)
-                        <label class="flex items-center gap-2">
-                            <input type="checkbox" name="permissions[]" value="{{ $permission->name }}"
-                                   {{ isset($role) && $role->hasPermissionTo($permission->name) ? 'checked' : '' }}
-                                   class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500">
-                            <span class="text-sm text-gray-700 dark:text-gray-300">{{ $permission->name }}</span>
-                        </label>
-                    @endforeach
+            {{-- Left Panel: Role Information --}}
+            <div class="lg:col-span-1">
+                <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50 p-6 shadow-sm sticky top-24">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Informasi Role</h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nama Role <span class="text-danger-500">*</span></label>
+                            <input type="text" name="name" value="{{ old('name', $role->name ?? '') }}" required
+                                   {{ isset($role) && in_array($role->name, ['admin', 'staff', 'supervisor', 'hrd', 'direktur', 'finance', 'purchasing', 'direktur_operasional', 'hrd_coordinator', 'manager', 'direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'presiden_direktur']) ? 'readonly' : '' }}
+                                   class="block w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all font-medium
+                                          {{ isset($role) && in_array($role->name, ['admin', 'staff', 'supervisor', 'hrd', 'direktur', 'finance', 'purchasing', 'direktur_operasional', 'hrd_coordinator', 'manager', 'direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'presiden_direktur']) ? 'opacity-75 cursor-not-allowed' : '' }}">
+                            @error('name')<p class="mt-2 text-sm text-danger-600 font-medium">{{ $message }}</p>@enderror
+                            
+                            @if(isset($role) && in_array($role->name, ['admin', 'staff', 'supervisor', 'hrd', 'direktur', 'finance', 'purchasing', 'direktur_operasional', 'hrd_coordinator', 'manager', 'direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'presiden_direktur']))
+                                <p class="text-xs text-amber-600 dark:text-amber-400 mt-2 flex items-start gap-1">
+                                    <x-icon name="shield-check" class="w-4 h-4 flex-shrink-0" />
+                                    Nama role sistem tidak dapat diubah.
+                                </p>
+                            @endif
+                        </div>
+                    </div>
+                    
+                    <hr class="my-6 border-gray-100 dark:border-gray-700">
+                    
+                    <div class="space-y-3">
+                        <x-ui.button type="submit" icon="check" class="w-full justify-center py-3 text-base shadow-lg shadow-primary-500/30">
+                            Simpan Konfigurasi
+                        </x-ui.button>
+                        <x-ui.button type="button" variant="secondary" href="{{ route('admin.roles.index') }}" class="w-full justify-center py-3 text-base">
+                            Batal
+                        </x-ui.button>
+                    </div>
                 </div>
             </div>
-            
-            <div class="flex items-center justify-end gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                <x-ui.button type="button" variant="secondary" href="{{ route('admin.roles.index') }}">Batal</x-ui.button>
-                <x-ui.button type="submit" icon="check">Simpan</x-ui.button>
+
+            {{-- Right Panel: Permissions Configuration --}}
+            <div class="lg:col-span-3 space-y-6">
+                @foreach($permGroups as $groupName => $groupPerms)
+                <div x-data="{ 
+                        groupOpen: true,
+                        toggleAll(e) {
+                            const checkboxes = this.$el.querySelectorAll('input[type=checkbox]:not(.group-toggle)');
+                            checkboxes.forEach(cb => cb.checked = e.target.checked);
+                        }
+                     }" 
+                     class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden shadow-sm">
+                    
+                    {{-- Group Header --}}
+                    <div class="bg-gray-50/80 dark:bg-gray-800/80 px-6 py-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-700/50 cursor-pointer" @click="groupOpen = !groupOpen">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-white dark:bg-gray-900 flex items-center justify-center shadow-sm text-primary-600">
+                                @if($groupName == 'Dokumen') <x-icon name="document-text" class="w-5 h-5" />
+                                @elseif($groupName == 'Keuangan') <x-icon name="banknotes" class="w-5 h-5" />
+                                @elseif($groupName == 'Laporan') <x-icon name="presentation-chart-bar" class="w-5 h-5" />
+                                @elseif($groupName == 'HR & Absensi') <x-icon name="user-group" class="w-5 h-5" />
+                                @elseif($groupName == 'Administrasi') <x-icon name="cog-6-tooth" class="w-5 h-5" />
+                                @else <x-icon name="squares-2x2" class="w-5 h-5" /> @endif
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-900 dark:text-white uppercase tracking-wide text-sm">{{ $groupName }}</h3>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Konfigurasi hak akses modul {{ strtolower($groupName) }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center gap-4" @click.stop>
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <span class="text-xs font-semibold text-gray-500 group-hover:text-primary-600 transition-colors">PILIH SEMUA</span>
+                                <div class="relative inline-flex items-center">
+                                    <input type="checkbox" class="sr-only peer group-toggle" @change="toggleAll">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
+                                </div>
+                            </label>
+                            
+                            <button type="button" class="text-gray-400 hover:text-gray-600" @click="groupOpen = !groupOpen">
+                                <x-icon name="chevron-down" class="w-5 h-5 transition-transform duration-300" x-bind:class="groupOpen ? 'rotate-180' : ''" />
+                            </button>
+                        </div>
+                    </div>
+                    
+                    {{-- Group Body --}}
+                    <div x-show="groupOpen" x-collapse>
+                        <div class="p-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-y-4 gap-x-8">
+                            @foreach($groupPerms as $perm)
+                                @php $hasPerm = isset($role) ? $role->hasPermissionTo($perm) : false; @endphp
+                                <label class="flex items-center justify-between group cursor-pointer p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors border border-transparent hover:border-gray-100 dark:hover:border-gray-700/50">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">{{ str_replace('-', ' ', $perm) }}</span>
+                                    <div class="relative inline-flex items-center">
+                                        <input type="checkbox" name="permissions[]" value="{{ $perm }}" class="sr-only peer" {{ $hasPerm ? 'checked' : '' }}>
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500"></div>
+                                    </div>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+                @endforeach
             </div>
-        </x-ui.card>
+            
+        </div>
     </form>
 </x-app-layout>

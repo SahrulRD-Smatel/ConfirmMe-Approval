@@ -31,8 +31,8 @@ class DashboardController extends Controller
         }
 
         // Calculate statistics
-        $isApprover = $user->hasAnyRole(['supervisor', 'hrd', 'hrd_coordinator', 'purchasing',
-            'direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional', 'finance']);
+        // Anyone who is not just a staff or admin can potentially be an approver
+        $isApprover = !$user->hasAnyRole(['staff', 'admin']);
 
         $stats = [
             'total_documents' => $documentsQuery->count(),
@@ -62,8 +62,7 @@ class DashboardController extends Controller
 
         // Pending approvals for approvers
         $pendingApprovals = collect();
-        if ($user->hasAnyRole(['supervisor', 'hrd', 'hrd_coordinator', 'purchasing',
-            'direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional', 'finance'])) {
+        if ($isApprover) {
             $pendingApprovals = Document::where('current_approver_id', $user->id)
                 ->with('user')
                 ->latest()

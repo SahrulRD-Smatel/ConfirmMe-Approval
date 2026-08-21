@@ -46,6 +46,9 @@ class ReportController extends Controller
         } elseif ($user->hasRole('staff')) {
             // Staff: lihat dokumen milik sendiri
             $recentQuery->where('user_id', $user->id);
+        } else {
+            // Default fallback untuk role lain (misal: admin, atau role kustom baru)
+            $recentQuery->where('user_id', $user->id);
         }
 
         $recentDocuments = $recentQuery->latest()->take(5)->get();

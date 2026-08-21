@@ -66,12 +66,7 @@ class ApprovalWorkflowService
         $functionalRoles = $this->getFunctionalRoles();
 
         foreach ($workflow as $role) {
-            // Skip HRD for "only" type if document is not HR-related
-            if ($role === 'hrd' && $document->approval_type === 'only') {
-                if (!$this->isHRRelatedDocument($document)) {
-                    continue;
-                }
-            }
+
 
             // Skip approval steps at or below requester's role level
             // Exception: functional roles (finance, hrd, purchasing) and all direktur/presiden roles are never skipped
@@ -154,12 +149,13 @@ class ApprovalWorkflowService
         }
 
         if ($action === 'approved') {
-            // Only Finance role can set approved_amount
-            $finalAmount = $approver->hasRole('finance') ? $approvedAmount : null;
+            // Any approver in the dynamic chain can technically adjust the amount now.
+            // If the template involves finance, they will adjust it. If it involves a director, they can adjust it.
+            $finalAmount = $approvedAmount !== null ? (float) $approvedAmount : null;
             $currentApproval->approve($comment, $finalAmount);
 
             // Check if amount was changed — needs requester confirmation
-            if ($finalAmount !== null && $finalAmount != $document->estimated_budget) {
+            if ($finalAmount !== null && (float)$finalAmount !== (float)$document->estimated_budget) {
                 $this->sendToRequesterConfirmation($document, $approver, $finalAmount);
             } else {
                 $this->moveToNextStep($document);
@@ -467,7 +463,7 @@ class ApprovalWorkflowService
     /**
      * Reject document
      */
-    protected function rejectDocument(Document $document, string $reason): void
+    public function rejectDocument(Document $document, string $reason): void
     {
         // Mark remaining approvals as skipped
         DocumentApproval::where('document_id', $document->id)
@@ -486,96 +482,36 @@ class ApprovalWorkflowService
     }
 
     /**
+     * Auto-reject all pending documents using a specific template code.
+     * Called when a template's workflow is modified or deleted.
+     */
+    public function autoRejectPendingDocumentsForTemplate(string $templateCode, string $reason): void
+    {
+        // Get all pending documents with this template code
+        // Pending statuses: supervisor_review, manager_review, etc.
+        $pendingDocuments = Document::where('template', $templateCode)
+            ->whereNotIn('status', ['approved', 'rejected', 'waiting_disbursement', 'completed', 'cancelled'])
+            ->get();
+
+        foreach ($pendingDocuments as $document) {
+            $this->rejectDocument($document, $reason);
+        }
+    }
+
+    /**
      * Get workflow for a specific document
      */
     protected function getWorkflowForDocument(Document $document): array
     {
-        // Check if document has custom workflow (from template)
         if ($document->template) {
-            $template = \App\Models\DocumentTemplate::where('code', $document->template)->first();
-            if ($template && $template->workflow) {
+            $template = \App\Models\DocumentTemplate::withTrashed()->where('code', $document->template)->first();
+            if ($template && !empty($template->workflow)) {
                 return $template->workflow;
             }
         }
 
-        $approvalType = $document->approval_type;
-
-        // PO: route to internal or external chain based on po_category
-        if ($approvalType === 'po' && $document->po_category === 'internal') {
-            $approvalType = 'po_internal';
-        }
-
-        // Priority 1: DB workflow chains
-        $workflow = WorkflowChain::getChainForType($approvalType);
-
-        // Priority 2: Config fallback
-        if (empty($workflow)) {
-            $typeWorkflows = config('workflow.types', []);
-            $workflow = $typeWorkflows[$approvalType] ?? null;
-        }
-
-        // Priority 3: Hardcoded default
-        if (empty($workflow)) {
-            $workflow = [1 => 'supervisor', 2 => 'direktur'];
-        }
-
-        // Dynamic threshold: for 'only' type, truncate chain based on nominal
-        if ($document->approval_type === 'only' && $document->estimated_budget > 0) {
-            $workflow = $this->applyThresholdToWorkflow($workflow, $document);
-        }
-
-        return $workflow;
-    }
-
-    /**
-     * Apply nominal-based threshold to truncate workflow chain.
-     * Used for 'only' type where approval depth varies by amount.
-     */
-    protected function applyThresholdToWorkflow(array $workflow, Document $document): array
-    {
-        $amount = $document->estimated_budget;
-        $approvalType = $document->approval_type;
-
-        // Try DB thresholds first (admin-editable)
-        $threshold = null;
-        if (\Schema::hasTable('approval_thresholds')) {
-            $threshold = \DB::table('approval_thresholds')
-                ->where('approval_type', $approvalType)
-                ->where('is_active', true)
-                ->where('min_amount', '<=', $amount)
-                ->where(function ($q) use ($amount) {
-                    $q->where('max_amount', '>=', $amount)
-                      ->orWhereNull('max_amount');
-                })
-                ->orderBy('sort_order')
-                ->first();
-        }
-
-        // Fallback to config thresholds
-        if (!$threshold) {
-            $configThresholds = config("workflow.approval_thresholds.{$approvalType}", []);
-            foreach ($configThresholds as $t) {
-                if ($amount <= ($t['max'] ?? PHP_INT_MAX)) {
-                    $threshold = (object) ['final_role' => $t['final_role']];
-                    break;
-                }
-            }
-        }
-
-        if (!$threshold) {
-            return $workflow;
-        }
-
-        // Truncate workflow at the final_role
-        $truncated = [];
-        foreach ($workflow as $order => $role) {
-            $truncated[$order] = $role;
-            if ($role === $threshold->final_role) {
-                break;
-            }
-        }
-
-        return $truncated;
+        // Fallback or throw error if workflow cannot be resolved
+        throw new \Exception("Workflow tidak ditemukan untuk dokumen ini. Harap periksa konfigurasi template.");
     }
 
     /**
@@ -587,63 +523,44 @@ class ApprovalWorkflowService
         $requesterId = $document->user_id;
         $allExcluded = array_merge([$requesterId], $excludeIds);
 
-        // Handle direktur role - map to division-specific director
+        // 1. Handle specific user assignment (e.g. user:15)
+        if (str_starts_with($role, 'user:')) {
+            $userId = (int) substr($role, 5);
+            return User::where('id', $userId)
+                ->where('is_active', true)
+                ->first(); // We don't exclude specific users because it's explicitly requested
+        }
+
+        // Backward compatibility and clean up role string
+        if (str_starts_with($role, 'role:')) {
+            $role = substr($role, 5);
+        }
+
+        // 1.5 Handle 'direktur' meta-role - dynamically map to division-specific director
         if ($role === 'direktur') {
             return $this->findDivisionDirector($document, $excludeIds);
         }
 
-        // Handle presiden_direktur
-        if ($role === 'presiden_direktur') {
-            return User::role('presiden_direktur')
-                ->where('is_active', true)
-                ->whereNotIn('id', $allExcluded)
-                ->first();
+        // 2. Try to find someone with the requested role IN THE SAME DEPARTMENT as the requester
+        // This is crucial for roles like 'manager' or 'supervisor' to ensure it goes to the right division
+        $approverInSameDept = User::role($role)
+            ->where('department', $document->department)
+            ->where('is_active', true)
+            ->whereNotIn('id', $allExcluded)
+            ->first();
+
+        if ($approverInSameDept) {
+            return $approverInSameDept;
         }
 
-        // For supervisor/manager, try to find one in the same department (excluding requester + assigned)
-        if (in_array($role, ['supervisor', 'manager'])) {
-            $approver = User::role($role)
-                ->where('department', $document->department)
-                ->where('is_active', true)
-                ->whereNotIn('id', $allExcluded)
-                ->first();
-
-            if ($approver) {
-                return $approver;
-            }
-        }
-
-        // Purchasing: find in Finance department (sub-bagian Finance)
-        if ($role === 'purchasing') {
-            $approver = User::role('purchasing')
-                ->where('is_active', true)
-                ->whereNotIn('id', $allExcluded)
-                ->first();
-
-            if ($approver) {
-                return $approver;
-            }
-        }
-
-        // HRD Coordinator: find in HR department
-        if ($role === 'hrd_coordinator') {
-            $approver = User::role('hrd_coordinator')
-                ->where('is_active', true)
-                ->whereNotIn('id', $allExcluded)
-                ->first();
-
-            if ($approver) {
-                return $approver;
-            }
-        }
-
-        // Find any active user with this role (excluding requester + assigned)
+        // 3. Fallback: Find ANY active user with this role globally
+        // This handles cross-department roles (like 'direktur_hr', 'purchasing', 'hrd_coordinator')
         $approver = User::role($role)
             ->where('is_active', true)
             ->whereNotIn('id', $allExcluded)
             ->first();
 
-        // Fallback: if no alternative found, allow duplicate (better than no approver)
+        // 4. Ultimate Fallback: if no alternative found, allow duplicate (better than breaking the flow)
         if (!$approver && !empty($excludeIds)) {
             $approver = User::role($role)
                 ->where('is_active', true)

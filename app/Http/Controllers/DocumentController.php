@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Illuminate\Support\Facades\DB;
 
 class DocumentController extends Controller
 {
@@ -58,8 +59,6 @@ class DocumentController extends Controller
     {
         $this->authorize('create', Document::class);
 
-        $templates = DocumentTemplate::active()->get();
-
         // Determine which approval types this user can create based on department
         $typeAccess = \App\Models\WorkflowSetting::getTypeAccess();
         $userDept = auth()->user()->department;
@@ -70,6 +69,19 @@ class DocumentController extends Controller
                 $allowedTypes[] = $type;
             }
         }
+
+        // Apply global feature toggles
+        if (!feature_active('module_loan')) {
+            $allowedTypes = array_diff($allowedTypes, ['loan']);
+        }
+        if (!feature_active('module_finance')) {
+            $allowedTypes = array_diff($allowedTypes, ['po', 'invoice']);
+        }
+
+        // Fetch active templates that belong to the allowed approval types
+        $templates = DocumentTemplate::active()
+            ->whereIn('approval_type', $allowedTypes)
+            ->get();
 
         return view('documents.create', compact('templates', 'allowedTypes'));
     }
@@ -94,23 +106,261 @@ class DocumentController extends Controller
     }
 
     /**
-     * Store a newly created document in storage.
+     * Store newly created documents in storage (Bulk Request).
      */
     public function store(Request $request)
     {
         $this->authorize('create', Document::class);
 
-        // Validate approval type access based on user's department
-        $typeAccess = config('workflow.type_access', []);
-        $userDept = auth()->user()->department;
-        $requestedType = $request->input('approval_type');
-        $allowedDepts = $typeAccess[$requestedType] ?? ['*'];
+        // We wrap everything in a transaction for bulk requests
+        return DB::transaction(function () use ($request) {
+            // First, validate the array of documents
+            $rules = [
+                'documents' => 'required|array|min:1|max:10',
+                'documents.*.title' => 'required|string|max:255',
+                'documents.*.description' => 'required|string',
+                'documents.*.approval_type' => 'required|in:only,po,invoice,loan',
+                'documents.*.po_category' => 'nullable|in:internal,external',
+                'documents.*.priority' => 'required|in:low,normal,high,urgent',
+                'documents.*.template' => 'nullable|string',
+                // Type-specific fields
+                'documents.*.document_category' => 'nullable|string',
+                'documents.*.effective_date' => 'nullable|date',
+                'documents.*.expiry_date' => 'nullable|date',
+                'documents.*.related_department' => 'nullable|string',
+                'documents.*.vendor_name' => 'nullable|string|max:255',
+                'documents.*.vendor_npwp' => 'nullable|string|max:50',
+                'documents.*.item_description' => 'nullable|string',
+                'documents.*.subtotal' => 'nullable|numeric|min:0',
+                'documents.*.tax_amount' => 'nullable|numeric|min:0',
+                'documents.*.budget_code' => 'nullable|string|max:50',
+                'documents.*.expected_delivery' => 'nullable|date',
+                'documents.*.invoice_number' => 'nullable|string|max:100',
+                'documents.*.invoice_date' => 'nullable|date',
+                'documents.*.related_po_number' => 'nullable|string|max:100',
+                'documents.*.vendor_name_invoice' => 'nullable|string|max:255',
+                'documents.*.invoice_amount' => 'nullable|numeric|min:0',
+                'documents.*.payment_due_date' => 'nullable|date',
+                'documents.*.bank_account' => 'nullable|string|max:255',
+                'documents.*.tax_invoice' => 'nullable|string|max:100',
+                'documents.*.loan_type' => 'nullable|string',
+                'documents.*.loan_amount' => 'nullable|numeric|min:0',
+                'documents.*.installment_count' => 'nullable|integer|min:1',
+                'documents.*.repayment_start' => 'nullable|string',
+                'documents.*.loan_reason' => 'nullable|string',
+                
+                // Attachments are indexed by document index
+                'attachments' => 'nullable|array|max:10',
+                'attachments.*' => 'nullable|array',
+                'attachments.*.*' => 'nullable|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png',
+            ];
 
-        if (!in_array('*', $allowedDepts) && !in_array($userDept, $allowedDepts)) {
-            abort(403, 'Departemen Anda tidak memiliki akses untuk membuat pengajuan tipe ini.');
+            $validated = $request->validate($rules, [
+                'documents.*.title.required' => 'Judul dokumen wajib diisi.',
+                'documents.*.description.required' => 'Deskripsi dokumen wajib diisi.',
+            ]);
+
+            $typeAccess = config('workflow.type_access', []);
+            $userDept = auth()->user()->department;
+            
+            // Validate department access for ALL requested documents
+            foreach ($validated['documents'] as $docData) {
+                $requestedType = $docData['approval_type'];
+                $allowedDepts = $typeAccess[$requestedType] ?? ['*'];
+
+                if (!in_array('*', $allowedDepts) && !in_array($userDept, $allowedDepts)) {
+                    abort(403, 'Departemen Anda tidak memiliki akses untuk membuat pengajuan tipe ini.');
+                }
+            }
+
+            foreach ($validated['documents'] as $index => $docData) {
+                // Sanitize currency inputs for this specific document
+                $moneyFields = ['subtotal', 'tax_amount', 'invoice_amount', 'loan_amount'];
+                foreach ($moneyFields as $field) {
+                    if (isset($docData[$field])) {
+                        $docData[$field] = str_replace('.', '', $docData[$field]);
+                    }
+                }
+
+                // Build metadata based on approval type
+                $metadata = [];
+                switch ($docData['approval_type']) {
+                    case 'only':
+                        $metadata = [
+                            'document_category' => $docData['document_category'] ?? null,
+                            'effective_date' => $docData['effective_date'] ?? null,
+                            'expiry_date' => $docData['expiry_date'] ?? null,
+                            'related_department' => $docData['related_department'] ?? null,
+                        ];
+                        break;
+                    case 'po':
+                        $metadata = [
+                            'vendor_name' => $docData['vendor_name'] ?? null,
+                            'vendor_npwp' => $docData['vendor_npwp'] ?? null,
+                            'item_description' => $docData['item_description'] ?? null,
+                            'subtotal' => $docData['subtotal'] ?? 0,
+                            'tax_amount' => $docData['tax_amount'] ?? 0,
+                            'budget_code' => $docData['budget_code'] ?? null,
+                            'expected_delivery' => $docData['expected_delivery'] ?? null,
+                        ];
+                        break;
+                    case 'invoice':
+                        $metadata = [
+                            'invoice_number' => $docData['invoice_number'] ?? null,
+                            'invoice_date' => $docData['invoice_date'] ?? null,
+                            'related_po_number' => $docData['related_po_number'] ?? null,
+                            'vendor_name' => $docData['vendor_name_invoice'] ?? null,
+                            'invoice_amount' => $docData['invoice_amount'] ?? 0,
+                            'payment_due_date' => $docData['payment_due_date'] ?? null,
+                            'bank_account' => $docData['bank_account'] ?? null,
+                            'tax_invoice' => $docData['tax_invoice'] ?? null,
+                        ];
+                        break;
+                    case 'loan':
+                        $metadata = [
+                            'loan_type' => $docData['loan_type'] ?? null,
+                            'loan_amount' => $docData['loan_amount'] ?? 0,
+                            'installment_count' => $docData['installment_count'] ?? 1,
+                            'repayment_start' => $docData['repayment_start'] ?? null,
+                            'loan_reason' => $docData['loan_reason'] ?? null,
+                        ];
+                        break;
+                }
+
+                // Auto-calculate estimated_budget
+                $estimatedBudget = match ($docData['approval_type']) {
+                    'po' => (($docData['subtotal'] ?? 0) + ($docData['tax_amount'] ?? 0)),
+                    'invoice' => $docData['invoice_amount'] ?? 0,
+                    'loan' => $docData['loan_amount'] ?? 0,
+                    default => null,
+                };
+
+                $document = Document::create([
+                    'title' => $docData['title'],
+                    'description' => $docData['description'],
+                    'approval_type' => $docData['approval_type'],
+                    'po_category' => $docData['po_category'] ?? 'external',
+                    'priority' => $docData['priority'],
+                    'estimated_budget' => $estimatedBudget ?: 0,
+                    'template' => $docData['template'] ?? null,
+                    'user_id' => auth()->id(),
+                    'department' => auth()->user()->department,
+                    'status' => 'draft',
+                    'metadata' => $metadata,
+                ]);
+
+                // Handle file uploads for this specific document index
+                if ($request->hasFile("attachments.{$index}")) {
+                    $files = $request->file("attachments.{$index}");
+                    if (!is_array($files)) {
+                        $files = [$files];
+                    }
+
+                    foreach ($files as $fileIndex => $file) {
+                        try {
+                            if (!$file || !($file instanceof \Illuminate\Http\UploadedFile) || !$file->isValid()) continue;
+
+                            $tempPath = $file->getRealPath() ?: $file->getPathname() ?: $file->path();
+                            if (empty($tempPath) || !file_exists($tempPath)) continue;
+
+                            $extension = $file->getClientOriginalExtension();
+                            $filename = uniqid() . '_' . time() . '.' . $extension;
+                            $storagePath = 'documents/' . $document->id . '/' . $filename;
+
+                            $contents = file_get_contents($tempPath);
+                            if ($contents === false) continue;
+
+                            if (Storage::disk('public')->put($storagePath, $contents)) {
+                                DocumentAttachment::create([
+                                    'document_id' => $document->id,
+                                    'file_name' => $file->getClientOriginalName(),
+                                    'file_path' => $storagePath,
+                                    'file_type' => $extension,
+                                    'file_size' => $file->getSize() ?: filesize($tempPath),
+                                    'uploaded_by' => auth()->id(),
+                                ]);
+                            }
+                        } catch (\Exception $e) {
+                            \Log::error("Failed to upload file for doc index {$index}: " . $e->getMessage());
+                        }
+                    }
+                }
+                
+                // Automatically assign workflow based on template or legacy rules
+                $this->workflowService->assignWorkflow($document);
+            }
+
+            return redirect()->route('documents.index')
+                ->with('success', count($validated['documents']) . ' Dokumen pengajuan berhasil dibuat dan disimpan sebagai draft.');
+        });
+    }
+
+    /**
+     * Display the specified document.
+     */
+    public function show(Document $document)
+    {
+        $this->authorize('view', $document);
+
+        $document->load(['user', 'attachments', 'approvals.user']);
+        
+        // Add debugging to see why actions aren't showing
+        // \Log::info('Document Status: ' . $document->status);
+        // \Log::info('Current Approver ID: ' . $document->current_approver_id);
+        // \Log::info('Auth ID: ' . auth()->id());
+        
+        $canApprove = $document->status === 'pending' && $document->current_approver_id === auth()->id();
+        $isCreator = $document->user_id === auth()->id();
+
+        // Also check if current user is an admin or director for override permissions
+        $canOverride = auth()->user()->hasRole(['admin', 'direktur']);
+
+        return view('documents.show', compact('document', 'canApprove', 'isCreator', 'canOverride'));
+    }
+
+    /**
+     * Show the form for editing the specified document.
+     */
+    public function edit(Document $document)
+    {
+        $this->authorize('update', $document);
+
+        // Only draft or revision requested documents can be edited
+        if (!in_array($document->status, ['draft', 'revision_requested'])) {
+            return redirect()->route('documents.show', $document)
+                ->with('error', 'Hanya dokumen berstatus Draft atau Perlu Revisi yang dapat diedit.');
         }
 
-        // Core validation rules
+        $typeAccess = config('workflow.type_access', []);
+        $userDept = auth()->user()->department;
+        $allowedTypes = [];
+
+        foreach ($typeAccess as $type => $departments) {
+            if (in_array('*', $departments) || in_array($userDept, $departments)) {
+                $allowedTypes[] = $type;
+            }
+        }
+        
+        // Fetch active templates
+        $templates = DocumentTemplate::active()
+            ->whereIn('approval_type', $allowedTypes)
+            ->get();
+
+        return view('documents.edit', compact('document', 'templates'));
+    }
+
+    /**
+     * Update the specified document in storage.
+     */
+    public function update(Request $request, Document $document)
+    {
+        $this->authorize('update', $document);
+
+        if (!in_array($document->status, ['draft', 'revision_requested'])) {
+            return redirect()->route('documents.show', $document)
+                ->with('error', 'Dokumen tidak dapat diubah pada status saat ini.');
+        }
+
         $rules = [
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -118,9 +368,7 @@ class DocumentController extends Controller
             'po_category' => 'nullable|in:internal,external',
             'priority' => 'required|in:low,normal,high,urgent',
             'template' => 'nullable|string',
-            'attachments' => 'nullable|array',
-            'attachments.*' => 'nullable|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png',
-            // Type-specific fields (all nullable, will validate based on type)
+            // ... (keep rest of update rules as they were, flat structure for edit)
             'document_category' => 'nullable|string',
             'effective_date' => 'nullable|date',
             'expiry_date' => 'nullable|date',
@@ -145,16 +393,14 @@ class DocumentController extends Controller
             'installment_count' => 'nullable|integer|min:1',
             'repayment_start' => 'nullable|string',
             'loan_reason' => 'nullable|string',
+            'attachments' => 'nullable|array',
+            'attachments.*' => 'nullable|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png',
         ];
 
         $validated = $request->validate($rules);
-
-        // Sanitize currency inputs (strip thousand separators like dots)
         $this->sanitizeMoneyFields($request, ['subtotal', 'tax_amount', 'invoice_amount', 'loan_amount']);
 
-        // Build metadata based on approval type
         $metadata = [];
-
         switch ($validated['approval_type']) {
             case 'only':
                 $metadata = [
@@ -198,7 +444,6 @@ class DocumentController extends Controller
                 break;
         }
 
-        // Auto-calculate estimated_budget from type-specific nominals
         $estimatedBudget = match ($validated['approval_type']) {
             'po' => ($request->input('subtotal', 0) + $request->input('tax_amount', 0)),
             'invoice' => $request->input('invoice_amount', 0) ?: 0,
@@ -206,267 +451,95 @@ class DocumentController extends Controller
             default => null,
         };
 
-        $document = Document::create([
+        $document->update([
             'title' => $validated['title'],
             'description' => $validated['description'],
             'approval_type' => $validated['approval_type'],
             'po_category' => $validated['po_category'] ?? 'external',
             'priority' => $validated['priority'],
-            'estimated_budget' => $estimatedBudget,
+            'estimated_budget' => $estimatedBudget ?: 0,
             'template' => $validated['template'] ?? null,
-            'user_id' => auth()->id(),
-            'department' => auth()->user()->department,
-            'status' => 'draft',
             'metadata' => $metadata,
         ]);
 
-        // Handle file uploads safely
         if ($request->hasFile('attachments')) {
             $files = $request->file('attachments');
-            \Log::info('File upload started. Files received: ' . (is_array($files) ? count($files) : 'single'));
-
-            // Ensure it's an array
             if (!is_array($files)) {
                 $files = [$files];
             }
 
-            foreach ($files as $index => $file) {
+            foreach ($files as $file) {
                 try {
-                    // Multiple validation checks with logging
-                    if (!$file) {
-                        \Log::warning("File[$index]: Skipped - file is null");
-                        continue;
-                    }
-                    if (!($file instanceof \Illuminate\Http\UploadedFile)) {
-                        \Log::warning("File[$index]: Skipped - not UploadedFile instance, type: " . gettype($file));
-                        continue;
-                    }
-                    if (!$file->isValid()) {
-                        \Log::warning("File[$index]: Skipped - isValid() returned false, error: " . $file->getError());
-                        continue;
-                    }
-                    if ($file->getError() !== UPLOAD_ERR_OK) {
-                        \Log::warning("File[$index]: Skipped - getError() = " . $file->getError());
-                        continue;
-                    }
-                    if (empty($file->getClientOriginalName())) {
-                        \Log::warning("File[$index]: Skipped - getClientOriginalName() is empty");
-                        continue;
-                    }
-
-                    // Get the temp path - try multiple methods for Windows compatibility
+                    if (!$file || !($file instanceof \Illuminate\Http\UploadedFile) || !$file->isValid()) continue;
                     $tempPath = $file->getRealPath() ?: $file->getPathname() ?: $file->path();
-                    if (empty($tempPath) || !file_exists($tempPath)) {
-                        \Log::warning("File[$index]: Skipped - no valid temp path found");
-                        continue;
-                    }
+                    if (empty($tempPath) || !file_exists($tempPath)) continue;
 
-                    $fileSize = $file->getSize() ?: filesize($tempPath);
-                    if ($fileSize <= 0) {
-                        \Log::warning("File[$index]: Skipped - file size is 0");
-                        continue;
-                    }
-
-                    // Generate unique filename
                     $extension = $file->getClientOriginalExtension();
                     $filename = uniqid() . '_' . time() . '.' . $extension;
                     $storagePath = 'documents/' . $document->id . '/' . $filename;
-
-                    \Log::info("File[$index]: Storing {$file->getClientOriginalName()} to {$storagePath}");
-
-                    // Use file_get_contents + Storage::put for Windows compatibility
+                    
                     $contents = file_get_contents($tempPath);
-                    if ($contents === false) {
-                        \Log::warning("File[$index]: Skipped - could not read file contents");
-                        continue;
-                    }
+                    if ($contents === false) continue;
 
-                    $stored = Storage::disk('public')->put($storagePath, $contents);
-                    if (!$stored) {
-                        \Log::warning("File[$index]: Skipped - Storage::put() failed");
-                        continue;
+                    if (Storage::disk('public')->put($storagePath, $contents)) {
+                        DocumentAttachment::create([
+                            'document_id' => $document->id,
+                            'file_name' => $file->getClientOriginalName(),
+                            'file_path' => $storagePath,
+                            'file_type' => $extension,
+                            'file_size' => $file->getSize() ?: filesize($tempPath),
+                            'uploaded_by' => auth()->id(),
+                        ]);
                     }
-
-                    DocumentAttachment::create([
-                        'document_id' => $document->id,
-                        'filename' => $filename,
-                        'original_filename' => $file->getClientOriginalName(),
-                        'file_path' => $storagePath,
-                        'file_type' => $extension,
-                        'file_size' => $fileSize,
-                        'uploaded_by' => auth()->id(),
-                    ]);
-                    \Log::info("File[$index]: Successfully uploaded to $storagePath");
-                } catch (\Throwable $e) {
-                    \Log::error("File[$index]: Exception - " . $e->getMessage());
-                    continue;
+                } catch (\Exception $e) {
+                    \Log::error('Failed to upload file during update: ' . $e->getMessage());
                 }
             }
-        } else {
-            \Log::info('No attachments in request');
         }
 
-        ApprovalLog::log($document, 'created', 'Dokumen dibuat');
-
         return redirect()->route('documents.show', $document)
-            ->with('success', 'Dokumen berhasil dibuat!');
+            ->with('success', 'Dokumen berhasil diperbarui.');
     }
 
     /**
-     * Display the specified document.
+     * Submit a draft document for approval.
      */
-    public function show(Document $document)
-    {
-        $this->authorize('view', $document);
-
-        $document->load([
-            'user',
-            'currentApprover',
-            'approvals.approver',
-            'attachments.uploader',
-            'comments.user',
-            'approvalLogs.user',
-        ]);
-
-        return view('documents.show', compact('document'));
-    }
-
-    /**
-     * Show the form for editing the specified document.
-     */
-    public function edit(Document $document)
+    public function submit(Request $request, Document $document)
     {
         $this->authorize('update', $document);
 
-        $templates = DocumentTemplate::active()->get();
+        if (!in_array($document->status, ['draft', 'revision_requested'])) {
+            return back()->with('error', 'Hanya dokumen berstatus Draft atau Perlu Revisi yang dapat disubmit.');
+        }
 
-        return view('documents.edit', compact('document', 'templates'));
-    }
+        // Validate that workflow is assigned
+        if (!$document->current_approver_id) {
+            // Try to assign it now
+            $this->workflowService->assignWorkflow($document);
+            $document->refresh();
 
-    /**
-     * Update the specified document in storage.
-     */
-    public function update(Request $request, Document $document)
-    {
-        $this->authorize('update', $document);
+            if (!$document->current_approver_id) {
+                return back()->with('error', 'Gagal submit: Tidak ada alur approval yang tersedia untuk tipe dokumen ini. Silakan hubungi Administrator.');
+            }
+        }
 
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'approval_type' => 'required|in:only,po,invoice,loan',
-            'priority' => 'required|in:low,normal,high,urgent',
-            'attachments' => 'nullable|array',
-            'attachments.*' => 'nullable|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png',
-        ]);
-
-        // Sanitize currency inputs (strip thousand separators like dots)
-        $this->sanitizeMoneyFields($request, ['subtotal', 'tax_amount', 'invoice_amount', 'loan_amount']);
-
-        // Auto-calculate estimated_budget from type-specific nominals
-        $estimatedBudget = match ($validated['approval_type']) {
-            'po' => ($request->input('subtotal', 0) + $request->input('tax_amount', 0)),
-            'invoice' => $request->input('invoice_amount', 0) ?: 0,
-            'loan' => $request->input('loan_amount', 0) ?: 0,
-            default => null,
-        };
-
-        // Update document (exclude attachments as they're handled separately)
         $document->update([
-            'title' => $validated['title'],
-            'description' => $validated['description'],
-            'approval_type' => $validated['approval_type'],
-            'priority' => $validated['priority'],
-            'estimated_budget' => $estimatedBudget,
+            'status' => 'pending',
+            'submitted_at' => now()
         ]);
 
-        // Handle new file uploads safely
-        if ($request->hasFile('attachments')) {
-            $files = $request->file('attachments');
-            \Log::info('Update: File upload started. Files received: ' . (is_array($files) ? count($files) : 'single'));
-
-            // Ensure it's an array
-            if (!is_array($files)) {
-                $files = [$files];
+        // Send notification to first approver
+        try {
+            $approver = \App\Models\User::find($document->current_approver_id);
+            if ($approver) {
+                $approver->notify(new DocumentNotification($document, 'requires_approval'));
             }
-
-            foreach ($files as $index => $file) {
-                try {
-                    // Multiple validation checks
-                    if (!$file) {
-                        \Log::warning("Update File[$index]: Skipped - file is null");
-                        continue;
-                    }
-                    if (!($file instanceof \Illuminate\Http\UploadedFile)) {
-                        \Log::warning("Update File[$index]: Skipped - not UploadedFile instance");
-                        continue;
-                    }
-                    if (!$file->isValid()) {
-                        \Log::warning("Update File[$index]: Skipped - isValid() returned false");
-                        continue;
-                    }
-                    if ($file->getError() !== UPLOAD_ERR_OK) {
-                        \Log::warning("Update File[$index]: Skipped - getError() = " . $file->getError());
-                        continue;
-                    }
-                    if (empty($file->getClientOriginalName())) {
-                        \Log::warning("Update File[$index]: Skipped - getClientOriginalName() is empty");
-                        continue;
-                    }
-
-                    // Get the temp path - try multiple methods for Windows compatibility
-                    $tempPath = $file->getRealPath() ?: $file->getPathname() ?: $file->path();
-                    if (empty($tempPath) || !file_exists($tempPath)) {
-                        \Log::warning("Update File[$index]: Skipped - no valid temp path found");
-                        continue;
-                    }
-
-                    $fileSize = $file->getSize() ?: filesize($tempPath);
-                    if ($fileSize <= 0) {
-                        \Log::warning("Update File[$index]: Skipped - file size is 0");
-                        continue;
-                    }
-
-                    // Generate unique filename
-                    $extension = $file->getClientOriginalExtension();
-                    $filename = uniqid() . '_' . time() . '.' . $extension;
-                    $storagePath = 'documents/' . $document->id . '/' . $filename;
-
-                    \Log::info("Update File[$index]: Storing {$file->getClientOriginalName()} to {$storagePath}");
-
-                    // Use file_get_contents + Storage::put for Windows compatibility
-                    $contents = file_get_contents($tempPath);
-                    if ($contents === false) {
-                        \Log::warning("Update File[$index]: Skipped - could not read file contents");
-                        continue;
-                    }
-
-                    $stored = Storage::disk('public')->put($storagePath, $contents);
-                    if (!$stored) {
-                        \Log::warning("Update File[$index]: Skipped - Storage::put() failed");
-                        continue;
-                    }
-
-                    DocumentAttachment::create([
-                        'document_id' => $document->id,
-                        'filename' => $filename,
-                        'original_filename' => $file->getClientOriginalName(),
-                        'file_path' => $storagePath,
-                        'file_type' => $extension,
-                        'file_size' => $fileSize,
-                        'uploaded_by' => auth()->id(),
-                    ]);
-                    \Log::info("Update File[$index]: Successfully uploaded to $storagePath");
-                } catch (\Throwable $e) {
-                    \Log::error('Update file upload error: ' . $e->getMessage());
-                    continue;
-                }
-            }
+        } catch (\Exception $e) {
+            \Log::error('Failed to send notification on submit: ' . $e->getMessage());
         }
 
-        ApprovalLog::log($document, 'updated', 'Dokumen diperbarui');
-
         return redirect()->route('documents.show', $document)
-            ->with('success', 'Dokumen berhasil diperbarui!');
+            ->with('success', 'Dokumen berhasil disubmit untuk approval.');
     }
 
     /**
@@ -476,197 +549,100 @@ class DocumentController extends Controller
     {
         $this->authorize('delete', $document);
 
-        // Soft delete
+        if (!in_array($document->status, ['draft', 'rejected'])) {
+            return back()->with('error', 'Hanya dokumen berstatus Draft atau Ditolak yang dapat dihapus.');
+        }
+
+        // Delete attachments from storage
+        foreach ($document->attachments as $attachment) {
+            Storage::disk('public')->delete($attachment->file_path);
+        }
+
         $document->delete();
 
-        ApprovalLog::log($document, 'deleted', 'Dokumen dihapus');
-
-        // Hapus notifikasi terkait
-        \Illuminate\Support\Facades\DB::table('notifications')
-            ->where('data->document_id', $document->id)
-            ->delete();
-
         return redirect()->route('documents.index')
-            ->with('success', 'Dokumen berhasil dihapus!');
+            ->with('success', 'Dokumen berhasil dihapus.');
     }
 
     /**
-     * Submit document for approval
+     * Remove a specific attachment.
      */
-    public function submit(Document $document)
+    public function deleteAttachment(Document $document, DocumentAttachment $attachment)
     {
-        $this->authorize('submit', $document);
+        $this->authorize('update', $document);
 
-        // Check if this is a re-submit after revision
-        if ($document->isRevision()) {
-            // Re-submit goes back to the approver who requested revision
-            $this->workflowService->resubmitAfterRevision($document);
-
-            ApprovalLog::log($document, 'resubmitted', 'Dokumen dikirim ulang setelah revisi (revisi ke-' . $document->revision_count . ')');
-        } else {
-            // Initialize new workflow
-            $this->workflowService->initializeWorkflow($document);
-
-            $document->update([
-                'status' => 'pending',
-                'submitted_at' => now(),
-            ]);
-
-            ApprovalLog::log($document, 'submitted', 'Dokumen dikirim untuk approval');
+        if (!in_array($document->status, ['draft', 'revision_requested'])) {
+            return response()->json(['message' => 'Tidak dapat menghapus lampiran pada status dokumen saat ini.'], 403);
         }
 
-        // Note: Email notification to first approver is sent in initializeWorkflow()
+        Storage::disk('public')->delete($attachment->file_path);
+        $attachment->delete();
 
-        // Send in-app notification to first/current approver
-        try {
-            $document->refresh();
-            if ($document->currentApprover) {
-                $document->currentApprover->notify(new DocumentNotification(
-                    'submitted',
-                    $document,
-                    auth()->user()->name . " mengajukan dokumen \"{$document->title}\" untuk persetujuan Anda.",
-                    route('documents.show', $document)
-                ));
-            }
-        } catch (\Exception $e) {
-            \Log::warning('Failed to send submit notification: ' . $e->getMessage());
-        }
-
-        $message = $document->revision_count > 0
-            ? 'Dokumen berhasil dikirim ulang setelah revisi!'
-            : 'Dokumen berhasil dikirim untuk approval!';
-
-        return redirect()->route('documents.show', $document)
-            ->with('success', $message);
+        return response()->json(['message' => 'Lampiran berhasil dihapus.']);
     }
 
     /**
-     * Print document as PDF
+     * Generate and stream PDF for the document.
      */
     public function print(Document $document)
     {
-        $this->authorize('print', $document);
+        $this->authorize('view', $document);
 
-        // Generate QR code using SVG format (doesn't require Imagick)
-        $verifyUrl = route('verify.show', $document->approval_hash ?? $document->generateApprovalHash());
-        $qrCode = base64_encode(QrCode::format('svg')->size(100)->generate($verifyUrl));
+        $document->load(['user', 'approvals.user']);
+        
+        // Ensure QR Hash exists
+        if (!$document->approval_hash) {
+            $document->generateHash();
+        }
 
-        $pdf = Pdf::loadView('pdf.document', [
-            'document' => $document->load(['user', 'approvals.approver']),
-            'qrCode' => $qrCode,
-            'qrFormat' => 'svg',
-        ]);
+        // Generate QR Code URL
+        $verificationUrl = route('verify.show', $document->approval_hash);
+        $qrCode = base64_encode(QrCode::format('svg')->size(100)->generate($verificationUrl));
 
-        return $pdf->stream($document->document_number . '.pdf');
+        $pdf = Pdf::loadView('documents.pdf', compact('document', 'qrCode'));
+        
+        // Set paper size to A4
+        $pdf->setPaper('A4', 'portrait');
+        
+        // Set filename
+        $filename = 'DOC-' . $document->document_number . '.pdf';
+
+        return $pdf->stream($filename);
     }
-
+    
     /**
-     * Download document PDF
-     */
-    public function download(Document $document)
-    {
-        $this->authorize('print', $document);
-
-        $verifyUrl = route('verify.show', $document->approval_hash ?? $document->generateApprovalHash());
-        $qrCode = base64_encode(QrCode::format('svg')->size(100)->generate($verifyUrl));
-
-        $pdf = Pdf::loadView('pdf.document', [
-            'document' => $document->load(['user', 'approvals.approver']),
-            'qrCode' => $qrCode,
-            'qrFormat' => 'svg',
-        ]);
-
-        return $pdf->download($document->document_number . '.pdf');
-    }
-
-    /**
-     * Add comment to document
+     * Add a comment to the document
      */
     public function comment(Request $request, Document $document)
     {
         $this->authorize('view', $document);
-
+        
         $validated = $request->validate([
-            'comment' => 'required|string|max:2000',
-            'is_internal' => 'boolean',
+            'comment' => 'required|string|max:1000'
         ]);
-
-        \App\Models\DocumentComment::create([
-            'document_id' => $document->id,
+        
+        $document->comments()->create([
             'user_id' => auth()->id(),
-            'comment' => $validated['comment'],
-            'is_internal' => $validated['is_internal'] ?? false,
+            'comment' => $validated['comment']
         ]);
-
-        ApprovalLog::log($document, 'commented', 'Komentar ditambahkan');
-
-        return back()->with('success', 'Komentar berhasil ditambahkan!');
+        
+        return back()->with('success', 'Komentar berhasil ditambahkan.');
     }
 
     /**
-     * Download attachment file
+     * Sanitize money fields by removing non-numeric characters (except minus sign).
      */
-    public function downloadAttachment(DocumentAttachment $attachment)
+    protected function sanitizeMoneyFields(Request $request, array $fields): void
     {
-        // Check if user can view the document
-        $this->authorize('view', $attachment->document);
-
-        // Get full file path
-        $filePath = Storage::disk('public')->path($attachment->file_path);
-
-        // Check if file exists
-        if (!file_exists($filePath)) {
-            abort(404, 'File tidak ditemukan');
+        foreach ($fields as $field) {
+            if ($request->has($field)) {
+                $value = $request->input($field);
+                if (is_string($value)) {
+                    // Remove dots, commas if used as thousands separator
+                    $cleanValue = preg_replace('/[^\d-]/', '', $value);
+                    $request->merge([$field => $cleanValue]);
+                }
+            }
         }
-
-        return response()->download(
-            $filePath,
-            $attachment->original_filename
-        );
-    }
-
-    /**
-     * Requester accepts the revised nominal amount.
-     * Document continues to the next approval step.
-     */
-    public function confirmAmount(Document $document)
-    {
-        // Only the document owner can confirm
-        if ((int) $document->user_id !== (int) auth()->id()) {
-            abort(403, 'Hanya pembuat dokumen yang dapat mengkonfirmasi nominal.');
-        }
-
-        if ($document->status !== 'pending_requester_confirmation') {
-            return back()->with('error', 'Dokumen ini tidak dalam status menunggu konfirmasi nominal.');
-        }
-
-        $workflowService = app(ApprovalWorkflowService::class);
-        $workflowService->processRequesterConfirmation($document, 'accept');
-
-        $amount = number_format($document->confirmed_amount, 0, ',', '.');
-
-        return back()->with('success', "Nominal Rp {$amount} disetujui. Dokumen dilanjutkan ke tahap berikutnya.");
-    }
-
-    /**
-     * Requester rejects the revised nominal amount.
-     * Document is cancelled/rejected.
-     */
-    public function rejectAmount(Document $document)
-    {
-        // Only the document owner can reject
-        if ((int) $document->user_id !== (int) auth()->id()) {
-            abort(403, 'Hanya pembuat dokumen yang dapat menolak nominal.');
-        }
-
-        if ($document->status !== 'pending_requester_confirmation') {
-            return back()->with('error', 'Dokumen ini tidak dalam status menunggu konfirmasi nominal.');
-        }
-
-        $workflowService = app(ApprovalWorkflowService::class);
-        $workflowService->processRequesterConfirmation($document, 'reject');
-
-        return back()->with('success', 'Nominal ditolak. Dokumen dibatalkan.');
     }
 }
-

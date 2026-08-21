@@ -66,13 +66,13 @@
                         Daftar Pengajuan
                     </x-sidebar-link>
                 @endif
-                @if(auth()->user()->hasPermissionTo('create-document') && !auth()->user()->hasRole('admin'))
+                @if(feature_active('module_loan') && auth()->user()->hasPermissionTo('create-document') && !auth()->user()->hasRole('admin'))
                     <x-sidebar-link :href="route('my-loans.index')" :active="request()->routeIs('my-loans.*')"
                         icon="hand-raised">
                         Pinjaman Saya
                     </x-sidebar-link>
                 @endif
-                @if(!auth()->user()->hasRole('admin'))
+                @if(feature_active('module_hris') && !auth()->user()->hasRole('admin'))
                     <x-sidebar-link :href="route('leave-requests.index')" :active="request()->routeIs('leave-requests.*')"
                         icon="calendar">
                         Pengajuan Cuti
@@ -82,7 +82,7 @@
         @endif
 
         {{-- Absensi - Users with roles (except admin & presiden_direktur) --}}
-        @if(!auth()->user()->hasAnyRole(['admin', 'presiden_direktur']) && auth()->user()->roles->isNotEmpty())
+        @if(feature_active('module_hris') && !auth()->user()->hasAnyRole(['admin', 'presiden_direktur']) && auth()->user()->roles->isNotEmpty())
             <x-sidebar-section title="Absensi" :collapsed="$sidebarCollapsed ?? false">
                 <x-sidebar-link :href="route('attendance.index')" :active="request()->routeIs('attendance.index')"
                     icon="clock">
@@ -124,7 +124,7 @@
         @endif
 
         {{-- Leave Approval Menu (Non-Presiden) - shown BEFORE Executive section --}}
-        @if(auth()->user()->hasAnyRole(['supervisor', 'manager', 'hrd_coordinator', 'direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional']) && !auth()->user()->hasRole('presiden_direktur'))
+        @if(feature_active('module_hris') && auth()->user()->hasAnyRole(['supervisor', 'manager', 'hrd_coordinator', 'direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional']) && !auth()->user()->hasRole('presiden_direktur'))
             @php $pendingLeaveCount = $sidebarBadges['pendingLeaveCount'] ?? 0; @endphp
 
             <x-sidebar-section title="Cuti" :collapsed="$sidebarCollapsed ?? false">
@@ -156,15 +156,17 @@
                             class="ml-auto bg-purple-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $sidebarBadges['presdirPendingCount'] }}</span>
                     @endif
                 </x-sidebar-link>
-                @php $presdirLeaveCount = $sidebarBadges['presdirLeaveCount'] ?? 0; @endphp
-                <x-sidebar-link :href="route('leave-approvals.index')" :active="request()->routeIs('leave-approvals.*')"
-                    icon="calendar-days">
-                    Approval Cuti
-                    @if($presdirLeaveCount > 0)
-                        <span
-                            class="ml-auto bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $presdirLeaveCount }}</span>
-                    @endif
-                </x-sidebar-link>
+                @if(feature_active('module_hris'))
+                    @php $presdirLeaveCount = $sidebarBadges['presdirLeaveCount'] ?? 0; @endphp
+                    <x-sidebar-link :href="route('leave-approvals.index')" :active="request()->routeIs('leave-approvals.*')"
+                        icon="calendar-days">
+                        Approval Cuti
+                        @if($presdirLeaveCount > 0)
+                            <span
+                                class="ml-auto bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $presdirLeaveCount }}</span>
+                        @endif
+                    </x-sidebar-link>
+                @endif
                 <x-sidebar-link :href="route('executive.insights')" :active="request()->routeIs('executive.insights')"
                     icon="presentation-chart-bar">
                     Company Insights
@@ -177,7 +179,7 @@
         @endif
 
         <!-- Finance Menu - Role-based (Finance only) -->
-        @if(auth()->user()->hasRole('finance'))
+        @if(feature_active('module_finance') && auth()->user()->hasRole('finance'))
             <x-sidebar-section title="Keuangan" :collapsed="$sidebarCollapsed ?? false">
 
                 <x-sidebar-link :href="route('finance.budgets.index')" :active="request()->routeIs('finance.budgets.*')"
@@ -200,14 +202,16 @@
                             class="ml-auto bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-pulse">{{ $sidebarBadges['pendingInvoiceCount'] }}</span>
                     @endif
                 </x-sidebar-link>
-                <x-sidebar-link :href="route('finance.loans.index')" :active="request()->routeIs('finance.loans.*')"
-                    icon="currency-dollar">
-                    Pinjaman Karyawan
-                    @if(($sidebarBadges['pendingLoanCount'] ?? 0) > 0)
-                        <span
-                            class="ml-auto bg-yellow-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $sidebarBadges['pendingLoanCount'] }}</span>
-                    @endif
-                </x-sidebar-link>
+                @if(feature_active('module_loan'))
+                    <x-sidebar-link :href="route('finance.loans.index')" :active="request()->routeIs('finance.loans.*')"
+                        icon="currency-dollar">
+                        Pinjaman Karyawan
+                        @if(($sidebarBadges['pendingLoanCount'] ?? 0) > 0)
+                            <span
+                                class="ml-auto bg-yellow-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $sidebarBadges['pendingLoanCount'] }}</span>
+                        @endif
+                    </x-sidebar-link>
+                @endif
             </x-sidebar-section>
         @endif
 
@@ -230,7 +234,7 @@
         @endif
 
         {{-- Attendance & Leave Admin - HRD, Admin, Manager, Directors --}}
-        @if(auth()->user()->hasAnyRole(['admin', 'hrd', 'hrd_coordinator', 'direktur_hr', 'presiden_direktur', 'manager']))
+        @if(feature_active('module_hris') && auth()->user()->hasAnyRole(['admin', 'hrd', 'hrd_coordinator', 'direktur_hr', 'presiden_direktur', 'manager']))
             <x-sidebar-section title="Kelola Karyawan" :collapsed="$sidebarCollapsed ?? false">
                 <x-sidebar-link :href="route('attendance-admin.report')" :active="request()->routeIs('attendance-admin.report')"
                     icon="chart-bar-square">
@@ -250,7 +254,7 @@
         @endif
 
         {{-- Pengumuman - HRD, Admin, Direktur HR only --}}
-        @if(auth()->user()->hasAnyRole(['hrd', 'direktur_hr', 'admin']) || auth()->user()->department === 'Human Resources')
+        @if(feature_active('module_hris') && (auth()->user()->hasAnyRole(['hrd', 'direktur_hr', 'admin']) || auth()->user()->department === 'Human Resources'))
             <x-sidebar-section title="HRIS" :collapsed="$sidebarCollapsed ?? false">
                 <x-sidebar-link :href="route('announcements.index')" :active="request()->routeIs('announcements.*')"
                     icon="megaphone">
@@ -259,35 +263,53 @@
             </x-sidebar-section>
         @endif
 
-        <!-- Admin Menu - Role-based (Admin only) -->
-        @if(auth()->user()->hasRole('admin'))
+        <!-- Admin Menu - Dynamic via Permissions -->
+        @canany(['manage-users', 'manage-roles', 'manage-features', 'manage-workflow', 'manage-departments', 'manage-templates', 'view-audit-log'])
             <x-sidebar-section title="Administrasi" :collapsed="$sidebarCollapsed ?? false">
+                @can('manage-users')
                 <x-sidebar-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')"
                     icon="users">
                     Manajemen User
                 </x-sidebar-link>
+                @endcan
+                @can('manage-roles')
                 <x-sidebar-link :href="route('admin.roles.index')" :active="request()->routeIs('admin.roles.*')"
                     icon="shield-check">
                     Role & Permission
                 </x-sidebar-link>
+                @endcan
+                @can('manage-features')
+                <x-sidebar-link :href="route('admin.features.index')" :active="request()->routeIs('admin.features.*')"
+                    icon="adjustments-horizontal">
+                    Fitur & Modul
+                </x-sidebar-link>
+                @endcan
+                @can('manage-workflow')
                 <x-sidebar-link :href="route('admin.workflow.index')" :active="request()->routeIs('admin.workflow.*')"
                     icon="cog-6-tooth">
                     Konfigurasi Workflow
                 </x-sidebar-link>
+                @endcan
+                @can('manage-departments')
                 <x-sidebar-link :href="route('admin.departments.index')" :active="request()->routeIs('admin.departments.*')"
                     icon="building-office">
                     Departemen
                 </x-sidebar-link>
+                @endcan
+                @can('manage-templates')
                 <x-sidebar-link :href="route('admin.templates.index')" :active="request()->routeIs('admin.templates.*')"
                     icon="document-text">
                     Template Dokumen
                 </x-sidebar-link>
+                @endcan
+                @can('view-audit-log')
                 <x-sidebar-link :href="route('admin.audit-logs.index')" :active="request()->routeIs('admin.audit-logs.*')"
                     icon="clipboard-document-list">
                     Audit Log
                 </x-sidebar-link>
+                @endcan
             </x-sidebar-section>
-        @endif
+        @endcanany
 
         {{-- Archive - All users with view-document permission (not Presiden Direktur) --}}
         @if(!auth()->user()->hasRole('presiden_direktur') && auth()->user()->hasPermissionTo('view-document'))

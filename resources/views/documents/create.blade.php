@@ -1,621 +1,365 @@
 <x-app-layout>
-    <x-slot name="title">Buat Pengajuan</x-slot>
+    <x-slot name="title">Buat Pengajuan Baru</x-slot>
 
     <x-slot name="header">
         <div class="flex items-center gap-4">
             <a href="{{ route('documents.index') }}"
-                class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                class="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-gray-800 text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 shadow-sm transition-colors">
                 <x-icon name="arrow-left" class="w-5 h-5" />
             </a>
             <div>
                 <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">Buat Pengajuan Baru</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Lengkapi form berikut untuk mengajukan dokumen
+                    Pilih modul dokumen dan lengkapi form pengajuan Anda (Bisa lebih dari satu sekaligus)
                 </p>
             </div>
         </div>
     </x-slot>
 
-    <form action="{{ route('documents.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6" x-data="{
-              approvalType: '{{ old('approval_type', $allowedTypes[0] ?? 'only') }}'
-          }" @set-approval-type.window="approvalType = $event.detail">
-        @csrf
-
-        <!-- Approval Type Selection -->
-        <x-ui.card>
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Jenis Approval</h2>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Pilih jenis approval yang sesuai dengan kebutuhan
-                Anda</p>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                @if(in_array('only', $allowedTypes))
-                    <!-- Approval Only -->
-                    <label class="relative flex cursor-pointer rounded-lg border p-4 focus:outline-none transition-all"
-                        :class="approvalType === 'only' ? 'border-primary-600 bg-primary-50 dark:bg-primary-900/20 ring-2 ring-primary-600' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'">
-                        <input type="radio" name="approval_type" value="only" class="sr-only" x-model="approvalType" {{ old('approval_type', $allowedTypes[0] ?? 'only') === 'only' ? 'checked' : '' }}>
-                        <span class="flex flex-1 flex-col">
-                            <span class="block text-sm font-medium text-gray-900 dark:text-white">Approval Only</span>
-                            <span class="mt-1 text-xs text-gray-500">Persetujuan non-finansial (Surat tugas, SOP,
-                                Memo)</span>
-                        </span>
-                    </label>
-                @endif
-
-                @if(in_array('po', $allowedTypes))
-                    <!-- Approval to PO -->
-                    <label class="relative flex cursor-pointer rounded-lg border p-4 focus:outline-none transition-all"
-                        :class="approvalType === 'po' ? 'border-primary-600 bg-primary-50 dark:bg-primary-900/20 ring-2 ring-primary-600' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'">
-                        <input type="radio" name="approval_type" value="po" class="sr-only" x-model="approvalType" {{ old('approval_type') === 'po' ? 'checked' : '' }}>
-                        <span class="flex flex-1 flex-col">
-                            <span class="block text-sm font-medium text-gray-900 dark:text-white">Approval to PO</span>
-                            <span class="mt-1 text-xs text-gray-500">Pembelian barang/jasa (Generate Purchase Order)</span>
-                        </span>
-                    </label>
-                @endif
-
-                @if(in_array('invoice', $allowedTypes))
-                    <!-- Approval to Invoice -->
-                    <label class="relative flex cursor-pointer rounded-lg border p-4 focus:outline-none transition-all"
-                        :class="approvalType === 'invoice' ? 'border-primary-600 bg-primary-50 dark:bg-primary-900/20 ring-2 ring-primary-600' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'">
-                        <input type="radio" name="approval_type" value="invoice" class="sr-only" x-model="approvalType" {{ old('approval_type') === 'invoice' ? 'checked' : '' }}>
-                        <span class="flex flex-1 flex-col">
-                            <span class="block text-sm font-medium text-gray-900 dark:text-white">Approval to Invoice</span>
-                            <span class="mt-1 text-xs text-gray-500">Pembayaran tagihan (Generate Invoice)</span>
-                        </span>
-                    </label>
-                @endif
-
-                @if(in_array('loan', $allowedTypes))
-                    <!-- Employee Loan -->
-                    <label class="relative flex cursor-pointer rounded-lg border p-4 focus:outline-none transition-all"
-                        :class="approvalType === 'loan' ? 'border-primary-600 bg-primary-50 dark:bg-primary-900/20 ring-2 ring-primary-600' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'">
-                        <input type="radio" name="approval_type" value="loan" class="sr-only" x-model="approvalType" {{ old('approval_type') === 'loan' ? 'checked' : '' }}>
-                        <span class="flex flex-1 flex-col">
-                            <span class="block text-sm font-medium text-gray-900 dark:text-white">Employee Loan</span>
-                            <span class="mt-1 text-xs text-gray-500">Pinjaman karyawan (Potong Gaji)</span>
-                        </span>
-                    </label>
-                @endif
-            </div>
-
-            @error('approval_type')
-                <p class="mt-2 text-sm text-danger-600">{{ $message }}</p>
-            @enderror
-        </x-ui.card>
-
-        <!-- Document Info -->
-        <x-ui.card>
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Informasi Dokumen</h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Title -->
-                <div class="md:col-span-2">
-                    <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Judul Dokumen <span class="text-danger-500">*</span>
-                    </label>
-                    <input type="text" name="title" id="title" value="{{ old('title') }}" required
-                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                        placeholder="Masukkan judul dokumen">
-                    @error('title')
-                        <p class="mt-1 text-sm text-danger-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <!-- Template Selector (Auto-Fill) -->
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        <x-icon name="sparkles" class="w-4 h-4 inline text-amber-500" />
-                        Gunakan Template (Opsional)
-                    </label>
-                    <div class="flex gap-3">
-                        <select id="templateSelector" name="template"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
-                            <option value="">— Tanpa Template (isi manual) —</option>
-                            @foreach($templates as $tpl)
-                                <option value="{{ $tpl->code }}" data-type="{{ $tpl->approval_type }}">{{ $tpl->name }} — {{ $tpl->approval_type_label }}</option>
-                            @endforeach
-                        </select>
-                        <div id="templateLoading" class="flex items-center" style="display:none">
-                            <svg class="animate-spin h-5 w-5 text-primary-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div id="templateSuccess" class="mt-2 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg" style="display:none">
-                        <p class="text-sm text-green-700 dark:text-green-300 flex items-center gap-2">
-                            <x-icon name="check-circle" class="w-4 h-4" />
-                            <span>Template <strong id="templateAppliedName"></strong> diterapkan!</span>
-                            <span class="text-xs text-green-500" id="templateFieldCount"></span>
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Priority -->
-                <div>
-                    <label for="priority" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Prioritas <span class="text-danger-500">*</span>
-                    </label>
-                    <select name="priority" id="priority" required
-                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
-                        <option value="low" {{ old('priority') === 'low' ? 'selected' : '' }}>Rendah</option>
-                        <option value="normal" {{ old('priority', 'normal') === 'normal' ? 'selected' : '' }}>Normal
-                        </option>
-                        <option value="high" {{ old('priority') === 'high' ? 'selected' : '' }}>Tinggi</option>
-                        <option value="urgent" {{ old('priority') === 'urgent' ? 'selected' : '' }}>Urgent</option>
-                    </select>
-                    @error('priority')
-                        <p class="mt-1 text-sm text-danger-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <!-- Description -->
-                <div class="md:col-span-2">
-                    <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Deskripsi <span class="text-danger-500">*</span>
-                    </label>
-                    <textarea name="description" id="description" rows="5" required
-                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                        placeholder="Jelaskan detail pengajuan Anda...">{{ old('description') }}</textarea>
-                    @error('description')
-                        <p class="mt-1 text-sm text-danger-600">{{ $message }}</p>
-                    @enderror
-                </div>
-            </div>
-        </x-ui.card>
-
-        <!-- Type-Specific Fields: APPROVAL ONLY -->
-        <div x-show="approvalType === 'only'" x-transition>
-            <x-ui.card>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Detail Dokumen Administratif</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="document_category"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Kategori Dokumen
-                        </label>
-                        <select name="document_category" id="document_category"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
-                            <option value="memo" {{ old('document_category') === 'memo' ? 'selected' : '' }}>Memo Internal
-                            </option>
-                            <option value="sop" {{ old('document_category') === 'sop' ? 'selected' : '' }}>SOP / Kebijakan
-                            </option>
-                            <option value="surat_tugas" {{ old('document_category') === 'surat_tugas' ? 'selected' : '' }}>Surat Tugas</option>
-                            <option value="surat_keputusan" {{ old('document_category') === 'surat_keputusan' ? 'selected' : '' }}>Surat Keputusan</option>
-                            <option value="lainnya" {{ old('document_category') === 'lainnya' ? 'selected' : '' }}>Lainnya
-                            </option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="effective_date"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Tanggal Berlaku
-                        </label>
-                        <input type="date" name="effective_date" id="effective_date" value="{{ old('effective_date') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
-                    </div>
-                    <div>
-                        <label for="expiry_date"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Tanggal Kadaluarsa (Opsional)
-                        </label>
-                        <input type="date" name="expiry_date" id="expiry_date" value="{{ old('expiry_date') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
-                    </div>
-                    <div>
-                        <label for="related_department"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Departemen Terkait
-                        </label>
-                        <input type="text" name="related_department" id="related_department"
-                            value="{{ old('related_department') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                            placeholder="IT, HR, Finance, dll">
-                    </div>
-                </div>
-            </x-ui.card>
-        </div>
-
-        <!-- Type-Specific Fields: PO (Purchase Order) -->
-        <div x-show="approvalType === 'po'" x-transition x-data="{
-            subtotal: {{ old('subtotal', 0) }},
-            taxAmount: {{ old('tax_amount', 0) }},
-            grandTotal: 0,
-            calculateTax() {
-                this.taxAmount = Math.round(this.subtotal * 0.11);
-                this.grandTotal = parseInt(this.subtotal) + parseInt(this.taxAmount);
+    <div x-data="{
+        step: {{ old('documents') ? 2 : 1 }},
+        searchQuery: '',
+        selectedTemplate: null,
+        approvalType: '{{ old('documents.0.approval_type') }}',
+        isLoading: false,
+        // Inisialisasi form repeater dari Laravel old() jika ada error validasi
+        forms: [
+            @if(old('documents'))
+                @foreach(old('documents') as $index => $oldDoc)
+                    { id: {{ $index }}, title: '{{ addslashes($oldDoc['title'] ?? '') }}', description: '{{ addslashes($oldDoc['description'] ?? '') }}', subtotal: {{ $oldDoc['subtotal'] ?? 0 }}, taxAmount: {{ $oldDoc['taxAmount'] ?? 0 }} }{{ !$loop->last ? ',' : '' }}
+                @endforeach
+            @else
+                { id: Date.now(), title: '', description: '', subtotal: 0, taxAmount: 0 }
+            @endif
+        ],
+        templates: [
+            @foreach($templates as $tpl)
+            {
+                code: '{{ $tpl->code }}',
+                name: '{{ addslashes($tpl->name) }}',
+                description: '{{ addslashes($tpl->description ?? '') }}',
+                type: '{{ $tpl->approval_type }}',
+                category: '{{ $tpl->approval_type === 'only' ? 'Administratif' : ($tpl->approval_type === 'loan' ? 'HR & Pinjaman' : 'Keuangan & PO') }}',
+                icon: '{{ $tpl->approval_type === 'only' ? 'document-text' : ($tpl->approval_type === 'loan' ? 'user-group' : 'banknotes') }}',
+                color: '{{ $tpl->approval_type === 'only' ? 'blue' : ($tpl->approval_type === 'loan' ? 'pink' : 'emerald') }}',
+                defaultTitle: '{{ addslashes($tpl->fields['title'] ?? '') }}',
+                defaultDesc: '{{ addslashes($tpl->fields['description'] ?? '') }}',
+                defaultCategory: '{{ addslashes($tpl->fields['document_category'] ?? '') }}'
             },
-            formatNumber(num) {
-                return new Intl.NumberFormat('id-ID').format(num);
+            @endforeach
+        ],
+        init() {
+            // Restore selected template visually if validation failed
+            if (this.approvalType) {
+                const oldTplCode = '{{ old('documents.0.template') }}';
+                if (oldTplCode) {
+                    this.selectedTemplate = this.templates.find(t => t.code === oldTplCode);
+                }
             }
-        }" x-init="calculateTax()">
-            <x-ui.card>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Detail Purchase Order</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="vendor_name"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Nama Vendor <span class="text-danger-500">*</span>
-                        </label>
-                        <input type="text" name="vendor_name" id="vendor_name" value="{{ old('vendor_name') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                            placeholder="PT Supplier Indonesia">
-                    </div>
-                    <div>
-                        <label for="vendor_npwp"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            NPWP Vendor
-                        </label>
-                        <input type="text" name="vendor_npwp" id="vendor_npwp" value="{{ old('vendor_npwp') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                            placeholder="XX.XXX.XXX.X-XXX.XXX">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label for="item_description"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Rincian Barang/Jasa <span class="text-danger-500">*</span>
-                        </label>
-                        <textarea name="item_description" id="item_description" rows="3"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                            placeholder="1. Laptop Lenovo x 5 unit @ Rp 15.000.000&#10;2. Mouse Wireless x 5 unit @ Rp 250.000">{{ old('item_description') }}</textarea>
-                    </div>
-                    <div>
-                        <label for="subtotal" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Subtotal (Sebelum Pajak) <span class="text-danger-500">*</span>
-                        </label>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">Rp</span>
-                            <input type="text" name="subtotal" id="subtotal"
-                                value="{{ old('subtotal', 0) }}"
-                                class="currency-input block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                                inputmode="numeric" required
-                                @currency-change="subtotal = $event.detail.value; calculateTax()">
-                        </div>
-                    </div>
-                    <div>
-                        <label for="tax_amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            PPN (11%) <span class="text-xs text-gray-400">- Auto</span>
-                        </label>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">Rp</span>
-                            <input type="text" :value="formatNumber(taxAmount)" readonly
-                                class="block w-full pl-10 pr-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-not-allowed">
-                            <input type="hidden" name="tax_amount" :value="taxAmount">
-                        </div>
-                        <p class="mt-1 text-xs text-gray-500">Dihitung otomatis 11% dari subtotal</p>
-                    </div>
-                    <div class="md:col-span-2 p-4 bg-primary-50 dark:bg-primary-900/20 rounded-lg">
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Grand Total (Termasuk
-                                PPN)</span>
-                            <span class="text-xl font-bold text-primary-600 dark:text-primary-400"
-                                x-text="'Rp ' + formatNumber(grandTotal)"></span>
-                        </div>
-                    </div>
-                    <div>
-                        <label for="budget_code"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Kode Anggaran
-                        </label>
-                        <input type="text" name="budget_code" id="budget_code" value="{{ old('budget_code') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                            placeholder="IT-2026-001">
-                    </div>
-                    <div>
-                        <label for="expected_delivery"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Estimasi Pengiriman
-                        </label>
-                        <input type="date" name="expected_delivery" id="expected_delivery"
-                            value="{{ old('expected_delivery') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
-                    </div>
+        },
+        filteredTemplates() {
+            if (this.searchQuery === '') return this.templates;
+            const q = this.searchQuery.toLowerCase();
+            return this.templates.filter(t => t.name.toLowerCase().includes(q) || t.description.toLowerCase().includes(q) || t.category.toLowerCase().includes(q));
+        },
+        hasCategory(cat) {
+            return this.filteredTemplates().some(t => t.category === cat);
+        },
+        getTemplatesByCategory(cat) {
+            return this.filteredTemplates().filter(t => t.category === cat);
+        },
+        selectTemplate(tpl) {
+            this.selectedTemplate = tpl;
+            this.approvalType = tpl.type;
+            
+            // Set defaults to form 0
+            this.forms = [{ 
+                id: Date.now(), 
+                title: tpl.defaultTitle || '', 
+                description: tpl.defaultDesc || '',
+                subtotal: 0,
+                taxAmount: 0
+            }];
+            
+            this.step = 2;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        },
+        addForm() {
+            if (this.forms.length < 10) {
+                this.forms.push({
+                    id: Date.now(),
+                    title: this.selectedTemplate ? this.selectedTemplate.defaultTitle : '',
+                    description: this.selectedTemplate ? this.selectedTemplate.defaultDesc : '',
+                    subtotal: 0,
+                    taxAmount: 0
+                });
+            } else {
+                alert('Maksimal 10 dokumen sekaligus.');
+            }
+        },
+        removeForm(index) {
+            if (this.forms.length > 1) {
+                this.forms.splice(index, 1);
+            }
+        },
+        resetSelection() {
+            this.step = 1;
+            this.selectedTemplate = null;
+            this.approvalType = '';
+            this.forms = [{ id: Date.now(), title: '', description: '', subtotal: 0, taxAmount: 0 }];
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }">
+
+        <!-- STEP 1: Pilih Template -->
+        <div x-show="step === 1" x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 transform scale-95"
+             x-transition:enter-end="opacity-100 transform scale-100" class="space-y-6">
+             
+            <!-- Search Bar -->
+            <div class="relative max-w-2xl mx-auto">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <x-icon name="magnifying-glass" class="w-6 h-6 text-gray-400" />
                 </div>
-            </x-ui.card>
-        </div>
-
-        <!-- Type-Specific Fields: INVOICE -->
-        <div x-show="approvalType === 'invoice'" x-transition>
-            <x-ui.card>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Detail Invoice / Tagihan</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="invoice_number"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Nomor Invoice <span class="text-danger-500">*</span>
-                        </label>
-                        <input type="text" name="invoice_number" id="invoice_number" value="{{ old('invoice_number') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                            placeholder="INV-2026-0001">
-                    </div>
-                    <div>
-                        <label for="invoice_date"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Tanggal Invoice <span class="text-danger-500">*</span>
-                        </label>
-                        <input type="date" name="invoice_date" id="invoice_date" value="{{ old('invoice_date') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
-                    </div>
-                    <div>
-                        <label for="related_po_number"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Nomor PO Terkait
-                        </label>
-                        <input type="text" name="related_po_number" id="related_po_number"
-                            value="{{ old('related_po_number') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                            placeholder="PO-2026-0001">
-                    </div>
-                    <div>
-                        <label for="vendor_name_invoice"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Nama Vendor <span class="text-danger-500">*</span>
-                        </label>
-                        <input type="text" name="vendor_name_invoice" id="vendor_name_invoice"
-                            value="{{ old('vendor_name_invoice') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                            placeholder="PT Supplier Indonesia">
-                    </div>
-                    <div>
-                        <label for="invoice_amount"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Nilai Tagihan <span class="text-danger-500">*</span>
-                        </label>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">Rp</span>
-                            <input type="text" name="invoice_amount" id="invoice_amount"
-                                value="{{ old('invoice_amount') }}"
-                                class="currency-input block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                                inputmode="numeric"
-                                placeholder="0">
-                        </div>
-                    </div>
-                    <div>
-                        <label for="payment_due_date"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Jatuh Tempo Pembayaran <span class="text-danger-500">*</span>
-                        </label>
-                        <input type="date" name="payment_due_date" id="payment_due_date"
-                            value="{{ old('payment_due_date') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
-                    </div>
-                    <div>
-                        <label for="bank_account"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Rekening Tujuan
-                        </label>
-                        <input type="text" name="bank_account" id="bank_account" value="{{ old('bank_account') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                            placeholder="BCA - 1234567890 a.n. PT Supplier">
-                    </div>
-                    <div>
-                        <label for="tax_invoice"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Nomor Faktur Pajak
-                        </label>
-                        <input type="text" name="tax_invoice" id="tax_invoice" value="{{ old('tax_invoice') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                            placeholder="010.000-26.00000001">
-                    </div>
-                </div>
-            </x-ui.card>
-        </div>
-
-        <!-- Type-Specific Fields: LOAN -->
-        <div x-show="approvalType === 'loan'" x-transition>
-            <x-ui.card>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Detail Pinjaman Karyawan</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="loan_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Jenis Pinjaman <span class="text-danger-500">*</span>
-                        </label>
-                        <select name="loan_type" id="loan_type"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
-                            <option value="darurat" {{ old('loan_type') === 'darurat' ? 'selected' : '' }}>Pinjaman
-                                Darurat</option>
-                            <option value="pendidikan" {{ old('loan_type') === 'pendidikan' ? 'selected' : '' }}>Pinjaman
-                                Pendidikan</option>
-                            <option value="perumahan" {{ old('loan_type') === 'perumahan' ? 'selected' : '' }}>Pinjaman
-                                Perumahan</option>
-                            <option value="kendaraan" {{ old('loan_type') === 'kendaraan' ? 'selected' : '' }}>Pinjaman
-                                Kendaraan</option>
-                            <option value="lainnya" {{ old('loan_type') === 'lainnya' ? 'selected' : '' }}>Lainnya
-                            </option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="loan_amount"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Jumlah Pinjaman <span class="text-danger-500">*</span>
-                        </label>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">Rp</span>
-                            <input type="text" name="loan_amount" id="loan_amount" value="{{ old('loan_amount') }}"
-                                class="currency-input block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                                inputmode="numeric">
-                        </div>
-                    </div>
-                    <div>
-                        <label for="installment_count"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Jumlah Cicilan (Bulan) <span class="text-danger-500">*</span>
-                        </label>
-                        <select name="installment_count" id="installment_count"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
-                            <option value="3" {{ old('installment_count') === '3' ? 'selected' : '' }}>3 Bulan</option>
-                            <option value="6" {{ old('installment_count') === '6' ? 'selected' : '' }}>6 Bulan</option>
-                            <option value="12" {{ old('installment_count') === '12' ? 'selected' : '' }}>12 Bulan</option>
-                            <option value="24" {{ old('installment_count') === '24' ? 'selected' : '' }}>24 Bulan</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="repayment_start"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Mulai Potong Gaji <span class="text-danger-500">*</span>
-                        </label>
-                        <input type="month" name="repayment_start" id="repayment_start"
-                            value="{{ old('repayment_start') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label for="loan_reason"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Alasan Pinjaman <span class="text-danger-500">*</span>
-                        </label>
-                        <textarea name="loan_reason" id="loan_reason" rows="3"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                            placeholder="Jelaskan alasan pengajuan pinjaman...">{{ old('loan_reason') }}</textarea>
-                    </div>
-                </div>
-            </x-ui.card>
-        </div>
-
-        <!-- Attachments -->
-        <x-ui.card>
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Lampiran</h2>
-
-            <div
-                class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center hover:border-primary-400 transition-colors">
-                <input type="file" name="attachments[]" id="attachments" multiple
-                    accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" class="hidden">
-                <label for="attachments" class="cursor-pointer">
-                    <x-icon name="arrow-down-tray" class="w-10 h-10 text-gray-400 mx-auto mb-3" />
-                    <p class="text-sm text-gray-600 dark:text-gray-400">
-                        <span class="text-primary-600 dark:text-primary-400 font-medium">Klik untuk upload</span>
-                        atau
-                        drag & drop
-                    </p>
-                    <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                        PDF, DOC, XLS, JPG, PNG (Max 10MB per file)
-                    </p>
-                </label>
+                <input type="text" x-model="searchQuery"
+                    class="block w-full pl-12 pr-4 py-4 border-none rounded-2xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-700 focus:ring-2 focus:ring-inset focus:ring-primary-500 text-lg transition-shadow"
+                    placeholder="Cari modul pengajuan (misal: Cuti, Dinas, Pengadaan)...">
             </div>
-            <div id="file-list" class="mt-4 space-y-2"></div>
-            @error('attachments.*')
-                <p class="mt-2 text-sm text-danger-600">{{ $message }}</p>
-            @enderror
-        </x-ui.card>
 
-        <!-- Actions -->
-        <div class="flex items-center justify-end gap-4">
-            <x-ui.button type="button" variant="secondary" href="{{ route('documents.index') }}">
-                Batal
-            </x-ui.button>
-            <x-ui.button type="submit" name="action" value="draft" variant="ghost">
-                Simpan Draft
-            </x-ui.button>
-            <x-ui.button type="submit" name="action" value="submit" icon="paper-airplane">
-                Kirim untuk Approval
-            </x-ui.button>
+            <!-- Categories -->
+            <template x-for="category in ['Administratif', 'Keuangan & PO', 'HR & Pinjaman']" :key="category">
+                <div x-show="hasCategory(category)" class="space-y-4">
+                    <h3 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider pl-2" x-text="category"></h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <template x-for="tpl in getTemplatesByCategory(category)" :key="tpl.code">
+                            <div @click="selectTemplate(tpl)"
+                                 class="group relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50 p-5 cursor-pointer overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                                 
+                                <div class="absolute right-0 top-0 w-24 h-24 bg-gradient-to-br from-white/0 to-current opacity-5 rounded-bl-[100px]" :class="`text-${tpl.color}-500`"></div>
+                                
+                                <div class="flex items-start gap-4 relative z-10">
+                                    <div class="w-12 h-12 rounded-xl flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-300"
+                                         :class="`bg-${tpl.color}-100 dark:bg-${tpl.color}-900/30 text-${tpl.color}-600 dark:text-${tpl.color}-400`">
+                                        <template x-if="tpl.icon === 'document-text'"><x-icon name="document-text" class="w-6 h-6" /></template>
+                                        <template x-if="tpl.icon === 'user-group'"><x-icon name="user-group" class="w-6 h-6" /></template>
+                                        <template x-if="tpl.icon === 'banknotes'"><x-icon name="banknotes" class="w-6 h-6" /></template>
+                                        <template x-if="tpl.icon === 'shopping-bag'"><x-icon name="shopping-bag" class="w-6 h-6" /></template>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="text-lg font-bold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors" x-text="tpl.name"></h4>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2" x-text="tpl.description || 'Tidak ada deskripsi.'"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </template>
         </div>
-    </form>
 
-    @push('scripts')
-        <script>
-            // File upload preview
-            document.getElementById('attachments').addEventListener('change', function (e) {
-                const fileList = document.getElementById('file-list');
-                fileList.innerHTML = '';
+        <!-- STEP 2: Isi Form (BULK) -->
+        <div x-show="step === 2" style="display: none;" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 transform translate-y-4"
+             x-transition:enter-end="opacity-100 transform translate-y-0">
+             
+            <form action="{{ route('documents.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                @csrf
+                
+                @if ($errors->any())
+                    <div class="bg-danger-50 dark:bg-danger-900/20 border border-danger-200 dark:border-danger-800 rounded-xl p-4">
+                        <div class="flex gap-3">
+                            <x-icon name="exclamation-triangle" class="w-5 h-5 text-danger-500 shrink-0 mt-0.5" />
+                            <div>
+                                <h3 class="text-sm font-bold text-danger-800 dark:text-danger-200">Terjadi kesalahan pada validasi (Beberapa isian wajib diperbaiki)</h3>
+                                <ul class="mt-2 text-sm text-danger-700 dark:text-danger-300 list-disc list-inside">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                                <p class="mt-2 text-sm text-danger-600 dark:text-danger-400 font-medium">Catatan: Harap unggah ulang file lampiran Anda (jika ada) demi keamanan.</p>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+                
+                <!-- Selected Module Indicator -->
+                <div class="bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 rounded-2xl p-4 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center text-primary-600 dark:text-primary-400">
+                            <x-icon name="sparkles" class="w-5 h-5" />
+                        </div>
+                        <div>
+                            <p class="text-xs text-primary-600 dark:text-primary-400 font-semibold uppercase tracking-wider">Modul Terpilih (Bulk Request)</p>
+                            <h3 class="text-base font-bold text-gray-900 dark:text-white" x-text="selectedTemplate ? selectedTemplate.name : 'Melanjutkan Form'"></h3>
+                        </div>
+                    </div>
+                    <button type="button" @click="resetSelection()" class="text-sm font-medium text-primary-600 hover:text-primary-700 bg-white/50 dark:bg-gray-800/50 hover:bg-white dark:hover:bg-gray-800 px-3 py-1.5 rounded-lg transition-colors border border-primary-200 dark:border-primary-700/50">
+                        Ganti Modul
+                    </button>
+                </div>
 
-                Array.from(e.target.files).forEach(file => {
-                    const div = document.createElement('div');
-                    div.className = 'flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg';
-                    div.innerHTML = `
-                                            <div class="flex items-center gap-3">
-                                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                                </svg>
-                                                <span class="text-sm text-gray-700 dark:text-gray-300">${file.name}</span>
+                <!-- FORM REPEATER -->
+                <div class="space-y-6">
+                    <template x-for="(form, index) in forms" :key="form.id">
+                        <div class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden transition-all duration-300">
+                            
+                            <!-- Repeater Header -->
+                            <div class="bg-gray-50/80 dark:bg-gray-900/50 px-6 py-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-700">
+                                <h3 class="font-bold text-gray-800 dark:text-gray-200 flex items-center gap-3">
+                                    <span class="bg-primary-500 text-white w-7 h-7 rounded-full flex items-center justify-center text-sm shadow-sm" x-text="index + 1"></span>
+                                    <span>Dokumen #<span x-text="index + 1"></span></span>
+                                </h3>
+                                <button type="button" @click="removeForm(index)" x-show="forms.length > 1" 
+                                    class="text-danger-500 hover:text-danger-700 hover:bg-danger-50 dark:hover:bg-danger-900/30 px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-colors">
+                                    <x-icon name="trash" class="w-4 h-4"/> Hapus
+                                </button>
+                            </div>
+
+                            <div class="p-6 space-y-8">
+                                <!-- Hidden bindings -->
+                                <input type="hidden" :name="`documents[${index}][approval_type]`" x-model="approvalType">
+                                <input type="hidden" :name="`documents[${index}][template]`" x-bind:value="selectedTemplate ? selectedTemplate.code : ''">
+
+                                <!-- BASIC INFO -->
+                                <div>
+                                    <h4 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Informasi Utama</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div class="md:col-span-2">
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Judul Dokumen <span class="text-danger-500">*</span></label>
+                                            <input type="text" :name="`documents[${index}][title]`" required x-model="form.title"
+                                                class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Prioritas <span class="text-danger-500">*</span></label>
+                                            <select :name="`documents[${index}][priority]`" required class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                                <option value="low">Rendah</option>
+                                                <option value="normal" selected>Normal</option>
+                                                <option value="high">Tinggi</option>
+                                                <option value="urgent">Urgent</option>
+                                            </select>
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Deskripsi <span class="text-danger-500">*</span></label>
+                                            <textarea :name="`documents[${index}][description]`" rows="3" required x-model="form.description"
+                                                class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- PO SPECIFIC -->
+                                <div x-show="approvalType === 'po'" class="pt-6 border-t border-gray-100 dark:border-gray-700"
+                                     x-data="{
+                                        subtotal: form.subtotal || 0,
+                                        taxAmount: form.taxAmount || 0,
+                                        grandTotal: 0,
+                                        init() { this.calc(); },
+                                        calc() {
+                                            this.taxAmount = Math.round(this.subtotal * 0.11);
+                                            this.grandTotal = parseInt(this.subtotal || 0) + parseInt(this.taxAmount || 0);
+                                        },
+                                        fmt(n) { return new Intl.NumberFormat('id-ID').format(n); }
+                                     }">
+                                    <h4 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Detail Purchase Order</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Vendor <span class="text-danger-500">*</span></label>
+                                            <input type="text" :name="`documents[${index}][vendor_name]`" class="block w-full px-4 py-3 border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-primary-500">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kategori Pembelian <span class="text-danger-500">*</span></label>
+                                            <select :name="`documents[${index}][po_category]`" class="block w-full px-4 py-3 border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-primary-500">
+                                                <option value="internal">Internal Use</option>
+                                                <option value="external">External / Client</option>
+                                            </select>
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rincian Barang/Jasa <span class="text-danger-500">*</span></label>
+                                            <textarea :name="`documents[${index}][item_description]`" rows="2" class="block w-full px-4 py-3 border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-primary-500"></textarea>
+                                        </div>
+                                        <div class="md:col-span-2 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
+                                            <div class="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-1">Subtotal (DPP) <span class="text-danger-500">*</span></label>
+                                                    <input type="number" :name="`documents[${index}][subtotal]`" x-model="subtotal" @input="calc" min="0" class="block w-full px-4 py-3 border border-gray-300 rounded-xl bg-white">
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-1">PPN 11%</label>
+                                                    <input type="number" :name="`documents[${index}][tax_amount]`" x-model="taxAmount" @input="grandTotal = parseInt(subtotal||0) + parseInt(taxAmount||0)" class="block w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-100" readonly>
+                                                </div>
                                             </div>
-                                            <span class="text-xs text-gray-500">${(file.size / 1024 / 1024).toFixed(2)} MB</span>
-                                        `;
-                    fileList.appendChild(div);
-                });
-            });
+                                            <div class="mt-4 flex justify-between items-center text-lg font-bold text-primary-700">
+                                                <span>Grand Total</span>
+                                                <span x-text="'Rp ' + fmt(grandTotal)">Rp 0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
-            // Template filtering & auto-fill
-            (function() {
-                const templateSelect = document.getElementById('templateSelector');
-                const templateLoading = document.getElementById('templateLoading');
-                const templateSuccess = document.getElementById('templateSuccess');
-                const templateAppliedName = document.getElementById('templateAppliedName');
-                const templateFieldCount = document.getElementById('templateFieldCount');
+                                <!-- OTHER TYPES (Simplified for Bulk UI demonstration, typically same as single form) -->
+                                <div x-show="approvalType === 'only'" class="pt-6 border-t border-gray-100 dark:border-gray-700">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Kategori Dokumen</label>
+                                            <input type="text" :name="`documents[${index}][document_category]`" readonly :value="selectedTemplate ? selectedTemplate.defaultCategory : ''" class="block w-full px-4 py-3 border border-gray-200 bg-gray-50 rounded-xl text-gray-500 cursor-not-allowed">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Berlaku</label>
+                                            <input type="date" :name="`documents[${index}][effective_date]`" class="block w-full px-4 py-3 border border-gray-300 rounded-xl">
+                                        </div>
+                                    </div>
+                                </div>
 
-                if (!templateSelect) return;
+                                <!-- ATTACHMENTS -->
+                                <div class="pt-6 border-t border-gray-100 dark:border-gray-700" x-data="{ files: [] }">
+                                    <h4 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Lampiran</h4>
+                                    <label class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl cursor-pointer bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 transition-colors">
+                                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                            <x-icon name="cloud-arrow-up" class="w-6 h-6 text-gray-400 mb-1" />
+                                            <p class="text-sm text-gray-500"><span class="font-semibold text-primary-600">Pilih File Lampiran</span> untuk Dokumen #<span x-text="index+1"></span></p>
+                                        </div>
+                                        <input :name="`attachments[${index}][]`" type="file" multiple class="hidden" @change="files = Array.from($event.target.files)" />
+                                    </label>
+                                    <ul class="mt-3 space-y-2" x-show="files.length > 0">
+                                        <template x-for="(file, fi) in files" :key="fi">
+                                            <li class="text-xs text-primary-700 bg-primary-50 p-2 rounded-lg" x-text="file.name"></li>
+                                        </template>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
 
-                // Filter template options based on current approval type
-                function filterTemplates() {
-                    const checkedRadio = document.querySelector('input[name="approval_type"]:checked');
-                    const currentType = checkedRadio ? checkedRadio.value : '';
+                <!-- ADD ANOTHER DOC BUTTON -->
+                <div class="pt-4 flex justify-center">
+                    <button type="button" @click="addForm()" x-show="forms.length < 10" 
+                        class="group flex flex-col items-center gap-2 p-6 rounded-3xl border-2 border-dashed border-primary-200 dark:border-primary-800 hover:border-primary-400 dark:hover:border-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 w-full max-w-lg transition-all duration-300">
+                        <div class="w-12 h-12 rounded-full bg-primary-100 dark:bg-primary-900/50 text-primary-600 dark:text-primary-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <x-icon name="plus" class="w-6 h-6"/>
+                        </div>
+                        <div>
+                            <span class="block font-bold text-primary-700 dark:text-primary-400 text-lg">Tambah Pengajuan Lain</span>
+                            <span class="block text-sm text-primary-500/70" x-text="`${forms.length} dari maksimal 10 form`"></span>
+                        </div>
+                    </button>
+                    
+                    <div x-show="forms.length >= 10" class="text-center p-6 text-gray-500">
+                        Batas maksimal 10 pengajuan tercapai.
+                    </div>
+                </div>
 
-                    Array.from(templateSelect.options).forEach(opt => {
-                        if (opt.value === '') return; // skip default option
-                        const optType = opt.getAttribute('data-type');
-                        if (optType === currentType) {
-                            opt.style.display = '';
-                            opt.disabled = false;
-                        } else {
-                            opt.style.display = 'none';
-                            opt.disabled = true;
-                        }
-                    });
-
-                    // Reset selection when type changes
-                    templateSelect.value = '';
-                    templateSuccess.style.display = 'none';
-                }
-
-                // Load template data and auto-fill form
-                async function loadTemplate() {
-                    const code = templateSelect.value;
-                    if (!code) {
-                        templateSuccess.style.display = 'none';
-                        return;
-                    }
-
-                    templateLoading.style.display = 'flex';
-                    try {
-                        const res = await fetch('/documents/template-data/' + code);
-                        if (!res.ok) throw new Error('Not found');
-                        const data = await res.json();
-
-                        let filledCount = 0;
-                        const fields = data.fields || {};
-
-                        for (const [key, value] of Object.entries(fields)) {
-                            if (!value) continue;
-                            const el = document.querySelector('[name="' + key + '"]');
-                            if (el) {
-                                el.value = value;
-                                el.dispatchEvent(new Event('input', { bubbles: true }));
-                                el.dispatchEvent(new Event('change', { bubbles: true }));
-                                filledCount++;
-                            }
-                        }
-
-                        if (filledCount > 0) {
-                            templateAppliedName.textContent = data.name;
-                            templateFieldCount.textContent = filledCount + ' field terisi otomatis';
-                            templateSuccess.style.display = 'block';
-                        }
-                    } catch (e) {
-                        console.error('Template load error:', e);
-                    }
-                    templateLoading.style.display = 'none';
-                }
-
-                // Listen to approval type radio changes
-                document.querySelectorAll('input[name="approval_type"]').forEach(radio => {
-                    radio.addEventListener('change', filterTemplates);
-                });
-
-                // Listen to template select changes
-                templateSelect.addEventListener('change', loadTemplate);
-
-                // Initial filter on page load
-                filterTemplates();
-            })();
-        </script>
-    @endpush
+                <!-- SUBMIT ACTIONS -->
+                <div class="flex items-center justify-end gap-3 sticky bottom-6 z-40 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl p-4 rounded-2xl border border-gray-200/50 shadow-2xl shadow-primary-500/10 mt-8">
+                    <x-ui.button type="button" variant="secondary" @click="resetSelection()">
+                        Batal
+                    </x-ui.button>
+                    <x-ui.button type="submit" icon="paper-airplane" class="shadow-lg shadow-primary-500/30 font-bold px-8">
+                        Ajukan <span x-text="forms.length"></span> Dokumen Sekaligus
+                    </x-ui.button>
+                </div>
+            </form>
+        </div>
+    </div>
 </x-app-layout>

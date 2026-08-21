@@ -206,43 +206,19 @@
                     <div x-show="action === 'approve'" x-transition class="space-y-4">
                         @if($document->estimated_budget)
                             <div>
-                                @if(auth()->user()->hasRole('finance'))
-                                    {{-- Finance can edit the approved amount --}}
-                                    <label for="approved_amount"
-                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Jumlah Disetujui
-                                    </label>
-                                    <div class="relative">
-                                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">Rp</span>
-                                        <input type="text" id="approved_amount"
-                                            value="{{ $document->estimated_budget ?? 0 }}"
-                                            class="currency-input block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                                            inputmode="numeric"
-                                            @currency-change="approvedAmount = $event.detail.value">
-                                    </div>
-                                @else
-                                    {{-- Non-Finance approvers see read-only budget (finance-adjusted if applicable) --}}
-                                    @php
-                                        $financeApproval = $document->approvals()
-                                            ->where('approver_role', 'finance')
-                                            ->where('status', 'approved')
-                                            ->whereNotNull('approved_amount')
-                                            ->first();
-                                        $displayBudget = $financeApproval ? $financeApproval->approved_amount : $document->estimated_budget;
-                                    @endphp
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        {{ $financeApproval ? 'Jumlah Disetujui Finance' : 'Estimasi Anggaran' }}
-                                    </label>
-                                    <div
-                                        class="px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white font-medium">
-                                        Rp {{ number_format($displayBudget, 0, ',', '.') }}
-                                    </div>
-                                    @if($financeApproval && (float) $financeApproval->approved_amount !== (float) $document->estimated_budget)
-                                        <p class="text-xs text-yellow-600 dark:text-yellow-400 mt-1">
-                                            📝 Nominal awal: Rp {{ number_format($document->estimated_budget, 0, ',', '.') }} — diubah oleh Finance
-                                        </p>
-                                    @endif
-                                @endif
+                                {{-- Any approver can edit the approved amount in the dynamic system --}}
+                                <label for="approved_amount"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Jumlah Disetujui
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">Rp</span>
+                                    <input type="text" id="approved_amount"
+                                        value="{{ $document->estimated_budget ?? 0 }}"
+                                        class="currency-input block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                        inputmode="numeric"
+                                        @currency-change="approvedAmount = $event.detail.value">
+                                </div>
                             </div>
                         @endif
 

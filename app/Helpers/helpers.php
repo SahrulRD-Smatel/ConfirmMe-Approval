@@ -1,5 +1,8 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
+
 if (!function_exists('role_label')) {
     /**
      * Convert a role slug to a human-readable label.
@@ -30,5 +33,27 @@ if (!function_exists('role_label')) {
         ];
 
         return $labels[$role] ?? ucwords(str_replace('_', ' ', $role));
+    }
+}
+
+if (!function_exists('feature_active')) {
+    /**
+     * Check if a system feature is active.
+     *
+     * @param string $key The feature key (e.g., 'module_finance')
+     * @return bool
+     */
+    function feature_active(string $key): bool
+    {
+        return Cache::remember("system_feature_{$key}", 3600, function () use ($key) {
+            $feature = DB::table('system_features')->where('key', $key)->first();
+            
+            // If feature doesn't exist, assume it's active by default to prevent breaking
+            if (!$feature) {
+                return true;
+            }
+            
+            return (bool) $feature->is_active;
+        });
     }
 }

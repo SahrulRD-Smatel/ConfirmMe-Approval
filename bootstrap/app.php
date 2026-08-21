@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
             'active' => \App\Http\Middleware\EnsureUserIsActive::class,
             'has_role' => \App\Http\Middleware\EnsureUserHasRole::class,
+            'feature' => \App\Http\Middleware\FeatureToggleMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

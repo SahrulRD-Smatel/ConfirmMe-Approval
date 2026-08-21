@@ -224,6 +224,11 @@ class TwoFactorController extends Controller
      */
     public static function isRequired(Document $document): bool
     {
+        // Check if 2FA feature is enabled globally
+        if (!feature_active('feature_2fa_otp')) {
+            return false;
+        }
+
         $user = auth()->user();
         $directorRoles = ['direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional', 'presiden_direktur'];
 

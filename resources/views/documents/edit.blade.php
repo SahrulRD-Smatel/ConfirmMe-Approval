@@ -27,55 +27,37 @@
         @csrf
         @method('PUT')
 
-        <!-- Approval Type Selection -->
-        <x-ui.card>
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Jenis Approval</h2>
+        @php
+            $currentTemplate = $templates->where('code', $document->template)->first();
+            $templateName = $currentTemplate ? $currentTemplate->name : match($document->approval_type) {
+                'only' => 'Administratif',
+                'po' => 'Purchase Order',
+                'invoice' => 'Invoice',
+                'loan' => 'Employee Loan',
+                default => 'Unknown'
+            };
+        @endphp
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <!-- Approval Only -->
-                <label class="relative flex cursor-pointer rounded-lg border p-4 focus:outline-none transition-all"
-                    :class="approvalType === 'only' ? 'border-primary-600 bg-primary-50 dark:bg-primary-900/20 ring-2 ring-primary-600' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'">
-                    <input type="radio" name="approval_type" value="only" class="sr-only" x-model="approvalType" {{ old('approval_type', $document->approval_type) === 'only' ? 'checked' : '' }}>
-                    <span class="flex flex-1 flex-col">
-                        <span class="block text-sm font-medium text-gray-900 dark:text-white">Approval Only</span>
-                        <span class="mt-1 text-xs text-gray-500">Non-finansial</span>
-                    </span>
-                </label>
-
-                <!-- Approval to PO -->
-                <label class="relative flex cursor-pointer rounded-lg border p-4 focus:outline-none transition-all"
-                    :class="approvalType === 'po' ? 'border-primary-600 bg-primary-50 dark:bg-primary-900/20 ring-2 ring-primary-600' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'">
-                    <input type="radio" name="approval_type" value="po" class="sr-only" x-model="approvalType" {{ old('approval_type', $document->approval_type) === 'po' ? 'checked' : '' }}>
-                    <span class="flex flex-1 flex-col">
-                        <span class="block text-sm font-medium text-gray-900 dark:text-white">Approval to PO</span>
-                        <span class="mt-1 text-xs text-gray-500">Purchase Order</span>
-                    </span>
-                </label>
-
-                <!-- Approval to Invoice -->
-                <label class="relative flex cursor-pointer rounded-lg border p-4 focus:outline-none transition-all"
-                    :class="approvalType === 'invoice' ? 'border-primary-600 bg-primary-50 dark:bg-primary-900/20 ring-2 ring-primary-600' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'">
-                    <input type="radio" name="approval_type" value="invoice" class="sr-only" x-model="approvalType" {{ old('approval_type', $document->approval_type) === 'invoice' ? 'checked' : '' }}>
-                    <span class="flex flex-1 flex-col">
-                        <span class="block text-sm font-medium text-gray-900 dark:text-white">Approval to Invoice</span>
-                        <span class="mt-1 text-xs text-gray-500">Pembayaran</span>
-                    </span>
-                </label>
-
-                <!-- Employee Loan -->
-                <label class="relative flex cursor-pointer rounded-lg border p-4 focus:outline-none transition-all"
-                    :class="approvalType === 'loan' ? 'border-primary-600 bg-primary-50 dark:bg-primary-900/20 ring-2 ring-primary-600' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'">
-                    <input type="radio" name="approval_type" value="loan" class="sr-only" x-model="approvalType" {{ old('approval_type', $document->approval_type) === 'loan' ? 'checked' : '' }}>
-                    <span class="flex flex-1 flex-col">
-                        <span class="block text-sm font-medium text-gray-900 dark:text-white">Employee Loan</span>
-                        <span class="mt-1 text-xs text-gray-500">Potong Gaji</span>
-                    </span>
-                </label>
+        <!-- Selected Module Indicator (Read-Only) -->
+        <div class="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 flex items-center justify-between shadow-sm">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400">
+                    <x-icon name="lock-closed" class="w-6 h-6" />
+                </div>
+                <div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider mb-1">Modul Terpilih (Terkunci)</p>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ $templateName }}</h3>
+                </div>
             </div>
-            @error('approval_type')
-                <p class="mt-2 text-sm text-danger-600">{{ $message }}</p>
-            @enderror
-        </x-ui.card>
+            <div class="text-right hidden sm:block">
+                <p class="text-xs text-gray-500 dark:text-gray-400">Jenis Approval</p>
+                <p class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase">{{ $document->approval_type }}</p>
+            </div>
+        </div>
+
+        <!-- Hidden Inputs to preserve the locked values -->
+        <input type="hidden" name="approval_type" value="{{ $document->approval_type }}">
+        <input type="hidden" name="template" value="{{ $document->template }}">
 
         <!-- Document Info -->
         <x-ui.card>
@@ -141,14 +123,9 @@
                             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Kategori Dokumen
                         </label>
-                        <select name="document_category" id="document_category"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
-                            <option value="memo" {{ old('document_category', $metadata['document_category'] ?? '') === 'memo' ? 'selected' : '' }}>Memo Internal</option>
-                            <option value="sop" {{ old('document_category', $metadata['document_category'] ?? '') === 'sop' ? 'selected' : '' }}>SOP / Kebijakan</option>
-                            <option value="surat_tugas" {{ old('document_category', $metadata['document_category'] ?? '') === 'surat_tugas' ? 'selected' : '' }}>Surat Tugas</option>
-                            <option value="surat_keputusan" {{ old('document_category', $metadata['document_category'] ?? '') === 'surat_keputusan' ? 'selected' : '' }}>Surat Keputusan</option>
-                            <option value="lainnya" {{ old('document_category', $metadata['document_category'] ?? '') === 'lainnya' ? 'selected' : '' }}>Lainnya</option>
-                        </select>
+                        <input type="text" name="document_category" id="document_category"
+                            value="{{ old('document_category', $metadata['document_category'] ?? '') }}" readonly
+                            class="block w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed">
                     </div>
                     <div>
                         <label for="effective_date"

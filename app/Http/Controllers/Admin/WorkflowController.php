@@ -32,7 +32,7 @@ class WorkflowController extends Controller
         $roleHierarchy = WorkflowSetting::getRoleHierarchy();
         $functionalRoles = WorkflowSetting::getFunctionalRoles();
         $hrdKeywords = WorkflowSetting::getHrdKeywords();
-        $departments = WorkflowSetting::getDepartments();
+        $departments = \App\Models\Department::ordered()->pluck('name')->toArray();
         $allRoles = Role::orderBy('name')->pluck('name')->toArray();
 
         $roleLabels = config('workflow.role_labels', []);
@@ -50,80 +50,6 @@ class WorkflowController extends Controller
             'roleLabels',
             'typeLabels'
         ));
-    }
-
-    /**
-     * Update approval chain for a specific type.
-     */
-    public function updateChain(Request $request)
-    {
-        $validated = $request->validate([
-            'approval_type' => 'required|string|in:only,po,po_internal,invoice,loan',
-            'roles' => 'required|array|min:1',
-            'roles.*' => 'required|string',
-        ]);
-
-        // Validate no duplicates
-        $roles = array_values(array_filter($validated['roles']));
-        if (count($roles) !== count(array_unique($roles))) {
-            return back()->with('error', 'Tidak boleh ada role yang sama dalam satu chain!')
-                ->withInput();
-        }
-
-        WorkflowChain::saveChain($validated['approval_type'], $roles);
-
-        return back()->with('success', 'Chain approval untuk "' . ($validated['approval_type']) . '" berhasil disimpan!');
-    }
-
-    /**
-     * Store a new threshold.
-     */
-    public function storeThreshold(Request $request)
-    {
-        $validated = $request->validate([
-            'approval_type' => 'required|string',
-            'label' => 'required|string|max:255',
-            'min_amount' => 'required|numeric|min:0',
-            'max_amount' => 'nullable|numeric|min:0',
-            'final_role' => 'required|string',
-            'sort_order' => 'required|integer|min:0',
-        ]);
-
-        ApprovalThreshold::create($validated);
-
-        return back()->with('success', 'Threshold berhasil ditambahkan!');
-    }
-
-    /**
-     * Update an existing threshold.
-     */
-    public function updateThreshold(Request $request, $id)
-    {
-        $threshold = ApprovalThreshold::findOrFail($id);
-
-        $validated = $request->validate([
-            'label' => 'required|string|max:255',
-            'min_amount' => 'required|numeric|min:0',
-            'max_amount' => 'nullable|numeric|min:0',
-            'final_role' => 'required|string',
-            'sort_order' => 'required|integer|min:0',
-            'is_active' => 'boolean',
-        ]);
-
-        $threshold->update($validated);
-
-        return back()->with('success', 'Threshold berhasil diperbarui!');
-    }
-
-    /**
-     * Delete a threshold.
-     */
-    public function deleteThreshold($id)
-    {
-        $threshold = ApprovalThreshold::findOrFail($id);
-        $threshold->delete();
-
-        return back()->with('success', 'Threshold berhasil dihapus!');
     }
 
     /**
@@ -185,15 +111,7 @@ class WorkflowController extends Controller
                 WorkflowSetting::set('hrd_keywords', $keywords);
                 return back()->with('success', 'HRD keywords berhasil disimpan!');
 
-            case 'departments':
-                $validated = $request->validate([
-                    'departments' => 'required|string',
-                ]);
-                $departments = array_values(array_filter(
-                    array_map('trim', explode(',', $validated['departments']))
-                ));
-                WorkflowSetting::set('departments', $departments);
-                return back()->with('success', 'Daftar departemen berhasil disimpan!');
+            // Removed departments case as it's now managed via Department CRUD
 
             default:
                 return back()->with('error', 'Section tidak dikenali.');

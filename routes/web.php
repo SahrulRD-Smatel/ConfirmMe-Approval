@@ -84,7 +84,6 @@ Route::middleware(['auth', 'verified', 'active', 'has_role'])->group(function ()
 
     // Leave Approval (Supervisor for staff, HR Manager/Director for higher roles)
     Route::prefix('leave-approvals')->name('leave-approvals.')
-        ->middleware('role:supervisor|manager|hrd_coordinator|direktur_hr|direktur_finance|direktur_it|direktur_sales|direktur_operasional|presiden_direktur|staff|admin')
         ->group(function () {
             Route::get('/', [\App\Http\Controllers\LeaveApprovalController::class, 'index'])->name('index');
             Route::post('/{leaveRequest}/approve', [\App\Http\Controllers\LeaveApprovalController::class, 'approve'])->name('approve');
@@ -110,8 +109,8 @@ Route::middleware(['auth', 'verified', 'active', 'has_role'])->group(function ()
     Route::get('/archive', [ArchiveController::class, 'index'])->name('archive.index');
     Route::get('/archive/{document}', [ArchiveController::class, 'show'])->name('archive.show');
 
-    // Approvals (For approvers: supervisor, manager, hrd, division directors, presiden, finance, purchasing, direktur_operasional)
-    Route::prefix('approvals')->name('approvals.')->middleware('role:supervisor|manager|hrd|purchasing|direktur_hr|direktur_finance|direktur_it|direktur_sales|direktur_operasional|presiden_direktur|finance')->group(function () {
+    // Approvals (For all approvers - dynamic routing handled in controller)
+    Route::prefix('approvals')->name('approvals.')->group(function () {
         Route::get('/', [ApprovalController::class, 'index'])->name('index');
         Route::get('/history', [ApprovalController::class, 'history'])->name('history');
         Route::get('/bulk', [ApprovalController::class, 'bulk'])->name('bulk');
@@ -124,19 +123,19 @@ Route::middleware(['auth', 'verified', 'active', 'has_role'])->group(function ()
     });
 
     // 2FA Verification (For Division Directors and Presiden Direktur)
-    Route::prefix('2fa')->name('2fa.')->middleware('role:direktur_hr|direktur_finance|direktur_it|direktur_sales|direktur_operasional|presiden_direktur')->group(function () {
+    Route::prefix('2fa')->name('2fa.')->group(function () {
         Route::get('/{document}', [TwoFactorController::class, 'show'])->name('show');
         Route::post('/{document}/verify', [TwoFactorController::class, 'verify'])->name('verify');
         Route::post('/{document}/resend', [TwoFactorController::class, 'resend'])->name('resend');
     });
 
     // Team Documents (For supervisors and managers)
-    Route::prefix('team')->name('team.')->middleware('role:supervisor|manager')->group(function () {
+    Route::prefix('team')->name('team.')->group(function () {
         Route::get('/documents', [TeamController::class, 'documents'])->name('documents');
     });
 
     // Reports (Role-based - Management level only)
-    Route::prefix('reports')->name('reports.')->middleware('role:manager|hrd|direktur_hr|direktur_finance|direktur_it|direktur_sales|direktur_operasional|presiden_direktur|finance')->group(function () {
+    Route::prefix('reports')->name('reports.')->group(function () {
         Route::get('/', [ReportController::class, 'index'])->name('index');
         Route::get('/documents', [ReportController::class, 'documents'])->name('documents');
         Route::get('/finance', [ReportController::class, 'finance'])->name('finance');
@@ -172,36 +171,40 @@ Route::middleware(['auth', 'verified', 'active', 'has_role'])->group(function ()
     });
 
     // Admin Routes (Role-based - Admin only)
-    Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(function () {
+    Route::prefix('admin')->name('admin.')->group(function () {
         // User Management
-        Route::resource('users', UserController::class);
-        Route::patch('/users/{user}/toggle', [UserController::class, 'toggleStatus'])->name('users.toggle');
+        Route::resource('users', UserController::class)->middleware('can:manage-users');
+        Route::patch('/users/{user}/toggle', [UserController::class, 'toggleStatus'])->name('users.toggle')->middleware('can:manage-users');
 
         // Role & Permission Management
-        Route::resource('roles', RoleController::class);
+        Route::resource('roles', RoleController::class)->middleware('can:manage-roles');
+
+        // System Features Management
+        Route::prefix('features')->name('features.')->middleware('can:manage-features')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Admin\SystemFeatureController::class, 'index'])->name('index');
+            Route::patch('/{key}/toggle', [\App\Http\Controllers\Admin\SystemFeatureController::class, 'toggle'])->name('toggle');
+        });
 
         // Workflow Configuration (Dynamic)
-        Route::prefix('workflow')->name('workflow.')->group(function () {
+        Route::prefix('workflow')->name('workflow.')->middleware('can:manage-workflow')->group(function () {
             Route::get('/', [WorkflowController::class, 'index'])->name('index');
-            Route::post('/chains', [WorkflowController::class, 'updateChain'])->name('chains.update');
-            Route::post('/thresholds', [WorkflowController::class, 'storeThreshold'])->name('thresholds.store');
-            Route::put('/thresholds/{id}', [WorkflowController::class, 'updateThreshold'])->name('thresholds.update');
-            Route::delete('/thresholds/{id}', [WorkflowController::class, 'deleteThreshold'])->name('thresholds.destroy');
             Route::post('/type-access', [WorkflowController::class, 'updateTypeAccess'])->name('type-access.update');
             Route::post('/settings', [WorkflowController::class, 'updateSettings'])->name('settings.update');
             Route::post('/reset', [WorkflowController::class, 'resetToDefault'])->name('reset');
         });
 
-        // Department Management
-        Route::resource('departments', DepartmentController::class)->except(['create', 'show', 'edit']);
+        // Departments
+        Route::resource('departments', DepartmentController::class)->middleware('can:manage-departments');
+        Route::patch('/departments/{department}/toggle', [DepartmentController::class, 'toggleStatus'])->name('departments.toggle')->middleware('can:manage-departments');
 
         // Document Templates
-        Route::resource('templates', TemplateController::class);
+        Route::resource('templates', TemplateController::class)->middleware('can:manage-templates');
+        Route::post('/templates/{template}/duplicate', [TemplateController::class, 'duplicate'])->name('templates.duplicate')->middleware('can:manage-templates');
 
         // Audit Logs
-        Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
-        Route::get('/audit-logs/export', [AuditLogController::class, 'export'])->name('audit-logs.export');
-        Route::get('/audit-logs/{auditLog}', [AuditLogController::class, 'show'])->name('audit-logs.show');
+        Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index')->middleware('can:view-audit-log');
+        Route::get('/audit-logs/export', [AuditLogController::class, 'export'])->name('audit-logs.export')->middleware('can:view-audit-log');
+        Route::get('/audit-logs/{auditLog}', [AuditLogController::class, 'show'])->name('audit-logs.show')->middleware('can:view-audit-log');
     });
 
     // Executive Routes (Presiden Direktur only)

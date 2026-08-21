@@ -10,14 +10,34 @@ use Spatie\Permission\Models\Permission;
 class RoleController extends Controller
 {
     /**
+     * Helper to group permissions dynamically
+     */
+    private function getGroupedPermissions()
+    {
+        $permissions = Permission::orderBy('name')->pluck('name');
+        
+        $groups = [];
+        foreach ($permissions as $perm) {
+            if (str_contains($perm, 'document')) $groups['Dokumen'][] = $perm;
+            elseif (str_contains($perm, 'budget') || str_contains($perm, 'po') || str_contains($perm, 'invoice') || str_contains($perm, 'purchasing')) $groups['Keuangan'][] = $perm;
+            elseif (str_contains($perm, 'attendance')) $groups['HR & Absensi'][] = $perm;
+            elseif (str_contains($perm, 'reports')) $groups['Laporan'][] = $perm;
+            elseif (str_contains($perm, 'users') || str_contains($perm, 'roles') || str_contains($perm, 'workflow') || str_contains($perm, 'templates') || str_contains($perm, 'features') || str_contains($perm, 'departments') || str_contains($perm, 'audit-log')) $groups['Administrasi'][] = $perm;
+            else $groups['Lainnya'][] = $perm;
+        }
+        
+        return $groups;
+    }
+
+    /**
      * Display a listing of roles.
      */
     public function index()
     {
-        $roles = Role::with('permissions')->paginate(10);
-        $permissions = Permission::all();
+        $roles = Role::with('permissions')->get();
+        $permGroups = $this->getGroupedPermissions();
 
-        return view('admin.roles.index', compact('roles', 'permissions'));
+        return view('admin.roles.index', compact('roles', 'permGroups'));
     }
 
     /**
@@ -25,8 +45,8 @@ class RoleController extends Controller
      */
     public function create()
     {
-        $permissions = Permission::all();
-        return view('admin.roles.form', compact('permissions'));
+        $permGroups = $this->getGroupedPermissions();
+        return view('admin.roles.form', compact('permGroups'));
     }
 
     /**
@@ -64,8 +84,8 @@ class RoleController extends Controller
      */
     public function edit(Role $role)
     {
-        $permissions = Permission::all();
-        return view('admin.roles.form', compact('role', 'permissions'));
+        $permGroups = $this->getGroupedPermissions();
+        return view('admin.roles.form', compact('role', 'permGroups'));
     }
 
     /**

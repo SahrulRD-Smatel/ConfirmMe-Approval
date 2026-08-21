@@ -5,9 +5,17 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\DocumentTemplate;
 use Illuminate\Http\Request;
+use App\Services\ApprovalWorkflowService;
 
 class TemplateController extends Controller
 {
+    protected $workflowService;
+
+    public function __construct(ApprovalWorkflowService $workflowService)
+    {
+        $this->workflowService = $workflowService;
+    }
+
     public function index()
     {
         $templates = DocumentTemplate::with('creator')
@@ -19,7 +27,9 @@ class TemplateController extends Controller
 
     public function create()
     {
-        return view('admin.templates.form');
+        $roles = \Spatie\Permission\Models\Role::where('name', '!=', 'admin')->get();
+        $users = \App\Models\User::with('roles')->where('is_active', true)->get();
+        return view('admin.templates.form', compact('roles', 'users'));
     }
 
     public function store(Request $request)
@@ -32,6 +42,8 @@ class TemplateController extends Controller
             'is_active' => 'boolean',
             'fields' => 'nullable|array',
             'fields.*' => 'nullable|string|max:2000',
+            'workflow' => 'required|array|min:1',
+            'workflow.*' => 'required|string',
         ]);
 
         // Clean empty fields
@@ -43,6 +55,7 @@ class TemplateController extends Controller
             'description' => $validated['description'],
             'approval_type' => $validated['approval_type'],
             'fields' => $fields,
+            'workflow' => $validated['workflow'],
             'is_active' => $validated['is_active'] ?? true,
             'created_by' => auth()->id(),
         ]);
@@ -58,7 +71,9 @@ class TemplateController extends Controller
 
     public function edit(DocumentTemplate $template)
     {
-        return view('admin.templates.form', compact('template'));
+        $roles = \Spatie\Permission\Models\Role::where('name', '!=', 'admin')->get();
+        $users = \App\Models\User::with('roles')->where('is_active', true)->get();
+        return view('admin.templates.form', compact('template', 'roles', 'users'));
     }
 
     public function update(Request $request, DocumentTemplate $template)
@@ -71,10 +86,16 @@ class TemplateController extends Controller
             'is_active' => 'boolean',
             'fields' => 'nullable|array',
             'fields.*' => 'nullable|string|max:2000',
+            'workflow' => 'required|array|min:1',
+            'workflow.*' => 'required|string',
         ]);
 
         // Clean empty fields
         $fields = collect($validated['fields'] ?? [])->filter(fn($v) => $v !== null && $v !== '')->toArray();
+
+        // Check if workflow changed or became inactive
+        $workflowChanged = $template->workflow !== $validated['workflow'];
+        $becameInactive = $template->is_active && !($validated['is_active'] ?? true);
 
         $template->update([
             'name' => $validated['name'],
@@ -82,8 +103,14 @@ class TemplateController extends Controller
             'description' => $validated['description'],
             'approval_type' => $validated['approval_type'],
             'fields' => $fields,
+            'workflow' => $validated['workflow'],
             'is_active' => $validated['is_active'] ?? true,
         ]);
+
+        if ($workflowChanged || $becameInactive) {
+            $reason = $workflowChanged ? "Sistem: Susunan approver pada template telah diubah oleh Admin." : "Sistem: Template dokumen ini telah dinonaktifkan oleh Admin.";
+            $this->workflowService->autoRejectPendingDocumentsForTemplate($template->code, $reason);
+        }
 
         return redirect()->route('admin.templates.index')
             ->with('success', 'Template berhasil diperbarui!');
@@ -91,9 +118,12 @@ class TemplateController extends Controller
 
     public function destroy(DocumentTemplate $template)
     {
+        $code = $template->code;
         $template->delete();
+        
+        $this->workflowService->autoRejectPendingDocumentsForTemplate($code, "Sistem: Template dokumen ini telah dihapus oleh Admin.");
 
         return redirect()->route('admin.templates.index')
-            ->with('success', 'Template berhasil dihapus!');
+            ->with('success', 'Template berhasil dihapus dan dokumen terkait yang masih pending telah di-reject otomatis!');
     }
 }

@@ -21,8 +21,24 @@
 
     <form action="{{ isset($template) ? route('admin.templates.update', $template) : route('admin.templates.store') }}"
         method="POST" class="max-w-4xl space-y-6" x-data="{
-            approvalType: '{{ old('approval_type', $template->approval_type ?? 'only') }}'
-        }">
+            approvalType: '{{ old('approval_type', $template->approval_type ?? 'only') }}',
+            workflows: {{ Js::from(old('workflow', isset($template) ? (array) $template->workflow : [])) }},
+            init() {
+                this.workflows = this.workflows.map(w => {
+                    if (w && !w.startsWith('role:') && !w.startsWith('user:')) {
+                        return 'role:' + w;
+                    }
+                    return w;
+                });
+            },
+            addWorkflow() {
+                this.workflows.push('');
+            },
+            removeWorkflow(index) {
+                this.workflows.splice(index, 1);
+            }
+        }"
+        @submit="if(workflows.length === 0) { alert('Harap tambahkan minimal 1 approver pada Susunan Approver!'); $event.preventDefault(); }">
         @csrf
         @if(isset($template)) @method('PUT') @endif
 
@@ -125,15 +141,16 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Default Kategori</label>
-                        <select name="fields[document_category]"
+                        <input type="text" name="fields[document_category]" list="category_options"
+                            value="{{ $fields['document_category'] ?? '' }}"
+                            placeholder="Contoh: Surat Perjalanan Dinas"
                             class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
-                            <option value="">— Tidak diisi —</option>
-                            <option value="memo" {{ ($fields['document_category'] ?? '') === 'memo' ? 'selected' : '' }}>Memo Internal</option>
-                            <option value="sop" {{ ($fields['document_category'] ?? '') === 'sop' ? 'selected' : '' }}>SOP / Kebijakan</option>
-                            <option value="surat_tugas" {{ ($fields['document_category'] ?? '') === 'surat_tugas' ? 'selected' : '' }}>Surat Tugas</option>
-                            <option value="surat_keputusan" {{ ($fields['document_category'] ?? '') === 'surat_keputusan' ? 'selected' : '' }}>Surat Keputusan</option>
-                            <option value="lainnya" {{ ($fields['document_category'] ?? '') === 'lainnya' ? 'selected' : '' }}>Lainnya</option>
-                        </select>
+                        <datalist id="category_options">
+                            <option value="Memo Internal">
+                            <option value="SOP / Kebijakan">
+                            <option value="Surat Tugas">
+                            <option value="Surat Keputusan">
+                        </datalist>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Default Departemen Terkait</label>
@@ -258,6 +275,73 @@
                 </div>
             </x-ui.card>
         </div>
+
+        {{-- Workflow / Approver Chain --}}
+        <x-ui.card>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                    <x-icon name="user-group" class="w-5 h-5 text-indigo-500" />
+                    Susunan Approver (Wajib)
+                </h2>
+                <button type="button" @click="addWorkflow"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-lg text-sm font-medium transition-colors">
+                    <x-icon name="plus" class="w-4 h-4" /> Tambah Approver
+                </button>
+            </div>
+            
+            <p class="text-sm text-gray-500 mb-4">
+                Tentukan urutan persetujuan dokumen. Sistem akan memproses persetujuan sesuai urutan dari atas ke bawah.
+            </p>
+
+            @error('workflow')<p class="mb-4 text-sm text-danger-600">{{ $message }}</p>@enderror
+
+            <div class="space-y-3" x-show="workflows.length > 0">
+                <template x-for="(role, index) in workflows" :key="index">
+                    <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl relative group">
+                        <!-- Step Indicator -->
+                        <div class="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center shrink-0">
+                            <span class="text-indigo-600 dark:text-indigo-400 font-bold text-sm" x-text="index + 1"></span>
+                        </div>
+
+                        <!-- Role Select -->
+                        <div class="flex-1">
+                            <select x-model="workflows[index]" :name="`workflow[${index + 1}]`" required
+                                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="" disabled>-- Pilih Approver --</option>
+                                <optgroup label="Berdasarkan Role/Jabatan">
+                                    @foreach($roles as $roleData)
+                                        <option value="role:{{ $roleData->name }}">{{ role_label($roleData->name) }}</option>
+                                    @endforeach
+                                </optgroup>
+                                <optgroup label="Berdasarkan Spesifik User">
+                                    @foreach($users as $u)
+                                        @php
+                                            $position = $u->position ?? 'Tanpa Posisi';
+                                            $dept = $u->department ?? 'No Dept';
+                                        @endphp
+                                        <option value="user:{{ $u->id }}">{{ $u->name }} ({{ $position }} - {{ $dept }})</option>
+                                    @endforeach
+                                </optgroup>
+                            </select>
+                        </div>
+
+                        <!-- Remove Button -->
+                        <button type="button" @click="removeWorkflow(index)"
+                            class="p-2 text-gray-400 hover:text-danger-500 hover:bg-danger-50 rounded-lg transition-colors"
+                            title="Hapus">
+                            <x-icon name="trash" class="w-5 h-5" />
+                        </button>
+                    </div>
+                </template>
+            </div>
+
+            <div x-show="workflows.length === 0" class="text-center py-6 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
+                <p class="text-sm text-gray-500">Belum ada approver yang ditambahkan.</p>
+                <button type="button" @click="addWorkflow" class="mt-2 text-indigo-600 hover:text-indigo-700 text-sm font-medium">
+                    + Tambah Approver Pertama
+                </button>
+            </div>
+        </x-ui.card>
 
         {{-- Actions --}}
         <div class="flex items-center justify-end gap-4">
