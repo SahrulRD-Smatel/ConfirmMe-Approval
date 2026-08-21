@@ -16,36 +16,26 @@ class ArchiveController extends Controller
 
         $query = Document::with(['user', 'approvals'])
             ->whereIn('status', ['approved', 'rejected', 'completed', 'paid'])
-            // Role-based filtering
-            ->when($user->hasRole('staff'), function ($q) use ($user) {
-                // Staff only sees their own documents
-                $q->where('user_id', $user->id);
-            })
-            ->when($user->hasRole('finance'), function ($q) {
-                // Finance sees PO/Invoice type documents
-                $q->whereIn('approval_type', ['po', 'invoice']);
-            })
+            // Permission-based filtering
+            ->when(!$user->hasPermissionTo('view-all-documents'), function ($q) use ($user) {
+                $q->where(function ($query) use ($user) {
+                    // Own documents
+                    $query->where('user_id', $user->id)
+                        // Documents they approved
+                        ->orWhereHas('approvals', function ($subQ) use ($user) {
+                            $subQ->where('approver_id', $user->id);
+                        });
 
-            ->when($user->hasRole('supervisor') || ($user->hasRole('manager') && !$user->hasRole('hrd')), function ($q) use ($user) {
-                // Manager biasa: hanya lihat dokumen departemen sendiri + yang pernah dia approve
-                $q->where(function ($query) use ($user) {
-                    $query->where('department', $user->department)
-                        ->orWhereHas('approvals', function ($subQ) use ($user) {
-                            $subQ->where('approver_id', $user->id);
-                        });
+                    // Department documents
+                    if ($user->hasPermissionTo('view-department-documents')) {
+                        $query->orWhere('department', $user->department);
+                    }
+
+                    // Finance documents
+                    if ($user->hasPermissionTo('view-finance-documents')) {
+                        $query->orWhereIn('approval_type', ['po', 'invoice']);
+                    }
                 });
-            })
-            ->when($user->roles->pluck('name')->contains(fn($role) => str_starts_with($role, 'direktur_')), function ($q) use ($user) {
-                // Direktur departemen: lihat dokumen departemen sendiri + yang pernah di-approve
-                $q->where(function ($query) use ($user) {
-                    $query->where('department', $user->department)
-                        ->orWhereHas('approvals', function ($subQ) use ($user) {
-                            $subQ->where('approver_id', $user->id);
-                        });
-                });
-            })
-            ->when($user->hasRole('manager') && $user->hasRole('hrd'), function ($q) {
-                // Manager HRD (kombinasi role manager + hrd): lihat semua dokumen
             })
 
             // Filter options

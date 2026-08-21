@@ -6,10 +6,10 @@
         </div>
     </x-slot>
 
-    <div class="py-4">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="py-5">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             {{-- Stats Cards --}}
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="mb-7 grid grid-cols-2 gap-4 md:grid-cols-4">
                 <x-ui.stat-card title="Pinjaman Aktif" :value="$stats['active_loans']" icon="currency-dollar" color="primary" />
                 <x-ui.stat-card title="Total Pinjaman" :value="'Rp ' . number_format($stats['total_borrowed'], 0, ',', '.')" icon="banknotes" />
                 <x-ui.stat-card title="Sisa Hutang" :value="'Rp ' . number_format($stats['total_outstanding'], 0, ',', '.')" icon="arrow-trending-down" color="warning" />
@@ -19,7 +19,7 @@
             {{-- Loans List --}}
             <div class="space-y-4">
                 @forelse($loans as $loan)
-                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft p-6">
+                    <div class="rounded-3xl border border-gray-200/80 bg-white p-6 shadow-soft dark:border-gray-700/80 dark:bg-gray-900">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div class="flex-1">
                                 <div class="flex items-center gap-3 mb-2">
@@ -64,7 +64,7 @@
 
                             <div class="flex-shrink-0">
                                 <a href="{{ route('my-loans.show', $loan) }}"
-                                    class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 text-sm">
+                                    class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 text-sm">
                                     Lihat Detail
                                     <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -85,7 +85,7 @@
                             Anda belum memiliki riwayat pinjaman karyawan.
                         </p>
                         <a href="{{ route('documents.create') }}"
-                            class="mt-4 inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
+                            class="mt-4 inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700">
                             Ajukan Pinjaman Baru
                         </a>
                     </div>

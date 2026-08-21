@@ -1,11 +1,11 @@
 <x-app-layout>
     <x-slot name="title">Edit Pengumuman</x-slot>
 
-    <div class="max-w-3xl mx-auto">
+    <div class="mx-auto w-full max-w-3xl">
         <x-ui.card>
             <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Edit Pengumuman</h2>
 
-            <form action="{{ route('announcements.update', $announcement) }}" method="POST" class="space-y-6"
+            <form action="{{ route('announcements.update', $announcement) }}" method="POST" class="space-y-7"
                 enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
@@ -19,7 +19,7 @@
                 <div>
                     <x-input-label for="type" value="Tipe / Urgensi" />
                     <select name="type" id="type"
-                        class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
+                        class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-soft">
                         <option value="info" {{ $announcement->type == 'info' ? 'selected' : '' }}>Informasi (Biru)
                         </option>
                         <option value="warning" {{ $announcement->type == 'warning' ? 'selected' : '' }}>Peringatan
@@ -35,7 +35,7 @@
                 <div>
                     <x-input-label for="is_active" value="Status" />
                     <select name="is_active" id="is_active"
-                        class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
+                        class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-soft">
                         <option value="1" {{ $announcement->is_active ? 'selected' : '' }}>Active (Tampil di Dashboard)
                         </option>
                         <option value="0" {{ !$announcement->is_active ? 'selected' : '' }}>Archived (Sembunyikan)
@@ -63,7 +63,7 @@
                                     <label
                                         class="flex items-center space-x-2 text-xs text-red-600 cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/20 p-1 rounded">
                                         <input type="checkbox" name="delete_attachments[]" value="{{ $attachment->id }}"
-                                            class="rounded border-gray-300 text-red-600 shadow-sm focus:ring-red-500">
+                                            class="rounded border-gray-300 text-red-600 shadow-soft focus:ring-red-500">
                                         <span>Hapus</span>
                                     </label>
                                 </div>
@@ -77,7 +77,7 @@
                 <div>
                     <x-input-label for="attachments" value="Tambah Lampiran Baru" />
                     <input id="attachments" name="attachments[]" type="file" multiple
-                        class="mt-1 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                        class="mt-1 block w-full text-sm text-gray-900 border border-gray-300 rounded-xl cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
                         accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.xls,.xlsx">
                     <p class="mt-1 text-xs text-gray-500">File baru akan ditambahkan ke daftar lampiran. Maks 10MB per
                         file.</p>
@@ -87,13 +87,13 @@
                 <div>
                     <x-input-label for="content" value="Isi Pengumuman" />
                     <textarea id="content" name="content" rows="6"
-                        class="block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1"
+                        class="block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-soft mt-1"
                         required>{{ old('content', $announcement->content) }}</textarea>
                     <p class="text-xs text-gray-500 mt-1">Gunakan enter untuk paragraf baru.</p>
                     <x-input-error :messages="$errors->get('content')" class="mt-2" />
                 </div>
 
-                <div class="flex items-center justify-end gap-4">
+                <div class="flex flex-wrap items-center justify-end gap-3">
                     <x-ui.button href="{{ route('announcements.index') }}" variant="secondary">Batal</x-ui.button>
                     <x-ui.button type="submit">Simpan Perubahan</x-ui.button>
                 </div>

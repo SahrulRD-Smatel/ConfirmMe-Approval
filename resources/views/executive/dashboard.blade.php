@@ -2,9 +2,9 @@
     <x-slot name="title">Executive Dashboard</x-slot>
 
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
                     Executive Overview 👔
                 </h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -23,7 +23,7 @@
     </x-slot>
 
     {{-- Stats Cards --}}
-    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+    <div class="mb-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {{-- Pending Approval --}}
         <x-ui.stat-card title="Menunggu Approval" :value="$stats['pending_count'] ?? 0" icon="clock" color="primary" />
 
@@ -38,10 +38,10 @@
     </div>
 
     {{-- Charts Row --}}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <div class="mb-8 grid grid-cols-1 gap-5 lg:grid-cols-2">
         {{-- Monthly Spending Chart --}}
         <x-ui.card>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Pengeluaran 6 Bulan Terakhir</h3>
+            <h3 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Pengeluaran 6 Bulan Terakhir</h3>
             <div class="h-64" id="monthlyChart">
                 @if($monthlySpending->isEmpty())
                     <div class="flex flex-col items-center justify-center h-full text-gray-400">
@@ -58,7 +58,7 @@
 
         {{-- Division Distribution --}}
         <x-ui.card>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Distribusi per Divisi (Tahun Ini)</h3>
+            <h3 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Distribusi per Divisi (Tahun Ini)</h3>
             <div class="h-64" id="divisionChart">
                 @if($divisionData->isEmpty())
                     <div class="flex flex-col items-center justify-center h-full text-gray-400">
@@ -76,7 +76,7 @@
 
     {{-- Pending Approvals Table --}}
     <x-ui.card :padding="false">
-        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+        <div class="px-6 py-4 border-b border-gray-200/80 dark:border-gray-700/80 flex items-center justify-between">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Dokumen Menunggu Persetujuan Anda</h3>
             <a href="{{ route('executive.approvals') }}" class="text-sm font-medium text-purple-600 hover:text-purple-800 dark:text-purple-400">
                 Lihat Semua →
@@ -92,7 +92,7 @@
             </div>
         @else
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <table class="min-w-[900px] w-full divide-y divide-gray-200/80 dark:divide-gray-700/80">
                     <thead class="bg-gray-50 dark:bg-gray-700/50">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Dokumen</th>
@@ -103,9 +103,9 @@
                             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200/80 dark:divide-gray-700/80">
                         @foreach($pendingApprovals->take(5) as $document)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                            <tr class="hover:bg-primary-50/60 dark:hover:bg-gray-700/50">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div>
                                         <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $document->title }}</div>
@@ -162,9 +162,9 @@
     </x-ui.card>
 
     {{-- Quick Links --}}
-    <div class="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-3">
         <a href="{{ route('executive.approvals') }}" class="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-gray-900/5 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300">
-            <div class="p-3 rounded-lg bg-purple-100 dark:bg-purple-900/30">
+            <div class="p-3 rounded-xl bg-purple-100 dark:bg-purple-900/30">
                 <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                 </svg>
@@ -176,7 +176,7 @@
         </a>
         
         <a href="{{ route('executive.insights') }}" class="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-gray-900/5 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300">
-            <div class="p-3 rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
+            <div class="p-3 rounded-xl bg-emerald-100 dark:bg-emerald-900/30">
                 <svg class="w-6 h-6 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                 </svg>
@@ -188,7 +188,7 @@
         </a>
         
         <a href="{{ route('executive.audit') }}" class="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-gray-900/5 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300">
-            <div class="p-3 rounded-lg bg-gray-100 dark:bg-gray-700">
+            <div class="p-3 rounded-xl bg-gray-100 dark:bg-gray-700">
                 <svg class="w-6 h-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>

@@ -8,7 +8,7 @@
                 <x-icon name="arrow-left" class="w-5 h-5" />
             </a>
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">Edit Dokumen</h1>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Edit Dokumen</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     {{ $document->document_number }}
                 </p>
@@ -21,7 +21,7 @@
     @endphp
 
     <form action="{{ route('documents.update', $document) }}" method="POST" enctype="multipart/form-data"
-        class="space-y-6" x-data="{ 
+        class="space-y-7" x-data="{ 
               approvalType: '{{ old('approval_type', $document->approval_type) }}'
           }">
         @csrf
@@ -39,7 +39,7 @@
         @endphp
 
         <!-- Selected Module Indicator (Read-Only) -->
-        <div class="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 flex items-center justify-between shadow-sm">
+        <div class="flex items-center justify-between rounded-3xl border border-gray-200/80 bg-gray-50/80 p-5 shadow-soft dark:border-gray-700/80 dark:bg-gray-900/70">
             <div class="flex items-center gap-4">
                 <div class="w-12 h-12 rounded-xl bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400">
                     <x-icon name="lock-closed" class="w-6 h-6" />
@@ -61,16 +61,16 @@
 
         <!-- Document Info -->
         <x-ui.card>
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Informasi Dokumen</h2>
+            <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Informasi Dokumen</h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <!-- Title -->
                 <div class="md:col-span-2">
                     <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Judul Dokumen <span class="text-danger-500">*</span>
                     </label>
                     <input type="text" name="title" id="title" value="{{ old('title', $document->title) }}" required
-                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10 focus:border-transparent"
                         placeholder="Masukkan judul dokumen">
                     @error('title')
                         <p class="mt-1 text-sm text-danger-600">{{ $message }}</p>
@@ -83,7 +83,7 @@
                         Prioritas <span class="text-danger-500">*</span>
                     </label>
                     <select name="priority" id="priority" required
-                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
                         <option value="low" {{ old('priority', $document->priority) === 'low' ? 'selected' : '' }}>Rendah
                         </option>
                         <option value="normal" {{ old('priority', $document->priority) === 'normal' ? 'selected' : '' }}>
@@ -104,7 +104,7 @@
                         Deskripsi <span class="text-danger-500">*</span>
                     </label>
                     <textarea name="description" id="description" rows="5" required
-                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10 focus:border-transparent"
                         placeholder="Jelaskan detail pengajuan Anda...">{{ old('description', $document->description) }}</textarea>
                     @error('description')
                         <p class="mt-1 text-sm text-danger-600">{{ $message }}</p>
@@ -116,8 +116,8 @@
         <!-- Type-Specific Fields: APPROVAL ONLY -->
         <div x-show="approvalType === 'only'" x-transition>
             <x-ui.card>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Detail Dokumen Administratif</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Detail Dokumen Administratif</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                         <label for="document_category"
                             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -125,7 +125,7 @@
                         </label>
                         <input type="text" name="document_category" id="document_category"
                             value="{{ old('document_category', $metadata['document_category'] ?? '') }}" readonly
-                            class="block w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed">
+                            class="block w-full px-3 py-2 border border-gray-200/80 dark:border-gray-700/80 rounded-xl bg-gray-50/80 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed">
                     </div>
                     <div>
                         <label for="effective_date"
@@ -134,7 +134,7 @@
                         </label>
                         <input type="date" name="effective_date" id="effective_date"
                             value="{{ old('effective_date', $metadata['effective_date'] ?? '') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
                     </div>
                     <div>
                         <label for="expiry_date"
@@ -143,7 +143,7 @@
                         </label>
                         <input type="date" name="expiry_date" id="expiry_date"
                             value="{{ old('expiry_date', $metadata['expiry_date'] ?? '') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
                     </div>
                     <div>
                         <label for="related_department"
@@ -152,7 +152,7 @@
                         </label>
                         <input type="text" name="related_department" id="related_department"
                             value="{{ old('related_department', $metadata['related_department'] ?? '') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
                             placeholder="IT, HR, Finance, dll">
                     </div>
                 </div>
@@ -173,8 +173,8 @@
             }
         }" x-init="calculateTax()">
             <x-ui.card>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Detail Purchase Order</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Detail Purchase Order</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                         <label for="vendor_name"
                             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -182,7 +182,7 @@
                         </label>
                         <input type="text" name="vendor_name" id="vendor_name"
                             value="{{ old('vendor_name', $metadata['vendor_name'] ?? '') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
                             placeholder="PT Supplier Indonesia">
                     </div>
                     <div>
@@ -192,7 +192,7 @@
                         </label>
                         <input type="text" name="vendor_npwp" id="vendor_npwp"
                             value="{{ old('vendor_npwp', $metadata['vendor_npwp'] ?? '') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
                             placeholder="XX.XXX.XXX.X-XXX.XXX">
                     </div>
                     <div class="md:col-span-2">
@@ -201,7 +201,7 @@
                             Rincian Barang/Jasa <span class="text-danger-500">*</span>
                         </label>
                         <textarea name="item_description" id="item_description" rows="3"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
                             placeholder="1. Laptop x 5 unit @ Rp 15.000.000">{{ old('item_description', $metadata['item_description'] ?? '') }}</textarea>
                     </div>
                     <div>
@@ -212,7 +212,7 @@
                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">Rp</span>
                             <input type="text" name="subtotal" id="subtotal"
                                 value="{{ old('subtotal', $metadata['subtotal'] ?? 0) }}"
-                                class="currency-input block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                class="currency-input block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
                                 inputmode="numeric"
                                 @currency-change="subtotal = $event.detail.value; calculateTax()">
                         </div>
@@ -224,11 +224,11 @@
                         <div class="relative">
                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">Rp</span>
                             <input type="text" :value="formatNumber(taxAmount)" readonly
-                                class="block w-full pl-10 pr-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-not-allowed">
+                                class="block w-full pl-10 pr-3 py-2 border border-gray-200/80 dark:border-gray-700/80 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-not-allowed">
                             <input type="hidden" name="tax_amount" :value="taxAmount">
                         </div>
                     </div>
-                    <div class="md:col-span-2 p-4 bg-primary-50 dark:bg-primary-900/20 rounded-lg">
+                    <div class="md:col-span-2 p-4 bg-primary-50 dark:bg-primary-900/20 rounded-xl">
                         <div class="flex justify-between items-center">
                             <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Grand Total (Termasuk
                                 PPN)</span>
@@ -243,7 +243,7 @@
                         </label>
                         <input type="text" name="budget_code" id="budget_code"
                             value="{{ old('budget_code', $metadata['budget_code'] ?? '') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
                             placeholder="IT-2026-001">
                     </div>
                     <div>
@@ -253,7 +253,7 @@
                         </label>
                         <input type="date" name="expected_delivery" id="expected_delivery"
                             value="{{ old('expected_delivery', $metadata['expected_delivery'] ?? '') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
                     </div>
                 </div>
             </x-ui.card>
@@ -262,8 +262,8 @@
         <!-- Type-Specific Fields: INVOICE -->
         <div x-show="approvalType === 'invoice'" x-transition>
             <x-ui.card>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Detail Invoice / Tagihan</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Detail Invoice / Tagihan</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                         <label for="invoice_number"
                             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -271,7 +271,7 @@
                         </label>
                         <input type="text" name="invoice_number" id="invoice_number"
                             value="{{ old('invoice_number', $metadata['invoice_number'] ?? '') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
                             placeholder="INV-2026-0001">
                     </div>
                     <div>
@@ -281,7 +281,7 @@
                         </label>
                         <input type="date" name="invoice_date" id="invoice_date"
                             value="{{ old('invoice_date', $metadata['invoice_date'] ?? '') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
                     </div>
                     <div>
                         <label for="related_po_number"
@@ -290,7 +290,7 @@
                         </label>
                         <input type="text" name="related_po_number" id="related_po_number"
                             value="{{ old('related_po_number', $metadata['related_po_number'] ?? '') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
                             placeholder="PO-2026-0001">
                     </div>
                     <div>
@@ -300,7 +300,7 @@
                         </label>
                         <input type="text" name="vendor_name_invoice" id="vendor_name_invoice"
                             value="{{ old('vendor_name_invoice', $metadata['vendor_name'] ?? '') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
                             placeholder="PT Supplier Indonesia">
                     </div>
                     <div>
@@ -312,7 +312,7 @@
                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">Rp</span>
                             <input type="text" name="invoice_amount" id="invoice_amount"
                                 value="{{ old('invoice_amount', $metadata['invoice_amount'] ?? '') }}"
-                                class="currency-input block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                class="currency-input block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
                                 inputmode="numeric"
                                 placeholder="0">
                         </div>
@@ -324,7 +324,7 @@
                         </label>
                         <input type="date" name="payment_due_date" id="payment_due_date"
                             value="{{ old('payment_due_date', $metadata['payment_due_date'] ?? '') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
                     </div>
                     <div>
                         <label for="bank_account"
@@ -333,7 +333,7 @@
                         </label>
                         <input type="text" name="bank_account" id="bank_account"
                             value="{{ old('bank_account', $metadata['bank_account'] ?? '') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
                             placeholder="BCA - 1234567890 a.n. PT Supplier">
                     </div>
                     <div>
@@ -343,7 +343,7 @@
                         </label>
                         <input type="text" name="tax_invoice" id="tax_invoice"
                             value="{{ old('tax_invoice', $metadata['tax_invoice'] ?? '') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
                             placeholder="010.000-26.00000001">
                     </div>
                 </div>
@@ -353,14 +353,14 @@
         <!-- Type-Specific Fields: LOAN -->
         <div x-show="approvalType === 'loan'" x-transition>
             <x-ui.card>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Detail Pinjaman Karyawan</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Detail Pinjaman Karyawan</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                         <label for="loan_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Jenis Pinjaman <span class="text-danger-500">*</span>
                         </label>
                         <select name="loan_type" id="loan_type"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
                             <option value="darurat" {{ old('loan_type', $metadata['loan_type'] ?? '') === 'darurat' ? 'selected' : '' }}>Pinjaman Darurat</option>
                             <option value="pendidikan" {{ old('loan_type', $metadata['loan_type'] ?? '') === 'pendidikan' ? 'selected' : '' }}>Pinjaman Pendidikan</option>
                             <option value="perumahan" {{ old('loan_type', $metadata['loan_type'] ?? '') === 'perumahan' ? 'selected' : '' }}>Pinjaman Perumahan</option>
@@ -377,7 +377,7 @@
                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">Rp</span>
                             <input type="text" name="loan_amount" id="loan_amount"
                                 value="{{ old('loan_amount', $metadata['loan_amount'] ?? '') }}"
-                                class="currency-input block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                class="currency-input block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
                                 inputmode="numeric">
                         </div>
                     </div>
@@ -387,7 +387,7 @@
                             Jumlah Cicilan (Bulan) <span class="text-danger-500">*</span>
                         </label>
                         <select name="installment_count" id="installment_count"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
                             <option value="3" {{ old('installment_count', $metadata['installment_count'] ?? '') == '3' ? 'selected' : '' }}>3 Bulan</option>
                             <option value="6" {{ old('installment_count', $metadata['installment_count'] ?? '') == '6' ? 'selected' : '' }}>6 Bulan</option>
                             <option value="12" {{ old('installment_count', $metadata['installment_count'] ?? '') == '12' ? 'selected' : '' }}>12 Bulan</option>
@@ -401,7 +401,7 @@
                         </label>
                         <input type="month" name="repayment_start" id="repayment_start"
                             value="{{ old('repayment_start', $metadata['repayment_start'] ?? '') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
                     </div>
                     <div class="md:col-span-2">
                         <label for="loan_reason"
@@ -409,7 +409,7 @@
                             Alasan Pinjaman <span class="text-danger-500">*</span>
                         </label>
                         <textarea name="loan_reason" id="loan_reason" rows="3"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
                             placeholder="Jelaskan alasan pengajuan pinjaman...">{{ old('loan_reason', $metadata['loan_reason'] ?? '') }}</textarea>
                     </div>
                 </div>
@@ -419,10 +419,10 @@
         <!-- Existing Attachments -->
         @if($document->attachments->count() > 0)
             <x-ui.card>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Lampiran Saat Ini</h2>
+                <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Lampiran Saat Ini</h2>
                 <div class="space-y-2">
                     @foreach($document->attachments as $attachment)
-                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <div class="flex items-center justify-between p-3 bg-gray-50/80 dark:bg-gray-800 rounded-xl">
                             <div class="flex items-center gap-3">
                                 <x-icon name="document-text" class="w-5 h-5 text-gray-400" />
                                 <div>
@@ -444,10 +444,10 @@
 
         <!-- New Attachments -->
         <x-ui.card>
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Tambah Lampiran Baru</h2>
+            <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Tambah Lampiran Baru</h2>
 
             <div
-                class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center hover:border-primary-400 transition-colors">
+                class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-8 text-center hover:border-primary-400 transition-colors">
                 <input type="file" name="attachments[]" id="attachments" multiple
                     accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" class="hidden">
                 <label for="attachments" class="cursor-pointer">
@@ -468,7 +468,7 @@
         </x-ui.card>
 
         <!-- Actions -->
-        <div class="flex items-center justify-end gap-4">
+        <div class="flex flex-wrap items-center justify-end gap-3">
             <x-ui.button type="button" variant="secondary" href="{{ route('documents.show', $document) }}">
                 Batal
             </x-ui.button>
@@ -505,7 +505,7 @@
                         if (!file || !file.name) return;
 
                         const div = document.createElement('div');
-                        div.className = 'flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg';
+                        div.className = 'flex items-center justify-between rounded-xl bg-gray-50/80 p-3 dark:bg-gray-800';
                         div.innerHTML = `
                                             <div class="flex items-center gap-3">
                                                 <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -3,7 +3,7 @@
 
     <x-slot name="header">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">Dokumen Tim</h1>
+            <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Dokumen Tim</h1>
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 Dokumen dari tim di departemen {{ auth()->user()->department ?? 'Anda' }}
             </p>
@@ -15,13 +15,13 @@
         <form action="{{ route('team.documents') }}" method="GET" class="flex flex-col sm:flex-row gap-4">
             <div class="flex-1">
                 <input type="text" name="search" value="{{ request('search') }}"
-                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
                     placeholder="Cari dokumen tim...">
             </div>
 
             <div class="w-full sm:w-48">
                 <select name="status"
-                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
                     <option value="">Semua Status</option>
                     <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>Draft</option>
                     <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
@@ -39,8 +39,8 @@
     <!-- Documents Table -->
     <x-ui.card :padding="false">
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-800">
+            <table class="min-w-[860px] w-full divide-y divide-gray-200/80 dark:divide-gray-700/80">
+                <thead class="bg-gray-50/80 dark:bg-gray-800">
                     <tr>
                         <th scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -68,9 +68,9 @@
                         </th>
                     </tr>
                 </thead>
-                <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200/80 dark:divide-gray-700/80">
                     @forelse($documents as $document)
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                        <tr class="hover:bg-primary-50/60 dark:hover:bg-gray-800/80 transition-colors">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="text-sm font-medium text-primary-600 dark:text-primary-400">
                                     {{ $document->document_number }}
@@ -117,7 +117,7 @@
         </div>
 
         @if($documents->hasPages())
-            <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+            <div class="px-6 py-4 border-t border-gray-200/80 dark:border-gray-700/80">
                 {{ $documents->links() }}
             </div>
         @endif

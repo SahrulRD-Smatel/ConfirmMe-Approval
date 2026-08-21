@@ -53,89 +53,32 @@ class LeaveApprovalController extends Controller
     {
         $requester = $leaveRequest->user;
 
-        // Step 1: pending_supervisor — Supervisor in same dept
-        if ($leaveRequest->status === 'pending_supervisor') {
-            if ($user->hasRole('supervisor') && $user->department === $requester->department) {
-                return true;
-            }
-            // Manager can also approve if no supervisor available
-            if ($user->hasRole('manager') && $user->department === $requester->department) {
-                return true;
-            }
-        }
-
-        // Step 2: pending_manager — Manager in same dept or division
-        if ($leaveRequest->status === 'pending_manager') {
-            if ($user->hasRole('manager') && $user->department === $requester->department) {
-                return true;
-            }
-            // Division director can approve if no manager
-            if ($user->hasAnyRole(['direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional'])) {
-                return true;
-            }
-        }
-
-        // Step 3: pending_hrd — HRD Coordinator or HR Manager
-        if ($leaveRequest->status === 'pending_hrd') {
-            if ($user->hasRole('hrd_coordinator')) {
-                return true;
-            }
-            if ($user->hasRole('hrd')) {
-                return true;
-            }
-            if ($user->hasRole('manager') && $this->isHRDepartment($user->department)) {
-                return true;
-            }
-        }
-
-        // Step 4: pending_hr_final — HR Manager final validation
-        if (in_array($leaveRequest->status, ['pending_hr_final', 'pending_hr'])) {
-            if ($user->hasRole('manager') && $this->isHRDepartment($user->department)) {
-                return true;
-            }
-            if ($user->hasRole('hrd')) {
-                return true;
-            }
-            if ($user->hasRole('admin')) {
-                return true;
-            }
-        }
-
-        // Legacy: 'pending' status (before migration runs)
-        if ($leaveRequest->status === 'pending') {
-            return $this->isAuthorizedLegacy($leaveRequest, $user);
-        }
-
-        return false;
-    }
-
-    /**
-     * Legacy authorization for old 'pending' status (backward compat).
-     */
-    private function isAuthorizedLegacy(LeaveRequest $leaveRequest, User $user): bool
-    {
-        $requester = $leaveRequest->user;
-
-        if ($user->hasRole('supervisor') && $requester->hasRole('staff') && $requester->department === $user->department) {
+        // Global fallback: Admin or users with view-all-documents can approve
+        if ($user->hasPermissionTo('view-all-documents')) {
             return true;
         }
-        if ($user->hasRole('manager') && !$requester->hasAnyRole(['manager', 'direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional', 'presiden_direktur'])) {
-            if ($requester->department === $user->department || $this->isHRDepartment($user->department)) {
+
+        // Step 1 & 2: Same department approval
+        if (in_array($leaveRequest->status, ['pending', 'pending_supervisor', 'pending_manager'])) {
+            if ($user->hasPermissionTo('approve-document') && $user->department === $requester->department) {
                 return true;
             }
         }
-        if ($user->hasAnyRole(['direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional'])) {
-            return $requester->hasRole('manager');
-        }
-        if ($user->hasRole('direktur_hr')) {
-            return $requester->hasRole('manager') && $this->isHRDepartment($requester->department);
-        }
-        if ($user->hasRole('presiden_direktur')) {
-            return $requester->hasAnyRole(['direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional']);
+
+        // Step 3 & 4: HR Department approval
+        if (in_array($leaveRequest->status, ['pending_hrd', 'pending_hr', 'pending_hr_final'])) {
+            if ($user->hasPermissionTo('manage-attendance')) {
+                return true;
+            }
+            if ($user->hasPermissionTo('approve-document') && $this->isHRDepartment($user->department)) {
+                return true;
+            }
         }
 
         return false;
     }
+
+
 
     /**
      * Find the approver for a given step.
@@ -146,46 +89,35 @@ class LeaveApprovalController extends Controller
         $requesterId = $requester->id;
 
         return match ($step) {
-            // Step 1: Supervisor in same department
-            1 => User::role('supervisor')
+            // Step 1: Supervisor/Manager in same department (has approve-document)
+            1 => User::permission('approve-document')
                 ->where('department', $requester->department)
                 ->where('is_active', true)
                 ->where('id', '!=', $requesterId)
-                ->first()
-                ?? User::role('manager')
-                    ->where('department', $requester->department)
-                    ->where('is_active', true)
-                    ->where('id', '!=', $requesterId)
-                    ->first(),
+                ->orderBy('id', 'asc')
+                ->first(),
 
-            // Step 2: Manager in same department
-            2 => User::role('manager')
+            // Step 2: Manager/Director in same department (has view-department-documents)
+            2 => User::permission('view-department-documents')
                 ->where('department', $requester->department)
+                ->where('is_active', true)
+                ->where('id', '!=', $requesterId)
+                ->orderBy('id', 'asc')
+                ->first(),
+
+            // Step 3: HR Coordinator (has manage-attendance)
+            3 => User::permission('manage-attendance')
                 ->where('is_active', true)
                 ->where('id', '!=', $requesterId)
                 ->first(),
 
-            // Step 3: HRD Coordinator or HRD
-            3 => User::role('hrd_coordinator')
-                ->where('is_active', true)
-                ->where('id', '!=', $requesterId)
-                ->first()
-                ?? User::role('hrd')
-                    ->where('is_active', true)
-                    ->where('id', '!=', $requesterId)
-                    ->first(),
-
-            // Step 4: HR Manager (manager in HR dept) or admin
-            4 => User::role('manager')
+            // Step 4: HR Manager / Admin
+            4 => User::permission('manage-attendance')
                 ->where('department', 'Human Resources')
                 ->where('is_active', true)
                 ->where('id', '!=', $requesterId)
                 ->first()
-                ?? User::role('hrd')
-                    ->where('is_active', true)
-                    ->where('id', '!=', $requesterId)
-                    ->first()
-                ?? User::role('admin')
+                ?? User::permission('view-all-documents')
                     ->where('is_active', true)
                     ->where('id', '!=', $requesterId)
                     ->first(),
@@ -271,37 +203,38 @@ class LeaveApprovalController extends Controller
      */
     private function applyRoleBasedFilter($query, User $user): void
     {
-        if ($user->hasRole('supervisor')) {
-            $query->where(function ($q) use ($user) {
-                $q->whereIn('status', ['pending', 'pending_supervisor'])
-                    ->whereHas('user', fn($u) => $u->where('department', $user->department)->role('staff'));
-            });
-        } elseif ($user->hasRole('manager') && !$this->isHRDepartment($user->department)) {
+        // Global viewers (Admin, etc)
+        if ($user->hasPermissionTo('view-all-documents')) {
+            // Can see all pending
+            return;
+        }
+
+        // HR Department viewers
+        if ($user->hasPermissionTo('manage-attendance')) {
+            if ($user->department === 'Human Resources') {
+                $query->whereIn('status', ['pending_hr', 'pending_hr_final', 'pending_hrd']);
+            } else {
+                $query->whereIn('status', ['pending_hrd']);
+            }
+            return;
+        }
+
+        // Department-level viewers
+        if ($user->hasPermissionTo('view-department-documents')) {
             $query->whereIn('status', ['pending', 'pending_supervisor', 'pending_manager'])
                 ->whereHas('user', fn($u) => $u->where('department', $user->department));
-        } elseif ($user->hasRole('manager') && $this->isHRDepartment($user->department)) {
-            $query->where(function ($q) use ($user) {
-                $q->whereIn('status', ['pending_hr', 'pending_hr_final', 'pending_hrd'])
-                    ->where('user_id', '!=', $user->id);
-            });
-        } elseif ($user->hasRole('hrd_coordinator')) {
-            $query->whereIn('status', ['pending_hrd']);
-        } elseif ($user->hasRole('hrd')) {
-            $query->whereIn('status', ['pending_hrd', 'pending_hr', 'pending_hr_final']);
-        } elseif ($user->hasAnyRole(['direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional'])) {
-            $query->whereIn('status', ['pending', 'pending_manager'])
-                ->whereHas('user', fn($u) => $u->role('manager'));
-        } elseif ($user->hasRole('direktur_hr')) {
-            $query->whereIn('status', ['pending', 'pending_manager'])
-                ->whereHas('user', fn($u) => $u->role('manager')->where('department', 'Human Resources'));
-        } elseif ($user->hasRole('presiden_direktur')) {
-            $query->where('status', 'pending')
-                ->whereHas('user', fn($u) => $u->whereHas('roles', fn($r) => $r->where('name', 'like', 'direktur%')));
-        } elseif ($user->hasRole('admin')) {
-            // Admin can see all pending
-        } else {
-            $query->where('id', 0); // Show nothing
+            return;
         }
+
+        // Team-level viewers (Supervisor)
+        if ($user->hasPermissionTo('approve-document')) {
+            $query->whereIn('status', ['pending', 'pending_supervisor'])
+                ->whereHas('user', fn($u) => $u->where('department', $user->department));
+            return;
+        }
+
+        // Fallback: Show nothing if no permissions match
+        $query->where('id', 0);
     }
 
     /**

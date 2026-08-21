@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="title">Lokasi Kantor</x-slot>
 
-    <div class="space-y-6">
+    <div class="space-y-7">
         {{-- Header --}}
         <x-ui.card>
             <h1 class="text-xl font-bold text-gray-900 mb-1">Kelola Lokasi Kantor</h1>
@@ -15,10 +15,10 @@
             </div>
         @endif
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 gap-5 lg:grid-cols-3">
             {{-- Add New Location --}}
             <x-ui.card>
-                <h2 class="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <h2 class="mb-5 flex items-center gap-2 text-base font-semibold tracking-tight text-gray-900 dark:text-white">
                     <x-icon name="plus-circle" class="w-5 h-5 text-primary-600" />
                     Tambah Lokasi
                 </h2>
@@ -27,11 +27,11 @@
                     @csrf
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lokasi *</label>
-                        <input type="text" name="name" required class="w-full rounded-xl border-gray-300 text-sm focus:border-primary-500 focus:ring-primary-500" placeholder="Kantor Pusat Jakarta">
+                        <input type="text" name="name" required class="w-full rounded-xl border-gray-300 text-sm focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20/10" placeholder="Kantor Pusat Jakarta">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Alamat</label>
-                        <textarea name="address" rows="2" class="w-full rounded-xl border-gray-300 text-sm focus:border-primary-500 focus:ring-primary-500" placeholder="Jl. Example No. 1"></textarea>
+                        <textarea name="address" rows="2" class="w-full rounded-xl border-gray-300 text-sm focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20/10" placeholder="Jl. Example No. 1"></textarea>
                     </div>
                     <div class="grid grid-cols-2 gap-3">
                         <div>
@@ -55,7 +55,7 @@
             </x-ui.card>
 
             {{-- Existing Locations --}}
-            <div class="lg:col-span-2 space-y-4">
+            <div class="space-y-5 lg:col-span-2">
                 <h2 class="text-base font-bold text-gray-900 flex items-center gap-2">
                     <x-icon name="map-pin" class="w-5 h-5 text-primary-600" />
                     Daftar Lokasi ({{ $locations->count() }})

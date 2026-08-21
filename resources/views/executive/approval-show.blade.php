@@ -2,7 +2,7 @@
     <x-slot name="title">Review Dokumen - Executive</x-slot>
 
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <div class="flex items-center gap-2 mb-2">
                     <a href="{{ route('executive.approvals') }}"
@@ -14,7 +14,7 @@
                     <span class="text-gray-400 dark:text-gray-500">|</span>
                     <span class="text-sm text-gray-500 dark:text-gray-400">{{ $document->document_number }}</span>
                 </div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
                     {{ $document->title }}
                 </h1>
             </div>
@@ -35,12 +35,12 @@
 
     {{-- 2FA will be triggered when user clicks approve/reject --}}
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 gap-5 lg:grid-cols-3">
         {{-- Main Content --}}
         <div class="lg:col-span-2 space-y-6">
             {{-- Document Details --}}
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft border border-gray-200/80 dark:border-gray-700/80">
+                <div class="px-6 py-4 border-b border-gray-200/80 dark:border-gray-700/80">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Detail Dokumen</h3>
                 </div>
                 <div class="p-6 space-y-4">
@@ -76,13 +76,13 @@
                         </div>
                     </div>
 
-                    <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <div class="pt-4 border-t border-gray-200/80 dark:border-gray-700/80">
                         <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Deskripsi</p>
                         <p class="text-sm text-gray-900 dark:text-white">
                             {{ $document->description ?? 'Tidak ada deskripsi' }}</p>
                     </div>
 
-                    <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <div class="pt-4 border-t border-gray-200/80 dark:border-gray-700/80">
                         <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Nilai Dokumen</p>
                         @php
                             $financeApproval = $document->approvals()
@@ -126,15 +126,15 @@
 
             {{-- Attachments --}}
             @if($document->attachments->isNotEmpty())
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft border border-gray-200/80 dark:border-gray-700/80">
+                    <div class="px-6 py-4 border-b border-gray-200/80 dark:border-gray-700/80">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Lampiran</h3>
                     </div>
                     <div class="p-6">
                         <div class="space-y-2">
                             @foreach($document->attachments as $attachment)
                                 <a href="{{ Storage::url($attachment->file_path) }}" target="_blank"
-                                    class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
+                                    class="flex items-center gap-3 p-3 rounded-xl hover:bg-primary-50/60 dark:hover:bg-gray-700">
                                     <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -157,8 +157,8 @@
         <div class="space-y-6">
             {{-- Action Card --}}
             {{-- Action Card - 2FA will be checked in controller when submitting --}}
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft border border-gray-200/80 dark:border-gray-700/80">
+                    <div class="px-6 py-4 border-b border-gray-200/80 dark:border-gray-700/80">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Keputusan Anda</h3>
                     </div>
                     <div class="p-6 space-y-4">
@@ -169,11 +169,11 @@
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Catatan
                                     (opsional)</label>
                                 <textarea name="comment" rows="2"
-                                    class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg"
+                                    class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-xl"
                                     placeholder="Tambahkan catatan..."></textarea>
                             </div>
                             <button type="submit"
-                                class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg">
+                                class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M5 13l4 4L19 7" />
@@ -184,7 +184,7 @@
 
                         <div class="relative">
                             <div class="absolute inset-0 flex items-center">
-                                <div class="w-full border-t border-gray-200 dark:border-gray-700"></div>
+                                <div class="w-full border-t border-gray-200/80 dark:border-gray-700/80"></div>
                             </div>
                             <div class="relative flex justify-center text-sm">
                                 <span class="px-2 bg-white dark:bg-gray-800 text-gray-500">atau</span>
@@ -196,7 +196,7 @@
                             x-data="{ showReject: false }">
                             @csrf
                             <button type="button" @click="showReject = !showReject"
-                                class="w-full flex items-center justify-center gap-2 px-4 py-2.5 border border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 font-medium rounded-lg"
+                                class="w-full flex items-center justify-center gap-2 px-4 py-2.5 border border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 font-medium rounded-xl"
                                 x-show="!showReject">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -209,16 +209,16 @@
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Alasan
                                         penolakan <span class="text-red-500">*</span></label>
                                     <textarea name="comment" rows="3" required
-                                        class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg"
+                                        class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-xl"
                                         placeholder="Jelaskan alasan penolakan..."></textarea>
                                 </div>
                                 <div class="flex gap-2">
                                     <button type="button" @click="showReject = false"
-                                        class="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium rounded-lg">
+                                        class="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium rounded-xl">
                                         Batal
                                     </button>
                                     <button type="submit"
-                                        class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg">
+                                        class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl">
                                         Konfirmasi Tolak
                                     </button>
                                 </div>
@@ -227,7 +227,7 @@
 
                         <div class="relative">
                             <div class="absolute inset-0 flex items-center">
-                                <div class="w-full border-t border-gray-200 dark:border-gray-700"></div>
+                                <div class="w-full border-t border-gray-200/80 dark:border-gray-700/80"></div>
                             </div>
                             <div class="relative flex justify-center text-sm">
                                 <span class="px-2 bg-white dark:bg-gray-800 text-gray-500">atau</span>
@@ -239,7 +239,7 @@
                             x-data="{ showRevise: false }">
                             @csrf
                             <button type="button" @click="showRevise = !showRevise"
-                                class="w-full flex items-center justify-center gap-2 px-4 py-2.5 border border-amber-300 dark:border-amber-700 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 font-medium rounded-lg"
+                                class="w-full flex items-center justify-center gap-2 px-4 py-2.5 border border-amber-300 dark:border-amber-700 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 font-medium rounded-xl"
                                 x-show="!showRevise">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -248,7 +248,7 @@
                                 Minta Revisi
                             </button>
                             <div x-show="showRevise" x-cloak class="space-y-3">
-                                <div class="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
+                                <div class="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800">
                                     <p class="text-xs text-amber-800 dark:text-amber-300">
                                         Dokumen akan dikembalikan ke pengaju untuk diperbaiki sesuai catatan Anda.
                                     </p>
@@ -257,16 +257,16 @@
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Catatan
                                         revisi <span class="text-red-500">*</span></label>
                                     <textarea name="comment" rows="3" required
-                                        class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg"
+                                        class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-xl"
                                         placeholder="Tuliskan apa yang perlu diperbaiki..."></textarea>
                                 </div>
                                 <div class="flex gap-2">
                                     <button type="button" @click="showRevise = false"
-                                        class="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium rounded-lg">
+                                        class="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium rounded-xl">
                                         Batal
                                     </button>
                                     <button type="submit"
-                                        class="flex-1 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-medium rounded-lg">
+                                        class="flex-1 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-medium rounded-xl">
                                         Konfirmasi Revisi
                                     </button>
                                 </div>
@@ -277,8 +277,8 @@
 
 
             {{-- Approval Trail --}}
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft border border-gray-200/80 dark:border-gray-700/80">
+                <div class="px-6 py-4 border-b border-gray-200/80 dark:border-gray-700/80">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Approval Trail</h3>
                 </div>
                 <div class="p-6">

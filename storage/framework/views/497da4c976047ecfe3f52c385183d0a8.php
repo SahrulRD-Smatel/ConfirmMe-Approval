@@ -30,8 +30,8 @@ unset($__defined_vars, $__key, $__value); ?>
 
 <?php
     $classes = $active
-        ? 'flex items-center gap-3 px-3 py-2 text-sm text-white bg-primary-700 dark:bg-gray-700 rounded-lg font-medium'
-        : 'flex items-center gap-3 px-3 py-2 text-sm text-primary-100 hover:text-white hover:bg-primary-700 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg transition-colors';
+        ? 'group flex items-center gap-3 rounded-xl bg-primary-700 px-3 py-2.5 text-sm font-semibold text-white shadow-sm shadow-primary-950/10'
+        : 'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-primary-100 transition-all duration-200 hover:bg-primary-700 hover:text-white dark:text-gray-300 dark:hover:bg-gray-700';
 ?>
 
 <a href="<?php echo e($href); ?>" <?php echo e($attributes->merge(['class' => $classes])); ?>>

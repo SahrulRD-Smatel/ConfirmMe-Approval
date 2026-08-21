@@ -1,5 +1,5 @@
 <x-guest-layout>
-    <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div class="relative flex min-h-screen items-center justify-center overflow-hidden bg-gray-50 px-4 py-10 dark:bg-gray-950 sm:px-6 lg:px-8">
 
         {{-- Background decorative elements --}}
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
@@ -7,9 +7,9 @@
             <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-primary-300/20 dark:bg-primary-700/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
         </div>
 
-        <div class="max-w-md w-full relative z-10">
+        <div class="relative z-10 w-full max-w-lg">
             {{-- Main Card --}}
-            <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/50 dark:border-gray-700/50 p-8 space-y-6">
+            <div class="space-y-7 rounded-3xl border border-gray-200/80 bg-white/95 p-6 shadow-soft-lg backdrop-blur-xl dark:border-gray-800/80 dark:bg-gray-900/95 sm:p-8">
 
                 {{-- Animated Shield Icon --}}
                 <div class="flex justify-center">
@@ -37,7 +37,7 @@
                 </div>
 
                 {{-- Document Info Card --}}
-                <div class="bg-gradient-to-r from-primary-50 to-primary-100/50 dark:from-primary-900/20 dark:to-primary-800/10 rounded-xl p-4 border border-primary-100 dark:border-primary-800/30">
+                <div class="rounded-2xl border border-primary-100 bg-primary-50/80 p-4 dark:border-primary-800/40 dark:bg-primary-900/20">
                     <div class="flex items-start gap-3">
                         <div class="flex-shrink-0 w-10 h-10 bg-white dark:bg-gray-700 rounded-lg flex items-center justify-center shadow-sm">
                             <svg class="w-5 h-5 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -120,7 +120,7 @@
 
                     {{-- Verify Button --}}
                     <button type="submit" id="verify-btn"
-                        class="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white text-sm font-semibold rounded-xl shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
+                        class="flex w-full items-center justify-center gap-2 rounded-xl bg-primary-700 px-4 py-3.5 text-sm font-semibold text-white shadow-sm shadow-primary-900/20 transition-all duration-300 hover:bg-primary-800 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-primary-500/20 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />

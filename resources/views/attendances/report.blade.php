@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="title">Laporan Absensi</x-slot>
 
-    <div class="space-y-6">
+    <div class="space-y-7">
         {{-- Header --}}
         <div class="card-elevated p-6 relative overflow-hidden">
             <div class="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-amber-50/60 to-transparent rounded-full -mr-16 -mt-16 pointer-events-none"></div>
@@ -17,7 +17,7 @@
                     <div class="flex flex-wrap items-center gap-2">
                         {{-- Export PDF --}}
                         <a href="{{ route('attendance-admin.export-pdf', ['month' => $month, 'year' => $year, 'department' => $department]) }}"
-                           class="inline-flex items-center gap-1.5 px-3 py-2 bg-red-600 text-white text-xs font-medium rounded-xl hover:bg-red-700 transition shadow-sm"
+                           class="inline-flex items-center gap-1.5 px-3 py-2 bg-red-600 text-white text-xs font-medium rounded-xl hover:bg-red-700 transition shadow-soft"
                            id="btn-export-pdf">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -27,7 +27,7 @@
 
                         {{-- Export CSV --}}
                         <a href="{{ route('attendance-admin.export-csv', ['month' => $month, 'year' => $year, 'department' => $department]) }}"
-                           class="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-600 text-white text-xs font-medium rounded-xl hover:bg-emerald-700 transition shadow-sm"
+                           class="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-600 text-white text-xs font-medium rounded-xl hover:bg-emerald-700 transition shadow-soft"
                            id="btn-export-csv">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -37,7 +37,7 @@
 
                         {{-- Export XLSX --}}
                         <a href="{{ route('attendance-admin.export-xlsx', ['month' => $month, 'year' => $year, 'department' => $department]) }}"
-                           class="inline-flex items-center gap-1.5 px-3 py-2 bg-blue-600 text-white text-xs font-medium rounded-xl hover:bg-blue-700 transition shadow-sm"
+                           class="inline-flex items-center gap-1.5 px-3 py-2 bg-blue-600 text-white text-xs font-medium rounded-xl hover:bg-blue-700 transition shadow-soft"
                            id="btn-export-xlsx">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -49,7 +49,7 @@
                         @if(auth()->user()->hasAnyRole(['admin', 'hrd']))
                             <button type="button"
                                     onclick="document.getElementById('import-modal').classList.remove('hidden')"
-                                    class="inline-flex items-center gap-1.5 px-3 py-2 bg-amber-600 text-white text-xs font-medium rounded-xl hover:bg-amber-700 transition shadow-sm"
+                                    class="inline-flex items-center gap-1.5 px-3 py-2 bg-amber-600 text-white text-xs font-medium rounded-xl hover:bg-amber-700 transition shadow-soft"
                                     id="btn-import">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
@@ -62,19 +62,19 @@
 
                 {{-- Filters --}}
                 <form method="GET" class="flex flex-wrap items-center gap-2">
-                    <select name="month" class="rounded-xl border-gray-300 text-sm focus:border-primary-500 focus:ring-primary-500">
+                    <select name="month" class="rounded-xl border-gray-300 text-sm focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20/10">
                         @for($m = 1; $m <= 12; $m++)
                             <option value="{{ $m }}" {{ $month == $m ? 'selected' : '' }}>
                                 {{ \Carbon\Carbon::create()->month($m)->translatedFormat('F') }}
                             </option>
                         @endfor
                     </select>
-                    <select name="year" class="rounded-xl border-gray-300 text-sm focus:border-primary-500 focus:ring-primary-500">
+                    <select name="year" class="rounded-xl border-gray-300 text-sm focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20/10">
                         @for($y = now()->year + 2; $y >= now()->year - 5; $y--)
                             <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}</option>
                         @endfor
                     </select>
-                    <select name="department" class="rounded-xl border-gray-300 text-sm focus:border-primary-500 focus:ring-primary-500">
+                    <select name="department" class="rounded-xl border-gray-300 text-sm focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20/10">
                         <option value="">Semua Departemen</option>
                         @foreach($departments as $dept)
                             <option value="{{ $dept }}" {{ $department == $dept ? 'selected' : '' }}>{{ $dept }}</option>
@@ -173,7 +173,7 @@
         {{-- Report Table --}}
         <div class="card-elevated overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full text-sm">
+                <table class="min-w-[1180px] w-full text-sm">
                     <thead>
                         <tr class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider">
                             <th class="px-6 py-3 text-left font-semibold">Karyawan</th>
@@ -190,10 +190,10 @@
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         @forelse($reportData as $data)
-                            <tr class="hover:bg-gray-50 transition">
+                            <tr class="hover:bg-primary-50/60 transition">
                                 <td class="px-6 py-3">
                                     <div class="flex items-center gap-3">
-                                        <img src="{{ $data['user']->avatar_url }}" class="w-8 h-8 rounded-full object-cover ring-2 ring-white shadow-sm">
+                                        <img src="{{ $data['user']->avatar_url }}" class="w-8 h-8 rounded-full object-cover ring-2 ring-white shadow-soft">
                                         <div>
                                             <p class="font-medium text-gray-900">{{ $data['user']->name }}</p>
                                             <p class="text-xs text-gray-500">{{ $data['user']->position ?? '-' }}</p>
@@ -332,7 +332,7 @@
                                               file:bg-primary-50 file:text-primary-700
                                               hover:file:bg-primary-100
                                               cursor-pointer border border-gray-200 rounded-xl
-                                              focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                              focus:outline-none focus:ring-4 focus:ring-primary-500/20/10 focus:border-primary-500">
                             </div>
                             <p class="mt-1.5 text-xs text-gray-400">Format: CSV, XLSX — Maksimal 5MB</p>
                             @error('file')
@@ -348,7 +348,7 @@
                                 Batal
                             </button>
                             <button type="submit"
-                                    class="px-5 py-2.5 text-sm font-medium text-white bg-amber-600 rounded-xl hover:bg-amber-700 transition shadow-sm inline-flex items-center gap-2"
+                                    class="px-5 py-2.5 text-sm font-medium text-white bg-amber-600 rounded-xl hover:bg-amber-700 transition shadow-soft inline-flex items-center gap-2"
                                     id="btn-submit-import">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />

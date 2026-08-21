@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="title">Absensi</x-slot>
 
-    <div class="space-y-6" x-data="{
+    <div class="space-y-7" x-data="{
         latitude: null,
         longitude: null,
         locationReady: false,
@@ -79,7 +79,7 @@
     }">
 
         {{-- Header --}}
-        <x-ui.card class="relative overflow-hidden mb-6">
+        <x-ui.card class="relative mb-7 overflow-hidden rounded-3xl">
             <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-primary-50/60 to-transparent rounded-full -mr-20 -mt-20 pointer-events-none"></div>
 
             <div class="relative z-10">
@@ -88,7 +88,7 @@
                         <x-icon name="finger-print" class="w-5 h-5 text-primary-600" />
                     </div>
                     <div>
-                        <h1 class="text-xl font-bold text-gray-900 dark:text-white">Absensi</h1>
+                        <h1 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">Absensi</h1>
                         <p class="text-sm text-gray-500">{{ now()->translatedFormat('l, d F Y') }}</p>
                     </div>
                 </div>
@@ -98,7 +98,7 @@
 
 
         {{-- Today Status Cards --}}
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
             {{-- Check-In Card --}}
             <x-ui.stat-card title="Check In" 
                 :value="$todayCheckIn ? $todayCheckIn->created_at->format('H:i') : 'Belum check-in'" 
@@ -132,7 +132,7 @@
         {{-- Action Section --}}
         @if(!$todayCheckIn || !$todayCheckOut)
             <x-ui.card>
-                <h2 class="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <h2 class="mb-5 flex items-center gap-2 text-base font-semibold tracking-tight text-gray-900 dark:text-white">
                     <span class="w-1.5 h-1.5 rounded-full bg-primary-500"></span>
                     {{ !$todayCheckIn ? 'Check In' : 'Check Out' }}
                 </h2>
@@ -146,7 +146,7 @@
                     <input type="hidden" name="longitude" :value="longitude">
 
                     {{-- GPS Status --}}
-                    <div class="mb-4 p-3 rounded-lg" :class="locationReady ? 'bg-green-50' : 'bg-yellow-50'">
+                    <div class="mb-4 p-3 rounded-xl" :class="locationReady ? 'bg-green-50' : 'bg-yellow-50'">
                         <div class="flex items-center gap-2 text-sm">
                             <template x-if="locationReady">
                                 <span class="text-green-700 flex items-center gap-1">
@@ -187,7 +187,7 @@
                         <input type="file" name="photo" x-ref="photoInput" accept="image/*" class="hidden">
 
                         {{-- Camera Preview --}}
-                        <div class="relative rounded-xl overflow-hidden bg-gray-900 aspect-square max-w-xs mx-auto">
+                        <div class="relative mx-auto aspect-square w-full max-w-xs overflow-hidden rounded-3xl bg-gray-950 shadow-soft">
                             <video x-ref="video" autoplay playsinline
                                    x-show="selfieActive && !selfieData"
                                    class="w-full h-full object-cover"></video>
@@ -231,7 +231,7 @@
                             Catatan <span x-show="isWfh" class="text-red-500">*</span>
                         </label>
                         <textarea name="notes" rows="2"
-                                  class="w-full rounded-xl border-gray-300 focus:border-primary-500 focus:ring-primary-500 text-sm"
+                                  class="w-full rounded-xl border-gray-300 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20/10 text-sm"
                                   :placeholder="isWfh ? 'Jelaskan alasan WFH...' : 'Catatan tambahan (opsional)'"></textarea>
                         @error('notes')
                             <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
@@ -278,7 +278,7 @@
             </div>
 
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div class="p-4 bg-gray-100 dark:bg-gray-800 rounded-xl text-center border border-gray-200 dark:border-gray-700">
+                <div class="p-4 bg-gray-100 dark:bg-gray-800 rounded-xl text-center border border-gray-200/80 dark:border-gray-700/80">
                     <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $summary['total_days'] }}</p>
                     <p class="text-xs text-gray-500 font-medium">Hari Masuk</p>
                 </div>
@@ -299,14 +299,14 @@
 
         {{-- Recent History --}}
         <x-ui.card>
-            <h2 class="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <h2 class="mb-5 flex items-center gap-2 text-base font-semibold tracking-tight text-gray-900 dark:text-white">
                 <span class="w-1.5 h-1.5 rounded-full bg-primary-500"></span>
                 Riwayat 7 Hari Terakhir
             </h2>
 
-            <div class="overflow-x-auto mt-4 border border-gray-200 dark:border-gray-700 rounded-xl">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead class="bg-gray-50 dark:bg-gray-800">
+            <div class="overflow-x-auto mt-4 border border-gray-200/80 dark:border-gray-700/80 rounded-xl">
+                <table class="min-w-[720px] w-full divide-y divide-gray-200/80 dark:divide-gray-700/80">
+                    <thead class="bg-gray-50/80 dark:bg-gray-800">
                         <tr>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tanggal</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Check In</th>
@@ -314,13 +314,13 @@
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200/80 dark:divide-gray-700/80">
                         @forelse($recentHistory as $date => $records)
                             @php
                                 $checkIn = $records->firstWhere('type', 'check_in');
                                 $checkOut = $records->firstWhere('type', 'check_out');
                             @endphp
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                            <tr class="hover:bg-primary-50/60 dark:hover:bg-gray-800/80/50 transition-colors">
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-white">
                                     {{ \Carbon\Carbon::parse($date)->translatedFormat('l, d M') }}
                                 </td>
@@ -347,7 +347,7 @@
                             <tr>
                                 <td colspan="4" class="px-6 py-8 text-center">
                                     <div class="flex flex-col items-center justify-center">
-                                        <div class="w-12 h-12 rounded-full bg-gray-50 dark:bg-gray-800 flex items-center justify-center mx-auto mb-3 border border-gray-200 dark:border-gray-700">
+                                        <div class="w-12 h-12 rounded-full bg-gray-50/80 dark:bg-gray-800 flex items-center justify-center mx-auto mb-3 border border-gray-200/80 dark:border-gray-700/80">
                                             <x-icon name="clock" class="w-6 h-6 text-gray-400" />
                                         </div>
                                         <p class="text-sm font-medium text-gray-900 dark:text-white mb-1">Tidak ada riwayat</p>

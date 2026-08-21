@@ -1,6 +1,6 @@
-<section class="space-y-6">
+<section class="space-y-5">
     <header>
-        <h2 class="text-lg font-medium text-gray-900 dark:text-white">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
             Informasi Rekening Bank
         </h2>
         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
@@ -8,14 +8,14 @@
         </p>
     </header>
 
-    <form method="post" action="{{ route('profile.bank.update') }}" class="space-y-6">
+    <form method="post" action="{{ route('profile.bank.update') }}" class="space-y-5">
         @csrf
         @method('patch')
 
         <div>
             <x-input-label for="bank_name" :value="__('Nama Bank')" />
             <select id="bank_name" name="bank_name"
-                class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
+                class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 rounded-xl shadow-sm">
                 <option value="">-- Pilih Bank --</option>
                 <option value="BCA" {{ old('bank_name', $user->bank_name) == 'BCA' ? 'selected' : '' }}>BCA</option>
                 <option value="BNI" {{ old('bank_name', $user->bank_name) == 'BNI' ? 'selected' : '' }}>BNI</option>
@@ -57,7 +57,7 @@
             <x-input-error class="mt-2" :messages="$errors->get('bank_account_name')" />
         </div>
 
-        <div class="flex items-center gap-4">
+        <div class="flex flex-wrap items-center gap-3">
             <x-ui.button variant="primary" type="submit">{{ __('Simpan') }}</x-ui.button>
 
             @if (session('status') === 'bank-updated')

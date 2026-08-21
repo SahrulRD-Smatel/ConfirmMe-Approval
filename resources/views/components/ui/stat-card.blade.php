@@ -29,11 +29,11 @@ $isCurrency = is_string($value) && str_starts_with(trim($value), 'Rp');
         <a href="{{ $href }}" class="block">
     @endif
     
-    <div class="flex items-center justify-between mb-4">
+    <div class="mb-5 flex items-center justify-between gap-3">
         <p class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide truncate pr-4">{{ $title }}</p>
         
         @if($icon)
-            <div class="flex-shrink-0 p-2.5 rounded-xl {{ $iconBg }} bg-opacity-70">
+            <div class="flex-shrink-0 rounded-2xl p-3 {{ $iconBg }} bg-opacity-70 shadow-sm">
                 <x-icon :name="$icon" class="w-5 h-5" />
             </div>
         @endif
@@ -69,16 +69,16 @@ $isCurrency = is_string($value) && str_starts_with(trim($value), 'Rp');
         @endif
         
         @if($trend)
-            <div class="mt-2 flex items-center text-sm font-medium">
+            <div class="mt-3 flex flex-wrap items-center gap-2 text-sm font-medium">
                 @if($trendUp)
-                    <div class="flex items-center text-success-600 dark:text-success-400 bg-success-50 dark:bg-success-900/30 px-1.5 py-0.5 rounded-md mr-2">
+                    <div class="flex items-center rounded-lg bg-success-50 px-2 py-1 text-success-700 dark:bg-success-900/30 dark:text-success-400">
                         <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
                         </svg>
                         <span>{{ $trend }}</span>
                     </div>
                 @else
-                    <div class="flex items-center text-danger-600 dark:text-danger-400 bg-danger-50 dark:bg-danger-900/30 px-1.5 py-0.5 rounded-md mr-2">
+                    <div class="flex items-center rounded-lg bg-danger-50 px-2 py-1 text-danger-700 dark:bg-danger-900/30 dark:text-danger-400">
                         <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6"/>
                         </svg>

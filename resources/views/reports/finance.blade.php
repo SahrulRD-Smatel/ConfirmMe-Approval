@@ -22,7 +22,7 @@
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in-down">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">Laporan Keuangan</h1>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Laporan Keuangan</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     Ringkasan anggaran, pembayaran, dan pinjaman — Tahun {{ $currentYear }}
                 </p>
@@ -32,7 +32,7 @@
                 {{-- Year Selector --}}
                 <form method="GET" class="flex items-center gap-2">
                     <select name="year" onchange="this.form.submit()"
-                        class="text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500">
+                        class="text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl shadow-soft focus:ring-primary-500/20 focus:border-primary-500">
                         @for($y = now()->year; $y >= now()->year - 3; $y--)
                             <option value="{{ $y }}" {{ $currentYear == $y ? 'selected' : '' }}>{{ $y }}</option>
                         @endfor
@@ -60,7 +60,7 @@
                             {{ smartMoney($budgetSummary['total']) }}
                         </p>
                     </div>
-                    <div class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                    <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
                         <x-icon name="banknotes" class="w-6 h-6 text-white" />
                     </div>
                 </div>
@@ -76,7 +76,7 @@
                             {{ smartMoney($budgetSummary['used']) }}
                         </p>
                     </div>
-                    <div class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                    <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
                         <x-icon name="arrow-trending-up" class="w-6 h-6 text-white" />
                     </div>
                 </div>
@@ -102,7 +102,7 @@
                             {{ smartMoney($budgetSummary['committed']) }}
                         </p>
                     </div>
-                    <div class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                    <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
                         <x-icon name="lock-closed" class="w-6 h-6 text-white" />
                     </div>
                 </div>
@@ -121,7 +121,7 @@
                             {{ smartMoney($budgetSummary['remaining']) }}
                         </p>
                     </div>
-                    <div class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                    <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
                         <x-icon name="currency-dollar" class="w-6 h-6 text-white" />
                     </div>
                 </div>
@@ -131,24 +131,24 @@
     </section>
 
     {{-- SECTION 2: Charts & Invoice Stats --}}
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-8">
         {{-- Monthly Spending Chart (2/3) --}}
-        <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Tren Pengeluaran Bulanan {{ $currentYear }}</h2>
+        <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200/80 dark:border-gray-700/80 shadow-soft">
+            <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Tren Pengeluaran Bulanan {{ $currentYear }}</h2>
             <div class="h-64">
                 <canvas id="monthlyChart"></canvas>
             </div>
         </div>
 
         {{-- Invoice Summary (1/3) --}}
-        <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Ringkasan Invoice</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200/80 dark:border-gray-700/80 shadow-soft">
+            <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Ringkasan Invoice</h2>
 
             <div class="space-y-4">
                 {{-- Paid --}}
                 <div class="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-100 dark:border-green-800">
                     <div class="flex items-center gap-3">
-                        <div class="p-2 bg-green-100 dark:bg-green-900/40 rounded-lg">
+                        <div class="p-2 bg-green-100 dark:bg-green-900/40 rounded-xl">
                             <x-icon name="check-circle" class="w-5 h-5 text-green-600 dark:text-green-400" />
                         </div>
                         <div>
@@ -163,7 +163,7 @@
                 {{-- Outstanding --}}
                 <div class="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl border border-yellow-100 dark:border-yellow-800">
                     <div class="flex items-center gap-3">
-                        <div class="p-2 bg-yellow-100 dark:bg-yellow-900/40 rounded-lg">
+                        <div class="p-2 bg-yellow-100 dark:bg-yellow-900/40 rounded-xl">
                             <x-icon name="clock" class="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
                         </div>
                         <div>
@@ -178,7 +178,7 @@
                 {{-- Overdue --}}
                 <div class="p-4 {{ $invoiceStats['overdue_count'] > 0 ? 'bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-800' : 'bg-gray-50 dark:bg-gray-700/30 border-gray-100 dark:border-gray-600' }} rounded-xl border">
                     <div class="flex items-center gap-3">
-                        <div class="p-2 {{ $invoiceStats['overdue_count'] > 0 ? 'bg-red-100 dark:bg-red-900/40' : 'bg-gray-100 dark:bg-gray-600' }} rounded-lg">
+                        <div class="p-2 {{ $invoiceStats['overdue_count'] > 0 ? 'bg-red-100 dark:bg-red-900/40' : 'bg-gray-100 dark:bg-gray-600' }} rounded-xl">
                             <x-icon name="exclamation-triangle" class="w-5 h-5 {{ $invoiceStats['overdue_count'] > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-400' }}" />
                         </div>
                         <div>
@@ -194,14 +194,14 @@
     </div>
 
     {{-- SECTION 3: Budget Composition Donut + Loan --}}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-8">
         {{-- Budget Composition --}}
-        <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Komposisi Anggaran</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200/80 dark:border-gray-700/80 shadow-soft">
+            <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Komposisi Anggaran</h2>
             <div class="h-56 flex items-center justify-center">
                 <canvas id="budgetDonut"></canvas>
             </div>
-            <div class="mt-4 flex items-center justify-center gap-6 text-xs">
+            <div class="mt-4 flex items-center justify-center gap-5 text-xs">
                 <div class="flex items-center gap-1.5">
                     <span class="w-3 h-3 rounded-full bg-orange-500"></span>
                     <span class="text-gray-600 dark:text-gray-400">Terpakai</span>
@@ -218,7 +218,7 @@
         </div>
 
         {{-- Loan Summary --}}
-        <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm">
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200/80 dark:border-gray-700/80 shadow-soft">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Pinjaman Karyawan</h2>
                 @if(auth()->user()->hasRole('finance'))
@@ -231,7 +231,7 @@
             <div class="grid grid-cols-2 gap-4 mb-6">
                 {{-- Active Loans --}}
                 <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-blue-100 dark:border-blue-800 text-center">
-                    <div class="p-2 bg-blue-100 dark:bg-blue-900/40 rounded-lg w-fit mx-auto mb-2">
+                    <div class="p-2 bg-blue-100 dark:bg-blue-900/40 rounded-xl w-fit mx-auto mb-2">
                         <x-icon name="user-group" class="w-6 h-6 text-blue-600 dark:text-blue-400" />
                     </div>
                     <p class="text-3xl font-bold text-blue-700 dark:text-blue-300">{{ $loanStats['active'] }}</p>
@@ -240,7 +240,7 @@
 
                 {{-- Total Outstanding --}}
                 <div class="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-4 border border-amber-100 dark:border-amber-800 text-center">
-                    <div class="p-2 bg-amber-100 dark:bg-amber-900/40 rounded-lg w-fit mx-auto mb-2">
+                    <div class="p-2 bg-amber-100 dark:bg-amber-900/40 rounded-xl w-fit mx-auto mb-2">
                         <x-icon name="banknotes" class="w-6 h-6 text-amber-600 dark:text-amber-400" />
                     </div>
                     <p class="text-xl font-bold text-amber-700 dark:text-amber-300">
@@ -260,12 +260,12 @@
     </div>
 
     {{-- SECTION 4: Monthly Spending Table --}}
-    <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm mb-8">
-        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Detail Pengeluaran Per Bulan</h2>
+    <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200/80 dark:border-gray-700/80 shadow-soft mb-8">
+        <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Detail Pengeluaran Per Bulan</h2>
 
         <div class="overflow-hidden">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-800">
+            <table class="min-w-[1100px] w-full divide-y divide-gray-200/80 dark:divide-gray-700/80">
+                <thead class="bg-gray-50/80 dark:bg-gray-800">
                     <tr>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider rounded-l-lg">Bulan</th>
                         <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Jumlah Invoice</th>
@@ -284,7 +284,7 @@
                             $grandTotal += $row->total;
                             $grandCount += $row->count;
                         @endphp
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
+                        <tr class="hover:bg-primary-50/60 dark:hover:bg-gray-700/50 transition">
                             <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">
                                 {{ $monthNames[$row->month] ?? 'Bulan ' . $row->month }}
                             </td>

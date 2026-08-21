@@ -12,27 +12,29 @@ class DashboardController extends Controller
         $user = auth()->user();
 
         // Finance role uses integrated finance dashboard
-        if ($user->hasRole('finance')) {
+        if ($user->hasPermissionTo('manage-budget') || $user->hasPermissionTo('view-finance-documents')) {
             return redirect()->route('finance.dashboard');
         }
 
-        // Presiden Direktur uses executive dashboard
-        if ($user->hasRole('presiden_direktur')) {
+        // Executive dashboard for Board of Directors
+        if ($user->department === 'Board of Directors') {
             return redirect()->route('executive.dashboard');
         }
 
         // Base stats query based on role
         $documentsQuery = Document::query();
 
-        if ($user->hasRole('staff')) {
-            $documentsQuery->where('user_id', $user->id);
-        } elseif ($user->hasRole('supervisor')) {
+        if ($user->hasPermissionTo('view-all-documents')) {
+            // View all
+        } elseif ($user->hasPermissionTo('view-department-documents')) {
             $documentsQuery->where('department', $user->department);
+        } else {
+            $documentsQuery->where('user_id', $user->id);
         }
 
         // Calculate statistics
-        // Anyone who is not just a staff or admin can potentially be an approver
-        $isApprover = !$user->hasAnyRole(['staff', 'admin']);
+        // Anyone who can approve documents is an approver
+        $isApprover = $user->hasPermissionTo('approve-document');
 
         $stats = [
             'total_documents' => $documentsQuery->count(),

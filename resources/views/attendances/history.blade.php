@@ -1,26 +1,26 @@
 <x-app-layout>
     <x-slot name="title">Riwayat Absensi</x-slot>
 
-    <div class="space-y-6">
+    <div class="space-y-7">
         {{-- Header --}}
         <x-ui.card class="relative overflow-hidden">
             <div class="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-primary-50/60 to-transparent rounded-full -mr-16 -mt-16 pointer-events-none"></div>
             <div class="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 class="text-xl font-bold text-gray-900 dark:text-white">Riwayat Absensi</h1>
+                    <h1 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">Riwayat Absensi</h1>
                     <p class="text-sm text-gray-500">{{ auth()->user()->name }}</p>
                 </div>
 
                 {{-- Month Selector --}}
                 <form method="GET" class="flex items-center gap-2">
-                    <select name="month" class="rounded-xl border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm focus:border-primary-500 focus:ring-primary-500">
+                    <select name="month" class="rounded-xl border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20/10">
                         @for($m = 1; $m <= 12; $m++)
                             <option value="{{ $m }}" {{ $month == $m ? 'selected' : '' }}>
                                 {{ \Carbon\Carbon::create()->month($m)->translatedFormat('F') }}
                             </option>
                         @endfor
                     </select>
-                    <select name="year" class="rounded-xl border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm focus:border-primary-500 focus:ring-primary-500">
+                    <select name="year" class="rounded-xl border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20/10">
                         @for($y = now()->year + 2; $y >= now()->year - 5; $y--)
                             <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}</option>
                         @endfor
@@ -34,8 +34,8 @@
 
         {{-- Monthly Stats --}}
         <x-ui.card>
-            <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                <div class="p-4 bg-gray-100 dark:bg-gray-800 rounded-xl text-center border border-gray-200 dark:border-gray-700">
+            <div class="grid grid-cols-2 gap-3 sm:grid-cols-5">
+                <div class="p-4 bg-gray-100 dark:bg-gray-800 rounded-xl text-center border border-gray-200/80 dark:border-gray-700/80">
                     <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['total'] }}</p>
                     <p class="text-xs text-gray-500 font-medium">Total Masuk</p>
                 </div>
@@ -60,14 +60,14 @@
 
         {{-- Daily Records --}}
         <x-ui.card>
-            <h2 class="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <h2 class="mb-5 flex items-center gap-2 text-base font-semibold tracking-tight text-gray-900 dark:text-white">
                 <span class="w-1.5 h-1.5 rounded-full bg-primary-500"></span>
                 Detail Harian
             </h2>
 
-            <div class="overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-xl">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead class="bg-gray-50 dark:bg-gray-800">
+            <div class="overflow-x-auto border border-gray-200/80 dark:border-gray-700/80 rounded-xl">
+                <table class="min-w-[900px] w-full divide-y divide-gray-200/80 dark:divide-gray-700/80">
+                    <thead class="bg-gray-50/80 dark:bg-gray-800">
                         <tr>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tanggal</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Check In</th>
@@ -77,13 +77,13 @@
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200/80 dark:divide-gray-700/80">
                         @forelse($attendances as $date => $records)
                             @php
                                 $checkIn = $records->firstWhere('type', 'check_in');
                                 $checkOut = $records->firstWhere('type', 'check_out');
                             @endphp
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                            <tr class="hover:bg-primary-50/60 dark:hover:bg-gray-800/80/50 transition-colors">
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-white">
                                     {{ \Carbon\Carbon::parse($date)->translatedFormat('l, d M Y') }}
                                 </td>
@@ -123,7 +123,7 @@
                             <tr>
                                 <td colspan="6" class="px-6 py-8 text-center">
                                     <div class="flex flex-col items-center justify-center">
-                                        <div class="w-12 h-12 rounded-full bg-gray-50 dark:bg-gray-800 flex items-center justify-center mx-auto mb-3 border border-gray-200 dark:border-gray-700">
+                                        <div class="w-12 h-12 rounded-full bg-gray-50/80 dark:bg-gray-800 flex items-center justify-center mx-auto mb-3 border border-gray-200/80 dark:border-gray-700/80">
                                             <x-icon name="clock" class="w-6 h-6 text-gray-400" />
                                         </div>
                                         <p class="text-sm font-medium text-gray-900 dark:text-white mb-1">Tidak ada riwayat</p>

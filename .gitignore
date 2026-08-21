@@ -33,3 +33,5 @@ Thumbs.db
 **/screenshots
 **/videos
 **/traces
+# Backup views
+/resources/views_backup/

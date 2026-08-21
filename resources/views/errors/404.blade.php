@@ -77,16 +77,16 @@
     </style>
 </head>
 
-<body class="bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 antialiased min-h-screen">
+<body class="min-h-screen bg-gray-50 antialiased dark:bg-gray-950">
     <div class="min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden">
 
         {{-- Decorative --}}
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
-            <div class="absolute -top-20 -right-20 w-72 h-72 bg-blue-200/30 dark:bg-blue-900/10 rounded-full blur-3xl"></div>
-            <div class="absolute -bottom-20 -left-20 w-72 h-72 bg-indigo-200/30 dark:bg-indigo-900/10 rounded-full blur-3xl"></div>
+            <div class="absolute -top-20 -right-20 w-72 h-72 bg-primary-200/20 dark:bg-primary-900/10 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-20 -left-20 w-72 h-72 bg-primary-200/20 dark:bg-primary-900/10 rounded-full blur-3xl"></div>
         </div>
 
-        <div class="max-w-lg w-full text-center relative z-10">
+        <div class="relative z-10 w-full max-w-xl text-center">
             {{-- Animated Robot SVG --}}
             <div class="robot mx-auto mb-8 w-56 h-56 sm:w-64 sm:h-64">
                 <svg viewBox="0 0 200 200" class="w-full h-full">
@@ -186,7 +186,7 @@
             </div>
 
             {{-- Error Code --}}
-            <h1 class="text-7xl sm:text-8xl font-black bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-3">
+            <h1 class="text-7xl sm:text-8xl font-black bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent mb-3">
                 404
             </h1>
             <h2 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">Halaman Tidak Ditemukan</h2>
@@ -198,14 +198,14 @@
             {{-- Actions --}}
             <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
                 <a href="{{ url()->previous() !== url()->current() ? url()->previous() : route('dashboard') }}"
-                    class="inline-flex items-center px-6 py-3 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-600 transition-all shadow-sm border border-gray-200 dark:border-gray-600 hover:scale-105 active:scale-95">
+                    class="inline-flex items-center rounded-xl border border-gray-200 bg-white px-6 py-3 font-semibold text-gray-700 shadow-sm transition-all hover:-translate-y-0.5 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800">
                     <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
                     </svg>
                     Kembali
                 </a>
                 <a href="{{ route('dashboard') }}"
-                    class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105 active:scale-95">
+                    class="inline-flex items-center rounded-xl bg-primary-700 px-6 py-3 font-semibold text-white shadow-sm shadow-primary-900/20 transition-all hover:-translate-y-0.5 hover:bg-primary-800 hover:shadow-md">
                     <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />

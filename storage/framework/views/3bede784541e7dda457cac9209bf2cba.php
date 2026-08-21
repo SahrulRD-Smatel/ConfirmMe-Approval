@@ -53,9 +53,9 @@
                     this.subtitle = 'Istirahat yang cukup ya! 💤';
                 }
             }
-        }">
+        }" class="space-y-8">
             
-            <div class="card-elevated mb-6 -mt-4 mx-[-1rem] sm:mx-0 p-6 sm:p-8 relative overflow-hidden">
+            <div class="relative mb-8 -mt-4 overflow-hidden rounded-3xl border border-gray-200/80 bg-white/95 p-6 shadow-soft-lg ring-1 ring-black/5 backdrop-blur-sm sm:mx-0 sm:p-8">
                 
                 <div
                     class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-primary-50/60 to-transparent rounded-full -mr-20 -mt-20 pointer-events-none">
@@ -64,7 +64,7 @@
                     class="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-tr from-blue-50/40 to-transparent rounded-full -ml-16 -mb-16 pointer-events-none">
                 </div>
 
-                <div class="relative z-10 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
+                <div class="relative z-10 flex flex-col gap-7 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
                     
                     <div>
                         <div class="flex items-center gap-2 mb-1">
@@ -85,22 +85,22 @@
                     
                     <div class="flex flex-col items-end gap-3 sm:mt-1">
                         
-                        <div class="flex p-1 bg-gray-100 rounded-xl">
+                        <div class="inline-flex w-fit rounded-2xl border border-gray-200 bg-gray-100/80 p-1 shadow-inner">
                             <button @click="tab = 'workspace'"
                                 :class="{ 'bg-white shadow-md text-primary-700 font-semibold': tab === 'workspace', 'text-gray-500 hover:text-gray-700': tab !== 'workspace' }"
-                                class="px-5 py-2.5 text-sm font-medium rounded-lg transition-all duration-300">
+                                class="rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-200 sm:px-5">
                                 Workspace
                             </button>
                             <button @click="tab = 'tasks'"
                                 :class="{ 'bg-white shadow-md text-primary-700 font-semibold': tab === 'tasks', 'text-gray-500 hover:text-gray-700': tab !== 'tasks' }"
-                                class="px-5 py-2.5 text-sm font-medium rounded-lg transition-all duration-300">
+                                class="rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-200 sm:px-5">
                                 Tasks & Approval
                             </button>
                         </div>
 
                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->hasRole('staff')): ?>
                             <a href="<?php echo e(route('documents.create')); ?>"
-                                class="hidden sm:inline-flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-primary-500/25">
+                                class="hidden items-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:bg-primary-700 hover:shadow-lg hover:shadow-primary-500/25 sm:inline-flex">
                                 <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon','data' => ['name' => 'plus-circle','class' => 'w-4 h-4']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -132,17 +132,17 @@
 
             
             <div x-show="tab === 'workspace'" x-data="{ deleteUrl: '' }"
-                class="grid grid-cols-1 lg:grid-cols-4 gap-6 animate-fade-in">
+                class="grid grid-cols-1 gap-6 animate-fade-in xl:grid-cols-4 xl:gap-8">
                 
-                <div class="space-y-6 stagger-enter">
+                <div class="space-y-5 stagger-enter">
                     
-                    <div class="relative card-elevated overflow-hidden hover-lift shimmer-hover">
+                    <div class="card-elevated group relative overflow-hidden rounded-3xl hover-lift shimmer-hover">
                         
-                        <div class="h-20 bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 relative">
+                        <div class="relative h-24 bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900">
                             <div class="absolute inset-0 dot-pattern opacity-20"></div>
                         </div>
 
-                        <div class="px-6 pb-6 text-center -mt-12 relative z-10">
+                        <div class="relative z-10 -mt-12 px-6 pb-7 text-center">
                             
                             <div class="avatar-ring inline-block mx-auto mb-4 shadow-lg">
                                 <img src="<?php echo e(auth()->user()->avatar_url); ?>" alt="<?php echo e(auth()->user()->name); ?>"
@@ -169,7 +169,7 @@
                     </div>
 
                     
-                    <div class="card-elevated p-5">
+                    <div class="card-elevated rounded-3xl p-5">
                         <h3 class="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
                             <span class="w-1.5 h-1.5 rounded-full bg-primary-500"></span>
                             Quick Links
@@ -241,7 +241,7 @@
                     </div>
 
                     
-                    <div class="card-elevated p-5">
+                    <div class="card-elevated rounded-3xl p-5">
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-sm font-bold text-gray-900 flex items-center gap-2">
                                 <span class="w-1.5 h-1.5 rounded-full bg-primary-500"></span>
@@ -300,11 +300,11 @@
                 </div>
 
                 
-                <div class="lg:col-span-3 space-y-8">
+                <div class="space-y-6 xl:col-span-3 xl:space-y-8">
                     
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->hasAnyRole(['hrd', 'direktur_hr', 'admin']) || auth()->user()->department === 'Human Resources'): ?>
                         <div
-                            class="bg-gradient-to-r from-pink-500 to-rose-500 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden hover-lift">
+                            class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-pink-500 to-rose-500 p-6 text-white shadow-soft-lg hover-lift sm:p-7">
                             <div class="relative z-10 flex justify-between items-center">
                                 <div>
                                     <h2 class="text-xl font-bold mb-1">Halo Tim HR, <?php echo e(auth()->user()->name); ?>!</h2>
@@ -366,7 +366,7 @@
                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                     
-                    <div class="max-w-xl mx-auto space-y-6 stagger-enter">
+                    <div class="mx-auto max-w-2xl space-y-6 stagger-enter">
                         <div class="flex items-center gap-2 mb-2 px-2">
                             <div class="w-8 h-8 rounded-lg bg-primary-100 flex items-center justify-center">
                                 <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
@@ -397,7 +397,7 @@
                         </div>
 
                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $announcements; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $announcement): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
-                            <div class="feed-card dark:bg-gray-800 dark:border-gray-700">
+                            <div class="feed-card rounded-2xl dark:bg-gray-800 dark:border-gray-700">
                                 
                                 <div class="px-4 py-3 flex items-center justify-between">
                                     <div class="flex items-center gap-3">
@@ -746,10 +746,10 @@
             </div>
 
             
-            <div x-show="tab === 'tasks'" style="display: none;" class="animate-fade-in space-y-8">
+            <div x-show="tab === 'tasks'" style="display: none;" class="animate-fade-in space-y-6 xl:space-y-8">
                 <!-- Statistics Cards (Enhanced with gradients) -->
-                <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 stagger-enter">
-                    <div class="relative card-elevated p-6 hover-lift overflow-hidden group">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 xl:gap-5 stagger-enter">
+                    <div class="card-elevated group relative overflow-hidden rounded-3xl p-5 hover-lift sm:p-6">
                         <div
                             class="absolute top-0 right-0 w-24 h-24 bg-primary-50 rounded-full -mr-8 -mt-8 group-hover:scale-110 transition-transform duration-500">
                         </div>
@@ -784,7 +784,7 @@
                         <a href="<?php echo e(route('documents.index')); ?>" class="absolute inset-0"></a>
                     </div>
 
-                    <div class="relative card-elevated p-6 hover-lift overflow-hidden group">
+                    <div class="card-elevated group relative overflow-hidden rounded-3xl p-5 hover-lift sm:p-6">
                         <div
                             class="absolute top-0 right-0 w-24 h-24 bg-amber-50 rounded-full -mr-8 -mt-8 group-hover:scale-110 transition-transform duration-500">
                         </div>
@@ -824,7 +824,7 @@
                         <a href="<?php echo e(($stats['is_approver'] ?? false) ? route('approvals.index') : route('documents.index', ['status' => 'pending'])); ?>" class="absolute inset-0"></a>
                     </div>
 
-                    <div class="relative card-elevated p-6 hover-lift overflow-hidden group">
+                    <div class="card-elevated group relative overflow-hidden rounded-3xl p-5 hover-lift sm:p-6">
                         <div
                             class="absolute top-0 right-0 w-24 h-24 bg-green-50 rounded-full -mr-8 -mt-8 group-hover:scale-110 transition-transform duration-500">
                         </div>
@@ -860,7 +860,7 @@
                         </div>
                     </div>
 
-                    <div class="relative card-elevated p-6 hover-lift overflow-hidden group">
+                    <div class="card-elevated group relative overflow-hidden rounded-3xl p-5 hover-lift sm:p-6">
                         <div
                             class="absolute top-0 right-0 w-24 h-24 bg-red-50 rounded-full -mr-8 -mt-8 group-hover:scale-110 transition-transform duration-500">
                         </div>
@@ -900,7 +900,7 @@
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Recent Documents (Enhanced) -->
                     <div class="lg:col-span-2">
-                        <div class="card-elevated p-6">
+                        <div class="card-elevated rounded-3xl p-5 sm:p-6">
                             <div class="flex items-center justify-between mb-6">
                                 <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
                                     <span class="w-1.5 h-1.5 rounded-full bg-primary-500"></span>
@@ -916,7 +916,7 @@
                             <div class="space-y-3 stagger-enter">
                                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $recentDocuments ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $document): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                                     <div
-                                        class="flex items-center justify-between p-4 rounded-xl bg-gray-50/50 border border-gray-100 hover:bg-primary-50/50 hover:border-primary-100 transition-all duration-300 group">
+                                        class="group flex items-center justify-between gap-4 rounded-2xl border border-gray-100 bg-gray-50/70 p-4 transition-all duration-300 hover:border-primary-100 hover:bg-primary-50/50">
                                         <div class="flex items-center gap-4 min-w-0 flex-1">
                                             <div
                                                 class="flex-shrink-0 w-10 h-10 rounded-xl bg-primary-100 flex items-center justify-center group-hover:bg-primary-200 transition-colors">
@@ -1018,7 +1018,7 @@
                     <!-- Pending Approvals (Enhanced) -->
                     <div class="space-y-6">
                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->hasAnyRole(['supervisor', 'manager', 'hrd', 'hrd_coordinator', 'purchasing', 'direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional', 'finance'])): ?>
-                            <div class="card-elevated p-6">
+                            <div class="card-elevated rounded-3xl p-5 sm:p-6">
                                 <div class="flex items-center justify-between mb-4">
                                     <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
                                         <span class="w-1.5 h-1.5 rounded-full bg-primary-500"></span>
@@ -1034,7 +1034,7 @@
                                 <div class="space-y-2 stagger-enter">
                                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $pendingApprovals ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $document): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                                         <a href="<?php echo e(route('approvals.show', $document)); ?>"
-                                            class="block p-3 rounded-xl hover:bg-primary-50 border border-transparent hover:border-primary-100 transition-all duration-300 group">
+                                            class="group block rounded-2xl border border-transparent p-3.5 transition-all duration-300 hover:border-primary-100 hover:bg-primary-50">
                                             <div class="flex items-start justify-between gap-2">
                                                 <div class="min-w-0 flex-1">
                                                     <p

@@ -47,7 +47,7 @@
     <script src="<?php echo e(asset('js/form-loading.js')); ?>" defer></script>
 </head>
 
-<body class="h-full font-sans antialiased bg-white dark:bg-gray-900"
+<body class="h-full font-sans antialiased bg-gray-50 text-gray-800 dark:bg-gray-950 dark:text-gray-100"
     x-data="{ sidebarOpen: false, sidebarCollapsed: false }">
 
     
@@ -78,7 +78,7 @@
             style="width: 110px; height: 110px; left: 90%; animation-duration: 30s; animation-delay: 3.5s;"></div>
     </div>
 
-    <div class="min-h-screen flex relative z-10">
+    <div class="min-h-screen flex relative z-10 bg-gray-50/80 dark:bg-gray-950/80">
         <!-- Mobile sidebar backdrop -->
         <div x-show="sidebarOpen" x-transition:enter="transition-opacity ease-linear duration-300"
             x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
@@ -91,14 +91,14 @@
         <?php echo $__env->make('layouts.sidebar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
         <!-- Main Content Area -->
-        <div class="flex-1 flex flex-col min-w-0 transition-all duration-300" :class="sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-64'">
+        <div class="flex-1 flex min-w-0 flex-col bg-transparent transition-all duration-300" :class="sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-64'">
             <!-- Top Navigation -->
             <?php echo $__env->make('layouts.topbar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
             <!-- Page Header -->
             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($header)): ?>
-                <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-                    <div class="px-4 sm:px-6 lg:px-8 py-4">
+                <header class="border-b border-gray-200/80 bg-white/90 backdrop-blur-xl dark:border-gray-800/80 dark:bg-gray-900/90">
+                    <div class="mx-auto max-w-[1600px] px-4 py-4 sm:px-6 sm:py-5 xl:px-10">
                         <?php echo e($header); ?>
 
                     </div>
@@ -106,12 +106,12 @@
             <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
             <!-- Main Content -->
-            <main class="flex-1 overflow-y-auto">
-                <div class="py-6">
-                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <main class="flex-1 overflow-y-auto bg-transparent">
+                <div class="py-6 sm:py-8 lg:py-10">
+                    <div class="mx-auto w-full max-w-[1600px] px-4 sm:px-6 xl:px-10">
                         <!-- Flash Messages -->
                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(session('success')): ?>
-                            <div class="mb-4 rounded-lg bg-success-50 dark:bg-success-900/30 p-4 animate-fade-in">
+                            <div class="mb-5 rounded-2xl border border-success-200/80 bg-success-50/90 p-4 shadow-sm shadow-success-900/5 animate-fade-in dark:border-success-800/60 dark:bg-success-900/20">
                                 <div class="flex items-center">
                                     <svg class="h-5 w-5 text-success-400" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd"
@@ -127,7 +127,7 @@
                         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(session('error')): ?>
-                            <div class="mb-4 rounded-lg bg-danger-50 dark:bg-danger-900/30 p-4 animate-fade-in">
+                            <div class="mb-5 rounded-2xl border border-danger-200/80 bg-danger-50/90 p-4 shadow-sm shadow-danger-900/5 animate-fade-in dark:border-danger-800/60 dark:bg-danger-900/20">
                                 <div class="flex items-center">
                                     <svg class="h-5 w-5 text-danger-400" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd"
@@ -149,8 +149,8 @@
             </main>
 
             <!-- Footer -->
-            <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-4">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <footer class="border-t border-gray-200/80 bg-white/60 py-5 backdrop-blur-sm dark:border-gray-800/80 dark:bg-gray-900/60">
+                <div class="mx-auto w-full max-w-[1600px] px-4 sm:px-6 xl:px-10">
                     <p class="text-center text-sm text-gray-500 dark:text-gray-400">
                         &copy; <?php echo e(date('Y')); ?> PT. Info Solusindo Data Utama. ConfirmMe v1.0
                     </p>

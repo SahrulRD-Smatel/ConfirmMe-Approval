@@ -25,7 +25,7 @@
             </div>
         @endif
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
             {{-- Add Department Form --}}
             <div class="lg:col-span-1">
                 <div class="card-elevated p-6">
@@ -38,19 +38,19 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Nama Departemen <span class="text-red-500">*</span></label>
                             <input type="text" name="name" value="{{ old('name') }}" required placeholder="contoh: Marketing"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                class="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-4 focus:ring-primary-500/20/10 focus:border-primary-500">
                             @error('name')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Kode <span class="text-red-500">*</span></label>
                             <input type="text" name="code" value="{{ old('code') }}" required placeholder="contoh: MKT" maxlength="20"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 uppercase">
+                                class="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-4 focus:ring-primary-500/20/10 focus:border-primary-500 uppercase">
                             @error('code')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Direktur Role</label>
                             <select name="director_role"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                class="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-4 focus:ring-primary-500/20/10 focus:border-primary-500">
                                 <option value="">— Tidak ada —</option>
                                 @foreach($roles as $role)
                                     <option value="{{ $role }}" {{ old('director_role') === $role ? 'selected' : '' }}>
@@ -63,7 +63,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Urutan</label>
                             <input type="number" name="sort_order" value="{{ old('sort_order', 0) }}" min="0"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                class="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-4 focus:ring-primary-500/20/10 focus:border-primary-500">
                         </div>
                         <button type="submit"
                             class="w-full px-4 py-2.5 bg-primary-600 text-white text-sm font-medium rounded-xl hover:bg-primary-700 transition flex items-center justify-center gap-2">
@@ -88,7 +88,7 @@
                     </div>
                     <div class="divide-y divide-gray-100">
                         @forelse($departments as $dept)
-                            <div class="px-6 py-4 hover:bg-gray-50/50 transition" x-data="{ editing: false }">
+                            <div class="px-6 py-4 hover:bg-primary-50/60/50 transition" x-data="{ editing: false }">
                                 {{-- View Mode --}}
                                 <div x-show="!editing" class="flex items-center justify-between">
                                     <div class="flex items-center gap-4">
@@ -117,7 +117,7 @@
                                             <span class="text-xs font-medium text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Nonaktif</span>
                                         @endif
                                         <button @click="editing = true"
-                                            class="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition">
+                                            class="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition">
                                             <x-icon name="pencil-square" class="w-4 h-4" />
                                         </button>
                                         @if(\App\Models\User::where('department', $dept->name)->count() === 0)
@@ -125,7 +125,7 @@
                                                 onsubmit="confirmAction(event, 'Hapus departemen {{ $dept->name }}?')">
                                                 @csrf @method('DELETE')
                                                 <button type="submit"
-                                                    class="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
+                                                    class="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition">
                                                     <x-icon name="trash" class="w-4 h-4" />
                                                 </button>
                                             </form>
@@ -141,17 +141,17 @@
                                         <div>
                                             <label class="block text-xs font-medium text-gray-500 mb-1">Nama</label>
                                             <input type="text" name="name" value="{{ $dept->name }}" required
-                                                class="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500">
+                                                class="w-full px-2.5 py-1.5 border border-gray-300 rounded-xl text-sm focus:ring-4 focus:ring-primary-500/20/10">
                                         </div>
                                         <div>
                                             <label class="block text-xs font-medium text-gray-500 mb-1">Kode</label>
                                             <input type="text" name="code" value="{{ $dept->code }}" required maxlength="20"
-                                                class="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 uppercase">
+                                                class="w-full px-2.5 py-1.5 border border-gray-300 rounded-xl text-sm focus:ring-4 focus:ring-primary-500/20/10 uppercase">
                                         </div>
                                         <div>
                                             <label class="block text-xs font-medium text-gray-500 mb-1">Direktur Role</label>
                                             <select name="director_role"
-                                                class="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500">
+                                                class="w-full px-2.5 py-1.5 border border-gray-300 rounded-xl text-sm focus:ring-4 focus:ring-primary-500/20/10">
                                                 <option value="">— Tidak ada —</option>
                                                 @foreach($roles as $role)
                                                     <option value="{{ $role }}" {{ $dept->director_role === $role ? 'selected' : '' }}>{{ role_label($role) }}</option>
@@ -161,23 +161,23 @@
                                         <div>
                                             <label class="block text-xs font-medium text-gray-500 mb-1">Urutan</label>
                                             <input type="number" name="sort_order" value="{{ $dept->sort_order }}" min="0"
-                                                class="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500">
+                                                class="w-full px-2.5 py-1.5 border border-gray-300 rounded-xl text-sm focus:ring-4 focus:ring-primary-500/20/10">
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <label class="flex items-center gap-2 text-sm text-gray-600">
                                             <input type="hidden" name="is_active" value="0">
                                             <input type="checkbox" name="is_active" value="1" {{ $dept->is_active ? 'checked' : '' }}
-                                                class="rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                                                class="rounded border-gray-300 text-primary-600 focus:ring-primary-500/20">
                                             Aktif
                                         </label>
                                         <div class="ml-auto flex items-center gap-2">
                                             <button type="button" @click="editing = false"
-                                                class="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition">
+                                                class="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-xl transition">
                                                 Batal
                                             </button>
                                             <button type="submit"
-                                                class="px-3 py-1.5 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition">
+                                                class="px-3 py-1.5 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-xl transition">
                                                 Simpan
                                             </button>
                                         </div>

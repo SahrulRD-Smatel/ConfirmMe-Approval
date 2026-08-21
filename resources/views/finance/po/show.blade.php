@@ -2,7 +2,7 @@
     <x-slot name="title">{{ $po->po_number }}</x-slot>
 
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex items-center gap-4">
                 <a href="{{ route('finance.po.index') }}"
                     class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
@@ -10,7 +10,7 @@
                 </a>
                 <div>
                     <div class="flex items-center gap-3">
-                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">
+                        <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
                             {{ $po->po_number }}
                         </h1>
                         <x-ui.badge :status="match($po->status) { 'issued' => 'success', 'completed' => 'completed', 'cancelled' => 'danger', default => 'warning' }">
@@ -65,12 +65,12 @@
         </div>
     </x-slot>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <!-- Main Content -->
         <div class="lg:col-span-2 space-y-6">
             <!-- PO Info -->
             <x-ui.card>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Informasi Purchase Order</h2>
+                <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Informasi Purchase Order</h2>
 
                 <dl class="grid grid-cols-2 gap-4">
                     <div>
@@ -105,11 +105,11 @@
 
             <!-- Items -->
             <x-ui.card>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Item Pesanan</h2>
+                <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Item Pesanan</h2>
 
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
-                        <thead class="bg-gray-50 dark:bg-gray-800">
+                        <thead class="bg-gray-50/80 dark:bg-gray-800">
                             <tr>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Item</th>
                                 <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Qty</th>
@@ -119,7 +119,7 @@
                                 <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Total</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                        <tbody class="divide-y divide-gray-200/80 dark:divide-gray-700/80">
                             @foreach($po->items as $item)
                                 <tr>
                                     <td class="px-4 py-3 text-gray-900 dark:text-white">
@@ -138,7 +138,7 @@
                                 </tr>
                             @endforeach
                         </tbody>
-                        <tfoot class="bg-gray-50 dark:bg-gray-800">
+                        <tfoot class="bg-gray-50/80 dark:bg-gray-800">
                             <tr>
                                 <td colspan="4" class="px-4 py-2 text-right text-gray-500">Subtotal</td>
                                 <td class="px-4 py-2 text-right font-medium text-gray-900 dark:text-white">Rp
@@ -163,9 +163,9 @@
             <!-- Document Reference -->
             @if($po->document)
                 <x-ui.card>
-                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Dokumen Referensi</h2>
+                    <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Dokumen Referensi</h2>
 
-                    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <div class="flex items-center justify-between p-4 bg-gray-50/80 dark:bg-gray-800 rounded-xl">
                         <div>
                             <p class="text-sm font-medium text-gray-900 dark:text-white">
                                 {{ $po->document->document_number }}</p>

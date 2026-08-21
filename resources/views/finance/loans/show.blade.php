@@ -17,18 +17,18 @@
     <div class="py-4">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             @if(session('success'))
-                <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+                <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-xl">
                     {{ session('success') }}
                 </div>
             @endif
 
             @if(session('error'))
-                <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-xl">
                     {{ session('error') }}
                 </div>
             @endif
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
                 {{-- Main Info --}}
                 <div class="lg:col-span-2 space-y-6">
                     {{-- Loan Summary --}}
@@ -42,13 +42,13 @@
                         </div>
 
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
                                 <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">Jumlah Pinjaman</p>
                                 <p class="text-lg font-bold text-gray-900 dark:text-white">
                                     {{ $loan->formatted_loan_amount }}
                                 </p>
                             </div>
-                            <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
                                 <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">Cicilan
                                     1-{{ $loan->installment_months - 1 }}</p>
                                 <p class="text-lg font-bold text-gray-900 dark:text-white">
@@ -59,13 +59,13 @@
                                     </p>
                                 @endif
                             </div>
-                            <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
                                 <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">Tenor</p>
                                 <p class="text-lg font-bold text-gray-900 dark:text-white">
                                     {{ $loan->installment_months }} Bulan
                                 </p>
                             </div>
-                            <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
                                 <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">Sisa Hutang</p>
                                 <p class="text-lg font-bold text-primary-600">{{ $loan->formatted_outstanding }}</p>
                             </div>
@@ -90,11 +90,11 @@
 
                     {{-- Repayment History --}}
                     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft p-6">
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Riwayat Pembayaran</h3>
+                        <h3 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Riwayat Pembayaran</h3>
 
                         @if($loan->repayments->count() > 0)
                             <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                <table class="min-w-full divide-y divide-gray-200/80 dark:divide-gray-700/80">
                                     <thead>
                                         <tr>
                                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
@@ -109,7 +109,7 @@
                                                 Dicatat Oleh</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                    <tbody class="divide-y divide-gray-200/80 dark:divide-gray-700/80">
                                         @foreach($loan->repayments as $repayment)
                                             <tr>
                                                 <td class="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">
@@ -144,7 +144,7 @@
                 <div class="space-y-6">
                     {{-- Employee Info --}}
                     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft p-6">
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Info Karyawan</h3>
+                        <h3 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Info Karyawan</h3>
                         <div class="flex items-center gap-4 mb-4">
                             <img class="h-12 w-12 rounded-full" src="{{ $loan->employee->avatar_url }}" alt="">
                             <div>
@@ -180,7 +180,7 @@
                     @if($loan->status === 'pending_disbursement')
                         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft p-6"
                             x-data="{ showConfirmModal: false }">
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Cairkan Pinjaman</h3>
+                            <h3 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Cairkan Pinjaman</h3>
                             <form id="disbursementForm" action="{{ route('finance.loans.disburse', $loan) }}" method="POST"
                                 enctype="multipart/form-data">
                                 @csrf
@@ -190,18 +190,18 @@
                                             Bukti Transfer (Opsional)
                                         </label>
                                         <input type="file" name="disbursement_proof" accept=".pdf,.jpg,.jpeg,.png"
-                                            class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100">
+                                            class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                             Catatan (Opsional)
                                         </label>
                                         <textarea name="notes" rows="2"
-                                            class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                                            class="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700"
                                             placeholder="Catatan pencairan..."></textarea>
                                     </div>
                                     <button type="button" @click="showConfirmModal = true"
-                                        class="w-full py-2 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium">
+                                        class="w-full py-2 px-4 bg-green-600 text-white rounded-xl hover:bg-green-700 font-medium">
                                         Cairkan Pinjaman
                                     </button>
                                 </div>
@@ -254,7 +254,7 @@
                                                 Anda akan mencairkan pinjaman dengan detail berikut:
                                             </p>
 
-                                            <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 space-y-3">
+                                            <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 space-y-3">
                                                 <div class="flex justify-between">
                                                     <span class="text-sm text-gray-500 dark:text-gray-400">Pemohon:</span>
                                                     <span
@@ -287,7 +287,7 @@
                                             </div>
 
                                             <div
-                                                class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                                                class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl">
                                                 <p class="text-sm text-yellow-700 dark:text-yellow-300">
                                                     <strong>Perhatian:</strong> Pastikan dana telah ditransfer ke rekening
                                                     karyawan sebelum mengkonfirmasi pencairan ini.
@@ -298,12 +298,12 @@
                                         {{-- Footer --}}
                                         <div class="bg-gray-50 dark:bg-gray-700/50 px-6 py-4 flex justify-end gap-3">
                                             <button type="button" @click="showConfirmModal = false"
-                                                class="px-4 py-2 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-500 font-medium">
+                                                class="px-4 py-2 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-xl hover:bg-primary-50/60 dark:hover:bg-primary-50/600 font-medium">
                                                 Batal
                                             </button>
                                             <button type="button"
                                                 @click="document.getElementById('disbursementForm').submit()"
-                                                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium flex items-center gap-2">
+                                                class="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 font-medium flex items-center gap-2">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                         d="M5 13l4 4L19 7" />
@@ -320,7 +320,7 @@
                     {{-- Repayment Form --}}
                     @if(in_array($loan->status, ['disbursed', 'repaying']))
                         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft p-6">
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Catat Pembayaran</h3>
+                            <h3 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Catat Pembayaran</h3>
                             <form action="{{ route('finance.loans.repayment', $loan) }}" method="POST"
                                 enctype="multipart/form-data">
                                 @csrf
@@ -333,7 +333,7 @@
                                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">Rp</span>
                                             <input type="text" name="amount" required
                                                 value="{{ (int) $loan->getInstallmentAmount($loan->getNextInstallmentNumber()) }}"
-                                                class="currency-input w-full pl-10 pr-3 py-2 rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                                                class="currency-input w-full pl-10 pr-3 py-2 rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700"
                                                 inputmode="numeric">
                                         </div>
                                         @if($loan->getNextInstallmentNumber() == $loan->installment_months && $loan->last_installment != $loan->monthly_installment)
@@ -347,14 +347,14 @@
                                             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tanggal
                                             Pembayaran *</label>
                                         <input type="date" name="payment_date" required value="{{ date('Y-m-d') }}"
-                                            class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                                            class="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700">
                                     </div>
                                     <div>
                                         <label
                                             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Metode
                                             Pembayaran *</label>
                                         <select name="payment_method" required
-                                            class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                                            class="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700">
                                             <option value="salary_deduction">Potong Gaji</option>
                                             <option value="transfer">Transfer Bank</option>
                                             <option value="cash">Tunai</option>
@@ -364,17 +364,17 @@
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Bukti
                                             Bayar (Opsional)</label>
                                         <input type="file" name="proof_file" accept=".pdf,.jpg,.jpeg,.png"
-                                            class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100">
+                                            class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100">
                                     </div>
                                     <div>
                                         <label
                                             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Catatan</label>
                                         <textarea name="notes" rows="2"
-                                            class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                                            class="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700"
                                             placeholder="Catatan pembayaran..."></textarea>
                                     </div>
                                     <button type="submit"
-                                        class="w-full py-2 px-4 bg-primary-600 text-white rounded-lg hover:bg-primary-700 font-medium">
+                                        class="w-full py-2 px-4 bg-primary-600 text-white rounded-xl hover:bg-primary-700 font-medium">
                                         Catat Pembayaran
                                     </button>
                                 </div>
@@ -385,7 +385,7 @@
                     {{-- Disbursement Info --}}
                     @if($loan->disbursement_date)
                         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft p-6">
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Info Pencairan</h3>
+                            <h3 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Info Pencairan</h3>
                             <div class="space-y-2 text-sm">
                                 <div class="flex justify-between">
                                     <span class="text-gray-500">Tanggal Cair:</span>

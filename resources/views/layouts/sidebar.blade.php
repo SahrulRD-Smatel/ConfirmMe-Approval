@@ -81,8 +81,8 @@
             </x-sidebar-section>
         @endif
 
-        {{-- Absensi - Users with roles (except admin & presiden_direktur) --}}
-        @if(feature_active('module_hris') && !auth()->user()->hasAnyRole(['admin', 'presiden_direktur']) && auth()->user()->roles->isNotEmpty())
+        {{-- Absensi - Active employees --}}
+        @if(feature_active('module_hris') && auth()->user()->roles->isNotEmpty())
             <x-sidebar-section title="Absensi" :collapsed="$sidebarCollapsed ?? false">
                 <x-sidebar-link :href="route('attendance.index')" :active="request()->routeIs('attendance.index')"
                     icon="clock">
@@ -95,9 +95,8 @@
             </x-sidebar-section>
         @endif
 
-        {{-- Approval Menu - Role-based matching route middleware:
-        supervisor|manager|hrd|purchasing|direktur_*|presiden_direktur|finance --}}
-        @if(auth()->user()->hasAnyRole(['supervisor', 'manager', 'hrd', 'purchasing', 'direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional', 'presiden_direktur', 'finance']))
+        {{-- Approval Menu - Dynamic via Permissions --}}
+        @if(auth()->user()->hasPermissionTo('approve-document'))
             {{-- Presiden Direktur uses Executive section instead --}}
             @if(!auth()->user()->hasRole('presiden_direktur'))
                 <x-sidebar-section title="Approval" :collapsed="$sidebarCollapsed ?? false">
@@ -109,7 +108,7 @@
                                 class="ml-auto bg-danger-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $sidebarBadges['pendingApprovalCount'] }}</span>
                         @endif
                     </x-sidebar-link>
-                    @if(!auth()->user()->hasAnyRole(['direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional', 'presiden_direktur']))
+                    @if(!auth()->user()->hasRole('presiden_direktur'))
                         <x-sidebar-link :href="route('approvals.bulk')" :active="request()->routeIs('approvals.bulk')"
                             icon="squares-2x2">
                             Bulk Approval
@@ -123,8 +122,8 @@
             @endif
         @endif
 
-        {{-- Leave Approval Menu (Non-Presiden) - shown BEFORE Executive section --}}
-        @if(feature_active('module_hris') && auth()->user()->hasAnyRole(['supervisor', 'manager', 'hrd_coordinator', 'direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional']) && !auth()->user()->hasRole('presiden_direktur'))
+        {{-- Leave Approval Menu --}}
+        @if(feature_active('module_hris') && auth()->user()->hasPermissionTo('approve-document') && !auth()->user()->hasRole('presiden_direktur'))
             @php $pendingLeaveCount = $sidebarBadges['pendingLeaveCount'] ?? 0; @endphp
 
             <x-sidebar-section title="Cuti" :collapsed="$sidebarCollapsed ?? false">
@@ -178,8 +177,8 @@
             </x-sidebar-section>
         @endif
 
-        <!-- Finance Menu - Role-based (Finance only) -->
-        @if(feature_active('module_finance') && auth()->user()->hasRole('finance'))
+        <!-- Finance Menu - Dynamic via Permissions -->
+        @if(feature_active('module_finance') && auth()->user()->hasAnyPermission(['manage-budget', 'create-po', 'create-invoice', 'print-po', 'print-invoice', 'manage-purchasing']))
             <x-sidebar-section title="Keuangan" :collapsed="$sidebarCollapsed ?? false">
 
                 <x-sidebar-link :href="route('finance.budgets.index')" :active="request()->routeIs('finance.budgets.*')"
@@ -215,8 +214,8 @@
             </x-sidebar-section>
         @endif
 
-        <!-- Supervisory View - Role-based -->
-        @if(auth()->user()->hasRole('supervisor') || auth()->user()->hasRole('manager'))
+        <!-- Supervisory View - Dynamic via Permissions -->
+        @if(auth()->user()->hasPermissionTo('approve-document'))
             <x-sidebar-section title="Tim Saya" :collapsed="$sidebarCollapsed ?? false">
                 <x-sidebar-link :href="route('team.documents')" :active="request()->routeIs('team.*')" icon="user-group">
                     Dokumen Tim
@@ -224,8 +223,8 @@
             </x-sidebar-section>
         @endif
 
-        {{-- Reports - Role-based matching route middleware: manager|hrd|direktur_*|presiden_direktur|finance --}}
-        @if(auth()->user()->hasAnyRole(['manager', 'hrd', 'direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional', 'presiden_direktur', 'finance']))
+        {{-- Reports - Dynamic via Permissions --}}
+        @if(auth()->user()->hasPermissionTo('view-reports'))
             <x-sidebar-section title="Laporan" :collapsed="$sidebarCollapsed ?? false">
                 <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*')" icon="chart-bar">
                     Laporan
@@ -233,8 +232,8 @@
             </x-sidebar-section>
         @endif
 
-        {{-- Attendance & Leave Admin - HRD, Admin, Manager, Directors --}}
-        @if(feature_active('module_hris') && auth()->user()->hasAnyRole(['admin', 'hrd', 'hrd_coordinator', 'direktur_hr', 'presiden_direktur', 'manager']))
+        {{-- Attendance & Leave Admin - Dynamic via Permissions --}}
+        @if(feature_active('module_hris') && auth()->user()->hasAnyPermission(['manage-attendance', 'view-attendance']))
             <x-sidebar-section title="Kelola Karyawan" :collapsed="$sidebarCollapsed ?? false">
                 <x-sidebar-link :href="route('attendance-admin.report')" :active="request()->routeIs('attendance-admin.report')"
                     icon="chart-bar-square">
@@ -253,8 +252,8 @@
             </x-sidebar-section>
         @endif
 
-        {{-- Pengumuman - HRD, Admin, Direktur HR only --}}
-        @if(feature_active('module_hris') && (auth()->user()->hasAnyRole(['hrd', 'direktur_hr', 'admin']) || auth()->user()->department === 'Human Resources'))
+        {{-- Pengumuman - Dynamic via Permissions --}}
+        @if(feature_active('module_hris') && (auth()->user()->hasPermissionTo('manage-attendance') || auth()->user()->department === 'Human Resources'))
             <x-sidebar-section title="HRIS" :collapsed="$sidebarCollapsed ?? false">
                 <x-sidebar-link :href="route('announcements.index')" :active="request()->routeIs('announcements.*')"
                     icon="megaphone">

@@ -2,7 +2,7 @@
     <x-slot name="title">Arsip: {{ $document->document_number }}</x-slot>
 
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex items-center gap-4">
                 <a href="{{ route('archive.index') }}"
                     class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
@@ -10,7 +10,7 @@
                 </a>
                 <div>
                     <div class="flex items-center gap-3">
-                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">
+                        <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
                             {{ $document->document_number }}
                         </h1>
                         <x-ui.badge :status="$document->status_color" size="lg">
@@ -35,12 +35,12 @@
         </div>
     </x-slot>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 gap-5 lg:grid-cols-3">
         <!-- Main Content -->
         <div class="lg:col-span-2 space-y-6">
             <!-- Document Info -->
             <x-ui.card>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Informasi Dokumen</h2>
+                <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Informasi Dokumen</h2>
 
                 <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
@@ -82,8 +82,8 @@
 
             <!-- Content -->
             <x-ui.card>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Isi Dokumen</h2>
-                <div class="prose prose-sm dark:prose-invert max-w-none">
+                <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Isi Dokumen</h2>
+                <div class="prose prose-sm max-w-none dark:prose-invert">
                     {!! nl2br(e($document->content)) !!}
                 </div>
             </x-ui.card>
@@ -91,8 +91,8 @@
             <!-- Attachments -->
             @if($document->attachments->count())
                 <x-ui.card>
-                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Lampiran</h2>
-                    <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+                    <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Lampiran</h2>
+                    <ul class="divide-y divide-gray-200/80 dark:divide-gray-700/80">
                         @foreach($document->attachments as $attachment)
                             <li class="py-3 flex items-center justify-between">
                                 <span class="text-sm text-gray-700 dark:text-gray-300">{{ $attachment->original_name }}</span>
@@ -160,7 +160,7 @@
                 <x-ui.card>
                     <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Purchase Order</h3>
                     <a href="{{ route('finance.po.show', $document->purchaseOrder) }}"
-                        class="block p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                        class="block rounded-2xl border border-gray-200/80 bg-gray-50/80 p-4 transition hover:border-primary-200 hover:bg-primary-50/60 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
                         <p class="text-sm font-medium text-primary-600">{{ $document->purchaseOrder->po_number }}</p>
                         <p class="text-xs text-gray-500">{{ $document->purchaseOrder->vendor_name }}</p>
                     </a>
@@ -171,7 +171,7 @@
                 <x-ui.card>
                     <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Invoice</h3>
                     <a href="{{ route('finance.invoices.show', $document->invoice) }}"
-                        class="block p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                        class="block rounded-2xl border border-gray-200/80 bg-gray-50/80 p-4 transition hover:border-primary-200 hover:bg-primary-50/60 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
                         <p class="text-sm font-medium text-primary-600">{{ $document->invoice->invoice_number }}</p>
                         <p class="text-xs text-gray-500">{{ $document->invoice->vendor_name }}</p>
                     </a>

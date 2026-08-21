@@ -15,7 +15,7 @@
      <?php $__env->slot('header', null, []); ?> 
         <div class="flex items-center gap-4">
             <a href="<?php echo e(route('documents.index')); ?>"
-                class="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-gray-800 text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 shadow-sm transition-colors">
+                class="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-gray-800 text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 shadow-soft transition-colors">
                 <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon','data' => ['name' => 'arrow-left','class' => 'w-5 h-5']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -40,7 +40,7 @@
 <?php endif; ?>
             </a>
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">Buat Pengajuan Baru</h1>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Buat Pengajuan Baru</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     Pilih modul dokumen dan lengkapi form pengajuan Anda (Bisa lebih dari satu sekaligus)
                 </p>
@@ -76,7 +76,8 @@
                 icon: '<?php echo e($tpl->approval_type === 'only' ? 'document-text' : ($tpl->approval_type === 'loan' ? 'user-group' : 'banknotes')); ?>',
                 color: '<?php echo e($tpl->approval_type === 'only' ? 'blue' : ($tpl->approval_type === 'loan' ? 'pink' : 'emerald')); ?>',
                 defaultTitle: '<?php echo e(addslashes($tpl->fields['title'] ?? '')); ?>',
-                defaultDesc: '<?php echo e(addslashes($tpl->fields['description'] ?? '')); ?>'
+                defaultDesc: '<?php echo e(addslashes($tpl->fields['description'] ?? '')); ?>',
+                defaultCategory: '<?php echo e(addslashes($tpl->fields['document_category'] ?? '')); ?>'
             },
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         ],
@@ -146,10 +147,10 @@
         <!-- STEP 1: Pilih Template -->
         <div x-show="step === 1" x-transition:enter="transition ease-out duration-300"
              x-transition:enter-start="opacity-0 transform scale-95"
-             x-transition:enter-end="opacity-100 transform scale-100" class="space-y-6">
+             x-transition:enter-end="opacity-100 transform scale-100" class="space-y-7">
              
             <!-- Search Bar -->
-            <div class="relative max-w-2xl mx-auto">
+            <div class="relative mx-auto w-full max-w-3xl">
                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc = $attributes; } ?>
@@ -175,7 +176,7 @@
 <?php endif; ?>
                 </div>
                 <input type="text" x-model="searchQuery"
-                    class="block w-full pl-12 pr-4 py-4 border-none rounded-2xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-700 focus:ring-2 focus:ring-inset focus:ring-primary-500 text-lg transition-shadow"
+                    class="block w-full rounded-2xl border-0 bg-white py-4 pl-12 pr-4 text-lg text-gray-900 shadow-soft ring-1 ring-inset ring-gray-200 transition-shadow focus:ring-4 focus:ring-inset focus:ring-primary-500/20/10 dark:bg-gray-900 dark:text-white dark:ring-gray-700"
                     placeholder="Cari modul pengajuan (misal: Cuti, Dinas, Pengadaan)...">
             </div>
 
@@ -184,10 +185,10 @@
                 <div x-show="hasCategory(category)" class="space-y-4">
                     <h3 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider pl-2" x-text="category"></h3>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
                         <template x-for="tpl in getTemplatesByCategory(category)" :key="tpl.code">
                             <div @click="selectTemplate(tpl)"
-                                 class="group relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50 p-5 cursor-pointer overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                                 class="group relative cursor-pointer overflow-hidden rounded-3xl border border-gray-200/80 bg-white/90 p-5 shadow-soft backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-soft-lg dark:border-gray-700/70 dark:bg-gray-900/90">
                                  
                                 <div class="absolute right-0 top-0 w-24 h-24 bg-gradient-to-br from-white/0 to-current opacity-5 rounded-bl-[100px]" :class="`text-${tpl.color}-500`"></div>
                                 
@@ -301,7 +302,7 @@
              x-transition:enter-start="opacity-0 transform translate-y-4"
              x-transition:enter-end="opacity-100 transform translate-y-0">
              
-            <form action="<?php echo e(route('documents.store')); ?>" method="POST" enctype="multipart/form-data" class="space-y-6">
+            <form action="<?php echo e(route('documents.store')); ?>" method="POST" enctype="multipart/form-data" class="space-y-7">
                 <?php echo csrf_field(); ?>
                 
                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($errors->any()): ?>
@@ -345,7 +346,7 @@
                 <!-- Selected Module Indicator -->
                 <div class="bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 rounded-2xl p-4 flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-lg bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center text-primary-600 dark:text-primary-400">
+                        <div class="w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center text-primary-600 dark:text-primary-400">
                             <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon','data' => ['name' => 'sparkles','class' => 'w-5 h-5']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -374,24 +375,24 @@
                             <h3 class="text-base font-bold text-gray-900 dark:text-white" x-text="selectedTemplate ? selectedTemplate.name : 'Melanjutkan Form'"></h3>
                         </div>
                     </div>
-                    <button type="button" @click="resetSelection()" class="text-sm font-medium text-primary-600 hover:text-primary-700 bg-white/50 dark:bg-gray-800/50 hover:bg-white dark:hover:bg-gray-800 px-3 py-1.5 rounded-lg transition-colors border border-primary-200 dark:border-primary-700/50">
+                    <button type="button" @click="resetSelection()" class="text-sm font-medium text-primary-600 hover:text-primary-700 bg-white/50 dark:bg-gray-800/50 hover:bg-white dark:hover:bg-gray-800/80 px-3 py-1.5 rounded-xl transition-colors border border-primary-200 dark:border-primary-700/50">
                         Ganti Modul
                     </button>
                 </div>
 
                 <!-- FORM REPEATER -->
-                <div class="space-y-6">
+                <div class="space-y-7">
                     <template x-for="(form, index) in forms" :key="form.id">
-                        <div class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden transition-all duration-300">
+                        <div class="overflow-hidden rounded-3xl border border-gray-200/80 bg-white shadow-soft transition-all duration-300 dark:border-gray-700/80 dark:bg-gray-900">
                             
                             <!-- Repeater Header -->
-                            <div class="bg-gray-50/80 dark:bg-gray-900/50 px-6 py-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-700">
+                            <div class="bg-gray-50/80 dark:bg-gray-900/50 px-5 py-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-700">
                                 <h3 class="font-bold text-gray-800 dark:text-gray-200 flex items-center gap-3">
-                                    <span class="bg-primary-500 text-white w-7 h-7 rounded-full flex items-center justify-center text-sm shadow-sm" x-text="index + 1"></span>
+                                    <span class="bg-primary-500 text-white w-7 h-7 rounded-full flex items-center justify-center text-sm shadow-soft" x-text="index + 1"></span>
                                     <span>Dokumen #<span x-text="index + 1"></span></span>
                                 </h3>
                                 <button type="button" @click="removeForm(index)" x-show="forms.length > 1" 
-                                    class="text-danger-500 hover:text-danger-700 hover:bg-danger-50 dark:hover:bg-danger-900/30 px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-colors">
+                                    class="text-danger-500 hover:text-danger-700 hover:bg-danger-50 dark:hover:bg-danger-900/30 px-3 py-1.5 rounded-xl text-sm font-medium flex items-center gap-1.5 transition-colors">
                                     <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon','data' => ['name' => 'trash','class' => 'w-4 h-4']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -425,15 +426,15 @@
                                 <!-- BASIC INFO -->
                                 <div>
                                     <h4 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Informasi Utama</h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         <div class="md:col-span-2">
                                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Judul Dokumen <span class="text-danger-500">*</span></label>
                                             <input type="text" :name="`documents[${index}][title]`" required x-model="form.title"
-                                                class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                                class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10">
                                         </div>
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Prioritas <span class="text-danger-500">*</span></label>
-                                            <select :name="`documents[${index}][priority]`" required class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                            <select :name="`documents[${index}][priority]`" required class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10">
                                                 <option value="low">Rendah</option>
                                                 <option value="normal" selected>Normal</option>
                                                 <option value="high">Tinggi</option>
@@ -443,7 +444,7 @@
                                         <div class="md:col-span-2">
                                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Deskripsi <span class="text-danger-500">*</span></label>
                                             <textarea :name="`documents[${index}][description]`" rows="3" required x-model="form.description"
-                                                class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"></textarea>
+                                                class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10"></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -462,23 +463,23 @@
                                         fmt(n) { return new Intl.NumberFormat('id-ID').format(n); }
                                      }">
                                     <h4 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Detail Purchase Order</h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Vendor <span class="text-danger-500">*</span></label>
-                                            <input type="text" :name="`documents[${index}][vendor_name]`" class="block w-full px-4 py-3 border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-primary-500">
+                                            <input type="text" :name="`documents[${index}][vendor_name]`" class="block w-full px-4 py-3 border border-gray-300 rounded-xl bg-white focus:ring-4 focus:ring-primary-500/20/10">
                                         </div>
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kategori Pembelian <span class="text-danger-500">*</span></label>
-                                            <select :name="`documents[${index}][po_category]`" class="block w-full px-4 py-3 border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-primary-500">
+                                            <select :name="`documents[${index}][po_category]`" class="block w-full px-4 py-3 border border-gray-300 rounded-xl bg-white focus:ring-4 focus:ring-primary-500/20/10">
                                                 <option value="internal">Internal Use</option>
                                                 <option value="external">External / Client</option>
                                             </select>
                                         </div>
                                         <div class="md:col-span-2">
                                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rincian Barang/Jasa <span class="text-danger-500">*</span></label>
-                                            <textarea :name="`documents[${index}][item_description]`" rows="2" class="block w-full px-4 py-3 border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-primary-500"></textarea>
+                                            <textarea :name="`documents[${index}][item_description]`" rows="2" class="block w-full px-4 py-3 border border-gray-300 rounded-xl bg-white focus:ring-4 focus:ring-primary-500/20/10"></textarea>
                                         </div>
-                                        <div class="md:col-span-2 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
+                                        <div class="md:col-span-2 bg-gray-50/80 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
                                             <div class="grid grid-cols-2 gap-4">
                                                 <div>
                                                     <label class="block text-sm font-medium text-gray-700 mb-1">Subtotal (DPP) <span class="text-danger-500">*</span></label>
@@ -499,10 +500,10 @@
 
                                 <!-- OTHER TYPES (Simplified for Bulk UI demonstration, typically same as single form) -->
                                 <div x-show="approvalType === 'only'" class="pt-6 border-t border-gray-100 dark:border-gray-700">
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1">Kategori Dokumen</label>
-                                            <select :name="`documents[${index}][document_category]`" class="block w-full px-4 py-3 border border-gray-300 rounded-xl"><option value="memo">Memo</option><option value="lainnya">Lainnya</option></select>
+                                            <input type="text" :name="`documents[${index}][document_category]`" readonly :value="selectedTemplate ? selectedTemplate.defaultCategory : ''" class="block w-full px-4 py-3 border border-gray-200 bg-gray-50 rounded-xl text-gray-500 cursor-not-allowed">
                                         </div>
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Berlaku</label>
@@ -514,7 +515,7 @@
                                 <!-- ATTACHMENTS -->
                                 <div class="pt-6 border-t border-gray-100 dark:border-gray-700" x-data="{ files: [] }">
                                     <h4 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Lampiran</h4>
-                                    <label class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl cursor-pointer bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 transition-colors">
+                                    <label class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl cursor-pointer bg-gray-50/80 dark:bg-gray-800/50 hover:bg-gray-100 transition-colors">
                                         <div class="flex flex-col items-center justify-center pt-5 pb-6">
                                             <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc = $attributes; } ?>
@@ -544,7 +545,7 @@
                                     </label>
                                     <ul class="mt-3 space-y-2" x-show="files.length > 0">
                                         <template x-for="(file, fi) in files" :key="fi">
-                                            <li class="text-xs text-primary-700 bg-primary-50 p-2 rounded-lg" x-text="file.name"></li>
+                                            <li class="text-xs text-primary-700 bg-primary-50 p-2 rounded-xl" x-text="file.name"></li>
                                         </template>
                                     </ul>
                                 </div>
@@ -593,7 +594,7 @@
                 </div>
 
                 <!-- SUBMIT ACTIONS -->
-                <div class="flex items-center justify-end gap-3 sticky bottom-6 z-40 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl p-4 rounded-2xl border border-gray-200/50 shadow-2xl shadow-primary-500/10 mt-8">
+                <div class="sticky bottom-5 z-40 mt-8 flex items-center justify-end gap-3 rounded-2xl border border-gray-200/80 bg-white/95 p-4 shadow-soft-lg shadow-primary-500/10 backdrop-blur-xl dark:border-gray-700/80 dark:bg-gray-900/95">
                     <?php if (isset($component)) { $__componentOriginala8bb031a483a05f647cb99ed3a469847 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginala8bb031a483a05f647cb99ed3a469847 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.ui.button','data' => ['type' => 'button','variant' => 'secondary','@click' => 'resetSelection()']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>

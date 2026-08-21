@@ -142,8 +142,8 @@ Route::middleware(['auth', 'verified', 'active', 'has_role'])->group(function ()
         Route::get('/export', [ReportController::class, 'export'])->name('export');
     });
 
-    // Finance Routes (Role-based - Finance only)
-    Route::prefix('finance')->name('finance.')->middleware('role:finance')->group(function () {
+    // Finance Routes (Dynamic - Permissions based)
+    Route::prefix('finance')->name('finance.')->middleware('permission:manage-budget|create-po|create-invoice|manage-purchasing|print-po|print-invoice')->group(function () {
         // Dashboard
         Route::get('/', [FinanceDashboardController::class, 'index'])->name('dashboard');
 
@@ -231,8 +231,8 @@ Route::middleware(['auth', 'verified', 'active', 'has_role'])->group(function ()
         Route::get('/history', [AttendanceController::class, 'history'])->name('history');
     });
 
-    // Attendance Admin (HRD, Admin, Directors)
-    Route::prefix('attendance-admin')->name('attendance-admin.')->middleware('role:admin|hrd|hrd_coordinator|direktur_hr|presiden_direktur|manager')->group(function () {
+    // Attendance Admin (Dynamic - Permissions based)
+    Route::prefix('attendance-admin')->name('attendance-admin.')->middleware('permission:manage-attendance|view-attendance')->group(function () {
         Route::get('/report', [AttendanceController::class, 'report'])->name('report');
         Route::get('/report/export-pdf', [AttendanceController::class, 'exportPdf'])->name('export-pdf');
         Route::get('/report/export-csv', [AttendanceController::class, 'exportCsv'])->name('export-csv');
@@ -242,8 +242,8 @@ Route::middleware(['auth', 'verified', 'active', 'has_role'])->group(function ()
         Route::get('/locations', [AttendanceController::class, 'locations'])->name('locations');
         Route::post('/locations', [AttendanceController::class, 'storeLocation'])->name('locations.store');
     });
-    // Leave Reports
-    Route::prefix('leave-reports')->name('leave-reports.')->middleware('role:admin|hrd|hrd_coordinator|direktur_hr|presiden_direktur|manager')->group(function () {
+    // Leave Reports (Dynamic - Permissions based)
+    Route::prefix('leave-reports')->name('leave-reports.')->middleware('permission:view-reports|manage-attendance')->group(function () {
         Route::get('/', [\App\Http\Controllers\LeaveReportController::class, 'index'])->name('index');
     });
 });

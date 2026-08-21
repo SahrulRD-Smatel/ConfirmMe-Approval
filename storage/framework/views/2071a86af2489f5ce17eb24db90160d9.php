@@ -13,9 +13,9 @@
      <?php $__env->slot('title', null, []); ?> Kelola Pengguna <?php $__env->endSlot(); ?>
 
      <?php $__env->slot('header', null, []); ?> 
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">Kelola Pengguna</h1>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Kelola Pengguna</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     Manajemen akun pengguna sistem
                 </p>
@@ -49,25 +49,25 @@
     <!-- Filters -->
     <?php if (isset($component)) { $__componentOriginaldae4cd48acb67888a4631e1ba48f2f93 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginaldae4cd48acb67888a4631e1ba48f2f93 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.ui.card','data' => ['class' => 'mb-6']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.ui.card','data' => ['class' => 'mb-7']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('ui.card'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['class' => 'mb-6']); ?>
+<?php $component->withAttributes(['class' => 'mb-7']); ?>
 <?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
 
         <form action="<?php echo e(route('admin.users.index')); ?>" method="GET" class="flex flex-col sm:flex-row gap-4">
             <div class="flex-1">
                 <input type="text" name="search" value="<?php echo e(request('search')); ?>"
-                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
                     placeholder="Cari nama atau email...">
             </div>
             <div class="w-full sm:w-48">
                 <select name="role"
-                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
                     <option value="">Semua Role</option>
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $roles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $role): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                         <option value="<?php echo e($role->name); ?>" <?php echo e(request('role') === $role->name ? 'selected' : ''); ?>>
@@ -122,8 +122,8 @@ Filter <?php echo $__env->renderComponent(); ?>
 <?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-800">
+            <table class="min-w-[860px] w-full divide-y divide-gray-200/80 dark:divide-gray-700/80">
+                <thead class="bg-gray-50/80 dark:bg-gray-800">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                             Pengguna</th>
@@ -137,9 +137,9 @@ Filter <?php echo $__env->renderComponent(); ?>
                             Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200/80 dark:divide-gray-700/80">
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
+                        <tr class="hover:bg-primary-50/60 dark:hover:bg-gray-800/80">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center gap-3">
                                     <img src="<?php echo e($user->avatar_url); ?>" alt="<?php echo e($user->name); ?>"
@@ -208,7 +208,7 @@ Filter <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <div class="flex items-center justify-end gap-2">
+                                <div class="flex flex-wrap items-center justify-end gap-2">
                                     <a href="<?php echo e(route('admin.users.edit', $user)); ?>"
                                         class="text-primary-600 hover:text-primary-800">
                                         <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
@@ -299,7 +299,7 @@ Filter <?php echo $__env->renderComponent(); ?>
             </table>
         </div>
         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($users->hasPages()): ?>
-            <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+            <div class="px-6 py-4 border-t border-gray-200/80 dark:border-gray-700/80">
                 <?php echo e($users->links()); ?>
 
             </div>

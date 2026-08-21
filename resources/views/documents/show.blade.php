@@ -2,7 +2,7 @@
     <x-slot name="title">{{ $document->document_number }}</x-slot>
 
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex items-center gap-4">
                 <a href="{{ url()->previous() }}"
                     class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
@@ -10,7 +10,7 @@
                 </a>
                 <div>
                     <div class="flex items-center gap-3">
-                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">
+                        <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
                             {{ $document->document_number }}
                         </h1>
                         <x-ui.badge :status="$document->status_color" size="lg">
@@ -93,7 +93,7 @@
 
     {{-- Requester Amount Confirmation Banner --}}
     @if($document->status === 'pending_requester_confirmation' && (int) $document->user_id === (int) auth()->id())
-        <div class="mb-6 bg-amber-50 border-2 border-amber-300 rounded-2xl p-6 shadow-sm">
+        <div class="mb-7 rounded-3xl border border-amber-200 bg-amber-50/80 p-6 shadow-soft">
             <div class="flex items-start gap-4">
                 <div class="flex-shrink-0 w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
                     <x-icon name="exclamation-triangle" class="w-6 h-6 text-amber-600" />
@@ -125,7 +125,7 @@
                     <div class="flex flex-col sm:flex-row gap-3">
                         <form action="{{ route('documents.confirm-amount', $document) }}" method="POST" class="flex-1">
                             @csrf
-                            <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white font-bold text-sm rounded-xl transition-all hover:shadow-lg hover:shadow-green-500/25">
+                            <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-success-600 px-5 py-2.5 text-sm font-bold text-white transition-all hover:bg-success-700 hover:shadow-md">
                                 <x-icon name="check-circle" class="w-5 h-5" />
                                 Setuju dengan Nominal Baru
                             </button>
@@ -133,7 +133,7 @@
                         <form action="{{ route('documents.reject-amount', $document) }}" method="POST" class="flex-1"
                               onsubmit="confirmAction(event, 'Apakah Anda yakin ingin menolak? Dokumen ini akan dibatalkan.')">
                             @csrf
-                            <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-xl transition-all hover:shadow-lg hover:shadow-red-500/25">
+                            <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-danger-600 px-5 py-2.5 text-sm font-bold text-white transition-all hover:bg-danger-700 hover:shadow-md">
                                 <x-icon name="x-circle" class="w-5 h-5" />
                                 Tolak & Batalkan Pengajuan
                             </button>
@@ -144,12 +144,12 @@
         </div>
     @endif
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 gap-5 lg:grid-cols-3">
         <!-- Main Content -->
         <div class="lg:col-span-2 space-y-6">
             <!-- Document Info -->
             <x-ui.card>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Informasi Dokumen</h2>
+                <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Informasi Dokumen</h2>
 
                 <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
@@ -208,7 +208,7 @@
 
             <!-- Description -->
             <x-ui.card>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Deskripsi</h2>
+                <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Deskripsi</h2>
                 <div class="prose prose-sm dark:prose-invert max-w-none">
                     {!! nl2br(e($document->description)) !!}
                 </div>
@@ -220,7 +220,7 @@
                     @php $meta = $document->metadata; @endphp
 
                     @if($document->approval_type === 'only')
-                        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Detail Dokumen Administratif</h2>
+                        <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Detail Dokumen Administratif</h2>
                         <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             @if(!empty($meta['document_category']))
                                 <div>
@@ -252,7 +252,7 @@
                         </dl>
 
                     @elseif($document->approval_type === 'po')
-                        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Detail Purchase Order</h2>
+                        <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Detail Purchase Order</h2>
                         <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             @if(!empty($meta['vendor_name']))
                                 <div>
@@ -296,16 +296,16 @@
                             @endif
                         </dl>
                         @if(!empty($meta['item_description']))
-                            <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <div class="mt-4 pt-4 border-t border-gray-200/80 dark:border-gray-700/80">
                                 <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Rincian Barang/Jasa</dt>
                                 <dd
-                                    class="text-sm text-gray-900 dark:text-white whitespace-pre-line bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                                    class="text-sm text-gray-900 dark:text-white whitespace-pre-line bg-gray-50/80 dark:bg-gray-800 p-3 rounded-xl">
                                     {{ $meta['item_description'] }}</dd>
                             </div>
                         @endif
 
                     @elseif($document->approval_type === 'invoice')
-                        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Detail Invoice</h2>
+                        <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Detail Invoice</h2>
                         <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             @if(!empty($meta['invoice_number']))
                                 <div>
@@ -355,7 +355,7 @@
                         </dl>
 
                     @elseif($document->approval_type === 'loan')
-                        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Detail Pinjaman Karyawan</h2>
+                        <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Detail Pinjaman Karyawan</h2>
                         <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             @if(!empty($meta['loan_type']))
                                 <div>
@@ -398,10 +398,10 @@
                             @endif
                         </dl>
                         @if(!empty($meta['loan_reason']))
-                            <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <div class="mt-4 pt-4 border-t border-gray-200/80 dark:border-gray-700/80">
                                 <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Alasan Pinjaman</dt>
                                 <dd
-                                    class="text-sm text-gray-900 dark:text-white whitespace-pre-line bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                                    class="text-sm text-gray-900 dark:text-white whitespace-pre-line bg-gray-50/80 dark:bg-gray-800 p-3 rounded-xl">
                                     {{ $meta['loan_reason'] }}</dd>
                             </div>
                         @endif
@@ -426,12 +426,12 @@
             <!-- Attachments -->
             @if($document->attachments->count() > 0)
                 <x-ui.card>
-                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Lampiran
+                    <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Lampiran
                         ({{ $document->attachments->count() }})</h2>
                     <div class="space-y-2">
                         @foreach($document->attachments as $attachment)
                             <a href="{{ $attachment->url }}" target="_blank"
-                                class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                class="flex items-center justify-between p-3 bg-gray-50/80 dark:bg-gray-800 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                                 <div class="flex items-center gap-3">
                                     <x-icon name="document-text" class="w-5 h-5 text-gray-400" />
                                     <div>
@@ -450,14 +450,14 @@
 
             <!-- Comments -->
             <x-ui.card>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Komentar & Catatan</h2>
+                <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Komentar & Catatan</h2>
 
                 <div class="space-y-4 mb-6">
                     @forelse($document->comments as $comment)
-                        <div class="flex gap-3">
+                        <div class="flex items-start gap-3">
                             <img src="{{ $comment->user->avatar_url }}" alt="{{ $comment->user->name }}"
                                 class="w-8 h-8 rounded-full flex-shrink-0">
-                            <div class="flex-1 bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                            <div class="flex-1 rounded-2xl bg-gray-50/80 p-3 dark:bg-gray-800">
                                 <div class="flex items-center justify-between mb-1">
                                     <span
                                         class="text-sm font-medium text-gray-900 dark:text-white">{{ $comment->user->name }}</span>
@@ -474,12 +474,12 @@
                 @auth
                     <form action="{{ route('documents.comment', $document) }}" method="POST">
                         @csrf
-                        <div class="flex gap-3">
+                        <div class="flex items-start gap-3">
                             <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}"
                                 class="w-8 h-8 rounded-full flex-shrink-0">
                             <div class="flex-1">
                                 <textarea name="comment" rows="2" required
-                                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
                                     placeholder="Tambahkan komentar..."></textarea>
                                 <div class="mt-2 flex justify-end">
                                     <x-ui.button type="submit" size="sm">Kirim</x-ui.button>
@@ -495,12 +495,12 @@
         <div class="space-y-6">
             <!-- Approval Timeline -->
             <x-ui.card>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Status Approval</h2>
+                <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Status Approval</h2>
 
                 <div class="relative">
                     @foreach($document->approvals as $index => $approval)
                         <div
-                            class="flex gap-4 pb-6 {{ !$loop->last ? 'border-l-2 border-gray-200 dark:border-gray-700 ml-3' : '' }}">
+                            class="flex gap-4 pb-6 {{ !$loop->last ? 'border-l-2 border-gray-200/80 dark:border-gray-700/80 ml-3' : '' }}">
                             <div class="flex-shrink-0 -ml-3 w-6 h-6 rounded-full flex items-center justify-center
                                                             {{ $approval->status === 'approved' ? 'bg-success-500' : '' }}
                                                             {{ $approval->status === 'rejected' ? 'bg-danger-500' : '' }}
@@ -546,7 +546,7 @@
 
             <!-- Activity Log -->
             <x-ui.card>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Riwayat Aktivitas</h2>
+                <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Riwayat Aktivitas</h2>
 
                 <div class="space-y-3 max-h-80 overflow-y-auto">
                     @forelse($document->approvalLogs->take(10) as $log)
@@ -584,7 +584,7 @@
                 {{ __('Dokumen yang dihapus tidak dapat dikembalikan.') }}
             </p>
 
-            <div class="mt-6 flex justify-end">
+            <div class="mt-6 flex flex-wrap justify-end gap-3">
                 <x-secondary-button x-on:click="$dispatch('close')">
                     {{ __('Batal') }}
                 </x-secondary-button>

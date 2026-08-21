@@ -13,9 +13,9 @@
      <?php $__env->slot('title', null, []); ?> Kelola Role & Permission <?php $__env->endSlot(); ?>
 
      <?php $__env->slot('header', null, []); ?> 
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">Role & Permission</h1>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Role & Permission</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Atur hak akses secara dinamis untuk mengontrol visibilitas menu dan fitur setiap divisi.</p>
             </div>
             <?php if (isset($component)) { $__componentOriginala8bb031a483a05f647cb99ed3a469847 = $component; } ?>
@@ -59,7 +59,7 @@ Tambah Role <?php echo $__env->renderComponent(); ?>
         ?>
 
         <div x-data="{ open: false }" 
-             class="group bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
+             class="group bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden shadow-soft hover:shadow-md transition-all duration-300">
             
             
             <button @click="open = !open" 
@@ -243,7 +243,7 @@ Tambah Role <?php echo $__env->renderComponent(); ?>
                  x-collapse
                  class="border-t border-gray-100 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-800/30">
                 <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $permGroups; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $groupName => $groupPerms): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                             <?php 
                                 $activeInGroup = array_intersect($groupPerms, $rolePerms);
@@ -251,10 +251,10 @@ Tambah Role <?php echo $__env->renderComponent(); ?>
                                 $isAll = count($activeInGroup) === count($groupPerms);
                             ?>
                             
-                            <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700 shadow-sm relative overflow-hidden transition-colors <?php echo e($hasAny ? 'ring-1 ring-primary-500/20' : 'opacity-75'); ?>">
+                            <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700 shadow-soft relative overflow-hidden transition-colors <?php echo e($hasAny ? 'ring-1 ring-primary-500/20' : 'opacity-75'); ?>">
                                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isAll): ?>
                                     <div class="absolute top-0 right-0 w-16 h-16 overflow-hidden">
-                                        <div class="absolute transform rotate-45 bg-emerald-500 text-white text-[9px] font-bold py-1 right-[-35px] top-[15px] w-[120px] text-center shadow-sm">
+                                        <div class="absolute transform rotate-45 bg-emerald-500 text-white text-[9px] font-bold py-1 right-[-35px] top-[15px] w-[120px] text-center shadow-soft">
                                             FULL AKSES
                                         </div>
                                     </div>
@@ -338,14 +338,14 @@ Tambah Role <?php echo $__env->renderComponent(); ?>
                 <div class="px-6 py-4 bg-gray-100/50 dark:bg-gray-800/80 border-t border-gray-100 dark:border-gray-700/50 flex justify-end">
                     <?php if (isset($component)) { $__componentOriginala8bb031a483a05f647cb99ed3a469847 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginala8bb031a483a05f647cb99ed3a469847 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.ui.button','data' => ['href' => ''.e(route('admin.roles.edit', $role)).'','variant' => 'secondary','icon' => 'pencil','class' => 'shadow-sm']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.ui.button','data' => ['href' => ''.e(route('admin.roles.edit', $role)).'','variant' => 'secondary','icon' => 'pencil','class' => 'shadow-soft']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('ui.button'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['href' => ''.e(route('admin.roles.edit', $role)).'','variant' => 'secondary','icon' => 'pencil','class' => 'shadow-sm']); ?>
+<?php $component->withAttributes(['href' => ''.e(route('admin.roles.edit', $role)).'','variant' => 'secondary','icon' => 'pencil','class' => 'shadow-soft']); ?>
 <?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
 
                         Ubah Konfigurasi Akses

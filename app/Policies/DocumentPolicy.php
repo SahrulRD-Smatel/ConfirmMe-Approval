@@ -42,27 +42,18 @@ class DocumentPolicy
             return true;
         }
 
-        // Admin can view all
-        if ($user->hasRole('admin')) {
+        // Global view access (Admin, HRD, Directors)
+        if ($user->hasPermissionTo('view-all-documents')) {
             return true;
         }
 
-        // Directors can view all (any division director or presiden)
-        if ($user->hasAnyRole(['direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional', 'presiden_direktur'])) {
+        // Department-level view access (Manager, Supervisor)
+        if ($user->hasPermissionTo('view-department-documents') && $user->department === $document->department) {
             return true;
         }
 
-        // HRD can view all
-        if ($user->hasRole('hrd')) {
-            return true;
-        }
-
-        // Finance can view documents related to their work:
-        // - Documents with approval_type 'po' or 'invoice' (they're part of the workflow)
-        // - Documents in finance_review, approved, completed, paid status
-        // Note: We don't return false here so that the approvals check below can still catch
-        // loan documents that Finance has already approved
-        if ($user->hasRole('finance')) {
+        // Finance-specific view access
+        if ($user->hasPermissionTo('view-finance-documents')) {
             if (in_array($document->approval_type, ['po', 'invoice'])) {
                 return true;
             }
@@ -71,28 +62,8 @@ class DocumentPolicy
             }
         }
 
-        // Purchasing can view PO documents
-        if ($user->hasRole('purchasing') && $document->approval_type === 'po') {
-            return true;
-        }
-
-        // HRD Coordinator can view leave-related and HR documents
-        if ($user->hasRole('hrd_coordinator')) {
-            return true;
-        }
-
-        // Manager can view documents in their department or in manager_review status
-        if ($user->hasRole('manager')) {
-            if ($user->department === $document->department) {
-                return true;
-            }
-            if ($document->status === 'manager_review') {
-                return true;
-            }
-        }
-
-        // Supervisor can view team documents
-        if ($user->hasRole('supervisor') && $user->department === $document->department) {
+        // Feature-specific access (Purchasing)
+        if ($user->hasPermissionTo('manage-purchasing') && $document->approval_type === 'po') {
             return true;
         }
 
@@ -255,7 +226,7 @@ class DocumentPolicy
      */
     public function restore(User $user, Document $document): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasPermissionTo('view-audit-log');
     }
 
     /**

@@ -2,7 +2,7 @@
     <x-slot name="title">{{ $invoice->invoice_number }}</x-slot>
 
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex items-center gap-4">
                 <a href="{{ route('finance.invoices.index') }}"
                     class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
@@ -10,7 +10,7 @@
                 </a>
                 <div>
                     <div class="flex items-center gap-3">
-                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">
+                        <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
                             {{ $invoice->invoice_number }}
                         </h1>
                         <x-ui.badge :status="$invoice->status === 'paid' ? 'success' : ($invoice->status === 'overdue' ? 'danger' : 'warning')">
@@ -40,12 +40,12 @@
         </div>
     </x-slot>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <!-- Main Content -->
         <div class="lg:col-span-2 space-y-6">
             <!-- Invoice Info -->
             <x-ui.card>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Informasi Invoice</h2>
+                <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Informasi Invoice</h2>
 
                 <dl class="grid grid-cols-2 gap-4">
                     <div>
@@ -75,9 +75,9 @@
             <!-- Document Reference -->
             @if($invoice->document)
                 <x-ui.card>
-                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Dokumen Referensi</h2>
+                    <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Dokumen Referensi</h2>
 
-                    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <div class="flex items-center justify-between p-4 bg-gray-50/80 dark:bg-gray-800 rounded-xl">
                         <div>
                             <p class="text-sm font-medium text-gray-900 dark:text-white">
                                 {{ $invoice->document->document_number }}</p>
@@ -94,7 +94,7 @@
             <!-- Notes -->
             @if($invoice->notes)
                 <x-ui.card>
-                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Catatan</h2>
+                    <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Catatan</h2>
                     <p class="text-gray-700 dark:text-gray-300">{{ $invoice->notes }}</p>
                 </x-ui.card>
             @endif

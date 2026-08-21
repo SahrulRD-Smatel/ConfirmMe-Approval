@@ -13,9 +13,9 @@
      <?php $__env->slot('title', null, []); ?> Template Dokumen <?php $__env->endSlot(); ?>
 
      <?php $__env->slot('header', null, []); ?> 
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">Template Dokumen</h1>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Template Dokumen</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Kelola template pengajuan dokumen</p>
             </div>
             <?php if (isset($component)) { $__componentOriginala8bb031a483a05f647cb99ed3a469847 = $component; } ?>
@@ -42,7 +42,7 @@ Buat Template <?php echo $__env->renderComponent(); ?>
         </div>
      <?php $__env->endSlot(); ?>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $templates; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $template): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
             <?php if (isset($component)) { $__componentOriginaldae4cd48acb67888a4631e1ba48f2f93 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginaldae4cd48acb67888a4631e1ba48f2f93 = $attributes; } ?>
@@ -93,7 +93,7 @@ Buat Template <?php echo $__env->renderComponent(); ?>
                     <span>Tipe: <?php echo e($template->approval_type_label); ?></span>
                 </div>
 
-                <div class="flex items-center gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <div class="flex items-center gap-2 pt-4 border-t border-gray-200/80 dark:border-gray-700/80">
                     <?php if (isset($component)) { $__componentOriginala8bb031a483a05f647cb99ed3a469847 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginala8bb031a483a05f647cb99ed3a469847 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.ui.button','data' => ['href' => ''.e(route('admin.templates.edit', $template)).'','variant' => 'secondary','size' => 'sm']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>

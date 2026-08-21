@@ -2,9 +2,9 @@
     <x-slot name="title">Kelola Role & Permission</x-slot>
 
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">Role & Permission</h1>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Role & Permission</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Atur hak akses secara dinamis untuk mengontrol visibilitas menu dan fitur setiap divisi.</p>
             </div>
             <x-ui.button href="{{ route('admin.roles.create') }}" icon="plus" class="shadow-lg shadow-primary-500/30">Tambah Role</x-ui.button>
@@ -28,7 +28,7 @@
         @endphp
 
         <div x-data="{ open: false }" 
-             class="group bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
+             class="group bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden shadow-soft hover:shadow-md transition-all duration-300">
             
             {{-- Header (Clickable) --}}
             <button @click="open = !open" 
@@ -86,7 +86,7 @@
                  x-collapse
                  class="border-t border-gray-100 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-800/30">
                 <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                         @foreach($permGroups as $groupName => $groupPerms)
                             @php 
                                 $activeInGroup = array_intersect($groupPerms, $rolePerms);
@@ -94,10 +94,10 @@
                                 $isAll = count($activeInGroup) === count($groupPerms);
                             @endphp
                             
-                            <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700 shadow-sm relative overflow-hidden transition-colors {{ $hasAny ? 'ring-1 ring-primary-500/20' : 'opacity-75' }}">
+                            <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700 shadow-soft relative overflow-hidden transition-colors {{ $hasAny ? 'ring-1 ring-primary-500/20' : 'opacity-75' }}">
                                 @if($isAll)
                                     <div class="absolute top-0 right-0 w-16 h-16 overflow-hidden">
-                                        <div class="absolute transform rotate-45 bg-emerald-500 text-white text-[9px] font-bold py-1 right-[-35px] top-[15px] w-[120px] text-center shadow-sm">
+                                        <div class="absolute transform rotate-45 bg-emerald-500 text-white text-[9px] font-bold py-1 right-[-35px] top-[15px] w-[120px] text-center shadow-soft">
                                             FULL AKSES
                                         </div>
                                     </div>
@@ -136,7 +136,7 @@
                 </div>
                 
                 <div class="px-6 py-4 bg-gray-100/50 dark:bg-gray-800/80 border-t border-gray-100 dark:border-gray-700/50 flex justify-end">
-                    <x-ui.button href="{{ route('admin.roles.edit', $role) }}" variant="secondary" icon="pencil" class="shadow-sm">
+                    <x-ui.button href="{{ route('admin.roles.edit', $role) }}" variant="secondary" icon="pencil" class="shadow-soft">
                         Ubah Konfigurasi Akses
                     </x-ui.button>
                 </div>

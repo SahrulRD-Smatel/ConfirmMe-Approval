@@ -2,9 +2,9 @@
     <x-slot name="title">Approval Queue - Executive</x-slot>
 
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
                     Approval Queue
                 </h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -15,11 +15,11 @@
     </x-slot>
 
     {{-- Filters --}}
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft border border-gray-200/80 dark:border-gray-700/80 p-4 mb-6">
         <form method="GET" action="{{ route('executive.approvals') }}" class="flex flex-wrap items-center gap-4">
             <div class="flex-1 min-w-[150px]">
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Tipe</label>
-                <select name="type" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg focus:ring-purple-500 focus:border-purple-500">
+                <select name="type" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-xl focus:ring-purple-500 focus:border-purple-500">
                     <option value="">Semua Tipe</option>
                     <option value="po" {{ request('type') == 'po' ? 'selected' : '' }}>Purchase Order</option>
                     <option value="invoice" {{ request('type') == 'invoice' ? 'selected' : '' }}>Invoice</option>
@@ -28,7 +28,7 @@
             </div>
             <div class="flex-1 min-w-[150px]">
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Priority</label>
-                <select name="priority" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg focus:ring-purple-500 focus:border-purple-500">
+                <select name="priority" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-xl focus:ring-purple-500 focus:border-purple-500">
                     <option value="">Semua Priority</option>
                     <option value="urgent" {{ request('priority') == 'urgent' ? 'selected' : '' }}>Urgent</option>
                     <option value="high" {{ request('priority') == 'high' ? 'selected' : '' }}>High</option>
@@ -38,7 +38,7 @@
             </div>
             <div class="flex-1 min-w-[150px]">
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Divisi</label>
-                <select name="division" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg focus:ring-purple-500 focus:border-purple-500">
+                <select name="division" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-xl focus:ring-purple-500 focus:border-purple-500">
                     <option value="">Semua Divisi</option>
                     <option value="IT" {{ request('division') == 'IT' ? 'selected' : '' }}>IT</option>
                     <option value="HR" {{ request('division') == 'HR' ? 'selected' : '' }}>HR</option>
@@ -47,10 +47,10 @@
                 </select>
             </div>
             <div class="flex items-end gap-2">
-                <button type="submit" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg">
+                <button type="submit" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-xl">
                     Filter
                 </button>
-                <a href="{{ route('executive.approvals') }}" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 text-sm font-medium rounded-lg">
+                <a href="{{ route('executive.approvals') }}" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 text-sm font-medium rounded-xl">
                     Reset
                 </a>
             </div>
@@ -58,7 +58,7 @@
     </div>
 
     {{-- Documents Table --}}
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft border border-gray-200/80 dark:border-gray-700/80">
         @if($documents->isEmpty())
             <div class="px-6 py-16 text-center">
                 <svg class="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -69,7 +69,7 @@
             </div>
         @else
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <table class="min-w-[900px] w-full divide-y divide-gray-200/80 dark:divide-gray-700/80">
                     <thead class="bg-gray-50 dark:bg-gray-700/50">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Dokumen</th>
@@ -81,9 +81,9 @@
                             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200/80 dark:divide-gray-700/80">
                         @foreach($documents as $document)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 {{ $document->priority === 'urgent' ? 'bg-red-50 dark:bg-red-900/10' : '' }}">
+                            <tr class="hover:bg-primary-50/60 dark:hover:bg-gray-700/50 {{ $document->priority === 'urgent' ? 'bg-red-50 dark:bg-red-900/10' : '' }}">
                                 <td class="px-6 py-4">
                                     <div>
                                         <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $document->title }}</div>
@@ -149,7 +149,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right">
                                     <a href="{{ route('executive.approvals.show', $document) }}" 
-                                       class="inline-flex items-center px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg">
+                                       class="inline-flex items-center px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-xl">
                                         Review
                                     </a>
                                 </td>
@@ -160,7 +160,7 @@
             </div>
 
             {{-- Pagination --}}
-            <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+            <div class="px-6 py-4 border-t border-gray-200/80 dark:border-gray-700/80">
                 {{ $documents->withQueryString()->links() }}
             </div>
         @endif

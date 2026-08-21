@@ -13,9 +13,9 @@
      <?php $__env->slot('title', null, []); ?> Finance Dashboard <?php $__env->endSlot(); ?>
 
      <?php $__env->slot('header', null, []); ?> 
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">Finance Dashboard</h1>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Finance Dashboard</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Overview Keuangan & Approval</p>
             </div>
             <div class="flex items-center gap-2">
@@ -106,7 +106,7 @@
     
     <section class="mb-8 animate-fade-in-down">
         <h2 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Financial Health (Tahun <?php echo e(date('Y')); ?>)</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
             
             <?php if (isset($component)) { $__componentOriginal51ca8f9b5f2319ee98f72ec28ea4da42 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal51ca8f9b5f2319ee98f72ec28ea4da42 = $attributes; } ?>
@@ -220,7 +220,7 @@
     </section>
 
     
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+    <div class="mb-8 grid grid-cols-1 gap-5 lg:grid-cols-3">
         
         <div class="lg:col-span-2 space-y-8">
 
@@ -245,7 +245,7 @@
 <?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
 
                         <div class="overflow-x-auto">
-                            <table class="w-full text-sm text-left">
+                            <table class="min-w-[720px] w-full text-left text-sm">
                                 <thead class="bg-gray-50 dark:bg-gray-700/50 text-gray-500 font-medium">
                                     <tr>
                                         <th class="px-4 py-3">Dokumen</th>
@@ -254,9 +254,9 @@
                                         <th class="px-4 py-3 text-right">Aksi</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                <tbody class="divide-y divide-gray-200/80 dark:divide-gray-700/80">
                                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $approvalQueue; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $doc): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
-                                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
+                                        <tr class="hover:bg-primary-50/60 dark:hover:bg-gray-700/50 transition">
                                             <td class="px-4 py-3">
                                                 <div class="font-medium text-gray-900 dark:text-white">
                                                     <?php echo e($doc->document_number); ?></div>
@@ -325,7 +325,7 @@ Review <?php echo $__env->renderComponent(); ?>
 <?php $component->withAttributes(['class' => 'text-center py-12']); ?>
 <?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
 
-                        <div class="w-16 h-16 rounded-full bg-gray-50 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4">
+                        <div class="w-16 h-16 rounded-full bg-gray-50/80 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4">
                             <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon','data' => ['name' => 'document-check','class' => 'w-8 h-8 text-gray-300 dark:text-gray-600']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -368,16 +368,16 @@ Review <?php echo $__env->renderComponent(); ?>
             <div>
                 <h2 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
                     Analytics</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
                     
-                    <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200/80 dark:border-gray-700/80">
                         <h3 class="text-sm font-semibold mb-4 text-gray-900 dark:text-white">Cash Flow (YTD)</h3>
                         <div class="h-48">
                             <canvas id="cashFlowChart"></canvas>
                         </div>
                     </div>
                     
-                    <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200/80 dark:border-gray-700/80">
                         <h3 class="text-sm font-semibold mb-4 text-gray-900 dark:text-white">Budget vs Actual</h3>
                         <div class="h-48">
                             <canvas id="budgetChart"></canvas>
@@ -412,7 +412,7 @@ Review <?php echo $__env->renderComponent(); ?>
                 </div>
                 <div class="space-y-3">
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $outstandingInvoices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $invoice): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
-                        <div class="flex justify-between items-center text-sm p-2 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg cursor-pointer"
+                        <div class="flex justify-between items-center text-sm p-2 hover:bg-primary-50/60 dark:hover:bg-gray-700/50 rounded-xl cursor-pointer"
                             onclick="window.location='<?php echo e(route('finance.invoices.show', $invoice)); ?>'">
                             <div>
                                 <div class="font-medium text-gray-800 dark:text-gray-200"><?php echo e($invoice->invoice_number); ?>
@@ -464,7 +464,7 @@ Review <?php echo $__env->renderComponent(); ?>
                 </div>
                 <div class="space-y-3">
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $pendingPO; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $po): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
-                        <div class="flex justify-between items-center text-sm p-2 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg cursor-pointer"
+                        <div class="flex justify-between items-center text-sm p-2 hover:bg-primary-50/60 dark:hover:bg-gray-700/50 rounded-xl cursor-pointer"
                             onclick="window.location='<?php echo e(route('finance.po.show', $po)); ?>'">
                             <div>
                                 <div class="font-medium text-gray-800 dark:text-gray-200"><?php echo e($po->po_number); ?></div>
@@ -543,7 +543,7 @@ Review <?php echo $__env->renderComponent(); ?>
             <div class="grid grid-cols-2 md:grid-cols-5 gap-4 divide-x divide-gray-100 dark:divide-gray-700">
                 <div class="px-4">
                     <p class="text-xs text-gray-500">Total Outstanding</p>
-                    <p class="text-xl font-bold text-gray-900 dark:text-white"><?php echo e($loanStats['total_outstanding'] == 0 ? 'Rp 0' : 'Rp ' . number_format($loanStats['total_outstanding'] / 1000000, 1, ',', '.') . ' Jt'); ?></p>
+                    <p class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white"><?php echo e($loanStats['total_outstanding'] == 0 ? 'Rp 0' : 'Rp ' . number_format($loanStats['total_outstanding'] / 1000000, 1, ',', '.') . ' Jt'); ?></p>
                 </div>
                 <div class="px-4">
                     <p class="text-xs text-gray-500">Aktif</p>

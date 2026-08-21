@@ -8,7 +8,7 @@
                 <x-icon name="arrow-left" class="w-5 h-5" />
             </a>
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">Edit {{ $po->po_number }}</h1>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Edit {{ $po->po_number }}</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     Ubah data Purchase Order
                 </p>
@@ -21,7 +21,7 @@
         @method('PUT')
 
         @if($errors->any())
-            <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+            <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl">
                 <strong class="font-bold">Error!</strong>
                 <ul class="mt-2 list-disc list-inside">
                     @foreach($errors->all() as $error)
@@ -31,12 +31,12 @@
             </div>
         @endif
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
             <!-- Main Form -->
             <div class="lg:col-span-2 space-y-6">
                 <!-- Vendor Information -->
                 <x-ui.card>
-                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Informasi Vendor</h2>
+                    <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Informasi Vendor</h2>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="md:col-span-2">
@@ -46,7 +46,7 @@
                             </label>
                             <input type="text" name="vendor_name" id="vendor_name"
                                 value="{{ old('vendor_name', $po->vendor_name) }}" required
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10">
                         </div>
 
                         <div class="md:col-span-2">
@@ -55,7 +55,7 @@
                                 Alamat Vendor
                             </label>
                             <textarea name="vendor_address" id="vendor_address" rows="2"
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">{{ old('vendor_address', $po->vendor_address) }}</textarea>
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10">{{ old('vendor_address', $po->vendor_address) }}</textarea>
                         </div>
 
                         <div>
@@ -65,7 +65,7 @@
                             </label>
                             <input type="text" name="vendor_phone" id="vendor_phone"
                                 value="{{ old('vendor_phone', $po->vendor_phone) }}"
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10">
                         </div>
 
                         <div>
@@ -75,14 +75,14 @@
                             </label>
                             <input type="email" name="vendor_email" id="vendor_email"
                                 value="{{ old('vendor_email', $po->vendor_email) }}"
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10">
                         </div>
                     </div>
                 </x-ui.card>
 
                 <!-- Order Details -->
                 <x-ui.card>
-                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Detail Pesanan</h2>
+                    <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Detail Pesanan</h2>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div>
@@ -92,7 +92,7 @@
                             </label>
                             <input type="date" name="order_date" id="order_date"
                                 value="{{ old('order_date', $po->order_date->format('Y-m-d')) }}" required
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10">
                         </div>
 
                         <div>
@@ -102,7 +102,7 @@
                             </label>
                             <input type="date" name="expected_delivery_date" id="expected_delivery_date"
                                 value="{{ old('expected_delivery_date', $po->expected_delivery_date?->format('Y-m-d')) }}"
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10">
                         </div>
                     </div>
 
@@ -115,22 +115,22 @@
                                 <div class="col-span-4">
                                     <input type="text" :name="'items['+index+'][item_name]'" x-model="item.name"
                                         required placeholder="Nama Item"
-                                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                                 </div>
                                 <div class="col-span-2">
                                     <input type="number" :name="'items['+index+'][quantity]'" x-model="item.qty"
                                         @input="calculateTotal()" required min="1" placeholder="Qty"
-                                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                                 </div>
                                 <div class="col-span-2">
                                     <input type="text" :name="'items['+index+'][unit]'" x-model="item.unit" required
                                         placeholder="Unit"
-                                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                                 </div>
                                 <div class="col-span-3">
                                     <input type="number" :name="'items['+index+'][unit_price]'" x-model="item.price"
                                         @input="calculateTotal()" required min="0" placeholder="Harga Satuan"
-                                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                                 </div>
                                 <div class="col-span-1 flex justify-center">
                                     <button type="button" @click="removeItem(index)"
@@ -150,7 +150,7 @@
 
                 <!-- Additional Info -->
                 <x-ui.card>
-                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Informasi Tambahan</h2>
+                    <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Informasi Tambahan</h2>
 
                     <div class="space-y-4">
                         <div>
@@ -160,7 +160,7 @@
                             </label>
                             <input type="number" name="tax_amount" id="tax_amount" x-model="tax"
                                 @input="calculateTotal()" min="0"
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10">
                         </div>
 
                         <div>
@@ -169,7 +169,7 @@
                                 Syarat & Ketentuan
                             </label>
                             <textarea name="terms_conditions" id="terms_conditions" rows="3"
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">{{ old('terms_conditions', $po->terms_conditions) }}</textarea>
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10">{{ old('terms_conditions', $po->terms_conditions) }}</textarea>
                         </div>
 
                         <div>
@@ -177,14 +177,14 @@
                                 Catatan
                             </label>
                             <textarea name="notes" id="notes" rows="2"
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">{{ old('notes', $po->notes) }}</textarea>
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10">{{ old('notes', $po->notes) }}</textarea>
                         </div>
                     </div>
                 </x-ui.card>
             </div>
 
             <!-- Sidebar -->
-            <div class="space-y-6">
+            <div class="space-y-7">
                 <!-- Document Info -->
                 @if($po->document)
                     <x-ui.card>

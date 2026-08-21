@@ -9,7 +9,7 @@
             </a>
             <div>
                 <div class="flex items-center gap-3">
-                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">
+                    <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
                         {{ $document->document_number }}
                     </h1>
                     <x-ui.badge :status="$document->priority_color" size="lg">
@@ -23,12 +23,12 @@
         </div>
     </x-slot>
 
-    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 gap-5 xl:grid-cols-3">
         <!-- Main Content -->
         <div class="xl:col-span-2 space-y-6">
             <!-- Document Info -->
             <x-ui.card>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">{{ $document->title }}</h2>
+                <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ $document->title }}</h2>
 
                 <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                     <div>
@@ -80,7 +80,7 @@
                     @endif
                 </dl>
 
-                <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                <div class="border-t border-gray-200/80 dark:border-gray-700/80 pt-4">
                     <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Deskripsi</h3>
                     <div class="prose prose-sm dark:prose-invert max-w-none">
                         {!! nl2br(e($document->description)) !!}
@@ -91,14 +91,14 @@
             <!-- Attachments -->
             @if($document->attachments->count() > 0)
                 <x-ui.card>
-                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Lampiran
+                    <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Lampiran
                         ({{ $document->attachments->count() }})</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         @foreach($document->attachments as $attachment)
                             <a href="{{ $attachment->url }}" target="_blank"
-                                class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                class="flex items-center gap-3 p-3 bg-gray-50/80 dark:bg-gray-800 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                                 <div
-                                    class="flex-shrink-0 w-10 h-10 rounded-lg bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+                                    class="flex-shrink-0 w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
                                     <x-icon name="document-text" class="w-5 h-5 text-primary-600 dark:text-primary-400" />
                                 </div>
                                 <div class="flex-1 min-w-0">
@@ -119,11 +119,11 @@
             @endphp
             @if($previousApprovals->count() > 0)
                 <x-ui.card>
-                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Approval Sebelumnya</h2>
+                    <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Approval Sebelumnya</h2>
                     <div class="space-y-3">
                         @foreach($previousApprovals as $approval)
                             <div
-                                class="flex items-start gap-3 p-3 rounded-lg {{ $approval->status === 'approved' ? 'bg-success-50 dark:bg-success-900/20' : 'bg-danger-50 dark:bg-danger-900/20' }}">
+                                class="flex items-start gap-3 p-3 rounded-xl {{ $approval->status === 'approved' ? 'bg-success-50 dark:bg-success-900/20' : 'bg-danger-50 dark:bg-danger-900/20' }}">
                                 <div
                                     class="flex-shrink-0 w-10 h-10 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center">
                                     @if($approval->status === 'approved')
@@ -162,7 +162,7 @@
         <div class="space-y-6">
             <!-- Approval Form -->
             <x-ui.card>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Keputusan Anda</h2>
+                <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Keputusan Anda</h2>
 
                 <div x-data="{ 
                     action: null, 
@@ -179,24 +179,24 @@
                     reviseComment: ''
                 }" class="space-y-4">
                     <!-- Action Buttons -->
-                    <div class="grid grid-cols-3 gap-3">
+                    <div class="grid grid-cols-3 gap-2">
                         <button type="button" @click="action = 'approve'"
                             :class="action === 'approve' ? 'ring-2 ring-success-500 bg-success-50 dark:bg-success-900/30' : 'bg-gray-50 dark:bg-gray-800'"
-                            class="flex flex-col items-center justify-center p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-success-300 transition-all">
+                            class="flex flex-col items-center justify-center p-4 rounded-xl border border-gray-200/80 dark:border-gray-700/80 hover:border-success-300 transition-all">
                             <x-icon name="check-circle" class="w-8 h-8 text-success-600 mb-2" />
                             <span class="text-sm font-medium text-gray-900 dark:text-white">Setujui</span>
                         </button>
 
                         <button type="button" @click="action = 'revise'"
                             :class="action === 'revise' ? 'ring-2 ring-amber-500 bg-amber-50 dark:bg-amber-900/30' : 'bg-gray-50 dark:bg-gray-800'"
-                            class="flex flex-col items-center justify-center p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-amber-300 transition-all">
+                            class="flex flex-col items-center justify-center p-4 rounded-xl border border-gray-200/80 dark:border-gray-700/80 hover:border-amber-300 transition-all">
                             <x-icon name="pencil-square" class="w-8 h-8 text-amber-600 mb-2" />
                             <span class="text-sm font-medium text-gray-900 dark:text-white">Revisi</span>
                         </button>
 
                         <button type="button" @click="action = 'reject'"
                             :class="action === 'reject' ? 'ring-2 ring-danger-500 bg-danger-50 dark:bg-danger-900/30' : 'bg-gray-50 dark:bg-gray-800'"
-                            class="flex flex-col items-center justify-center p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-danger-300 transition-all">
+                            class="flex flex-col items-center justify-center p-4 rounded-xl border border-gray-200/80 dark:border-gray-700/80 hover:border-danger-300 transition-all">
                             <x-icon name="x-circle" class="w-8 h-8 text-danger-600 mb-2" />
                             <span class="text-sm font-medium text-gray-900 dark:text-white">Tolak</span>
                         </button>
@@ -215,7 +215,7 @@
                                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">Rp</span>
                                     <input type="text" id="approved_amount"
                                         value="{{ $document->estimated_budget ?? 0 }}"
-                                        class="currency-input block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                        class="currency-input block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
                                         inputmode="numeric"
                                         @currency-change="approvedAmount = $event.detail.value">
                                 </div>
@@ -228,12 +228,12 @@
                                 Catatan (Opsional)
                             </label>
                             <textarea x-model="approveComment" id="approve_comment" rows="3"
-                                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
                                 placeholder="Tambahkan catatan..."></textarea>
                         </div>
 
                         <button type="button" @click="showConfirmModal = true"
-                            class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-success-600 hover:bg-success-700 text-white font-medium rounded-lg transition-colors">
+                            class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-success-600 hover:bg-success-700 text-white font-medium rounded-xl transition-colors">
                             <x-icon name="check-circle" class="w-5 h-5" />
                             Lanjutkan Persetujuan
                         </button>
@@ -247,13 +247,13 @@
                                 Alasan Penolakan <span class="text-danger-500">*</span>
                             </label>
                             <textarea x-model="rejectComment" id="reject_comment" rows="3"
-                                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
                                 placeholder="Jelaskan alasan penolakan..."></textarea>
                         </div>
 
                         <button type="button"
                             @click="rejectComment.trim() ? showConfirmModal = true : showAlert('Alasan penolakan wajib diisi')"
-                            class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-danger-600 hover:bg-danger-700 text-white font-medium rounded-lg transition-colors">
+                            class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-danger-600 hover:bg-danger-700 text-white font-medium rounded-xl transition-colors">
                             <x-icon name="x-circle" class="w-5 h-5" />
                             Lanjutkan Penolakan
                         </button>
@@ -261,7 +261,7 @@
 
                     <!-- Revise Form -->
                     <div x-show="action === 'revise'" x-transition class="space-y-4">
-                        <div class="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
+                        <div class="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800">
                             <p class="text-sm text-amber-800 dark:text-amber-300">
                                 <x-icon name="information-circle" class="w-4 h-4 inline" />
                                 Dokumen akan dikembalikan ke pengaju untuk direvisi. Tuliskan catatan revisi yang jelas agar pengaju mengetahui apa yang perlu diperbaiki.
@@ -273,13 +273,13 @@
                                 Catatan Revisi <span class="text-danger-500">*</span>
                             </label>
                             <textarea x-model="reviseComment" rows="3"
-                                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                                 placeholder="Tuliskan catatan revisi, misalnya: Mohon lampirkan surat penawaran vendor..."></textarea>
                         </div>
 
                         <button type="button"
                             @click="reviseComment.trim() ? showConfirmModal = true : showAlert('Catatan revisi wajib diisi')"
-                            class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-medium rounded-lg transition-colors">
+                            class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-medium rounded-xl transition-colors">
                             <x-icon name="pencil-square" class="w-5 h-5" />
                             Minta Revisi
                         </button>
@@ -287,9 +287,9 @@
 
                     <!-- Confirmation Modal -->
                     <div x-show="showConfirmModal" x-transition
-                        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+                        class="fixed inset-0 z-50 flex items-center justify-center bg-gray-950/70 p-4 backdrop-blur-sm"
                         @click.self="showConfirmModal = false" style="display: none;">
-                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6" @click.stop>
+                        <div class="w-full max-w-md rounded-3xl border border-gray-200/80 bg-white p-6 shadow-soft-lg dark:border-gray-700 dark:bg-gray-900" @click.stop>
                             <!-- Approve Confirmation -->
                             <template x-if="action === 'approve'">
                                 <div>
@@ -313,11 +313,11 @@
 
                                         <div class="flex gap-3">
                                             <button type="button" @click="showConfirmModal = false"
-                                                class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                                class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-primary-50/60 dark:hover:bg-gray-700 transition-colors">
                                                 Batal
                                             </button>
                                             <button type="submit" data-loading-text="Menyetujui..."
-                                                class="flex-1 px-4 py-2 bg-success-600 hover:bg-success-700 text-white rounded-lg transition-colors">
+                                                class="flex-1 px-4 py-2 bg-success-600 hover:bg-success-700 text-white rounded-xl transition-colors">
                                                 Ya, Setujui
                                             </button>
                                         </div>
@@ -346,11 +346,11 @@
 
                                         <div class="flex gap-3">
                                             <button type="button" @click="showConfirmModal = false"
-                                                class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                                class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-primary-50/60 dark:hover:bg-gray-700 transition-colors">
                                                 Batal
                                             </button>
                                             <button type="submit" data-loading-text="Menolak..."
-                                                class="flex-1 px-4 py-2 bg-danger-600 hover:bg-danger-700 text-white rounded-lg transition-colors">
+                                                class="flex-1 px-4 py-2 bg-danger-600 hover:bg-danger-700 text-white rounded-xl transition-colors">
                                                 Ya, Tolak
                                             </button>
                                         </div>
@@ -379,11 +379,11 @@
 
                                         <div class="flex gap-3">
                                             <button type="button" @click="showConfirmModal = false"
-                                                class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                                class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-primary-50/60 dark:hover:bg-gray-700 transition-colors">
                                                 Batal
                                             </button>
                                             <button type="submit" data-loading-text="Mengirim..."
-                                                class="flex-1 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-colors">
+                                                class="flex-1 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl transition-colors">
                                                 Ya, Minta Revisi
                                             </button>
                                         </div>
@@ -397,7 +397,7 @@
 
             <!-- Approval Progress -->
             <x-ui.card>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Status Approval</h2>
+                <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Status Approval</h2>
 
                 <div class="space-y-3">
                     @foreach($document->approvals as $approval)

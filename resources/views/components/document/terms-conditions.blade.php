@@ -36,10 +36,10 @@
 @endphp
 
 @if($terms)
-<div class="terms-conditions mt-6 print:mt-4 text-xs text-gray-700 print:text-black">
-    <div class="border border-gray-300 rounded p-4 bg-gray-50 print:bg-white">
+<div class="terms-conditions mt-7 text-xs leading-6 text-gray-700 print:mt-4 print:text-black">
+    <div class="rounded-2xl border border-gray-200 bg-gray-50/80 p-5 shadow-sm print:bg-white">
         <h4 class="font-bold mb-2">{{ $terms['title'] }}</h4>
-        <ol class="list-decimal list-inside space-y-1">
+        <ol class="list-decimal list-inside space-y-2">
             @foreach($terms['items'] as $item)
                 <li class="text-justify leading-relaxed">{{ $item }}</li>
             @endforeach

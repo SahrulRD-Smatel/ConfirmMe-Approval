@@ -4,7 +4,7 @@
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in-down">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">Laporan Dokumen</h1>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Laporan Dokumen</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     Detail semua dokumen berdasarkan filter
                 </p>
@@ -16,12 +16,12 @@
     </x-slot>
 
     {{-- Filters --}}
-    <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm mb-6">
+    <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200/80 dark:border-gray-700/80 shadow-soft mb-6">
         <form method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             <div>
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Status</label>
                 <select name="status"
-                    class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-primary-500 focus:border-primary-500">
+                    class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:ring-primary-500/20 focus:border-primary-500">
                     <option value="">Semua Status</option>
                     <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>Draft</option>
                     <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
@@ -33,7 +33,7 @@
             <div>
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Tipe Approval</label>
                 <select name="approval_type"
-                    class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-primary-500 focus:border-primary-500">
+                    class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:ring-primary-500/20 focus:border-primary-500">
                     <option value="">Semua Tipe</option>
                     <option value="only" {{ request('approval_type') === 'only' ? 'selected' : '' }}>Approval Only</option>
                     <option value="po" {{ request('approval_type') === 'po' ? 'selected' : '' }}>Purchase Order</option>
@@ -44,17 +44,17 @@
             <div>
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Dari Tanggal</label>
                 <input type="date" name="from_date" value="{{ request('from_date') }}"
-                    class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-primary-500 focus:border-primary-500">
+                    class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:ring-primary-500/20 focus:border-primary-500">
             </div>
             <div>
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Sampai Tanggal</label>
                 <input type="date" name="to_date" value="{{ request('to_date') }}"
-                    class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-primary-500 focus:border-primary-500">
+                    class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:ring-primary-500/20 focus:border-primary-500">
             </div>
             <div>
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Departemen</label>
                 <input type="text" name="department" value="{{ request('department') }}" placeholder="Semua"
-                    class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-primary-500 focus:border-primary-500">
+                    class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:ring-primary-500/20 focus:border-primary-500">
             </div>
             <div class="sm:col-span-2 lg:col-span-5 flex items-center gap-2">
                 <x-ui.button type="submit" icon="funnel" size="sm">Filter</x-ui.button>
@@ -68,10 +68,10 @@
     </div>
 
     {{-- Documents Table --}}
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200/80 dark:border-gray-700/80 shadow-soft overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-800">
+            <table class="min-w-[1000px] w-full divide-y divide-gray-200/80 dark:divide-gray-700/80">
+                <thead class="bg-gray-50/80 dark:bg-gray-800">
                     <tr>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">No. Dokumen</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Judul</th>
@@ -85,7 +85,7 @@
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                     @forelse($documents as $document)
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
+                        <tr class="hover:bg-primary-50/60 dark:hover:bg-gray-700/50 transition">
                             <td class="px-4 py-3 font-mono text-xs text-gray-600 dark:text-gray-400">
                                 {{ $document->document_number }}
                             </td>
@@ -150,7 +150,7 @@
         </div>
 
         @if($documents->hasPages())
-            <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+            <div class="px-4 py-3 border-t border-gray-200/80 dark:border-gray-700/80">
                 {{ $documents->links() }}
             </div>
         @endif

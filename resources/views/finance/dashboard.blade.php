@@ -2,9 +2,9 @@
     <x-slot name="title">Finance Dashboard</x-slot>
 
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">Finance Dashboard</h1>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Finance Dashboard</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Overview Keuangan & Approval</p>
             </div>
             <div class="flex items-center gap-2">
@@ -35,7 +35,7 @@
     {{-- SECTION 1: Financial Health (Budget KPIs) --}}
     <section class="mb-8 animate-fade-in-down">
         <h2 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Financial Health (Tahun {{ date('Y') }})</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
             {{-- Total Budget --}}
             <x-ui.stat-card title="Total Budget" :value="'Rp ' . number_format($budgetKPIs['total'] / 1000000000, 1, ',', '.') . ' M'" icon="banknotes" color="primary">
                 <p class="text-xs text-gray-500 mt-1">Rp {{ number_format($budgetKPIs['total'], 0, ',', '.') }}</p>
@@ -69,7 +69,7 @@
     </section>
 
     {{-- SECTION 2: Action Center (Layout Grid: 2/3 Content + 1/3 Side) --}}
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+    <div class="mb-8 grid grid-cols-1 gap-5 lg:grid-cols-3">
         {{-- Main Column: Approval Queue & Charts --}}
         <div class="lg:col-span-2 space-y-8">
 
@@ -83,7 +83,7 @@
                 @if($approvalQueue->count() > 0)
                     <x-ui.card :padding="false">
                         <div class="overflow-x-auto">
-                            <table class="w-full text-sm text-left">
+                            <table class="min-w-[720px] w-full text-left text-sm">
                                 <thead class="bg-gray-50 dark:bg-gray-700/50 text-gray-500 font-medium">
                                     <tr>
                                         <th class="px-4 py-3">Dokumen</th>
@@ -92,9 +92,9 @@
                                         <th class="px-4 py-3 text-right">Aksi</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                <tbody class="divide-y divide-gray-200/80 dark:divide-gray-700/80">
                                     @foreach($approvalQueue as $doc)
-                                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
+                                        <tr class="hover:bg-primary-50/60 dark:hover:bg-gray-700/50 transition">
                                             <td class="px-4 py-3">
                                                 <div class="font-medium text-gray-900 dark:text-white">
                                                     {{ $doc->document_number }}</div>
@@ -122,7 +122,7 @@
                     </x-ui.card>
                 @else
                     <x-ui.card class="text-center py-12">
-                        <div class="w-16 h-16 rounded-full bg-gray-50 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4">
+                        <div class="w-16 h-16 rounded-full bg-gray-50/80 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4">
                             <x-icon name="document-check" class="w-8 h-8 text-gray-300 dark:text-gray-600" />
                         </div>
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-1">Semua Selesai!</h3>
@@ -135,16 +135,16 @@
             <div>
                 <h2 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
                     Analytics</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
                     {{-- Cash Flow --}}
-                    <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200/80 dark:border-gray-700/80">
                         <h3 class="text-sm font-semibold mb-4 text-gray-900 dark:text-white">Cash Flow (YTD)</h3>
                         <div class="h-48">
                             <canvas id="cashFlowChart"></canvas>
                         </div>
                     </div>
                     {{-- Budget vs Actual --}}
-                    <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200/80 dark:border-gray-700/80">
                         <h3 class="text-sm font-semibold mb-4 text-gray-900 dark:text-white">Budget vs Actual</h3>
                         <div class="h-48">
                             <canvas id="budgetChart"></canvas>
@@ -167,7 +167,7 @@
                 </div>
                 <div class="space-y-3">
                     @forelse($outstandingInvoices as $invoice)
-                        <div class="flex justify-between items-center text-sm p-2 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg cursor-pointer"
+                        <div class="flex justify-between items-center text-sm p-2 hover:bg-primary-50/60 dark:hover:bg-gray-700/50 rounded-xl cursor-pointer"
                             onclick="window.location='{{ route('finance.invoices.show', $invoice) }}'">
                             <div>
                                 <div class="font-medium text-gray-800 dark:text-gray-200">{{ $invoice->invoice_number }}
@@ -197,7 +197,7 @@
                 </div>
                 <div class="space-y-3">
                     @forelse($pendingPO as $po)
-                        <div class="flex justify-between items-center text-sm p-2 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg cursor-pointer"
+                        <div class="flex justify-between items-center text-sm p-2 hover:bg-primary-50/60 dark:hover:bg-gray-700/50 rounded-xl cursor-pointer"
                             onclick="window.location='{{ route('finance.po.show', $po) }}'">
                             <div>
                                 <div class="font-medium text-gray-800 dark:text-gray-200">{{ $po->po_number }}</div>
@@ -236,7 +236,7 @@
             <div class="grid grid-cols-2 md:grid-cols-5 gap-4 divide-x divide-gray-100 dark:divide-gray-700">
                 <div class="px-4">
                     <p class="text-xs text-gray-500">Total Outstanding</p>
-                    <p class="text-xl font-bold text-gray-900 dark:text-white">{{ $loanStats['total_outstanding'] == 0 ? 'Rp 0' : 'Rp ' . number_format($loanStats['total_outstanding'] / 1000000, 1, ',', '.') . ' Jt' }}</p>
+                    <p class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ $loanStats['total_outstanding'] == 0 ? 'Rp 0' : 'Rp ' . number_format($loanStats['total_outstanding'] / 1000000, 1, ',', '.') . ' Jt' }}</p>
                 </div>
                 <div class="px-4">
                     <p class="text-xs text-gray-500">Aktif</p>

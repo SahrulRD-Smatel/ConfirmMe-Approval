@@ -3,11 +3,11 @@
     
     <x-slot name="header">
         <div class="flex items-center gap-4">
-            <a href="{{ route('admin.roles.index') }}" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-gray-800 text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 shadow-sm transition-colors">
+            <a href="{{ route('admin.roles.index') }}" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-gray-800 text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 shadow-soft transition-colors">
                 <x-icon name="arrow-left" class="w-5 h-5" />
             </a>
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
                     {{ isset($role) ? 'Konfigurasi Hak Akses' : 'Tambah Role Baru' }}
                 </h1>
                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -21,11 +21,11 @@
         @csrf
         @if(isset($role)) @method('PUT') @endif
         
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 xl:gap-8 relative">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-5 xl:gap-8 relative">
             
             {{-- Left Panel: Role Information --}}
             <div class="lg:col-span-1">
-                <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50 p-6 shadow-sm sticky top-24">
+                <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50 p-6 shadow-soft sticky top-24">
                     <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Informasi Role</h3>
                     
                     <div class="space-y-4">
@@ -33,7 +33,7 @@
                             <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nama Role <span class="text-danger-500">*</span></label>
                             <input type="text" name="name" value="{{ old('name', $role->name ?? '') }}" required
                                    {{ isset($role) && in_array($role->name, ['admin', 'staff', 'supervisor', 'hrd', 'direktur', 'finance', 'purchasing', 'direktur_operasional', 'hrd_coordinator', 'manager', 'direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'presiden_direktur']) ? 'readonly' : '' }}
-                                   class="block w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all font-medium
+                                   class="block w-full px-4 py-3 border border-gray-200/80 dark:border-gray-700/80 rounded-xl bg-gray-50/80 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10 transition-all font-medium
                                           {{ isset($role) && in_array($role->name, ['admin', 'staff', 'supervisor', 'hrd', 'direktur', 'finance', 'purchasing', 'direktur_operasional', 'hrd_coordinator', 'manager', 'direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'presiden_direktur']) ? 'opacity-75 cursor-not-allowed' : '' }}">
                             @error('name')<p class="mt-2 text-sm text-danger-600 font-medium">{{ $message }}</p>@enderror
                             
@@ -65,16 +65,16 @@
                 <div x-data="{ 
                         groupOpen: true,
                         toggleAll(e) {
-                            const checkboxes = this.$el.querySelectorAll('input[type=checkbox]:not(.group-toggle)');
+                            const checkboxes = this.$root.querySelectorAll('input[type=checkbox]:not(.group-toggle)');
                             checkboxes.forEach(cb => cb.checked = e.target.checked);
                         }
                      }" 
-                     class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden shadow-sm">
+                     class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden shadow-soft">
                     
                     {{-- Group Header --}}
                     <div class="bg-gray-50/80 dark:bg-gray-800/80 px-6 py-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-700/50 cursor-pointer" @click="groupOpen = !groupOpen">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-lg bg-white dark:bg-gray-900 flex items-center justify-center shadow-sm text-primary-600">
+                            <div class="w-10 h-10 rounded-xl bg-white dark:bg-gray-900 flex items-center justify-center shadow-soft text-primary-600">
                                 @if($groupName == 'Dokumen') <x-icon name="document-text" class="w-5 h-5" />
                                 @elseif($groupName == 'Keuangan') <x-icon name="banknotes" class="w-5 h-5" />
                                 @elseif($groupName == 'Laporan') <x-icon name="presentation-chart-bar" class="w-5 h-5" />
@@ -108,7 +108,7 @@
                         <div class="p-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-y-4 gap-x-8">
                             @foreach($groupPerms as $perm)
                                 @php $hasPerm = isset($role) ? $role->hasPermissionTo($perm) : false; @endphp
-                                <label class="flex items-center justify-between group cursor-pointer p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors border border-transparent hover:border-gray-100 dark:hover:border-gray-700/50">
+                                <label class="flex items-center justify-between group cursor-pointer p-3 rounded-xl hover:bg-primary-50/60 dark:hover:bg-gray-800/80/50 transition-colors border border-transparent hover:border-gray-100 dark:hover:border-gray-700/50">
                                     <span class="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">{{ str_replace('-', ' ', $perm) }}</span>
                                     <div class="relative inline-flex items-center">
                                         <input type="checkbox" name="permissions[]" value="{{ $perm }}" class="sr-only peer" {{ $hasPerm ? 'checked' : '' }}>

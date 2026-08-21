@@ -1,5 +1,5 @@
 <x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
+    <div class="mb-6 rounded-2xl border border-gray-200/80 bg-gray-50/80 p-4 text-sm leading-6 text-gray-600 dark:border-gray-800 dark:bg-gray-800/60 dark:text-gray-400">
         {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
     </div>
 
@@ -16,7 +16,7 @@
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
-        <div class="flex items-center justify-end mt-4">
+        <div class="mt-6 flex flex-wrap items-center justify-end gap-3">
             <x-ui.button variant="primary" type="submit">
                 {{ __('Email Password Reset Link') }}
             </x-ui.button>

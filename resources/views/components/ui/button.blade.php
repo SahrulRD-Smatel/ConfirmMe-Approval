@@ -8,16 +8,16 @@
 ])
 
 @php
-$baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
+$baseClasses = 'inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50';
 
 $variants = [
-    'primary' => 'bg-primary-800 text-white hover:bg-primary-900 focus:ring-primary-500 shadow-sm hover:shadow-md',
-    'secondary' => 'bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-500 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600',
-    'success' => 'bg-success-600 text-white hover:bg-success-700 focus:ring-success-500 shadow-sm hover:shadow-md',
-    'danger' => 'bg-danger-600 text-white hover:bg-danger-700 focus:ring-danger-500 shadow-sm hover:shadow-md',
-    'warning' => 'bg-warning-500 text-white hover:bg-warning-600 focus:ring-warning-500 shadow-sm hover:shadow-md',
-    'ghost' => 'bg-transparent text-gray-600 hover:bg-gray-100 focus:ring-gray-500 dark:text-gray-300 dark:hover:bg-gray-800',
-    'outline' => 'border-2 border-primary-800 text-primary-800 hover:bg-primary-50 focus:ring-primary-500 dark:text-primary-400 dark:border-primary-400',
+    'primary' => 'bg-primary-700 text-white shadow-sm hover:bg-primary-800 hover:shadow-md focus:ring-primary-500/20',
+    'secondary' => 'border border-gray-200 bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700',
+    'success' => 'bg-success-600 text-white shadow-sm hover:bg-success-700 hover:shadow-md focus:ring-success-500/20',
+    'danger' => 'bg-danger-600 text-white shadow-sm hover:bg-danger-700 hover:shadow-md focus:ring-danger-500/20',
+    'warning' => 'bg-warning-500 text-white shadow-sm hover:bg-warning-600 hover:shadow-md focus:ring-warning-500/20',
+    'ghost' => 'bg-transparent text-gray-600 hover:bg-gray-100 focus:ring-gray-500/20 dark:text-gray-300 dark:hover:bg-gray-800',
+    'outline' => 'border border-primary-700 text-primary-700 hover:bg-primary-50 focus:ring-primary-500/20 dark:border-primary-400 dark:text-primary-300',
 ];
 
 $sizes = [

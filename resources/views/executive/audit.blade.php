@@ -2,9 +2,9 @@
     <x-slot name="title">Audit & History - Executive</x-slot>
 
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
                     Audit & History
                 </h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -15,11 +15,11 @@
     </x-slot>
 
     {{-- Filters --}}
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft border border-gray-200/80 dark:border-gray-700/80 p-4 mb-6">
         <form method="GET" class="flex flex-wrap items-end gap-4">
             <div class="flex-1 min-w-[120px]">
                 <label class="block text-xs font-medium text-gray-500 mb-1">Tipe</label>
-                <select name="type" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg">
+                <select name="type" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-xl">
                     <option value="">Semua Tipe</option>
                     <option value="po" {{ request('type') == 'po' ? 'selected' : '' }}>PO</option>
                     <option value="invoice" {{ request('type') == 'invoice' ? 'selected' : '' }}>Invoice</option>
@@ -28,11 +28,11 @@
             </div>
             <div class="flex-1 min-w-[120px]">
                 <label class="block text-xs font-medium text-gray-500 mb-1">Dari Tanggal</label>
-                <input type="date" name="from" value="{{ request('from') }}" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg">
+                <input type="date" name="from" value="{{ request('from') }}" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-xl">
             </div>
             <div class="flex-1 min-w-[120px]">
                 <label class="block text-xs font-medium text-gray-500 mb-1">Sampai Tanggal</label>
-                <input type="date" name="to" value="{{ request('to') }}" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg">
+                <input type="date" name="to" value="{{ request('to') }}" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-xl">
             </div>
             <div class="flex items-center gap-2">
                 <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
@@ -41,10 +41,10 @@
                 </label>
             </div>
             <div class="flex gap-2">
-                <button type="submit" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg">
+                <button type="submit" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-xl">
                     Filter
                 </button>
-                <a href="{{ route('executive.audit') }}" class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-sm font-medium rounded-lg">
+                <a href="{{ route('executive.audit') }}" class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-sm font-medium rounded-xl">
                     Reset
                 </a>
             </div>
@@ -52,7 +52,7 @@
     </div>
 
     {{-- Audit Log Table --}}
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft border border-gray-200/80 dark:border-gray-700/80">
         @if($logs->isEmpty())
             <div class="px-6 py-16 text-center">
                 <svg class="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -63,7 +63,7 @@
             </div>
         @else
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <table class="min-w-full divide-y divide-gray-200/80 dark:divide-gray-700/80">
                     <thead class="bg-gray-50 dark:bg-gray-700/50">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
@@ -74,9 +74,9 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Oleh</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody class="divide-y divide-gray-200/80 dark:divide-gray-700/80">
                         @foreach($logs as $log)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                            <tr class="hover:bg-primary-50/60 dark:hover:bg-gray-700/50">
                                 <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
                                     {{ $log->created_at->format('d M Y') }}<br>
                                     <span class="text-xs">{{ $log->created_at->format('H:i') }}</span>
@@ -131,7 +131,7 @@
             </div>
             
             {{-- Pagination --}}
-            <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+            <div class="px-6 py-4 border-t border-gray-200/80 dark:border-gray-700/80">
                 {{ $logs->withQueryString()->links() }}
             </div>
         @endif

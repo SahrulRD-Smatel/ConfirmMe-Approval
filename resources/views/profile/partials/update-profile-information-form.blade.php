@@ -1,6 +1,6 @@
-<section>
+<section class="space-y-1">
     <header>
-        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
             {{ __('Profile Information') }}
         </h2>
 
@@ -13,7 +13,7 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update') }}" class="mt-7 space-y-5">
         @csrf
         @method('patch')
 
@@ -33,7 +33,7 @@
                     <p class="text-sm mt-2 text-gray-800 dark:text-gray-200">
                         {{ __('Your email address is unverified.') }}
 
-                        <button form="send-verification" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
+                        <button form="send-verification" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800">
                             {{ __('Click here to re-send the verification email.') }}
                         </button>
                     </p>
@@ -47,7 +47,7 @@
             @endif
         </div>
 
-        <div class="flex items-center gap-4">
+        <div class="flex flex-wrap items-center gap-3">
             <x-ui.button variant="primary" type="submit">{{ __('Save') }}</x-ui.button>
 
             @if (session('status') === 'profile-updated')
@@ -56,7 +56,7 @@
                     x-show="show"
                     x-transition
                     x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600 dark:text-gray-400"
+                    class="inline-flex items-center rounded-lg bg-success-50 px-3 py-2 text-sm font-medium text-success-700 dark:bg-success-900/20 dark:text-success-300"
                 >{{ __('Saved.') }}</p>
             @endif
         </div>

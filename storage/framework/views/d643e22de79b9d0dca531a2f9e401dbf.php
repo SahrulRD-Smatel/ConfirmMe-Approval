@@ -198,7 +198,7 @@
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
         
-        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(feature_active('module_hris') && !auth()->user()->hasAnyRole(['admin', 'presiden_direktur']) && auth()->user()->roles->isNotEmpty()): ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(feature_active('module_hris') && auth()->user()->roles->isNotEmpty()): ?>
             <?php if (isset($component)) { $__componentOriginal19b3b58260c06b73d31092a7043ca4e9 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal19b3b58260c06b73d31092a7043ca4e9 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.sidebar-section','data' => ['title' => 'Absensi','collapsed' => $sidebarCollapsed ?? false]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -270,7 +270,7 @@
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
         
-        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->hasAnyRole(['supervisor', 'manager', 'hrd', 'purchasing', 'direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional', 'presiden_direktur', 'finance'])): ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->hasPermissionTo('approve-document')): ?>
             
             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!auth()->user()->hasRole('presiden_direktur')): ?>
                 <?php if (isset($component)) { $__componentOriginal19b3b58260c06b73d31092a7043ca4e9 = $component; } ?>
@@ -312,7 +312,7 @@
 <?php $component = $__componentOriginal3d3185cbc95d2b4d3b41182ae7d7a300; ?>
 <?php unset($__componentOriginal3d3185cbc95d2b4d3b41182ae7d7a300); ?>
 <?php endif; ?>
-                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!auth()->user()->hasAnyRole(['direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional', 'presiden_direktur'])): ?>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!auth()->user()->hasRole('presiden_direktur')): ?>
                         <?php if (isset($component)) { $__componentOriginal3d3185cbc95d2b4d3b41182ae7d7a300 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal3d3185cbc95d2b4d3b41182ae7d7a300 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.sidebar-link','data' => ['href' => route('approvals.bulk'),'active' => request()->routeIs('approvals.bulk'),'icon' => 'squares-2x2']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -374,7 +374,7 @@
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
         
-        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(feature_active('module_hris') && auth()->user()->hasAnyRole(['supervisor', 'manager', 'hrd_coordinator', 'direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional']) && !auth()->user()->hasRole('presiden_direktur')): ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(feature_active('module_hris') && auth()->user()->hasPermissionTo('approve-document') && !auth()->user()->hasRole('presiden_direktur')): ?>
             <?php $pendingLeaveCount = $sidebarBadges['pendingLeaveCount'] ?? 0; ?>
 
             <?php if (isset($component)) { $__componentOriginal19b3b58260c06b73d31092a7043ca4e9 = $component; } ?>
@@ -582,8 +582,8 @@
 <?php endif; ?>
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-        <!-- Finance Menu - Role-based (Finance only) -->
-        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(feature_active('module_finance') && auth()->user()->hasRole('finance')): ?>
+        <!-- Finance Menu - Dynamic via Permissions -->
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(feature_active('module_finance') && auth()->user()->hasAnyPermission(['manage-budget', 'create-po', 'create-invoice', 'print-po', 'print-invoice', 'manage-purchasing'])): ?>
             <?php if (isset($component)) { $__componentOriginal19b3b58260c06b73d31092a7043ca4e9 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal19b3b58260c06b73d31092a7043ca4e9 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.sidebar-section','data' => ['title' => 'Keuangan','collapsed' => $sidebarCollapsed ?? false]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -715,8 +715,8 @@
 <?php endif; ?>
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-        <!-- Supervisory View - Role-based -->
-        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->hasRole('supervisor') || auth()->user()->hasRole('manager')): ?>
+        <!-- Supervisory View - Dynamic via Permissions -->
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->hasPermissionTo('approve-document')): ?>
             <?php if (isset($component)) { $__componentOriginal19b3b58260c06b73d31092a7043ca4e9 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal19b3b58260c06b73d31092a7043ca4e9 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.sidebar-section','data' => ['title' => 'Tim Saya','collapsed' => $sidebarCollapsed ?? false]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -765,7 +765,7 @@
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
         
-        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->hasAnyRole(['manager', 'hrd', 'direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional', 'presiden_direktur', 'finance'])): ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->hasPermissionTo('view-reports')): ?>
             <?php if (isset($component)) { $__componentOriginal19b3b58260c06b73d31092a7043ca4e9 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal19b3b58260c06b73d31092a7043ca4e9 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.sidebar-section','data' => ['title' => 'Laporan','collapsed' => $sidebarCollapsed ?? false]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -814,7 +814,7 @@
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
         
-        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(feature_active('module_hris') && auth()->user()->hasAnyRole(['admin', 'hrd', 'hrd_coordinator', 'direktur_hr', 'presiden_direktur', 'manager'])): ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(feature_active('module_hris') && auth()->user()->hasAnyPermission(['manage-attendance', 'view-attendance'])): ?>
             <?php if (isset($component)) { $__componentOriginal19b3b58260c06b73d31092a7043ca4e9 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal19b3b58260c06b73d31092a7043ca4e9 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.sidebar-section','data' => ['title' => 'Kelola Karyawan','collapsed' => $sidebarCollapsed ?? false]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -911,7 +911,7 @@
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
         
-        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(feature_active('module_hris') && (auth()->user()->hasAnyRole(['hrd', 'direktur_hr', 'admin']) || auth()->user()->department === 'Human Resources')): ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(feature_active('module_hris') && (auth()->user()->hasPermissionTo('manage-attendance') || auth()->user()->department === 'Human Resources')): ?>
             <?php if (isset($component)) { $__componentOriginal19b3b58260c06b73d31092a7043ca4e9 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal19b3b58260c06b73d31092a7043ca4e9 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.sidebar-section','data' => ['title' => 'HRIS','collapsed' => $sidebarCollapsed ?? false]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>

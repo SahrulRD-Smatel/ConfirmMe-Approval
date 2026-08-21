@@ -14,7 +14,7 @@
 
      <?php $__env->slot('header', null, []); ?> 
         <div>
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">Arsip Dokumen</h1>
+            <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Arsip Dokumen</h1>
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 Riwayat semua dokumen yang telah selesai diproses
             </p>
@@ -37,13 +37,13 @@
         <form action="<?php echo e(route('archive.index')); ?>" method="GET" class="flex flex-col sm:flex-row gap-4">
             <div class="flex-1">
                 <input type="text" name="search" value="<?php echo e(request('search')); ?>"
-                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
                     placeholder="Cari nomor atau judul dokumen...">
             </div>
 
             <div class="w-full sm:w-48">
                 <select name="status"
-                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
                     <option value="">Semua Status</option>
                     <option value="approved" <?php echo e(request('status') === 'approved' ? 'selected' : ''); ?>>Disetujui</option>
                     <option value="rejected" <?php echo e(request('status') === 'rejected' ? 'selected' : ''); ?>>Ditolak</option>
@@ -54,7 +54,7 @@
 
             <div class="w-full sm:w-48">
                 <select name="year"
-                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
                     <option value="">Semua Tahun</option>
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php for($y = date('Y'); $y >= 2020; $y--): ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                         <option value="<?php echo e($y); ?>" <?php echo e(request('year') == $y ? 'selected' : ''); ?>><?php echo e($y); ?></option>
@@ -98,7 +98,7 @@
 <?php endif; ?>
 
     <!-- Statistics -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <div class="mb-7 grid grid-cols-2 gap-4 md:grid-cols-4">
         <?php if (isset($component)) { $__componentOriginal51ca8f9b5f2319ee98f72ec28ea4da42 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal51ca8f9b5f2319ee98f72ec28ea4da42 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.ui.stat-card','data' => ['title' => 'Total Arsip','value' => $documents->total(),'icon' => 'archive-box']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -203,41 +203,41 @@
 <?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-800">
+            <table class="min-w-[720px] w-full divide-y divide-gray-200/80 dark:divide-gray-700/80">
+                <thead class="bg-gray-50/80 dark:bg-gray-800">
                     <tr>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            class="px-5 py-3.5 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             No. Dokumen
                         </th>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            class="px-5 py-3.5 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             Judul
                         </th>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            class="px-5 py-3.5 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             Status
                         </th>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            class="px-5 py-3.5 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             Tanggal Selesai
                         </th>
                         <th scope="col"
-                            class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            class="px-5 py-3.5 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             Aksi
                         </th>
                     </tr>
                 </thead>
-                <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200/80 dark:divide-gray-700/80">
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $documents; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $document): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                            <td class="px-6 py-4 whitespace-nowrap">
+                        <tr class="hover:bg-primary-50/60 dark:hover:bg-gray-800/80 transition-colors">
+                            <td class="px-5 py-4 whitespace-nowrap">
                                 <span class="text-sm font-medium text-primary-600 dark:text-primary-400">
                                     <?php echo e($document->document_number); ?>
 
                                 </span>
                             </td>
-                            <td class="px-6 py-4">
+                            <td class="px-5 py-4">
                                 <div class="text-sm font-medium text-gray-900 dark:text-white truncate max-w-xs">
                                     <?php echo e($document->title); ?>
 
@@ -247,7 +247,7 @@
 
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="px-5 py-4 whitespace-nowrap">
                                 <?php if (isset($component)) { $__componentOriginalab7baa01105b3dfe1e0cf1dfc58879b4 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalab7baa01105b3dfe1e0cf1dfc58879b4 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.ui.badge','data' => ['status' => $document->status_color]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -273,12 +273,12 @@
 <?php unset($__componentOriginalab7baa01105b3dfe1e0cf1dfc58879b4); ?>
 <?php endif; ?>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                            <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                 <?php echo e(($document->completed_at ?? $document->approved_at ?? $document->rejected_at)?->format('d M Y') ?? '-'); ?>
 
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <div class="flex items-center justify-end gap-2">
+                            <td class="px-5 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <div class="flex flex-wrap items-center justify-end gap-2">
                                     <a href="<?php echo e(route('documents.show', $document)); ?>"
                                         class="text-primary-600 hover:text-primary-800 dark:text-primary-400" title="Lihat">
                                         <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
@@ -369,7 +369,7 @@
         </div>
 
         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($documents->hasPages()): ?>
-            <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+            <div class="px-5 py-4 border-t border-gray-200/80 dark:border-gray-700/80">
                 <?php echo e($documents->links()); ?>
 
             </div>

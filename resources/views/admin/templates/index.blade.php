@@ -2,16 +2,16 @@
     <x-slot name="title">Template Dokumen</x-slot>
 
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">Template Dokumen</h1>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Template Dokumen</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Kelola template pengajuan dokumen</p>
             </div>
             <x-ui.button href="{{ route('admin.templates.create') }}" icon="plus">Buat Template</x-ui.button>
         </div>
     </x-slot>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         @forelse($templates as $template)
             <x-ui.card>
                 <div class="flex items-start justify-between mb-4">
@@ -30,7 +30,7 @@
                     <span>Tipe: {{ $template->approval_type_label }}</span>
                 </div>
 
-                <div class="flex items-center gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <div class="flex items-center gap-2 pt-4 border-t border-gray-200/80 dark:border-gray-700/80">
                     <x-ui.button href="{{ route('admin.templates.edit', $template) }}" variant="secondary"
                         size="sm">Edit</x-ui.button>
                     <form action="{{ route('admin.templates.destroy', $template) }}" method="POST"

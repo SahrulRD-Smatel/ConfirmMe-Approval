@@ -2,9 +2,9 @@
     <x-slot name="title">Kelola Anggaran</x-slot>
 
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">Kelola Anggaran</h1>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Kelola Anggaran</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Manajemen budget departemen</p>
             </div>
             <x-ui.button href="{{ route('finance.budgets.create') }}" icon="plus">Tambah Budget</x-ui.button>
@@ -25,8 +25,8 @@
     <!-- Budgets Table -->
     <x-ui.card :padding="false">
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-800">
+            <table class="min-w-[760px] w-full divide-y divide-gray-200/80 dark:divide-gray-700/80">
+                <thead class="bg-gray-50/80 dark:bg-gray-800">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Budget</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Departemen</th>
@@ -36,9 +36,9 @@
                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200/80 dark:divide-gray-700/80">
                     @forelse($budgets as $budget)
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
+                        <tr class="hover:bg-primary-50/60 dark:hover:bg-gray-800/80">
                             <td class="px-6 py-4">
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $budget->name }}</div>
                                 <div class="text-xs text-gray-500">{{ $budget->code }} | {{ $budget->fiscal_year }}</div>
@@ -59,7 +59,7 @@
                                     class="text-xs text-gray-500">{{ number_format($budget->usage_percentage, 1) }}%</span>
                             </td>
                             <td class="px-6 py-4 text-right">
-                                <div class="flex items-center justify-end gap-2">
+                                <div class="flex flex-wrap items-center justify-end gap-2">
                                     <a href="{{ route('finance.budgets.edit', $budget) }}"
                                         class="text-primary-600 hover:text-primary-800">
                                         <x-icon name="pencil" class="w-5 h-5" />
@@ -76,7 +76,7 @@
             </table>
         </div>
         @if($budgets->hasPages())
-            <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">{{ $budgets->links() }}</div>
+            <div class="px-6 py-4 border-t border-gray-200/80 dark:border-gray-700/80">{{ $budgets->links() }}</div>
         @endif
     </x-ui.card>
 </x-app-layout>

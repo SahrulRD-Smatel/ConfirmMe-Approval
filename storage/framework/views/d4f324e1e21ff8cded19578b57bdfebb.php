@@ -35,7 +35,7 @@ foreach ($attributes->all() as $__key => $__value) {
 unset($__defined_vars, $__key, $__value); ?>
 
 <?php
-    $baseClasses = 'inline-flex items-center font-medium rounded-full';
+    $baseClasses = 'inline-flex items-center rounded-full font-semibold tracking-wide';
 
     $colors = [
         'default' => 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',

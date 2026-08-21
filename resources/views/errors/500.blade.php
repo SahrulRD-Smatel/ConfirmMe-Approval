@@ -110,7 +110,7 @@
     </style>
 </head>
 
-<body class="bg-gradient-to-br from-orange-50 via-white to-red-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 antialiased min-h-screen">
+<body class="min-h-screen bg-gray-50 antialiased dark:bg-gray-950">
     <div class="min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden warning-stripe">
 
         {{-- Decorative --}}
@@ -119,7 +119,7 @@
             <div class="absolute -bottom-20 -left-20 w-72 h-72 bg-red-200/30 dark:bg-red-900/10 rounded-full blur-3xl"></div>
         </div>
 
-        <div class="max-w-lg w-full text-center relative z-10">
+        <div class="relative z-10 w-full max-w-xl text-center">
             {{-- Animated Panicking Monster --}}
             <div class="monster-panic mx-auto mb-8 w-56 h-56 sm:w-64 sm:h-64">
                 <svg viewBox="0 0 200 200" class="w-full h-full">
@@ -243,14 +243,14 @@
             {{-- Actions --}}
             <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
                 <a href="{{ url()->previous() !== url()->current() ? url()->previous() : '/' }}"
-                    class="inline-flex items-center px-6 py-3 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-600 transition-all shadow-sm border border-gray-200 dark:border-gray-600 hover:scale-105 active:scale-95">
+                    class="inline-flex items-center rounded-xl border border-gray-200 bg-white px-6 py-3 font-semibold text-gray-700 shadow-sm transition-all hover:-translate-y-0.5 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800">
                     <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
                     </svg>
                     Kembali
                 </a>
                 <a href="/"
-                    class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-orange-600 to-red-600 text-white rounded-xl font-semibold hover:from-orange-700 hover:to-red-700 transition-all shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:scale-105 active:scale-95">
+                    class="inline-flex items-center rounded-xl bg-primary-700 px-6 py-3 font-semibold text-white shadow-sm shadow-primary-900/20 transition-all hover:-translate-y-0.5 hover:bg-primary-800 hover:shadow-md">
                     <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182"/>
                     </svg>

@@ -2,9 +2,9 @@
     <x-slot name="title">Kelola Pengumuman</x-slot>
 
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">Kelola Pengumuman</h1>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Kelola Pengumuman</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Manage announcements for the dashboard feed.
                 </p>
             </div>
@@ -14,8 +14,8 @@
 
     <x-ui.card>
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-800">
+            <table class="min-w-full divide-y divide-gray-200/80 dark:divide-gray-700/80">
+                <thead class="bg-gray-50/80 dark:bg-gray-800">
                     <tr>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Judul</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
@@ -25,9 +25,9 @@
                         <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody class="divide-y divide-gray-200/80 dark:divide-gray-700/80">
                     @forelse($announcements as $announcement)
-                                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                        <tr class="hover:bg-primary-50/60 dark:hover:bg-gray-700/50">
                                             <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">{{ $announcement->title }}</td>
                                             <td class="px-4 py-3">
                                                 <span class="px-2 py-1 rounded text-xs font-bold uppercase {{ match ($announcement->type) {

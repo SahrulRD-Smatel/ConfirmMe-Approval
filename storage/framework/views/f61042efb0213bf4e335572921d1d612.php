@@ -14,13 +14,13 @@
      <?php $__env->slot('header', null, []); ?> 
         <div class="flex items-center justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">Konfigurasi Workflow</h1>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Konfigurasi Workflow</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Kelola alur approval, threshold, dan akses secara dinamis</p>
             </div>
             <form action="<?php echo e(route('admin.workflow.reset')); ?>" method="POST" onsubmit="confirmAction(event, 'Reset semua konfigurasi ke default?')">
                 <?php echo csrf_field(); ?>
                 <input type="hidden" name="type" value="all">
-                <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
+                <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl hover:bg-primary-50/60 dark:hover:bg-gray-700">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                     Reset ke Default
                 </button>
@@ -30,7 +30,7 @@
 
     
     <div x-data="{ activeTab: 'access' }" class="space-y-6">
-        <div class="border-b border-gray-200 dark:border-gray-700">
+        <div class="border-b border-gray-200/80 dark:border-gray-700/80">
             <nav class="flex gap-4 -mb-px">
                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = ['access' => 'Akses Tipe', 'settings' => 'Pengaturan']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tab => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                 <button @click="activeTab = '<?php echo e($tab); ?>'" :class="activeTab === '<?php echo e($tab); ?>' ? 'border-primary-500 text-primary-600 dark:text-primary-400' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
@@ -42,15 +42,15 @@
 
         
         <div x-show="activeTab === 'access'" x-transition>
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Akses Tipe Approval per Departemen</h3>
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft border border-gray-200/80 dark:border-gray-700/80 p-6">
+                <h3 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Akses Tipe Approval per Departemen</h3>
                 <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Centang departemen yang diizinkan membuat setiap tipe approval. Centang "Semua" untuk mengizinkan semua departemen.</p>
                 <form action="<?php echo e(route('admin.workflow.type-access.update')); ?>" method="POST">
                     <?php echo csrf_field(); ?>
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm">
                             <thead>
-                                <tr class="border-b border-gray-200 dark:border-gray-700">
+                                <tr class="border-b border-gray-200/80 dark:border-gray-700/80">
                                     <th class="px-3 py-2 text-left text-gray-500 dark:text-gray-400">Tipe Approval</th>
                                     <th class="px-3 py-2 text-center text-gray-500 dark:text-gray-400">Semua</th>
                                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $departments; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $dept): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
@@ -58,7 +58,7 @@
                                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                            <tbody class="divide-y divide-gray-200/80 dark:divide-gray-700/80">
                                 <?php $typeLabelsAccess = ['only'=>'Approval Only','po'=>'PO External','po_internal'=>'PO Internal','invoice'=>'Invoice','loan'=>'Pinjaman']; ?>
                                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $typeLabelsAccess; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $type => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                                 <?php $currentAccess = $typeAccess[$type] ?? []; $isAll = in_array('*', $currentAccess); ?>
@@ -84,7 +84,7 @@
                         </table>
                     </div>
                     <div class="mt-4">
-                        <button type="submit" class="px-6 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg">Simpan Pengaturan Akses</button>
+                        <button type="submit" class="px-6 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-xl">Simpan Pengaturan Akses</button>
                     </div>
                 </form>
             </div>
@@ -92,9 +92,9 @@
 
         
         <div x-show="activeTab === 'settings'" x-transition>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
                 
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft border border-gray-200/80 dark:border-gray-700/80 p-6">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Role Hierarchy</h3>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">Level lebih tinggi = jabatan lebih tinggi. Role dengan level ≤ requester akan di-skip otomatis.</p>
                     <form action="<?php echo e(route('admin.workflow.settings.update')); ?>" method="POST">
@@ -109,12 +109,12 @@
                             </div>
                             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                         </div>
-                        <button type="submit" class="mt-4 w-full px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg">Simpan Hierarchy</button>
+                        <button type="submit" class="mt-4 w-full px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-xl">Simpan Hierarchy</button>
                     </form>
                 </div>
 
                 
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft border border-gray-200/80 dark:border-gray-700/80 p-6">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Functional Roles</h3>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">Role fungsional TIDAK akan di-skip oleh auto-skip hierarchy. Centang role yang bersifat fungsional.</p>
                     <form action="<?php echo e(route('admin.workflow.settings.update')); ?>" method="POST">
@@ -132,19 +132,19 @@
                             <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                         </div>
-                        <button type="submit" class="mt-4 w-full px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg">Simpan Functional Roles</button>
+                        <button type="submit" class="mt-4 w-full px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-xl">Simpan Functional Roles</button>
                     </form>
                 </div>
 
                 
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft border border-gray-200/80 dark:border-gray-700/80 p-6">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">HRD Keywords</h3>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">Keyword untuk mendeteksi dokumen HR-related pada Approval Only. Pisahkan dengan koma.</p>
                     <form action="<?php echo e(route('admin.workflow.settings.update')); ?>" method="POST">
                         <?php echo csrf_field(); ?>
                         <input type="hidden" name="section" value="hrd_keywords">
-                        <textarea name="keywords" rows="4" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg"><?php echo e(implode(', ', $hrdKeywords)); ?></textarea>
-                        <button type="submit" class="mt-3 w-full px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg">Simpan Keywords</button>
+                        <textarea name="keywords" rows="4" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-xl"><?php echo e(implode(', ', $hrdKeywords)); ?></textarea>
+                        <button type="submit" class="mt-3 w-full px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-xl">Simpan Keywords</button>
                     </form>
                 </div>
 

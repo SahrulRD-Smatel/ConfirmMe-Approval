@@ -35,9 +35,9 @@
                     <div class="flex-1 min-w-[200px]">
                         <input type="text" name="search" value="{{ request('search') }}"
                             placeholder="Cari nomor pinjaman atau nama..."
-                            class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                            class="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700">
                     </div>
-                    <select name="status" class="rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                    <select name="status" class="rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700">
                         <option value="">Semua Status</option>
                         <option value="pending_disbursement" {{ request('status') == 'pending_disbursement' ? 'selected' : '' }}>Menunggu Pencairan</option>
                         <option value="disbursed" {{ request('status') == 'disbursed' ? 'selected' : '' }}>Dicairkan
@@ -46,7 +46,7 @@
                         </option>
                         <option value="paid_off" {{ request('status') == 'paid_off' ? 'selected' : '' }}>Lunas</option>
                     </select>
-                    <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
+                    <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700">
                         Filter
                     </button>
                     @if(request()->hasAny(['search', 'status']))
@@ -61,7 +61,7 @@
             {{-- Loans Table --}}
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <table class="min-w-[900px] w-full divide-y divide-gray-200/80 dark:divide-gray-700/80">
                         <thead class="bg-gray-50 dark:bg-gray-700">
                             <tr>
                                 <th
@@ -87,9 +87,9 @@
                                     Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200/80 dark:divide-gray-700/80">
                             @forelse($loans as $loan)
-                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                <tr class="hover:bg-primary-50/60 dark:hover:bg-gray-700">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm font-medium text-gray-900 dark:text-white">
                                             {{ $loan->loan_number }}
@@ -145,7 +145,7 @@
                 </div>
 
                 @if($loans->hasPages())
-                    <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+                    <div class="px-6 py-4 border-t border-gray-200/80 dark:border-gray-700/80">
                         {{ $loans->links() }}
                     </div>
                 @endif

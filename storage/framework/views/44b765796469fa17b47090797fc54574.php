@@ -77,11 +77,11 @@ $isCurrency = is_string($value) && str_starts_with(trim($value), 'Rp');
         <a href="<?php echo e($href); ?>" class="block">
     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
     
-    <div class="flex items-center justify-between mb-4">
+    <div class="mb-5 flex items-center justify-between gap-3">
         <p class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide truncate pr-4"><?php echo e($title); ?></p>
         
         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($icon): ?>
-            <div class="flex-shrink-0 p-2.5 rounded-xl <?php echo e($iconBg); ?> bg-opacity-70">
+            <div class="flex-shrink-0 rounded-2xl p-3 <?php echo e($iconBg); ?> bg-opacity-70 shadow-sm">
                 <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon','data' => ['name' => $icon,'class' => 'w-5 h-5']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -140,16 +140,16 @@ $isCurrency = is_string($value) && str_starts_with(trim($value), 'Rp');
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         
         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($trend): ?>
-            <div class="mt-2 flex items-center text-sm font-medium">
+            <div class="mt-3 flex flex-wrap items-center gap-2 text-sm font-medium">
                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($trendUp): ?>
-                    <div class="flex items-center text-success-600 dark:text-success-400 bg-success-50 dark:bg-success-900/30 px-1.5 py-0.5 rounded-md mr-2">
+                    <div class="flex items-center rounded-lg bg-success-50 px-2 py-1 text-success-700 dark:bg-success-900/30 dark:text-success-400">
                         <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
                         </svg>
                         <span><?php echo e($trend); ?></span>
                     </div>
                 <?php else: ?>
-                    <div class="flex items-center text-danger-600 dark:text-danger-400 bg-danger-50 dark:bg-danger-900/30 px-1.5 py-0.5 rounded-md mr-2">
+                    <div class="flex items-center rounded-lg bg-danger-50 px-2 py-1 text-danger-700 dark:bg-danger-900/30 dark:text-danger-400">
                         <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6"/>
                         </svg>

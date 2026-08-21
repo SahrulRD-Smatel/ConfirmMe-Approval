@@ -26,7 +26,7 @@ class LeaveNotificationService
     {
         try {
             $requester = $leaveRequest->user;
-            $approver = $this->findApprover($leaveRequest);
+            $approver = $leaveRequest->currentApprover;
 
             if (!$approver) {
                 Log::warning("No approver found for leave request #{$leaveRequest->id} by {$requester->name}");
@@ -132,62 +132,20 @@ class LeaveNotificationService
     }
 
     /**
-     * Find the appropriate approver for a leave request
+     * Delete findApprover as it's no longer used.
      */
-    protected function findApprover(LeaveRequest $leaveRequest): ?User
-    {
-        $requester = $leaveRequest->user;
-        $department = $requester->department;
-
-        // Staff → Supervisor di dept yang sama
-        if ($requester->hasRole('staff')) {
-            return User::role('supervisor')
-                ->where('department', $department)
-                ->where('is_active', true)
-                ->first()
-                // Fallback ke Manager jika tidak ada Supervisor
-                ?? User::role('manager')
-                    ->where('department', $department)
-                    ->where('is_active', true)
-                    ->first();
-        }
-
-        // Supervisor → Manager di dept yang sama
-        if ($requester->hasRole('supervisor')) {
-            return User::role('manager')
-                ->where('department', $department)
-                ->where('is_active', true)
-                ->first();
-        }
-
-        // Manager → Director sesuai divisi (dari tabel departments)
-        if ($requester->hasRole('manager')) {
-            $directorRole = \App\Models\Department::directorRoleFor($department);
-            if ($directorRole) {
-                return User::role($directorRole)
-                    ->where('is_active', true)
-                    ->first();
-            }
-        }
-
-        // Director → Presiden Direktur
-        if ($requester->hasAnyRole(['direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales'])) {
-            return User::role('presiden_direktur')
-                ->where('is_active', true)
-                ->first();
-        }
-
-        return null;
-    }
 
     /**
-     * Find HR Manager for Tier 2 notification
+     * Find HR for Tier 2 notification
      */
     protected function findHRManager(): ?User
     {
-        return User::role('manager')
+        return User::permission('manage-attendance')
             ->where('department', 'Human Resources')
             ->where('is_active', true)
-            ->first();
+            ->first()
+            ?? User::permission('manage-attendance')
+                ->where('is_active', true)
+                ->first();
     }
 }

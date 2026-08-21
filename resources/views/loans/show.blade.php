@@ -14,10 +14,10 @@
         </div>
     </x-slot>
 
-    <div class="py-4">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="py-5">
+        <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             {{-- Loan Summary Card --}}
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft p-6 mb-6">
+            <div class="mb-7 rounded-3xl border border-gray-200/80 bg-white p-6 shadow-soft dark:border-gray-700/80 dark:bg-gray-900">
                 <div class="flex items-start justify-between mb-6">
                     <div>
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Informasi Pinjaman</h3>
@@ -26,22 +26,22 @@
                     <x-ui.badge :type="$loan->status_color" size="lg">{{ $loan->status_label }}</x-ui.badge>
                 </div>
 
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                    <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg text-center">
+                <div class="mb-7 grid grid-cols-2 gap-4 md:grid-cols-4">
+                    <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl text-center">
                         <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">Jumlah Pinjaman</p>
                         <p class="text-lg font-bold text-gray-900 dark:text-white">{{ $loan->formatted_loan_amount }}
                         </p>
                     </div>
-                    <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg text-center">
+                    <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl text-center">
                         <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">Cicilan/Bulan</p>
                         <p class="text-lg font-bold text-gray-900 dark:text-white">
                             {{ $loan->formatted_monthly_installment }}</p>
                     </div>
-                    <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg text-center">
+                    <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl text-center">
                         <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">Sudah Dibayar</p>
                         <p class="text-lg font-bold text-green-600">{{ $loan->formatted_total_paid }}</p>
                     </div>
-                    <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg text-center">
+                    <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl text-center">
                         <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">Sisa Hutang</p>
                         <p class="text-lg font-bold text-primary-600">{{ $loan->formatted_outstanding }}</p>
                     </div>
@@ -60,7 +60,7 @@
                 </div>
 
                 @if($loan->disbursement_date)
-                    <div class="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                    <div class="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
                         <p class="text-sm text-green-800 dark:text-green-300">
                             <span class="font-medium">✓ Pinjaman dicairkan</span> pada
                             {{ $loan->disbursement_date->format('d F Y') }}
@@ -70,7 +70,7 @@
                         </p>
                     </div>
                 @elseif($loan->status === 'pending_disbursement')
-                    <div class="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                    <div class="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl">
                         <p class="text-sm text-yellow-800 dark:text-yellow-300">
                             <span class="font-medium">⏳ Menunggu pencairan</span> - Tim Finance akan memproses pinjaman
                             Anda.
@@ -80,13 +80,13 @@
             </div>
 
             {{-- Repayment History --}}
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft p-6">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Riwayat Pembayaran</h3>
+            <div class="rounded-3xl border border-gray-200/80 bg-white p-6 shadow-soft dark:border-gray-700/80 dark:bg-gray-900">
+                <h3 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Riwayat Pembayaran</h3>
 
                 @if($loan->repayments->count() > 0)
                     <div class="space-y-3">
                         @foreach($loan->repayments as $repayment)
-                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
                                 <div class="flex items-center gap-4">
                                     <div
                                         class="flex-shrink-0 w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
@@ -111,7 +111,7 @@
                     </div>
 
                     @if(!$loan->isPaidOff())
-                        <div class="mt-4 p-4 bg-primary-50 dark:bg-primary-900/20 rounded-lg">
+                        <div class="mt-4 p-4 bg-primary-50 dark:bg-primary-900/20 rounded-xl">
                             <p class="text-sm text-primary-800 dark:text-primary-300">
                                 <span class="font-medium">Sisa cicilan:</span>
                                 {{ $loan->installment_months - $loan->repayments->count() }} kali pembayaran lagi

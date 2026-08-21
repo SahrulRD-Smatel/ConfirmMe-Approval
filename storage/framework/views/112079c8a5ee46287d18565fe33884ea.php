@@ -80,7 +80,7 @@
             </div>
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
             
             <div class="lg:col-span-1">
                 <div class="card-elevated p-6">
@@ -114,7 +114,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Nama Departemen <span class="text-red-500">*</span></label>
                             <input type="text" name="name" value="<?php echo e(old('name')); ?>" required placeholder="contoh: Marketing"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                class="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-4 focus:ring-primary-500/20/10 focus:border-primary-500">
                             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['name'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -127,7 +127,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Kode <span class="text-red-500">*</span></label>
                             <input type="text" name="code" value="<?php echo e(old('code')); ?>" required placeholder="contoh: MKT" maxlength="20"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 uppercase">
+                                class="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-4 focus:ring-primary-500/20/10 focus:border-primary-500 uppercase">
                             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['code'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -140,7 +140,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Direktur Role</label>
                             <select name="director_role"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                class="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-4 focus:ring-primary-500/20/10 focus:border-primary-500">
                                 <option value="">— Tidak ada —</option>
                                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $roles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $role): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                                     <option value="<?php echo e($role); ?>" <?php echo e(old('director_role') === $role ? 'selected' : ''); ?>>
@@ -154,7 +154,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Urutan</label>
                             <input type="number" name="sort_order" value="<?php echo e(old('sort_order', 0)); ?>" min="0"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                class="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-4 focus:ring-primary-500/20/10 focus:border-primary-500">
                         </div>
                         <button type="submit"
                             class="w-full px-4 py-2.5 bg-primary-600 text-white text-sm font-medium rounded-xl hover:bg-primary-700 transition flex items-center justify-center gap-2">
@@ -221,7 +221,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                     </div>
                     <div class="divide-y divide-gray-100">
                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $departments; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $dept): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
-                            <div class="px-6 py-4 hover:bg-gray-50/50 transition" x-data="{ editing: false }">
+                            <div class="px-6 py-4 hover:bg-primary-50/60/50 transition" x-data="{ editing: false }">
                                 
                                 <div x-show="!editing" class="flex items-center justify-between">
                                     <div class="flex items-center gap-4">
@@ -250,7 +250,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                             <span class="text-xs font-medium text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Nonaktif</span>
                                         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                         <button @click="editing = true"
-                                            class="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition">
+                                            class="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition">
                                             <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon','data' => ['name' => 'pencil-square','class' => 'w-4 h-4']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -279,7 +279,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                                 onsubmit="confirmAction(event, 'Hapus departemen <?php echo e($dept->name); ?>?')">
                                                 <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
                                                 <button type="submit"
-                                                    class="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
+                                                    class="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition">
                                                     <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon','data' => ['name' => 'trash','class' => 'w-4 h-4']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -316,17 +316,17 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                         <div>
                                             <label class="block text-xs font-medium text-gray-500 mb-1">Nama</label>
                                             <input type="text" name="name" value="<?php echo e($dept->name); ?>" required
-                                                class="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500">
+                                                class="w-full px-2.5 py-1.5 border border-gray-300 rounded-xl text-sm focus:ring-4 focus:ring-primary-500/20/10">
                                         </div>
                                         <div>
                                             <label class="block text-xs font-medium text-gray-500 mb-1">Kode</label>
                                             <input type="text" name="code" value="<?php echo e($dept->code); ?>" required maxlength="20"
-                                                class="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 uppercase">
+                                                class="w-full px-2.5 py-1.5 border border-gray-300 rounded-xl text-sm focus:ring-4 focus:ring-primary-500/20/10 uppercase">
                                         </div>
                                         <div>
                                             <label class="block text-xs font-medium text-gray-500 mb-1">Direktur Role</label>
                                             <select name="director_role"
-                                                class="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500">
+                                                class="w-full px-2.5 py-1.5 border border-gray-300 rounded-xl text-sm focus:ring-4 focus:ring-primary-500/20/10">
                                                 <option value="">— Tidak ada —</option>
                                                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $roles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $role): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                                                     <option value="<?php echo e($role); ?>" <?php echo e($dept->director_role === $role ? 'selected' : ''); ?>><?php echo e(role_label($role)); ?></option>
@@ -336,7 +336,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                         <div>
                                             <label class="block text-xs font-medium text-gray-500 mb-1">Urutan</label>
                                             <input type="number" name="sort_order" value="<?php echo e($dept->sort_order); ?>" min="0"
-                                                class="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500">
+                                                class="w-full px-2.5 py-1.5 border border-gray-300 rounded-xl text-sm focus:ring-4 focus:ring-primary-500/20/10">
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-2">
@@ -344,16 +344,16 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                             <input type="hidden" name="is_active" value="0">
                                             <input type="checkbox" name="is_active" value="1" <?php echo e($dept->is_active ? 'checked' : ''); ?>
 
-                                                class="rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                                                class="rounded border-gray-300 text-primary-600 focus:ring-primary-500/20">
                                             Aktif
                                         </label>
                                         <div class="ml-auto flex items-center gap-2">
                                             <button type="button" @click="editing = false"
-                                                class="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition">
+                                                class="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-xl transition">
                                                 Batal
                                             </button>
                                             <button type="submit"
-                                                class="px-3 py-1.5 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition">
+                                                class="px-3 py-1.5 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-xl transition">
                                                 Simpan
                                             </button>
                                         </div>

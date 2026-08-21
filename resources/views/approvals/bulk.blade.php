@@ -4,7 +4,7 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">Bulk Approval</h1>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Bulk Approval</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     Setujui atau tolak beberapa dokumen sekaligus
                 </p>
@@ -42,13 +42,13 @@
             @csrf
 
             <!-- Action Bar -->
-            <x-ui.card class="mb-6">
-                <div class="flex flex-col gap-4">
+            <x-ui.card class="mb-7">
+                <div class="flex flex-col gap-5">
                     {{-- Top row: Select all & count --}}
                     <div class="flex items-center gap-4">
                         <label class="flex items-center gap-2 cursor-pointer">
                             <input type="checkbox" x-model="selectAll" @change="toggleAll()"
-                                class="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                                class="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500/20">
                             <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Pilih Semua</span>
                         </label>
                         <span
@@ -58,22 +58,22 @@
 
                     {{-- Bottom row: Action controls --}}
                     <div
-                        class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                        class="flex flex-col items-stretch gap-3 border-t border-gray-200/80 pt-4 dark:border-gray-700/80 sm:flex-row sm:items-center">
                         <div class="flex items-center gap-2">
                             <label class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">Aksi:</label>
                             <select name="action" x-model="action"
-                                class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-primary-500 text-sm min-w-[120px]">
+                                class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-primary-500/20 text-sm min-w-[120px]">
                                 <option value="approve">✓ Setujui</option>
                                 <option value="reject">✗ Tolak</option>
                             </select>
                         </div>
 
                         <input type="text" name="comment" x-model="comment" placeholder="Komentar (opsional)"
-                            class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-primary-500 text-sm min-w-0">
+                            class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-primary-500/20 text-sm min-w-0">
 
                         <button type="button" @click="submitForm()" x-bind:disabled="selectedIds.length === 0"
                             :class="action === 'approve' ? 'bg-success-600 hover:bg-success-700' : 'bg-danger-600 hover:bg-danger-700'"
-                            class="px-4 py-2 text-white font-medium rounded-lg whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed">
+                            class="px-4 py-2 text-white font-medium rounded-xl whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed">
                             <span x-text="action === 'approve' ? '✓ Setujui Terpilih' : '✗ Tolak Terpilih'"></span>
                         </button>
                     </div>
@@ -94,13 +94,13 @@
                         <span class="text-sm font-normal text-gray-500">({{ $docs->count() }} dokumen)</span>
                     </h3>
 
-                    <div class="divide-y divide-gray-200 dark:divide-gray-700">
+                    <div class="divide-y divide-gray-200/80 dark:divide-gray-700/80">
                         @foreach($docs as $document)
-                            <div class="py-4 flex items-start gap-4">
+                            <div class="flex items-start gap-4 py-4">
                                 <input type="checkbox" value="{{ $document->id }}"
                                     :checked="selectedIds.includes({{ $document->id }})"
                                     @change="$event.target.checked ? selectedIds.push({{ $document->id }}) : selectedIds = selectedIds.filter(id => id !== {{ $document->id }})"
-                                    class="mt-1 w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                                    class="mt-1 w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500/20">
 
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center gap-2">
@@ -146,9 +146,9 @@
 
             <!-- Confirmation Modal -->
             <div x-show="showConfirmModal" x-transition
-                class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+                class="fixed inset-0 z-50 flex items-center justify-center bg-gray-950/70 p-4 backdrop-blur-sm"
                 @click.self="showConfirmModal = false" style="display: none;">
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6" @click.stop>
+                <div class="w-full max-w-md rounded-3xl border border-gray-200/80 bg-white p-6 shadow-soft-lg dark:border-gray-700 dark:bg-gray-900" @click.stop>
                     <!-- Approve Confirmation -->
                     <template x-if="action === 'approve'">
                         <div>
@@ -171,11 +171,11 @@
 
                             <div class="flex gap-3">
                                 <button type="button" @click="showConfirmModal = false"
-                                    class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                    class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-primary-50/60 dark:hover:bg-gray-700 transition-colors">
                                     Batal
                                 </button>
                                 <button type="submit"
-                                    class="flex-1 px-4 py-2 bg-success-600 hover:bg-success-700 text-white rounded-lg transition-colors">
+                                    class="flex-1 px-4 py-2 bg-success-600 hover:bg-success-700 text-white rounded-xl transition-colors">
                                     Ya, Setujui Semua
                                 </button>
                             </div>
@@ -204,11 +204,11 @@
 
                             <div class="flex gap-3">
                                 <button type="button" @click="showConfirmModal = false"
-                                    class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                    class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-primary-50/60 dark:hover:bg-gray-700 transition-colors">
                                     Batal
                                 </button>
                                 <button type="submit"
-                                    class="flex-1 px-4 py-2 bg-danger-600 hover:bg-danger-700 text-white rounded-lg transition-colors">
+                                    class="flex-1 px-4 py-2 bg-danger-600 hover:bg-danger-700 text-white rounded-xl transition-colors">
                                     Ya, Tolak Semua
                                 </button>
                             </div>

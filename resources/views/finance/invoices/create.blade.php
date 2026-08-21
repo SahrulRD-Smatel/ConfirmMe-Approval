@@ -8,7 +8,7 @@
                 <x-icon name="arrow-left" class="w-5 h-5" />
             </a>
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">Buat Invoice Baru</h1>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Buat Invoice Baru</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     Buat invoice dari dokumen yang sudah disetujui
                 </p>
@@ -19,12 +19,12 @@
     <form action="{{ route('finance.invoices.store') }}" method="POST">
         @csrf
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
             <!-- Main Form -->
             <div class="lg:col-span-2 space-y-6">
                 <!-- Document Selection -->
                 <x-ui.card>
-                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Dokumen Referensi</h2>
+                    <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Dokumen Referensi</h2>
 
                     <div class="space-y-4">
                         <div>
@@ -33,7 +33,7 @@
                                 Pilih Dokumen <span class="text-red-500">*</span>
                             </label>
                             <select name="document_id" id="document_id" required
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10">
                                 <option value="">-- Pilih Dokumen --</option>
                                 @foreach($documents as $doc)
                                     <option value="{{ $doc->id }}" {{ (isset($document) && $document->id == $doc->id) || old('document_id') == $doc->id ? 'selected' : '' }}>
@@ -53,7 +53,7 @@
 
                 <!-- Vendor Information -->
                 <x-ui.card>
-                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Informasi Vendor</h2>
+                    <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Informasi Vendor</h2>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="md:col-span-2">
@@ -63,7 +63,7 @@
                             </label>
                             <input type="text" name="vendor_name" id="vendor_name" value="{{ old('vendor_name') }}"
                                 required
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10"
                                 placeholder="Nama perusahaan vendor">
                             @error('vendor_name')
                                 <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
@@ -76,7 +76,7 @@
                                 Alamat Vendor
                             </label>
                             <textarea name="vendor_address" id="vendor_address" rows="2"
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10"
                                 placeholder="Alamat lengkap vendor">{{ old('vendor_address') }}</textarea>
                         </div>
                     </div>
@@ -84,7 +84,7 @@
 
                 <!-- Invoice Details -->
                 <x-ui.card>
-                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Detail Invoice</h2>
+                    <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Detail Invoice</h2>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
@@ -94,7 +94,7 @@
                             </label>
                             <input type="date" name="invoice_date" id="invoice_date"
                                 value="{{ old('invoice_date', date('Y-m-d')) }}" required
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10">
                             @error('invoice_date')
                                 <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                             @enderror
@@ -106,7 +106,7 @@
                                 Jatuh Tempo <span class="text-red-500">*</span>
                             </label>
                             <input type="date" name="due_date" id="due_date" value="{{ old('due_date') }}" required
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10">
                             @error('due_date')
                                 <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                             @enderror
@@ -122,7 +122,7 @@
                                 <input type="text" name="subtotal" id="subtotal"
                                     value="{{ old('subtotal', isset($document) ? $document->approved_budget : '') }}"
                                     required
-                                    class="currency-input w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
+                                    class="currency-input w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10"
                                     inputmode="numeric" placeholder="0">
                             </div>
                             @error('subtotal')
@@ -138,7 +138,7 @@
                             <div class="relative">
                                 <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">Rp</span>
                                 <input type="text" name="tax_amount" id="tax_amount" value="{{ old('tax_amount', 0) }}"
-                                    class="currency-input w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
+                                    class="currency-input w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10"
                                     inputmode="numeric" placeholder="0">
                             </div>
                         </div>
@@ -149,14 +149,14 @@
                             Catatan
                         </label>
                         <textarea name="notes" id="notes" rows="3"
-                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10"
                             placeholder="Catatan tambahan...">{{ old('notes') }}</textarea>
                     </div>
                 </x-ui.card>
             </div>
 
             <!-- Sidebar -->
-            <div class="space-y-6">
+            <div class="space-y-7">
                 <!-- Document Info -->
                 @if(isset($document))
                     <x-ui.card>

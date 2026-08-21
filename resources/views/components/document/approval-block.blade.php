@@ -106,12 +106,12 @@
         Digital Approval Block
     </h3>
     
-    <div class="overflow-x-auto">
-        <table class="w-full border-collapse border border-gray-300 text-xs">
+    <div class="overflow-x-auto rounded-2xl border border-gray-200/80 bg-white p-2 shadow-sm">
+        <table class="min-w-[680px] w-full border-collapse overflow-hidden rounded-xl border border-gray-200 text-xs">
             <thead>
                 <tr>
                     @foreach($columns as $col)
-                        <th class="border border-gray-300 px-2 py-2 text-center bg-gray-50 font-semibold print:bg-white" style="min-width: 100px;">
+                        <th class="border border-gray-200 px-2 py-2 text-center bg-gray-50/80 font-semibold print:bg-white" style="min-width: 100px;">
                             {{ $col['label'] }}
                         </th>
                     @endforeach
@@ -121,7 +121,7 @@
                 {{-- QR Code / Status Row --}}
                 <tr>
                     @foreach($columns as $col)
-                        <td class="border border-gray-300 px-2 py-3 text-center align-middle" style="height: 100px;">
+                        <td class="border border-gray-200 px-2 py-3 text-center align-middle" style="height: 100px;">
                             @php
                                 $approval = $findApprovalByRole($col['role']);
                                 $isApproved = $approval && $approval->status === 'approved';
@@ -172,7 +172,7 @@
                 {{-- Digital Signature Info Row --}}
                 <tr>
                     @foreach($columns as $col)
-                        <td class="border border-gray-300 px-2 py-2 text-center bg-gray-50 print:bg-white">
+                        <td class="border border-gray-200 px-2 py-2 text-center bg-gray-50/80 print:bg-white">
                             @php
                                 $approval = $findApprovalByRole($col['role']);
                                 $isApproved = $approval && $approval->status === 'approved';
@@ -190,7 +190,7 @@
                 {{-- Name Row --}}
                 <tr>
                     @foreach($columns as $col)
-                        <td class="border border-gray-300 px-2 py-1 text-center">
+                        <td class="border border-gray-200 px-2 py-1 text-center">
                             @php
                                 $approval = $findApprovalByRole($col['role']);
                                 $name = match($col['role']) {
@@ -207,7 +207,7 @@
                 {{-- Title Row --}}
                 <tr>
                     @foreach($columns as $col)
-                        <td class="border border-gray-300 px-1 py-1 text-center text-gray-600">
+                        <td class="border border-gray-200 px-1 py-1 text-center text-gray-600">
                             {{ $col['title'] }}
                         </td>
                     @endforeach
@@ -216,7 +216,7 @@
                 {{-- Date & Time Row --}}
                 <tr>
                     @foreach($columns as $col)
-                        <td class="border border-gray-300 px-1 py-1 text-center text-gray-500">
+                        <td class="border border-gray-200 px-1 py-1 text-center text-gray-500">
                             @php
                                 $approval = $findApprovalByRole($col['role']);
                                 if ($col['role'] === 'requester') {
@@ -238,7 +238,7 @@
                 {{-- IP Address Row (optional, for audit) --}}
                 <tr class="print:hidden">
                     @foreach($columns as $col)
-                        <td class="border border-gray-300 px-1 py-1 text-center text-gray-400 text-[8px]">
+                        <td class="border border-gray-200 px-1 py-1 text-center text-gray-400 text-[8px]">
                             @php
                                 $approval = $findApprovalByRole($col['role']);
                             @endphp
@@ -254,7 +254,7 @@
 
     {{-- Verification Notice --}}
     @if($isFullyApproved && $verificationUrl)
-        <div class="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3 print:bg-white print:border-green-400">
+        <div class="mt-4 p-3 rounded-2xl border border-success-200 bg-success-50/80 flex items-center gap-3 print:bg-white print:border-green-400">
             <div class="flex-shrink-0">
                 {!! QrCode::size(60)->generate($verificationUrl) !!}
             </div>

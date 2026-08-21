@@ -13,9 +13,9 @@
      <?php $__env->slot('title', null, []); ?> Audit Log <?php $__env->endSlot(); ?>
 
      <?php $__env->slot('header', null, []); ?> 
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">Audit Log</h1>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Audit Log</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Log aktivitas sistem</p>
             </div>
             <?php if (isset($component)) { $__componentOriginala8bb031a483a05f647cb99ed3a469847 = $component; } ?>
@@ -60,12 +60,12 @@
         <form action="<?php echo e(route('admin.audit-logs.index')); ?>" method="GET" class="flex flex-col sm:flex-row gap-4">
             <div class="flex-1">
                 <input type="text" name="search" value="<?php echo e(request('search')); ?>"
-                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
                     placeholder="Cari aktivitas...">
             </div>
             <div class="w-full sm:w-48">
                 <select name="event"
-                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
                     <option value="">Semua Event</option>
                     <option value="created" <?php echo e(request('event') === 'created' ? 'selected' : ''); ?>>Created</option>
                     <option value="updated" <?php echo e(request('event') === 'updated' ? 'selected' : ''); ?>>Updated</option>
@@ -119,8 +119,8 @@ Filter <?php echo $__env->renderComponent(); ?>
 <?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-800">
+            <table class="min-w-[980px] w-full divide-y divide-gray-200/80 dark:divide-gray-700/80">
+                <thead class="bg-gray-50/80 dark:bg-gray-800">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Waktu</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
@@ -129,9 +129,9 @@ Filter <?php echo $__env->renderComponent(); ?>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">IP Address</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200/80 dark:divide-gray-700/80">
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $logs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $log): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
-                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
+                                    <tr class="hover:bg-primary-50/60 dark:hover:bg-gray-800/80">
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                             <?php echo e($log->created_at->format('d/m/Y H:i:s')); ?>
 
@@ -190,7 +190,7 @@ Filter <?php echo $__env->renderComponent(); ?>
             </table>
         </div>
         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($logs->hasPages()): ?>
-            <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700"><?php echo e($logs->links()); ?></div>
+            <div class="px-6 py-4 border-t border-gray-200/80 dark:border-gray-700/80"><?php echo e($logs->links()); ?></div>
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
      <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>

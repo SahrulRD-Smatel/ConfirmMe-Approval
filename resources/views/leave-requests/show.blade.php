@@ -8,7 +8,7 @@
                 <x-icon name="arrow-left" class="w-5 h-5" />
             </a>
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">Detail Pengajuan Cuti</h1>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Detail Pengajuan Cuti</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ $leaveRequest->type_label }} -
                     {{ $leaveRequest->start_date->format('d M Y') }}
                 </p>
@@ -16,10 +16,10 @@
         </div>
     </x-slot>
 
-    <div class="max-w-2xl mx-auto">
+    <div class="mx-auto w-full max-w-3xl">
         <x-ui.card>
             {{-- Status Banner --}}
-            <div class="mb-6 p-4 rounded-lg {{ match ($leaveRequest->status) {
+            <div class="mb-7 rounded-2xl border border-transparent p-5 {{ match ($leaveRequest->status) {
     'pending' => 'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800',
     'approved' => 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800',
     'rejected' => 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800',
@@ -68,7 +68,7 @@
 
             {{-- Leave Details --}}
             <div class="space-y-4">
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
                         <p class="text-sm text-gray-500 dark:text-gray-400">Jenis Cuti</p>
                         <p class="font-medium text-gray-900 dark:text-white">{{ $leaveRequest->type_label }}</p>
@@ -79,7 +79,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
                         <p class="text-sm text-gray-500 dark:text-gray-400">Tanggal Mulai</p>
                         <p class="font-medium text-gray-900 dark:text-white">
@@ -103,14 +103,14 @@
                     <div>
                         <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Lampiran</p>
                         <a href="{{ Storage::url($leaveRequest->attachment) }}" target="_blank"
-                            class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+                            class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition">
                             <x-icon name="document" class="w-4 h-4" />
                             Lihat Lampiran
                         </a>
                     </div>
                 @endif
 
-                <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+                <div class="border-t border-gray-200/80 pt-5 dark:border-gray-700/80">
                     <p class="text-sm text-gray-500 dark:text-gray-400">Diajukan pada</p>
                     <p class="font-medium text-gray-900 dark:text-white">
                         {{ $leaveRequest->created_at->format('l, d M Y H:i') }}

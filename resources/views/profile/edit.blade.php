@@ -5,8 +5,8 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    <div class="py-8 sm:py-10 lg:py-12">
+        <div class="mx-auto w-full max-w-5xl space-y-5 px-4 sm:px-6 lg:px-8">
             {{-- Profile Photo Card --}}
             <x-ui.card>
                 <div class="max-w-xl">
@@ -18,7 +18,7 @@
             <x-ui.card>
                 <div class="max-w-xl">
                     <header>
-                        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                        <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
                             {{ __('Informasi Jabatan') }}
                         </h2>
                         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
@@ -26,9 +26,9 @@
                         </p>
                     </header>
 
-                    <div class="mt-6 space-y-4">
+                    <div class="mt-6 space-y-3">
                         {{-- Role Badge --}}
-                        <div class="flex items-center justify-between">
+                        <div class="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-gray-50/70 px-4 py-3 dark:bg-gray-800/60">
                             <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Role</span>
                             @php
                                 $user = Auth::user();
@@ -73,19 +73,19 @@
                         </div>
 
                         {{-- Position --}}
-                        <div class="flex items-center justify-between">
+                        <div class="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-gray-50/70 px-4 py-3 dark:bg-gray-800/60">
                             <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Jabatan</span>
                             <span class="text-sm text-gray-900 dark:text-gray-100">{{ $user->position ?? '-' }}</span>
                         </div>
 
                         {{-- Department --}}
-                        <div class="flex items-center justify-between">
+                        <div class="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-gray-50/70 px-4 py-3 dark:bg-gray-800/60">
                             <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Departemen</span>
                             <span class="text-sm text-gray-900 dark:text-gray-100">{{ $user->department ?? '-' }}</span>
                         </div>
 
                         {{-- Division --}}
-                        <div class="flex items-center justify-between">
+                        <div class="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-gray-50/70 px-4 py-3 dark:bg-gray-800/60">
                             <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Divisi</span>
                             @php
                                 $divisionColors = [
@@ -107,7 +107,7 @@
                         </div>
 
                         {{-- Employee ID --}}
-                        <div class="flex items-center justify-between">
+                        <div class="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-gray-50/70 px-4 py-3 dark:bg-gray-800/60">
                             <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Employee ID</span>
                             <span
                                 class="text-sm font-mono text-gray-900 dark:text-gray-100">{{ $user->employee_id ?? '-' }}</span>

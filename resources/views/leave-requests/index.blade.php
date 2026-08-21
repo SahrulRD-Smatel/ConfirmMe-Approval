@@ -2,9 +2,9 @@
     <x-slot name="title">Pengajuan Cuti Saya</x-slot>
 
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-display">Pengajuan Cuti Saya</h1>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Pengajuan Cuti Saya</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Riwayat dan status pengajuan cuti Anda</p>
             </div>
             <x-ui.button href="{{ route('leave-requests.create') }}" icon="plus">Ajukan Cuti</x-ui.button>
@@ -12,7 +12,7 @@
     </x-slot>
 
     {{-- Leave Balance Cards --}}
-    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
+    <div class="mb-7 grid grid-cols-2 gap-4 sm:grid-cols-3">
         <x-ui.stat-card title="Sisa Cuti Tahunan" :value="auth()->user()->annual_leave_balance ?? 12" icon="calendar" color="primary" />
         <x-ui.stat-card title="Hari Sakit (Digunakan)" :value="auth()->user()->sick_leave_used ?? 0" icon="heart" color="danger" />
         <x-ui.stat-card title="Menunggu Persetujuan" :value="auth()->user()->leaveRequests()->pending()->count()" icon="clock" color="warning" />
@@ -33,8 +33,8 @@
             </div>
         @else
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead class="bg-gray-50 dark:bg-gray-800">
+                <table class="min-w-[760px] w-full divide-y divide-gray-200/80 dark:divide-gray-700/80">
+                    <thead class="bg-gray-50/80 dark:bg-gray-800">
                         <tr>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tanggal</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Jenis</th>
@@ -44,9 +44,9 @@
                             <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody class="divide-y divide-gray-200/80 dark:divide-gray-700/80">
                         @foreach($leaveRequests as $leave)
-                                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                        <tr class="hover:bg-primary-50/60 dark:hover:bg-gray-700/50">
                                             <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">
                                                 {{ $leave->start_date->format('d M Y') }}
                                                 @if($leave->start_date->ne($leave->end_date))

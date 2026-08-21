@@ -312,8 +312,8 @@ class DocumentController extends Controller
         $canApprove = $document->status === 'pending' && $document->current_approver_id === auth()->id();
         $isCreator = $document->user_id === auth()->id();
 
-        // Also check if current user is an admin or director for override permissions
-        $canOverride = auth()->user()->hasRole(['admin', 'direktur']);
+        // Check if current user has permission to override approvals (e.g. Admin)
+        $canOverride = auth()->user()->hasPermissionTo('manage-users') || auth()->user()->hasPermissionTo('view-all-documents');
 
         return view('documents.show', compact('document', 'canApprove', 'isCreator', 'canOverride'));
     }
