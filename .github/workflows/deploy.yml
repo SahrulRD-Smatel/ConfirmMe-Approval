@@ -10,38 +10,97 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Checkout Repository
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      # 2. Setup PHP 8.4
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql
+          tools: composer
+          coverage: none
 
+      # 3. Setup Node.js 22
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
 
+      # 4. Install Composer (Production Only)
       - name: Install Composer Dependencies
-        run: composer install --no-dev --optimize-autoloader
+        run: |
+          composer install \
+            --no-dev \
+            --prefer-dist \
+            --optimize-autoloader \
+            --no-interaction
 
+      # 5. Build Frontend (Vite)
       - name: Install Node Dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build Vite
         run: npm run build
 
+      # 6. Setup SSH & Security
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.CPANEL_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p "${{ secrets.CPANEL_PORT }}" "${{ secrets.CPANEL_HOST }}" >> ~/.ssh/known_hosts
 
-      - name: Test SSH
+      # 7. Arsipkan Kode Aplikasi (Mengabaikan Cache & Log)
+      - name: Create Deployment Archive
         run: |
-          ssh -i ~/.ssh/id_rsa \
-            -p ${{ secrets.CPANEL_PORT }} \
-            -o StrictHostKeyChecking=no \
-            ${{ secrets.CPANEL_USER }}@${{ secrets.CPANEL_HOST }} \
-            "echo 'SSH Connected Successfully'"
+          tar \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='.env' \
+            --exclude='node_modules' \
+            --exclude='tests' \
+            --exclude='storage/logs/*' \
+            --exclude='storage/framework/cache/*' \
+            --exclude='storage/framework/sessions/*' \
+            --exclude='storage/framework/views/*' \
+            --exclude='bootstrap/cache/*.php' \
+            -czf deploy.tar.gz .
+
+      # 8. Upload Archive ke cPanel
+      - name: Upload Archive to cPanel
+        run: |
+          scp \
+            -i ~/.ssh/id_rsa \
+            -P "${{ secrets.CPANEL_PORT }}" \
+            deploy.tar.gz \
+            "${{ secrets.CPANEL_USER }}@${{ secrets.CPANEL_HOST }}:~/deploy.tar.gz"
+
+      # 9. Ekstrak & Jalankan deploy.sh Aman di Server
+      - name: Deploy on cPanel
+        run: |
+          ssh \
+            -i ~/.ssh/id_rsa \
+            -p "${{ secrets.CPANEL_PORT }}" \
+            "${{ secrets.CPANEL_USER }}@${{ secrets.CPANEL_HOST }}" \
+            'bash -s' <<'REMOTE_SCRIPT'
+
+          set -e
+
+          APP_DIR="$HOME/repositories/ConfirmMe-Approval"
+          ARCHIVE="$HOME/deploy.tar.gz"
+
+          echo "📦 Extracting deployment files..."
+          mkdir -p "$APP_DIR"
+          tar -xzf "$ARCHIVE" -C "$APP_DIR"
+          rm -f "$ARCHIVE"
+
+          echo "⚙️ Running safe deploy.sh..."
+          cd "$APP_DIR"
+          chmod +x deploy.sh
+          bash deploy.sh
+
+          REMOTE_SCRIPT
