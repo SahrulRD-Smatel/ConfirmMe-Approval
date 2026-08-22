@@ -49,19 +49,14 @@ echo "🎼 Composer     : Pre-built by GitHub Actions"
 echo ""
 
 # ------------------------------------------------------------------------------
-# Safety Check
+# Safety Check & Environment Setup
 # ------------------------------------------------------------------------------
 
 echo "🔐 Running production safety checks..."
 
-if [ ! -f ".env" ]; then
-    echo "⚠️  .env tidak ditemukan di repository."
-    echo "   Pastikan production menggunakan:"
-    echo "   $PUBLIC_DIR/.env"
-fi
-
+# 1. Pastikan .env produksi di public_html tersedia
 if [ ! -f "$PUBLIC_DIR/.env" ]; then
-    echo "❌ ERROR: Production .env tidak ditemukan:"
+    echo "❌ ERROR: Production .env tidak ditemukan di:"
     echo "   $PUBLIC_DIR/.env"
     exit 1
 fi
@@ -77,7 +72,13 @@ if [ ! -d "$PUBLIC_DIR/public" ]; then
     exit 1
 fi
 
-echo "   ✅ Production environment detected"
+# 2. Hubungkan (symlink) .env produksi ke folder repository jika belum ada
+if [ ! -f ".env" ]; then
+    echo "🔗 Linking production .env to repository folder..."
+    ln -sf "$PUBLIC_DIR/.env" .env
+fi
+
+echo "   ✅ Production environment detected and linked"
 echo ""
 
 # ------------------------------------------------------------------------------
