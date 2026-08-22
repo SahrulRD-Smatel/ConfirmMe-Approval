@@ -54,7 +54,7 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -p "${{ secrets.CPANEL_PORT }}" "${{ secrets.CPANEL_HOST }}" >> ~/.ssh/known_hosts
 
-      # 7. Create Deployment Archive (Disimpan di /tmp agar tidak mengubah folder root)
+      # 7. Create Deployment Archive
       - name: Create Deployment Archive
         run: |
           tar \
@@ -79,7 +79,7 @@ jobs:
             /tmp/deploy.tar.gz \
             "${{ secrets.CPANEL_USER }}@${{ secrets.CPANEL_HOST }}:~/deploy.tar.gz"
 
-      # 9. Extract & Execute deploy.sh Aman di Server
+      # 9. Extract & Execute deploy.sh Langsung di Folder Live
       - name: Deploy on cPanel
         run: |
           ssh \
@@ -90,10 +90,10 @@ jobs:
 
           set -e
 
-          APP_DIR="$HOME/repositories/ConfirmMe-Approval"
+          APP_DIR="$HOME/public_html/confirmme.sahrulrdhani.my.id"
           ARCHIVE="$HOME/deploy.tar.gz"
 
-          echo "📦 Extracting deployment files..."
+          echo "📦 Extracting deployment files directly to live folder..."
           mkdir -p "$APP_DIR"
           tar -xzf "$ARCHIVE" -C "$APP_DIR"
           rm -f "$ARCHIVE"
