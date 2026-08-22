@@ -1,4 +1,4 @@
-name: Deploy Laravel to cPanel
+name: Deploy ConfirmMe-Approval to cPanel
 
 on:
   push:
@@ -30,7 +30,7 @@ jobs:
           node-version: 22
           cache: npm
 
-      # 4. Install Composer (Production Only)
+      # 4. Install Composer Dependencies (Production)
       - name: Install Composer Dependencies
         run: |
           composer install \
@@ -46,7 +46,7 @@ jobs:
       - name: Build Vite
         run: npm run build
 
-      # 6. Setup SSH & Security
+      # 6. Setup SSH Key
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
@@ -54,7 +54,7 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -p "${{ secrets.CPANEL_PORT }}" "${{ secrets.CPANEL_HOST }}" >> ~/.ssh/known_hosts
 
-      # 7. Arsipkan Kode Aplikasi (Mengabaikan Cache & Log)
+      # 7. Create Deployment Archive (Disimpan di /tmp agar tidak mengubah folder root)
       - name: Create Deployment Archive
         run: |
           tar \
@@ -68,19 +68,18 @@ jobs:
             --exclude='storage/framework/sessions/*' \
             --exclude='storage/framework/views/*' \
             --exclude='bootstrap/cache/*.php' \
-            --exclude='deploy.tar.gz' \
-            -czf deploy.tar.gz .
+            -czf /tmp/deploy.tar.gz .
 
-      # 8. Upload Archive ke cPanel
+      # 8. Upload Archive to cPanel
       - name: Upload Archive to cPanel
         run: |
           scp \
             -i ~/.ssh/id_rsa \
             -P "${{ secrets.CPANEL_PORT }}" \
-            deploy.tar.gz \
+            /tmp/deploy.tar.gz \
             "${{ secrets.CPANEL_USER }}@${{ secrets.CPANEL_HOST }}:~/deploy.tar.gz"
 
-      # 9. Ekstrak & Jalankan deploy.sh Aman di Server
+      # 9. Extract & Execute deploy.sh Aman di Server
       - name: Deploy on cPanel
         run: |
           ssh \
