@@ -95,7 +95,7 @@
                     taxAmount: 0
                 });
             } else {
-                alert('Maksimal 10 dokumen sekaligus.');
+                window.showAlert('Maksimal 10 dokumen sekaligus.', 'warning');
             }
         },
         removeForm(index) {

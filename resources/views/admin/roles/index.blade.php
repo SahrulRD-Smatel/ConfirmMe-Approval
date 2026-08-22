@@ -7,11 +7,31 @@
                 <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Role & Permission</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Atur hak akses secara dinamis untuk mengontrol visibilitas menu dan fitur setiap divisi.</p>
             </div>
-            <x-ui.button href="{{ route('admin.roles.create') }}" icon="plus" class="shadow-lg shadow-primary-500/30">Tambah Role</x-ui.button>
+            <x-ui.button href="{{ route('admin.roles.create') }}" icon="plus" class="shadow-soft shadow-primary-500/20">Tambah Role</x-ui.button>
         </div>
     </x-slot>
 
-    <div class="space-y-6">
+    <div class="space-y-5">
+        <!-- <section class="rounded-[1.75rem] border border-gray-200/80 bg-white/90 p-5 shadow-soft-lg shadow-gray-900/[0.025] dark:border-gray-800/80 dark:bg-gray-900/90 sm:p-6">
+            <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+                <div class="flex items-start gap-3">
+                    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary-50 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400">
+                        <x-icon name="shield-check" class="h-5 w-5" />
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400">Role directory</p>
+                        <h2 class="mt-1 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Access profiles</h2>
+                        <p class="mt-1 max-w-2xl text-xs leading-5 text-gray-500 dark:text-gray-400">Buka hanya role yang ingin ditinjau. Daftar permission di dalam setiap grup memiliki scroll internal agar halaman tetap ringkas.</p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.12em] text-gray-500 dark:text-gray-400">
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1.5 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400"><span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>Aktif</span>
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1.5 text-gray-500 dark:bg-gray-800 dark:text-gray-400"><span class="h-1.5 w-1.5 rounded-full bg-gray-400"></span>Tidak aktif</span>
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-primary-50 px-2.5 py-1.5 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400"><span class="h-1.5 w-1.5 rounded-full bg-primary-500"></span>Sistem</span>
+                </div>
+            </div>
+        </section> -->
+
         @foreach($roles as $role)
         @php
             $rolePerms = $role->permissions->pluck('name')->toArray();
@@ -27,74 +47,65 @@
             elseif($role->name === 'manager' || $role->name === 'supervisor') { $icon = 'star'; $bgColor = 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400'; }
         @endphp
 
-        <div x-data="{ open: false }" 
-             class="group bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden shadow-soft hover:shadow-md transition-all duration-300">
-            
+        <section x-data="{ open: false }"
+             class="group overflow-hidden rounded-[1.5rem] border border-gray-200/80 bg-white/95 shadow-soft-lg shadow-gray-900/[0.02] transition-all duration-300 dark:border-gray-800/80 dark:bg-gray-900/95">
             {{-- Header (Clickable) --}}
-            <button @click="open = !open" 
-                    class="w-full flex items-center justify-between p-5 transition-colors focus:outline-none">
-                <div class="flex items-center gap-5">
-                    <div class="w-14 h-14 rounded-xl flex items-center justify-center {{ $bgColor }} transition-transform duration-300 group-hover:scale-110">
-                        <x-icon name="{{ $icon }}" class="w-7 h-7" />
+            <button @click="open = !open"
+                    class="flex w-full items-center justify-between gap-4 p-4 text-left transition-colors hover:bg-gray-50/80 focus:outline-none focus:ring-4 focus:ring-inset focus:ring-primary-500/10 sm:p-5">
+                <div class="flex min-w-0 items-center gap-3 sm:gap-4">
+                    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl {{ $bgColor }} transition-transform duration-300 group-hover:scale-105 sm:h-12 sm:w-12">
+                        <x-icon name="{{ $icon }}" class="h-6 w-6" />
                     </div>
-                    <div class="text-left">
-                        <div class="flex items-center gap-3">
-                            <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ role_label($role->name) }}</h3>
+                    <div class="min-w-0">
+                        <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                            <h3 class="truncate text-base font-bold text-gray-900 dark:text-white sm:text-lg">{{ role_label($role->name) }}</h3>
                             @if($isProtected)
-                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary-100 text-primary-700 dark:bg-primary-900/50 dark:text-primary-400">
-                                    Sistem
-                                </span>
+                                <span class="rounded-full bg-primary-100 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.12em] text-primary-700 dark:bg-primary-900/50 dark:text-primary-400">Sistem</span>
                             @endif
                         </div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-3">
-                            <span class="flex items-center gap-1">
-                                <x-icon name="check-circle" class="w-4 h-4 text-emerald-500" />
-                                <b>{{ count($rolePerms) }}</b> Akses Terbuka
-                            </span>
-                            <span class="text-gray-300 dark:text-gray-600">•</span>
-                            <span class="flex items-center gap-1">
-                                <x-icon name="user" class="w-4 h-4" />
-                                <b>{{ $role->users()->count() }}</b> Pengguna
-                            </span>
-                        </p>
+                        <div class="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
+                            <span class="inline-flex items-center gap-1.5"><x-icon name="check-circle" class="h-3.5 w-3.5 text-emerald-500" /><b>{{ count($rolePerms) }}</b> Akses</span>
+                            <span class="hidden text-gray-300 dark:text-gray-600 sm:inline">•</span>
+                            <span class="inline-flex items-center gap-1.5"><x-icon name="user" class="h-3.5 w-3.5" /><b>{{ $role->users()->count() }}</b> Pengguna</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-3 pr-2">
-                    <div class="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <a href="{{ route('admin.roles.edit', $role) }}" @click.stop 
-                           class="p-2.5 text-primary-600 bg-primary-50 hover:bg-primary-100 dark:bg-primary-900/20 dark:hover:bg-primary-900/40 rounded-xl transition-colors tooltip" data-tip="Edit Hak Akses">
-                            <x-icon name="pencil" class="w-5 h-5" />
+                <div class="flex shrink-0 items-center gap-2 sm:gap-3">
+                    <div class="flex items-center gap-1 opacity-100 transition-opacity duration-300 sm:opacity-0 sm:group-hover:opacity-100">
+                        <a href="{{ route('admin.roles.edit', $role) }}" @click.stop
+                           class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-primary-50 text-primary-600 transition-colors hover:bg-primary-100 dark:bg-primary-900/20 dark:hover:bg-primary-900/40" data-tip="Edit Hak Akses" aria-label="Edit Hak Akses">
+                            <x-icon name="pencil" class="h-4 w-4" />
                         </a>
                         @if(!$isProtected)
                         <form action="{{ route('admin.roles.destroy', $role) }}" method="POST" @click.stop onsubmit="confirmAction(event, 'Hapus role {{ $role->name }} beserta hak aksesnya?')">
                             @csrf @method('DELETE')
-                            <button type="submit" class="p-2.5 text-danger-600 bg-danger-50 hover:bg-danger-100 dark:bg-danger-900/20 dark:hover:bg-danger-900/40 rounded-xl transition-colors tooltip" data-tip="Hapus Role">
-                                <x-icon name="trash" class="w-5 h-5" />
+                            <button type="submit" class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-danger-50 text-danger-600 transition-colors hover:bg-danger-100 dark:bg-danger-900/20 dark:hover:bg-danger-900/40" data-tip="Hapus Role" aria-label="Hapus Role">
+                                <x-icon name="trash" class="h-4 w-4" />
                             </button>
                         </form>
                         @endif
                     </div>
-                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-50 dark:bg-gray-700/50 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
-                        <x-icon name="chevron-down" class="w-5 h-5 transition-transform duration-300" x-bind:class="open ? 'rotate-180' : ''" />
-                    </div>
+                    <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-100 text-gray-400 transition-colors group-hover:text-gray-600 dark:bg-gray-800 dark:group-hover:text-gray-300">
+                        <x-icon name="chevron-down" class="h-4 w-4 transition-transform duration-300" x-bind:class="open ? 'rotate-180' : ''" />
+                    </span>
                 </div>
             </button>
 
             {{-- Body (Permissions Matrix) --}}
-            <div x-show="open" 
+            <div x-show="open"
                  x-collapse
-                 class="border-t border-gray-100 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-800/30">
-                <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                 class="border-t border-gray-200/80 bg-gray-50/50 dark:border-gray-800/80 dark:bg-gray-950/30">
+                <div class="p-4 sm:p-5">
+                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
                         @foreach($permGroups as $groupName => $groupPerms)
-                            @php 
+                            @php
                                 $activeInGroup = array_intersect($groupPerms, $rolePerms);
                                 $hasAny = count($activeInGroup) > 0;
                                 $isAll = count($activeInGroup) === count($groupPerms);
                             @endphp
-                            
-                            <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700 shadow-soft relative overflow-hidden transition-colors {{ $hasAny ? 'ring-1 ring-primary-500/20' : 'opacity-75' }}">
+
+                            <div class="flex max-h-72 min-h-0 flex-col overflow-hidden rounded-2xl border border-gray-200/80 bg-white p-3.5 shadow-sm transition-colors dark:border-gray-800/80 dark:bg-gray-900 {{ $hasAny ? 'ring-1 ring-primary-500/20' : 'opacity-75' }}">
                                 @if($isAll)
                                     <div class="absolute top-0 right-0 w-16 h-16 overflow-hidden">
                                         <div class="absolute transform rotate-45 bg-emerald-500 text-white text-[9px] font-bold py-1 right-[-35px] top-[15px] w-[120px] text-center shadow-soft">
@@ -102,59 +113,61 @@
                                         </div>
                                     </div>
                                 @endif
-                                
-                                <div class="flex items-center gap-2 mb-4">
-                                    <h4 class="font-bold text-gray-800 dark:text-gray-200 uppercase text-xs tracking-wider">{{ $groupName }}</h4>
+
+                                <div class="mb-3 flex shrink-0 items-center gap-2 border-b border-gray-100 pb-3 dark:border-gray-800">
+                                    <h4 class="min-w-0 truncate font-bold text-[10px] uppercase tracking-[0.14em] text-gray-700 dark:text-gray-200">{{ $groupName }}</h4>
                                     @if($hasAny && !$isAll)
-                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-primary-100 text-primary-700 dark:bg-primary-900/50 dark:text-primary-400">
-                                            {{ count($activeInGroup) }}/{{ count($groupPerms) }}
-                                        </span>
+                                        <span class="shrink-0 rounded-full bg-primary-100 px-2 py-0.5 text-[9px] font-semibold text-primary-700 dark:bg-primary-900/50 dark:text-primary-400">{{ count($activeInGroup) }}/{{ count($groupPerms) }}</span>
                                     @endif
                                 </div>
-                                
-                                <div class="space-y-2.5">
-                                    @foreach($groupPerms as $perm)
-                                        @php $hasPerm = in_array($perm, $rolePerms); @endphp
-                                        <div class="flex items-start gap-3 text-sm group/item">
-                                            @php 
+
+                                <div class="min-h-0 flex-1 overflow-y-auto pr-1">
+                                    <div class="grid grid-cols-1 gap-1.5">
+                                        @foreach($groupPerms as $perm)
+                                            @php $hasPerm = in_array($perm, $rolePerms); @endphp
+                                            @php
                                                 $isAction = in_array($perm, ['edit-document', 'delete-document', 'submit-document', 'reject-document', 'print-document', 'view-all-documents', 'view-department-documents', 'view-finance-documents', 'export-reports']);
                                                 $badgeLabel = $isAction ? 'FITUR' : 'MENU';
-                                                $badgeClass = $hasPerm 
+                                                $badgeClass = $hasPerm
                                                     ? ($isAction ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-400')
                                                     : 'bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500';
                                             @endphp
                                             @if($hasPerm)
-                                                <div class="mt-0.5 w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center flex-shrink-0">
-                                                    <x-icon name="check" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                                                <div class="group/item flex min-w-0 items-start gap-2 rounded-lg px-1.5 py-1 text-xs transition-colors hover:bg-emerald-50/70 dark:hover:bg-emerald-900/10">
+                                                    <div class="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/30">
+                                                        <x-icon name="check" class="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
+                                                    </div>
+                                                    <span class="min-w-0 flex flex-wrap items-center gap-1.5 font-medium leading-5 text-gray-900 dark:text-gray-100">
+                                                        <span class="break-words">{{ str_replace('-', ' ', $perm) }}</span>
+                                                        <span class="rounded px-1.5 py-0.5 text-[8px] font-bold {{ $badgeClass }}">{{ $badgeLabel }}</span>
+                                                    </span>
                                                 </div>
-                                                <span class="text-gray-900 dark:text-gray-100 font-medium flex items-center gap-2">
-                                                    {{ str_replace('-', ' ', $perm) }}
-                                                    <span class="px-1.5 py-0.5 rounded text-[9px] font-bold {{ $badgeClass }}">{{ $badgeLabel }}</span>
-                                                </span>
                                             @else
-                                                <div class="mt-0.5 w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
-                                                    <x-icon name="x-mark" class="w-3.5 h-3.5 text-gray-400" />
+                                                <div class="group/item flex min-w-0 items-start gap-2 rounded-lg px-1.5 py-1 text-xs transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/70">
+                                                    <div class="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
+                                                        <x-icon name="x-mark" class="h-3 w-3 text-gray-400" />
+                                                    </div>
+                                                    <span class="min-w-0 flex flex-wrap items-center gap-1.5 leading-5 text-gray-400 dark:text-gray-500">
+                                                        <span class="break-words">{{ str_replace('-', ' ', $perm) }}</span>
+                                                        <span class="rounded px-1.5 py-0.5 text-[8px] font-bold {{ $badgeClass }}">{{ $badgeLabel }}</span>
+                                                    </span>
                                                 </div>
-                                                <span class="text-gray-400 dark:text-gray-500 flex items-center gap-2">
-                                                    {{ str_replace('-', ' ', $perm) }}
-                                                    <span class="px-1.5 py-0.5 rounded text-[9px] font-bold {{ $badgeClass }}">{{ $badgeLabel }}</span>
-                                                </span>
                                             @endif
-                                        </div>
-                                    @endforeach
+                                        @endforeach
+                                    </div>
                                 </div>
                             </div>
                         @endforeach
                     </div>
                 </div>
-                
-                <div class="px-6 py-4 bg-gray-100/50 dark:bg-gray-800/80 border-t border-gray-100 dark:border-gray-700/50 flex justify-end">
-                    <x-ui.button href="{{ route('admin.roles.edit', $role) }}" variant="secondary" icon="pencil" class="shadow-soft">
+
+                <div class="flex justify-end border-t border-gray-200/80 bg-white/60 px-4 py-3 dark:border-gray-800/80 dark:bg-gray-900/60 sm:px-5">
+                    <x-ui.button href="{{ route('admin.roles.edit', $role) }}" variant="secondary" icon="pencil" class="shadow-sm">
                         Ubah Konfigurasi Akses
                     </x-ui.button>
                 </div>
             </div>
-        </div>
+        </section>
         @endforeach
     </div>
 </x-app-layout>

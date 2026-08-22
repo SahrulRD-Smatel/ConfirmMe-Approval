@@ -105,8 +105,23 @@
     function previewImage(input) {
         const preview = document.getElementById('avatar-preview');
         const placeholder = document.getElementById('avatar-placeholder');
+        const maxFileSize = 1048576; // 1MB
 
         if (input.files && input.files[0]) {
+            if (input.files[0].size > maxFileSize) {
+                showAlert('Ukuran file tidak boleh lebih dari 1MB.', 'error');
+                input.value = ''; // Clear the input
+                
+                // Reset tampilan ke semula
+                if (placeholder) {
+                    preview.classList.add('hidden');
+                    placeholder.classList.remove('hidden');
+                } else {
+                    preview.src = "{{ $user->avatar ? asset('storage/' . $user->avatar) : '' }}";
+                }
+                return;
+            }
+
             const reader = new FileReader();
 
             reader.onload = function (e) {

@@ -1,0 +1,181 @@
+﻿--- resources/views/admin/departments/index.blade.php ---
+<x-slot name="header">
+        {{-- Header --}}
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+            <div class="max-w-3xl">
+                <div class="mb-3 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-primary-600 dark:text-primary-400">
+                    <span class="h-1.5 w-1.5 rounded-full bg-primary-500"></span>
+                    Organization structure
+                </div>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-3xl">Manajemen Departemen</h1>
+                <p class="mt-2 text-sm leading-6 text-gray-500 dark:text-gray-400">Kelola departemen perusahaan. Perubahan nama otomatis update ke semua user terkait.</p>
+            </div>
+            <div class="hidden items-center gap-2 rounded-2xl border border-gray-200/80 bg-white/70 px-4 py-3 text-xs text-gray-500 shadow-sm dark:border-gray-700/80 dark:bg-gray-900/70 dark:text-gray-400 sm:flex">
+                <x-icon name="building-office" class="h-4 w-4 text-primary-500" />
+                <span>Directory settings</span>
+            </div>
+        </div>
+    </x-slot>
+
+--- resources/views/admin/templates/index.blade.php ---
+<x-slot name="header">
+        <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+                <div class="mb-3 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-primary-600 dark:text-primary-400">
+                    <span class="h-1.5 w-1.5 rounded-full bg-primary-500"></span>
+                    Document library
+                </div>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-3xl">Template Dokumen</h1>
+                <p class="mt-2 text-sm leading-6 text-gray-500 dark:text-gray-400">Kelola template pengajuan dokumen dari satu katalog yang ringkas dan mudah dipindai.</p>
+            </div>
+            <x-ui.button href="{{ route('admin.templates.create') }}" icon="plus">Buat Template</x-ui.button>
+        </div>
+    </x-slot>
+
+--- resources/views/admin/templates/form.blade.php ---
+<x-slot name="header">
+        <div class="flex items-center gap-4">
+            <a href="{{ route('admin.templates.index') }}" class="text-gray-500 hover:text-gray-700 dark:text-gray-400">
+                <x-icon name="arrow-left" class="w-5 h-5" />
+            </a>
+            <div>
+                <p class="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-primary-600 dark:text-primary-400">Template registry / configuration</p>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                    {{ isset($template) ? 'Edit Template' : 'Buat Template' }}
+                </h1>
+                <p class="mt-1 text-sm text-gray-500">Isi default values agar user tidak perlu mengisi ulang setiap kali</p>
+            </div>
+        </div>
+    </x-slot>
+
+--- resources/views/leave-approvals/index.blade.php ---
+<x-slot name="header">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+                <p class="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-primary-600 dark:text-primary-400">Approval workspace</p>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-3xl">Approval Cuti</h1>
+                <p class="mt-2 text-sm leading-6 text-gray-500 dark:text-gray-400">Kelola pengajuan cuti dari tim Anda dengan review yang terarah.</p>
+            </div>
+            <span class="w-fit rounded-full border border-gray-200/80 bg-white px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-gray-500 shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400">Review queue</span>
+        </div>
+    </x-slot>
+
+--- resources/views/finance/budgets/form.blade.php ---
+<x-slot name="header">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div class="flex items-start gap-3">
+                <a href="{{ route('finance.budgets.index') }}" class="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-gray-200/80 bg-white text-gray-500 shadow-sm transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800">
+                    <x-icon name="arrow-left" class="h-4 w-4" />
+                </a>
+                <div>
+                    <p class="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-primary-600 dark:text-primary-400">Finance control room / budget</p>
+                    <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-3xl">
+                        {{ isset($budget) ? 'Edit Budget' : 'Tambah Budget' }}
+                    </h1>
+                    <p class="mt-2 text-sm leading-6 text-gray-500 dark:text-gray-400">Tetapkan identitas, periode, dan batas anggaran dalam satu workspace.</p>
+                </div>
+            </div>
+            <span class="w-fit rounded-full border border-gray-200/80 bg-white px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-gray-500 shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400">Budget setup</span>
+        </div>
+    </x-slot>
+
+--- resources/views/admin/users/index.blade.php ---
+<x-slot name="header">
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div class="max-w-2xl">
+                <div class="mb-3 flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-primary-600 dark:text-primary-400">
+                    <span class="h-2 w-2 rounded-full bg-primary-500"></span>
+                    Directory / Access management
+                </div>
+                <h1 class="font-display text-3xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-4xl">Kelola Pengguna</h1>
+                <p class="mt-3 max-w-xl text-sm leading-6 text-gray-500 dark:text-gray-400">
+                    Kelola identitas, role, departemen, dan akses akun dari satu ruang kerja yang terstruktur.
+                </p>
+            </div>
+            <div class="flex shrink-0 items-center gap-3">
+                <div class="hidden rounded-2xl border border-gray-200/80 bg-white/70 px-4 py-3 text-right shadow-sm dark:border-gray-700/80 dark:bg-gray-900/70 sm:block">
+                    <p class="text-[10px] font-bold uppercase tracking-[0.16em] text-gray-400">Workspace</p>
+                    <p class="mt-1 text-sm font-semibold text-gray-800 dark:text-gray-200">User directory</p>
+                </div>
+                <x-ui.button href="{{ route('admin.users.create') }}" icon="plus">
+                    Tambah Pengguna
+                </x-ui.button>
+            </div>
+        </div>
+    </x-slot>
+
+--- resources/views/admin/users/form.blade.php ---
+<x-slot name="header">
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+            <div class="flex items-center gap-4">
+                <a href="{{ route('admin.users.index') }}"
+                    class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-gray-200/80 bg-white text-gray-500 shadow-sm transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-600 focus:outline-none focus:ring-4 focus:ring-primary-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-primary-900/20 dark:hover:text-primary-400">
+                    <x-icon name="arrow-left" class="h-5 w-5" />
+                </a>
+                <div>
+                    <div class="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-primary-600 dark:text-primary-400">
+                        <span class="h-1.5 w-1.5 rounded-full bg-primary-500"></span>
+                        Access management
+                    </div>
+                    <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-950 dark:text-white">
+                        {{ isset($user) ? 'Edit Pengguna' : 'Tambah Pengguna' }}
+                    </h1>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Atur identitas, akses, dan detail direktori pengguna.</p>
+                </div>
+            </div>
+            <span class="hidden rounded-full border border-gray-200/80 bg-white/70 px-3 py-1.5 text-xs font-semibold text-gray-500 shadow-sm dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-400 sm:inline-flex">Account profile</span>
+        </div>
+    </x-slot>
+
+--- resources/views/admin/roles/index.blade.php ---
+<x-slot name="header">
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+            <div class="max-w-3xl">
+                <div class="mb-3 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-primary-600 dark:text-primary-400">
+                    <span class="h-1.5 w-1.5 rounded-full bg-primary-500"></span>
+                    Access architecture
+                </div>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-3xl">Role & Permission</h1>
+                <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-500 dark:text-gray-400">Atur hak akses secara dinamis untuk mengontrol visibilitas menu dan fitur setiap divisi.</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="hidden rounded-full border border-gray-200/80 bg-white/70 px-3 py-1.5 text-xs font-semibold text-gray-500 shadow-sm dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-400 sm:inline-flex">Permission matrix</span>
+                <x-ui.button href="{{ route('admin.roles.create') }}" icon="plus" class="shadow-soft shadow-primary-500/20">Tambah Role</x-ui.button>
+            </div>
+        </div>
+    </x-slot>
+
+--- resources/views/admin/features/index.blade.php ---
+<x-slot name="header">
+        <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div class="max-w-3xl">
+                <div class="mb-3 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-primary-600 dark:text-primary-400">
+                    <span class="h-1.5 w-1.5 rounded-full bg-primary-500"></span>
+                    System configuration
+                </div>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-3xl">Fitur & Modul Sistem</h1>
+                <p class="mt-2 text-sm leading-6 text-gray-500 dark:text-gray-400">Aktifkan atau nonaktifkan fitur utama pada sistem. Perubahan akan langsung berdampak pada seluruh pengguna.</p>
+            </div>
+            <div class="rounded-2xl border border-warning-200/80 bg-warning-50/70 px-4 py-3 text-xs leading-5 text-warning-800 shadow-sm dark:border-warning-800/60 dark:bg-warning-900/10 dark:text-warning-300">
+                <div class="flex items-center gap-2 font-semibold"><x-icon name="exclamation-triangle" class="h-4 w-4" /> Perubahan bersifat global</div>
+                <p class="mt-1 text-warning-700/80 dark:text-warning-400/80">Pastikan modul siap digunakan sebelum diaktifkan.</p>
+            </div>
+        </div>
+    </x-slot>
+
+--- resources/views/profile/edit.blade.php ---
+<x-slot name="header">
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+                <div class="mb-3 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-primary-600 dark:text-primary-400">
+                    <span class="h-1.5 w-1.5 rounded-full bg-primary-500"></span>
+                    Account workspace
+                </div>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-3xl">{{ __('Profile') }}</h1>
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Kelola identitas, keamanan, dan informasi organisasi Anda dari satu ruang kerja.</p>
+            </div>
+            <span class="hidden rounded-full border border-gray-200/80 bg-white/70 px-3 py-1.5 text-xs font-semibold text-gray-500 shadow-sm dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-400 sm:inline-flex">Personal settings</span>
+        </div>
+    </x-slot>
+
+

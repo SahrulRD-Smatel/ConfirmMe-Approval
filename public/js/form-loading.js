@@ -16,6 +16,9 @@ document.addEventListener('DOMContentLoaded', function () {
         // Skip forms with "no-loading" class
         if (form.classList.contains('no-loading')) return;
 
+        // Skip if submission was already prevented (e.g. by confirmation dialog)
+        if (e.defaultPrevented) return;
+
         // Skip if already submitting (prevent double submit)
         if (form.dataset.submitting === 'true') {
             e.preventDefault();

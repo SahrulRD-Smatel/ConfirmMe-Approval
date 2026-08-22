@@ -43,7 +43,7 @@
 
 
     <!-- Navigation -->
-    <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+    <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1" x-init="$nextTick(() => { let active = $el.querySelector('[data-active=true]'); if(active) { active.scrollIntoView({block: 'center'}); } })">
         {{-- Dashboard - All Roles except Presiden Direktur (has Executive Dashboard) --}}
         @if(!auth()->user()->hasRole('presiden_direktur'))
             <x-sidebar-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" icon="home">

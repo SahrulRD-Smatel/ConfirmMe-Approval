@@ -10,7 +10,7 @@
                 <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
                     {{ isset($template) ? 'Edit Template' : 'Buat Template' }}
                 </h1>
-                <p class="mt-1 text-sm text-gray-500">Isi default values agar user tidak perlu mengisi ulang setiap kali</p>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Isi default values agar user tidak perlu mengisi ulang setiap kali</p>
             </div>
         </div>
     </x-slot>
@@ -20,7 +20,7 @@
     @endphp
 
     <form action="{{ isset($template) ? route('admin.templates.update', $template) : route('admin.templates.store') }}"
-        method="POST" class="max-w-4xl space-y-6" x-data="{
+        method="POST" class="mx-auto max-w-7xl space-y-6" x-data="{
             approvalType: '{{ old('approval_type', $template->approval_type ?? 'only') }}',
             workflows: {{ Js::from(old('workflow', isset($template) ? (array) $template->workflow : [])) }},
             init() {
@@ -38,18 +38,22 @@
                 this.workflows.splice(index, 1);
             }
         }"
-        @submit="if(workflows.length === 0) { alert('Harap tambahkan minimal 1 approver pada Susunan Approver!'); $event.preventDefault(); }">
+        @submit="if(workflows.length === 0) { window.showAlert('Harap tambahkan minimal 1 approver pada Susunan Approver!', 'warning'); $event.preventDefault(); }">
         @csrf
         @if(isset($template)) @method('PUT') @endif
 
+
+        <div class="grid grid-cols-1 items-start gap-5 xl:grid-cols-[minmax(0,1fr)_18rem]">
+            <div class="min-w-0 space-y-5">
+
         {{-- Basic Info --}}
-        <x-ui.card>
+        <x-ui.card class="rounded-2xl border-gray-200/80 p-5 shadow-soft-lg shadow-gray-900/[0.025] dark:border-gray-800/80 sm:p-6">
             <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                 <x-icon name="document-text" class="w-5 h-5 text-primary-500" />
                 Informasi Template
             </h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Template <span class="text-danger-500">*</span></label>
                     <input type="text" name="name" value="{{ old('name', $template->name ?? '') }}" required
@@ -95,14 +99,14 @@
         </x-ui.card>
 
         {{-- Default Values: Common --}}
-        <x-ui.card>
+        <x-ui.card class="rounded-2xl border-gray-200/80 p-5 shadow-soft-lg shadow-gray-900/[0.025] dark:border-gray-800/80 sm:p-6">
             <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
                 <x-icon name="sparkles" class="w-5 h-5 text-amber-500" />
                 Default Values — Umum
             </h2>
             <p class="text-sm text-gray-500 mb-4">Field ini akan otomatis terisi saat user memilih template</p>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Default Judul</label>
                     <input type="text" name="fields[title]" value="{{ $fields['title'] ?? '' }}"
@@ -132,13 +136,13 @@
 
         {{-- Default Values: Approval Only --}}
         <div x-show="approvalType === 'only'" x-transition>
-            <x-ui.card>
+            <x-ui.card class="rounded-2xl border-gray-200/80 p-5 shadow-soft-lg shadow-gray-900/[0.025] dark:border-gray-800/80 sm:p-6">
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
                     <x-icon name="document-check" class="w-5 h-5 text-blue-500" />
                     Default Values — Dokumen Administratif
                 </h2>
                 <p class="text-sm text-gray-500 mb-4">Khusus untuk tipe "Approval Only"</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Default Kategori</label>
                         <input type="text" name="fields[document_category]" list="category_options"
@@ -168,13 +172,13 @@
 
         {{-- Default Values: PO --}}
         <div x-show="approvalType === 'po'" x-transition>
-            <x-ui.card>
+            <x-ui.card class="rounded-2xl border-gray-200/80 p-5 shadow-soft-lg shadow-gray-900/[0.025] dark:border-gray-800/80 sm:p-6">
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
                     <x-icon name="shopping-cart" class="w-5 h-5 text-green-500" />
                     Default Values — Purchase Order
                 </h2>
                 <p class="text-sm text-gray-500 mb-4">Khusus untuk tipe "Approval to PO"</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Default Nama Vendor</label>
                         <input type="text" name="fields[vendor_name]" value="{{ $fields['vendor_name'] ?? '' }}"
@@ -205,13 +209,13 @@
 
         {{-- Default Values: Invoice --}}
         <div x-show="approvalType === 'invoice'" x-transition>
-            <x-ui.card>
+            <x-ui.card class="rounded-2xl border-gray-200/80 p-5 shadow-soft-lg shadow-gray-900/[0.025] dark:border-gray-800/80 sm:p-6">
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
                     <x-icon name="receipt-percent" class="w-5 h-5 text-orange-500" />
                     Default Values — Invoice
                 </h2>
                 <p class="text-sm text-gray-500 mb-4">Khusus untuk tipe "Approval to Invoice"</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Default Nama Vendor</label>
                         <input type="text" name="fields[vendor_name_invoice]" value="{{ $fields['vendor_name_invoice'] ?? '' }}"
@@ -236,13 +240,13 @@
 
         {{-- Default Values: Loan --}}
         <div x-show="approvalType === 'loan'" x-transition>
-            <x-ui.card>
+            <x-ui.card class="rounded-2xl border-gray-200/80 p-5 shadow-soft-lg shadow-gray-900/[0.025] dark:border-gray-800/80 sm:p-6">
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
                     <x-icon name="currency-dollar" class="w-5 h-5 text-purple-500" />
                     Default Values — Pinjaman
                 </h2>
                 <p class="text-sm text-gray-500 mb-4">Khusus untuk tipe "Employee Loan"</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Default Jenis Pinjaman</label>
                         <select name="fields[loan_type]"
@@ -276,7 +280,7 @@
             </x-ui.card>
         </div>
         {{-- Dynamic Form Builder --}}
-        <x-ui.card x-data="{
+        <x-ui.card class="rounded-2xl border-gray-200/80 p-5 shadow-soft-lg shadow-gray-900/[0.025] dark:border-gray-800/80 sm:p-6" x-data="{
             dynamicFields: {{ Js::from($fields['dynamic_fields'] ?? []) }},
             addField() {
                 this.dynamicFields.push({
@@ -369,7 +373,7 @@
         </x-ui.card>
 
         {{-- Workflow / Approver Chain --}}
-        <x-ui.card>
+        <x-ui.card class="rounded-2xl border-gray-200/80 p-5 shadow-soft-lg shadow-gray-900/[0.025] dark:border-gray-800/80 sm:p-6">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                     <x-icon name="user-group" class="w-5 h-5 text-indigo-500" />
@@ -435,8 +439,43 @@
             </div>
         </x-ui.card>
 
+
+            </div>
+
+            <aside class="space-y-4 xl:sticky xl:top-6">
+                <div class="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-soft-lg shadow-gray-900/[0.025] dark:border-gray-800/80 dark:bg-gray-900">
+                    <div class="border-b border-gray-200/80 bg-primary-50/60 px-5 py-4 dark:border-gray-800/80 dark:bg-primary-900/10">
+                        <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-primary-600 dark:text-primary-400">Configuration map</p>
+                        <h2 class="mt-1 text-sm font-bold text-gray-900 dark:text-white">Bangun template bertahap</h2>
+                    </div>
+                    <div class="space-y-1 p-3">
+                        <div class="flex items-start gap-3 rounded-xl bg-gray-50 px-3 py-3 dark:bg-gray-800/70">
+                            <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-primary-100 text-[10px] font-bold text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">01</span>
+                            <div><p class="text-xs font-semibold text-gray-800 dark:text-gray-200">Identitas</p><p class="mt-0.5 text-[10px] leading-4 text-gray-500">Nama, kode, tipe, dan status</p></div>
+                        </div>
+                        <div class="flex items-start gap-3 rounded-xl px-3 py-3">
+                            <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-[10px] font-bold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">02</span>
+                            <div><p class="text-xs font-semibold text-gray-800 dark:text-gray-200">Default values</p><p class="mt-0.5 text-[10px] leading-4 text-gray-500">Nilai awal sesuai tipe approval</p></div>
+                        </div>
+                        <div class="flex items-start gap-3 rounded-xl px-3 py-3">
+                            <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-[10px] font-bold text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300">03</span>
+                            <div><p class="text-xs font-semibold text-gray-800 dark:text-gray-200">Workflow</p><p class="mt-0.5 text-[10px] leading-4 text-gray-500">Field khusus dan approver chain</p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-2xl border border-primary-100 bg-primary-50/60 p-4 dark:border-primary-900/40 dark:bg-primary-900/10">
+                    <div class="flex items-center gap-2 text-primary-800 dark:text-primary-300">
+                        <x-icon name="information-circle" class="h-4 w-4" />
+                        <p class="text-xs font-semibold">Catatan penting</p>
+                    </div>
+                    <p class="mt-2 text-xs leading-5 text-primary-700/80 dark:text-primary-300/70">Susunan approver wajib memiliki minimal satu langkah agar template dapat disimpan.</p>
+                </div>
+            </aside>
+        </div>
+
         {{-- Actions --}}
-        <div class="flex flex-wrap items-center justify-end gap-3">
+        <div class="sticky bottom-4 z-20 flex flex-wrap items-center justify-end gap-3 rounded-2xl border border-gray-200/80 bg-white/95 p-3 shadow-soft-lg backdrop-blur dark:border-gray-800/80 dark:bg-gray-900/95">
             <x-ui.button type="button" variant="secondary" href="{{ route('admin.templates.index') }}">Batal</x-ui.button>
             <x-ui.button type="submit" icon="check">Simpan Template</x-ui.button>
         </div>

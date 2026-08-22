@@ -208,170 +208,185 @@
                     </div>
                 </div>
 
-                {{-- Center Column: Announcements (Instagram Style) --}}
-                <div class="space-y-6 xl:col-span-3 xl:space-y-8">
+                {{-- Center Column: Announcements (Compact Feed) --}}
+                <div class="space-y-4 xl:col-span-3 xl:space-y-5">
                     {{-- HR Banner (Only for HR) --}}
                     @if(auth()->user()->hasAnyRole(['hrd', 'direktur_hr', 'admin']) || auth()->user()->department === 'Human Resources')
-                        <div
-                            class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-pink-500 to-rose-500 p-6 text-white shadow-soft-lg hover-lift sm:p-7">
-                            <div class="relative z-10 flex justify-between items-center">
+                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-pink-500 to-rose-500 p-5 text-white shadow-soft-lg sm:p-6">
+                            <div class="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                 <div>
-                                    <h2 class="text-xl font-bold mb-1">Halo Tim HR, {{ auth()->user()->name }}!</h2>
-                                    <p class="text-pink-100 text-sm">Kelola pengumuman dan informasi perusahaan di sini.</p>
+                                    <h2 class="text-lg font-bold">Halo Tim HR, {{ auth()->user()->name }}!</h2>
+                                    <p class="mt-1 text-sm text-pink-100">Kelola pengumuman dan informasi perusahaan di sini.</p>
                                 </div>
                                 <x-ui.button href="{{ route('announcements.index') }}" variant="secondary" size="sm">
                                     Kelola Pengumuman
                                 </x-ui.button>
                             </div>
-                            <div class="absolute right-0 bottom-0 opacity-10 transform translate-x-10 translate-y-10">
-                                <x-icon name="megaphone" class="w-40 h-40" />
+                            <div class="pointer-events-none absolute bottom-0 right-0 translate-x-10 translate-y-10 opacity-10">
+                                <x-icon name="megaphone" class="h-32 w-32" />
                             </div>
-                            {{-- Decorative circles --}}
-                            <div class="absolute top-3 right-20 w-16 h-16 rounded-full bg-white/10 animate-float"></div>
-                            <div class="absolute bottom-3 right-48 w-8 h-8 rounded-full bg-white/10 animate-float"
-                                style="animation-delay: 1.5s;"></div>
                         </div>
                     @endif
 
-                    {{-- Feed Container (Narrower for focus) --}}
-                    <div class="mx-auto max-w-2xl space-y-6 stagger-enter">
-                        <div class="flex items-center gap-2 mb-2 px-2">
-                            <div class="w-8 h-8 rounded-lg bg-primary-100 flex items-center justify-center">
-                                <x-icon name="sparkles" class="w-4 h-4 text-primary-600" />
+                    {{-- Compact announcement stream --}}
+                    <div class="mx-auto max-w-3xl space-y-3">
+                        <div class="flex items-center gap-3 px-1 pb-1">
+                            <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-100">
+                                <x-icon name="sparkles" class="h-4 w-4 text-primary-600" />
                             </div>
-                            <h3 class="text-base font-bold text-gray-900 dark:text-white">Feed Terbaru</h3>
-                            <div class="flex-1 h-px bg-gradient-to-r from-gray-200 to-transparent ml-2"></div>
+                            <div class="min-w-0">
+                                <h3 class="text-base font-bold text-gray-900 dark:text-white">Feed Terbaru</h3>
+                                <p class="text-[11px] text-gray-400">Pengumuman terbaru dan lampiran terkait</p>
+                            </div>
+                            <div class="h-px flex-1 bg-gradient-to-r from-gray-200 to-transparent"></div>
                         </div>
 
                         @forelse($announcements as $announcement)
-                            <div class="feed-card rounded-2xl dark:bg-gray-800 dark:border-gray-700">
-                                {{-- Card Header: Avatar & Name (Compact) --}}
-                                <div class="px-4 py-3 flex items-center justify-between">
-                                    <div class="flex items-center gap-3">
-                                        <div class="relative">
+                            <article class="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm transition-shadow hover:shadow-soft dark:border-gray-700 dark:bg-gray-800">
+                                {{-- Compact card header --}}
+                                <div class="flex items-center justify-between gap-3 px-4 py-3">
+                                    <div class="flex min-w-0 items-center gap-2.5">
+                                        <div class="relative shrink-0">
                                             <img src="{{ $announcement->creator->avatar_url }}"
-                                                class="w-10 h-10 rounded-full object-cover border-2 border-gray-100 dark:border-gray-700 shadow-sm">
+                                                class="h-9 w-9 rounded-full border-2 border-gray-100 object-cover shadow-sm dark:border-gray-700"
+                                                loading="lazy" decoding="async">
                                             @if($announcement->type === 'urgent' || $announcement->type === 'danger')
                                                 <span class="absolute -bottom-0.5 -right-0.5 flex h-3 w-3">
-                                                    <span
-                                                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                                    <span
-                                                        class="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white dark:border-gray-800"></span>
+                                                    <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+                                                    <span class="relative inline-flex h-3 w-3 rounded-full border-2 border-white bg-red-500 dark:border-gray-800"></span>
                                                 </span>
                                             @endif
                                         </div>
-                                        <div>
-                                            <h4
-                                                class="text-sm font-bold text-gray-900 dark:text-white leading-tight flex items-center gap-1.5">
-                                                {{ $announcement->creator->name }}
+                                        <div class="min-w-0">
+                                            <h4 class="flex min-w-0 items-center gap-1.5 text-xs font-bold leading-tight text-gray-900 dark:text-white">
+                                                <span class="truncate">{{ $announcement->creator->name }}</span>
                                                 @if($announcement->type !== 'info')
-                                                                                        <span class="text-[10px] uppercase px-1.5 py-0.5 rounded-full font-bold
-                                                                                                                                                                                                                                                                                                                                                                                                                    {{ match ($announcement->type) {
+                                                    <span class="shrink-0 rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase
+                                                        {{ match ($announcement->type) {
                                                         'urgent' => 'bg-red-100 text-red-600',
                                                         'warning' => 'bg-yellow-100 text-yellow-600',
                                                         'danger' => 'bg-red-100 text-red-600',
                                                         default => 'bg-gray-100 text-gray-600'
                                                     } }}">
-                                                                                            {{ $announcement->type }}
-                                                                                        </span>
+                                                        {{ $announcement->type }}
+                                                    </span>
                                                 @endif
                                             </h4>
-                                            <p class="text-[11px] text-gray-500 dark:text-gray-400"
-                                                title="{{ $announcement->created_at }}">
+                                            <p class="text-[10px] text-gray-500 dark:text-gray-400" title="{{ $announcement->created_at }}">
                                                 {{ $announcement->created_at->diffForHumans() }}
                                             </p>
                                         </div>
                                     </div>
 
-                                    {{-- Actions --}}
                                     @if(auth()->user()->hasAnyRole(['hrd', 'direktur_hr', 'admin']) || auth()->user()->department === 'Human Resources')
-                                        <div class="relative" x-data="{ open: false }">
+                                        <div class="relative shrink-0" x-data="{ open: false }">
                                             <button @click="open = !open" @click.away="open = false"
-                                                class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition">
-                                                <x-icon name="dots-horizontal" class="w-5 h-5" />
+                                                class="rounded-full p-1 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-300">
+                                                <x-icon name="dots-horizontal" class="h-5 w-5" />
                                             </button>
                                             <div x-show="open" style="display: none;"
-                                                class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 border border-gray-200 dark:border-gray-700 z-10 transition-all">
+                                                class="absolute right-0 z-20 mt-2 w-48 rounded-xl border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800">
                                                 <a href="{{ route('announcements.edit', $announcement) }}"
-                                                    class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Edit
-                                                    Pengumuman</a>
+                                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">Edit Pengumuman</a>
                                                 <button
                                                     @click="deleteUrl = '{{ route('announcements.destroy', $announcement) }}'; open = false; $dispatch('open-modal', 'confirm-announcement-deletion')"
-                                                    class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700">Hapus</button>
+                                                    class="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700">Hapus</button>
                                             </div>
                                         </div>
                                     @endif
                                 </div>
 
-                                {{-- Media (Full Width) --}}
+                                {{-- Media uses contain + natural dimensions to avoid crop/upscaling blur --}}
                                 @php
                                     $media = $announcement->attachments->whereIn('file_type', ['image', 'video']);
                                     $mediaCount = $media->count();
                                 @endphp
 
                                 @if($mediaCount > 0)
-                                    <div class="w-full bg-black border-y border-gray-100 dark:border-gray-700">
+                                    <div class="border-y border-gray-100 bg-gray-950 dark:border-gray-700">
                                         @if($mediaCount === 1)
                                             @foreach($media as $item)
                                                 @if($item->file_type === 'video')
-                                                    <div class="relative w-full" style="padding-top: 100%;">
-                                                        <video controls class="absolute inset-0 w-full h-full object-contain">
+                                                    <div class="relative mx-auto aspect-video max-h-[280px] w-full overflow-hidden bg-black sm:max-h-[360px]">
+                                                        <video controls preload="metadata" class="absolute inset-0 h-full w-full object-contain">
                                                             <source src="{{ Storage::url($item->file_path) }}"
                                                                 type="video/{{ pathinfo($item->file_path, PATHINFO_EXTENSION) }}">
                                                         </video>
                                                     </div>
                                                 @else
-                                                    <div
-                                                        class="flex items-center justify-center bg-gray-100 dark:bg-gray-900 max-h-[500px] overflow-hidden">
+                                                    <a href="{{ Storage::url($item->file_path) }}" target="_blank" class="block bg-gray-950 text-center">
                                                         <img src="{{ Storage::url($item->file_path) }}"
-                                                            class="w-full h-auto object-cover max-h-[500px]">
-                                                    </div>
+                                                            class="mx-auto block h-auto max-h-[360px] w-auto max-w-full object-contain [image-rendering:auto] sm:max-h-[440px]"
+                                                            loading="lazy" decoding="async" fetchpriority="low">
+                                                    </a>
                                                 @endif
                                             @endforeach
                                         @else
-                                            <div
-                                                class="grid h-[350px] {{ $mediaCount === 2 ? 'grid-cols-2' : 'grid-cols-2' }} gap-0.5 bg-white dark:bg-gray-800">
-                                                @foreach($media->take(4) as $index => $item)
-                                                    <div
-                                                        class="relative h-full w-full overflow-hidden {{ $mediaCount === 3 && $index === 0 ? 'row-span-2' : '' }}">
-                                                        @if($item->file_type === 'video')
-                                                            <video controls class="absolute inset-0 w-full h-full object-cover">
-                                                                <source src="{{ Storage::url($item->file_path) }}"
-                                                                    type="video/{{ pathinfo($item->file_path, PATHINFO_EXTENSION) }}">
-                                                            </video>
-                                                        @else
-                                                            <a href="{{ Storage::url($item->file_path) }}" target="_blank">
-                                                                <img src="{{ Storage::url($item->file_path) }}"
-                                                                    class="absolute inset-0 w-full h-full object-cover hover:opacity-95 transition">
-                                                            </a>
-                                                        @endif
+                                            <div x-data="{
+                                                    activeSlide: 1,
+                                                    total: {{ $mediaCount }},
+                                                    scrollNext() { this.$refs.slider.scrollBy({ left: this.$refs.slider.offsetWidth, behavior: 'smooth' }); },
+                                                    scrollPrev() { this.$refs.slider.scrollBy({ left: -this.$refs.slider.offsetWidth, behavior: 'smooth' }); },
+                                                    updateSlide() {
+                                                        let width = this.$refs.slider.offsetWidth;
+                                                        let scrollLeft = this.$refs.slider.scrollLeft;
+                                                        this.activeSlide = Math.round(scrollLeft / width) + 1;
+                                                    }
+                                                }" 
+                                                class="relative group bg-gray-950">
+                                                
+                                                <div x-ref="slider" @scroll.passive="updateSlide()" class="flex overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                                                    @foreach($media as $item)
+                                                        <div class="relative flex-none w-full snap-center flex items-center justify-center h-[320px] sm:h-[400px] bg-black">
+                                                            @if($item->file_type === 'video')
+                                                                <video controls preload="metadata" class="absolute inset-0 h-full w-full object-contain">
+                                                                    <source src="{{ Storage::url($item->file_path) }}" type="video/{{ pathinfo($item->file_path, PATHINFO_EXTENSION) }}">
+                                                                </video>
+                                                            @else
+                                                                <a href="{{ Storage::url($item->file_path) }}" target="_blank" class="flex h-full w-full items-center justify-center">
+                                                                    <img src="{{ Storage::url($item->file_path) }}" class="block h-full w-full object-contain transition hover:opacity-95 [image-rendering:auto]" loading="lazy" decoding="async">
+                                                                </a>
+                                                            @endif
+                                                        </div>
+                                                    @endforeach
+                                                </div>
 
-                                                        @if($loop->iteration === 4 && $mediaCount > 4)
-                                                            <div
-                                                                class="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-bold text-xl pointer-events-none">
-                                                                +{{ $mediaCount - 4 }}
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                @endforeach
+                                                {{-- Controls --}}
+                                                <button @click.prevent="scrollPrev()" x-show="activeSlide > 1" x-cloak class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white rounded-full p-1.5 hidden group-hover:flex items-center justify-center backdrop-blur-sm transition">
+                                                    <x-icon name="chevron-left" class="w-5 h-5" />
+                                                </button>
+                                                <button @click.prevent="scrollNext()" x-show="activeSlide < total" x-cloak class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white rounded-full p-1.5 hidden group-hover:flex items-center justify-center backdrop-blur-sm transition">
+                                                    <x-icon name="chevron-right" class="w-5 h-5" />
+                                                </button>
+
+                                                {{-- Indicator --}}
+                                                <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-1 rounded-full pointer-events-none tracking-widest shadow-sm border border-white/10">
+                                                    <span x-text="activeSlide"></span>/{{ $mediaCount }}
+                                                </div>
                                             </div>
                                         @endif
                                     </div>
                                 @endif
 
-                                {{-- Content & Interaction --}}
+                                {{-- Compact content and documents --}}
                                 <div class="p-4" x-data="{ expanded: false }">
-                                    <h3 class="font-bold text-gray-900 dark:text-white mb-1 text-sm block">
-                                        {{ $announcement->title }}
-                                    </h3>
+                                    <div class="flex items-start justify-between gap-3">
+                                        <h3 class="min-w-0 line-clamp-1 text-sm font-bold text-gray-900 dark:text-white">{{ $announcement->title }}</h3>
+                                        @if($mediaCount > 0)
+                                            <span class="shrink-0 rounded-full bg-gray-100 px-2 py-1 text-[10px] font-medium text-gray-500 dark:bg-gray-700 dark:text-gray-300">{{ $mediaCount }} media</span>
+                                        @endif
+                                    </div>
 
-                                    <div class="relative text-sm text-gray-800 dark:text-gray-300 leading-relaxed">
-                                        <div :class="expanded ? '' : 'line-clamp-2'">
+                                    <div class="mt-1 text-sm leading-6 text-gray-700 dark:text-gray-300">
+                                        @php
+                                            $isLong = strlen($announcement->content) > 100 || substr_count($announcement->content, "\n") >= 2;
+                                        @endphp
+                                        <div :class="expanded ? '' : '{{ $isLong ? 'line-clamp-3' : '' }}'">
                                             {!! nl2br(e($announcement->content)) !!}
                                         </div>
-                                        @if(strlen($announcement->content) > 100)
+                                        @if($isLong)
                                             <button @click="expanded = !expanded"
-                                                class="text-primary-600 hover:text-primary-800 dark:text-primary-400 text-xs font-semibold mt-1">
+                                                class="mt-1 text-xs font-semibold text-primary-600 hover:text-primary-800 dark:text-primary-400">
                                                 <span x-show="!expanded">... selengkapnya</span>
                                                 <span x-show="expanded">sembunyikan</span>
                                             </button>
@@ -383,32 +398,34 @@
                                         $docs = $announcement->attachments->where('file_type', 'document');
                                     @endphp
                                     @if($docs->isNotEmpty())
-                                        <div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
-                                            <div class="flex flex-col gap-1.5">
+                                        <div class="mt-3 border-t border-gray-100 pt-3 dark:border-gray-700">
+                                            <div class="mb-2 flex items-center justify-between">
+                                                <span class="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400">Lampiran</span>
+                                                <span class="text-[10px] text-gray-400">{{ $docs->count() }} file</span>
+                                            </div>
+                                            <div class="max-h-36 space-y-1.5 overflow-y-auto pr-1">
                                                 @foreach($docs as $doc)
                                                     <a href="{{ Storage::url($doc->file_path) }}" target="_blank"
-                                                        class="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-primary-50 hover:text-primary-700 dark:hover:bg-gray-600 transition-all duration-300">
-                                                        <div class="p-1 bg-white dark:bg-gray-800 rounded shadow-sm">
-                                                            <x-icon name="document-text" class="w-3.5 h-3.5 text-primary-500" />
-                                                        </div>
-                                                        <span class="flex-1 truncate">{{ $doc->original_name }}</span>
-                                                        <x-icon name="download" class="w-3.5 h-3.5 text-gray-400" />
+                                                        class="flex items-center gap-2 rounded-lg border border-gray-100 bg-gray-50/80 p-2 text-xs font-medium text-gray-600 transition hover:border-primary-100 hover:bg-primary-50 hover:text-primary-700 dark:border-gray-700 dark:bg-gray-700/40 dark:text-gray-300 dark:hover:bg-gray-600">
+                                                        <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white shadow-sm dark:bg-gray-800">
+                                                            <x-icon name="document-text" class="h-3.5 w-3.5 text-primary-500" />
+                                                        </span>
+                                                        <span class="min-w-0 flex-1 truncate">{{ $doc->original_name }}</span>
+                                                        <x-icon name="download" class="h-3.5 w-3.5 shrink-0 text-gray-400" />
                                                     </a>
                                                 @endforeach
                                             </div>
                                         </div>
                                     @endif
                                 </div>
-                            </div>
+                            </article>
                         @empty
-                            <div
-                                class="text-center py-16 card-elevated border-dashed dark:bg-gray-800 dark:border-gray-700">
-                                <div
-                                    class="bg-primary-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <x-icon name="sparkles" class="w-8 h-8 text-primary-400" />
+                            <div class="rounded-2xl border border-dashed border-gray-200 py-12 text-center dark:border-gray-700 dark:bg-gray-800">
+                                <div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-primary-50">
+                                    <x-icon name="sparkles" class="h-7 w-7 text-primary-400" />
                                 </div>
-                                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Belum Ada Kabar</h3>
-                                <p class="text-gray-500 text-sm mt-1">Semua informasi penting akan muncul di sini.</p>
+                                <h3 class="text-base font-medium text-gray-900 dark:text-white">Belum Ada Kabar</h3>
+                                <p class="mt-1 text-sm text-gray-500">Semua informasi penting akan muncul di sini.</p>
                             </div>
                         @endforelse
 
@@ -423,8 +440,7 @@
                                 </h2>
 
                                 <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                                    Apakah Anda yakin ingin menghapus pengumuman ini? Tindakan ini tidak dapat
-                                    dibatalkan.
+                                    Apakah Anda yakin ingin menghapus pengumuman ini? Tindakan ini tidak dapat dibatalkan.
                                 </p>
 
                                 <div class="mt-6 flex justify-end">
