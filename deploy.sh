@@ -82,6 +82,23 @@ echo "   ✅ Production environment detected and linked"
 echo ""
 
 # ------------------------------------------------------------------------------
+# Copy Updated Code to Live Directory
+# ------------------------------------------------------------------------------
+
+echo "============================================================"
+echo "📂 Copying updated files to live public_html"
+echo "============================================================"
+
+# Copy seluruh file dari repository ke folder live
+cp -a "$APP_DIR/." "$PUBLIC_DIR/"
+
+# Pindah lokasi kerja ke folder live agar artisan berjalan langsung di website utama
+cd "$PUBLIC_DIR"
+
+echo "   ✅ Live files updated successfully"
+echo ""
+
+# ------------------------------------------------------------------------------
 # IMPORTANT: Never run DatabaseSeeder
 # ------------------------------------------------------------------------------
 
