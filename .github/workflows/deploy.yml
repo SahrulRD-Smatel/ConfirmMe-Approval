@@ -10,34 +10,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # ============================================================
-      # 1. Checkout
-      # ============================================================
+      # 1. Checkout Repository
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # ============================================================
-      # 2. Setup PHP
-      # ============================================================
+      # 2. Setup PHP 8.4
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: mbstring, bcmath, pdo_mysql
+          extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql
           tools: composer
+          coverage: none
 
-      # ============================================================
-      # 3. Setup Node
-      # ============================================================
+      # 3. Setup Node.js 22
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
 
-      # ============================================================
-      # 4. Install Composer
-      # ============================================================
+      # 4. Install Composer (Production Only)
       - name: Install Composer Dependencies
         run: |
           composer install \
@@ -46,72 +39,48 @@ jobs:
             --optimize-autoloader \
             --no-interaction
 
-      # ============================================================
-      # 5. Install Node
-      # ============================================================
+      # 5. Build Frontend (Vite)
       - name: Install Node Dependencies
         run: npm ci
 
-      # ============================================================
-      # 6. Build Vite
-      # ============================================================
       - name: Build Vite
         run: npm run build
 
-      # ============================================================
-      # 7. Create deployment archive
-      # ============================================================
-      - name: Create Deployment Archive
-        run: |
-          tar -czf deploy.tar.gz \
-            --exclude='.git' \
-            --exclude='.github' \
-            --exclude='.env' \
-            --exclude='storage' \
-            --exclude='node_modules' \
-            .
-
-      # ============================================================
-      # 8. Setup SSH
-      # ============================================================
+      # 6. Setup SSH & Security
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
-
           echo "${{ secrets.CPANEL_SSH_KEY }}" > ~/.ssh/id_rsa
-
           chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p "${{ secrets.CPANEL_PORT }}" "${{ secrets.CPANEL_HOST }}" >> ~/.ssh/known_hosts
 
-          ssh-keyscan -p "${{ secrets.CPANEL_PORT }}" \
-            "${{ secrets.CPANEL_HOST }}" \
-            >> ~/.ssh/known_hosts
-
-      # ============================================================
-      # 9. Test SSH
-      # ============================================================
-      - name: Test SSH
+      # 7. Arsipkan Kode Aplikasi (Mengabaikan Cache & Log)
+      - name: Create Deployment Archive
         run: |
-          ssh \
-            -i ~/.ssh/id_rsa \
-            -p "${{ secrets.CPANEL_PORT }}" \
-            "${{ secrets.CPANEL_USER }}@${{ secrets.CPANEL_HOST }}" \
-            "echo 'SSH Connected Successfully'"
+          tar \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='.env' \
+            --exclude='node_modules' \
+            --exclude='tests' \
+            --exclude='storage/logs/*' \
+            --exclude='storage/framework/cache/*' \
+            --exclude='storage/framework/sessions/*' \
+            --exclude='storage/framework/views/*' \
+            --exclude='bootstrap/cache/*.php' \
+            -czf deploy.tar.gz .
 
-      # ============================================================
-      # 10. Upload deployment archive
-      # ============================================================
-      - name: Upload Deployment Archive
+      # 8. Upload Archive ke cPanel
+      - name: Upload Archive to cPanel
         run: |
           scp \
             -i ~/.ssh/id_rsa \
             -P "${{ secrets.CPANEL_PORT }}" \
             deploy.tar.gz \
-            "${{ secrets.CPANEL_USER }}@${{ secrets.CPANEL_HOST }}:/home/${{ secrets.CPANEL_USER }}/deploy.tar.gz"
+            "${{ secrets.CPANEL_USER }}@${{ secrets.CPANEL_HOST }}:~/deploy.tar.gz"
 
-      # ============================================================
-      # 11. Deploy on cPanel
-      # ============================================================
-      - name: Deploy to cPanel
+      # 9. Ekstrak & Jalankan deploy.sh Aman di Server
+      - name: Deploy on cPanel
         run: |
           ssh \
             -i ~/.ssh/id_rsa \
@@ -121,67 +90,17 @@ jobs:
 
           set -e
 
-          APP_DIR="/home/${{ secrets.CPANEL_USER }}/public_html/confirmme.sahrulrdhani.my.id"
-          ARCHIVE="/home/${{ secrets.CPANEL_USER }}/deploy.tar.gz"
-          BACKUP_DIR="/home/${{ secrets.CPANEL_USER }}/deployment-backup"
+          APP_DIR="$HOME/repositories/ConfirmMe-Approval"
+          ARCHIVE="$HOME/deploy.tar.gz"
 
-          echo "=========================================="
-          echo "🚀 ConfirmMe Production Deployment"
-          echo "=========================================="
-
-          cd "$APP_DIR"
-
-          # --------------------------------------------------------
-          # Backup .env
-          # --------------------------------------------------------
-          echo "📦 Backing up .env..."
-
-          mkdir -p "$BACKUP_DIR"
-
-          cp .env "$BACKUP_DIR/.env.backup"
-
-          # --------------------------------------------------------
-          # Backup storage
-          # --------------------------------------------------------
-          echo "📦 Backing up storage..."
-
-          tar -czf "$BACKUP_DIR/storage-backup.tar.gz" storage 2>/dev/null || true
-
-          # --------------------------------------------------------
-          # Extract new application
-          # --------------------------------------------------------
-          echo "📥 Extracting new application..."
-
+          echo "📦 Extracting deployment files..."
+          mkdir -p "$APP_DIR"
           tar -xzf "$ARCHIVE" -C "$APP_DIR"
-
-          # --------------------------------------------------------
-          # Restore .env
-          # --------------------------------------------------------
-          echo "🔐 Restoring production .env..."
-
-          cp "$BACKUP_DIR/.env.backup" "$APP_DIR/.env"
-
-          # --------------------------------------------------------
-          # Run deployment script
-          # --------------------------------------------------------
-          echo "⚙️ Running deploy.sh..."
-
-          chmod +x "$APP_DIR/deploy.sh"
-
-          cd "$APP_DIR"
-
-          bash deploy.sh
-
-          # --------------------------------------------------------
-          # Cleanup
-          # --------------------------------------------------------
-          echo "🧹 Cleaning deployment archive..."
-
           rm -f "$ARCHIVE"
 
-          echo ""
-          echo "=========================================="
-          echo "✅ Deployment completed successfully"
-          echo "=========================================="
+          echo "⚙️ Running safe deploy.sh..."
+          cd "$APP_DIR"
+          chmod +x deploy.sh
+          bash deploy.sh
 
           REMOTE_SCRIPT
