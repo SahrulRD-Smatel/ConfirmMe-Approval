@@ -606,7 +606,46 @@ class DatabaseSeeder extends Seeder
                         ['name' => 'data_penumpang', 'label' => 'Data Penumpang dalam Mobil', 'type' => 'table', 'columns' => 'Nama Penumpang', 'required' => false],
                     ],
                 ],
+        ],
+            [
+                'name' => 'Surat Ijin Keluar/Masuk Barang Gudang',
+                'code' => 'SURAT_IJIN_GUDANG',
+                'description' => 'Formulir untuk ijin keluar masuk barang dari gudang.',
+                'approval_type' => 'only',
+                'fields' => [
+                    'title' => 'Surat Ijin Keluar/Masuk Barang Gudang',
+                    'description' => 'Mohon ijin keluar/masuk barang.',
+                    'priority' => 'normal',
+                    'document_category' => 'lainnya',
+                    'dynamic_fields' => [
+                        ['name' => 'perusahaan', 'label' => 'Perusahaan', 'type' => 'text', 'required' => true],
+                        ['name' => 'dokumen_po_do', 'label' => 'Dokumen P.O / D.O', 'type' => 'select', 'options' => 'Ada, Tidak', 'required' => true],
+                        ['name' => 'no_po_do', 'label' => 'No. P.O / D.O', 'type' => 'text', 'required' => false],
+                        ['name' => 'lokasi_tujuan', 'label' => 'Lokasi Tujuan / Asal Barang', 'type' => 'textarea', 'required' => true],
+                        ['name' => 'tanggal_keluar_masuk', 'label' => 'Tanggal Keluar / Masuk', 'type' => 'date', 'required' => true],
+                        ['name' => 'jam_keluar_masuk', 'label' => 'Jam Keluar / Masuk', 'type' => 'time', 'required' => true],
+                        ['name' => 'alasan', 'label' => 'Alasan (Catatan Petugas)', 'type' => 'textarea', 'required' => false],
+                        ['name' => 'items', 'label' => 'Daftar Barang', 'type' => 'table', 'columns' => 'Nama Barang, Project Awal Barang, Jumlah, Actual Project', 'required' => true]
+                    ]
+                ]
             ],
+            [
+                'name' => 'Permintaan Pembelian Barang',
+                'code' => 'PEMBELIAN_BARANG',
+                'description' => 'Formulir untuk permintaan pembelian ATK, P3K, atau Pantry.',
+                'approval_type' => 'po',
+                'fields' => [
+                    'title' => 'Permintaan Pembelian Barang',
+                    'description' => 'Pengajuan pembelian barang kebutuhan kantor.',
+                    'priority' => 'normal',
+                    'dynamic_fields' => [
+                        ['name' => 'kategori_pembelian', 'label' => 'Kategori Pembelian', 'type' => 'select', 'options' => 'ALAT TULIS KANTOR, KEBUTUHAN P3K, KEBUTUHAN PANTRY, LAINNYA', 'required' => true],
+                        ['name' => 'keterangan', 'label' => 'Keterangan/Projek', 'type' => 'text', 'required' => true],
+                        ['name' => 'expected_delivery', 'label' => 'Perkiraan Tgl Penerimaan', 'type' => 'date', 'required' => true],
+                        ['name' => 'items', 'label' => 'Daftar Barang', 'type' => 'table', 'columns' => 'Nama Barang, Keterangan, Max Perbulan, Stock Saat Ini, Permintaan (Qty), Harga Perk./Item', 'required' => true]
+                    ]
+                ]
+            ]
         ];
 
         foreach ($templates as $template) {

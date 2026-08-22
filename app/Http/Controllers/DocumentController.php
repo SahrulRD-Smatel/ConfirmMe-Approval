@@ -664,7 +664,8 @@ class DocumentController extends Controller
         $verificationUrl = route('verify.show', $document->approval_hash);
         $qrCode = base64_encode(QrCode::format('svg')->size(100)->generate($verificationUrl));
 
-        $pdf = Pdf::loadView('documents.pdf', compact('document', 'qrCode'));
+        // Render the generic PDF template for all documents
+        $pdf = Pdf::loadView('pdf.document', compact('document', 'qrCode'));
         
         // Set paper size to A4
         $pdf->setPaper('A4', 'portrait');
