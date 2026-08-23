@@ -1,7 +1,10 @@
 import './bootstrap';
 
 import Alpine from 'alpinejs';
+import collapse from '@alpinejs/collapse';
 import Swal from 'sweetalert2';
+
+Alpine.plugin(collapse);
 
 const BRAND_COLOR = '#82181a';
 const MUTED_COLOR = '#6b7280';

@@ -278,42 +278,24 @@ class ApprovalWorkflowService
 
     /**
      * Re-submit a document after revision.
-     * Returns to the approver who requested the revision, NOT from the beginning.
+     * Mengulang alur persetujuan (approval) dari awal (approver pertama)
+     * agar semua pihak mengetahui perubahan yang telah dilakukan.
      */
     public function resubmitAfterRevision(Document $document): void
     {
-        // Find the approval step that requested revision
-        $revisionApproval = DocumentApproval::where('document_id', $document->id)
-            ->where('status', 'revision_requested')
-            ->orderBy('approval_order')
-            ->first();
+        // 1. Hapus semua antrean approver yang lama (karena akan dibentuk ulang)
+        DocumentApproval::where('document_id', $document->id)->delete();
 
-        if ($revisionApproval) {
-            // Reset this step back to pending
-            $revisionApproval->update([
-                'status' => 'pending',
-                'comment' => null,
-                'action_at' => null,
-            ]);
+        // 2. Reset catatan revisi pada dokumen
+        $document->update([
+            'revision_notes' => null,
+            'revision_requested_by' => null,
+            'revision_requested_at' => null,
+            // 'revision_count' tetap dibiarkan agar ketahuan sudah berapa kali direvisi
+        ]);
 
-            // Set current approver back to the revision requester
-            $document->update([
-                'status' => $this->statusMapping[$revisionApproval->approver_role] ?? 'pending',
-                'current_approver_id' => $revisionApproval->approver_id,
-                'revision_notes' => null,
-                'revision_requested_by' => null,
-                'revision_requested_at' => null,
-            ]);
-
-            // Invalidate sidebar badge cache for the approver
-            Cache::forget("sidebar_badges_{$revisionApproval->approver_id}");
-
-            // Send notification to the approver that document has been revised
-            $this->emailNotificationService->sendApprovalNotification($document, 'pending_approval');
-        } else {
-            // Fallback: re-initialize workflow if no revision step found
-            $this->initializeWorkflow($document);
-        }
+        // 3. Bentuk ulang rantai workflow dari awal
+        $this->initializeWorkflow($document);
     }
 
     /**

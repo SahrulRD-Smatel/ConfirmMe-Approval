@@ -314,7 +314,7 @@
             </p>
 
             <div class="space-y-4">
-                <template x-for="(field, index) in dynamicFields" :key="field.id">
+                <template x-for="(field, index) in dynamicFields" :key="field.id || index">
                     <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800 relative group">
                         <button type="button" @click="removeField(index)" class="absolute top-3 right-3 text-gray-400 hover:text-danger-500 transition-colors tooltip" data-tip="Hapus Field">
                             <x-icon name="trash" class="w-5 h-5" />

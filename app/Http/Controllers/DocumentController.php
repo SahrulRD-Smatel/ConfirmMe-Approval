@@ -577,6 +577,15 @@ class DocumentController extends Controller
             return back()->with('error', 'Hanya dokumen berstatus Draft atau Perlu Revisi yang dapat disubmit.');
         }
 
+        // Handle Resubmit after revision
+        if ($document->status === 'revision_requested') {
+            $this->workflowService->resubmitAfterRevision($document);
+            
+            return redirect()->route('documents.show', $document)
+                ->with('success', 'Dokumen revisi berhasil disubmit ulang dan akan mengulang proses approval.');
+        }
+
+        // Standard Submit (from Draft)
         // Validate that workflow is assigned
         if (!$document->current_approver_id) {
             // Try to assign it now

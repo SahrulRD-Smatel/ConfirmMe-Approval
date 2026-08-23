@@ -50,8 +50,8 @@
         <section x-data="{ open: false }"
              class="group overflow-hidden rounded-[1.5rem] border border-gray-200/80 bg-white/95 shadow-soft-lg shadow-gray-900/[0.02] transition-all duration-300 dark:border-gray-800/80 dark:bg-gray-900/95">
             {{-- Header (Clickable) --}}
-            <button @click="open = !open"
-                    class="flex w-full items-center justify-between gap-4 p-4 text-left transition-colors hover:bg-gray-50/80 focus:outline-none focus:ring-4 focus:ring-inset focus:ring-primary-500/10 sm:p-5">
+            <div @click="open = !open"
+                    class="flex w-full items-center justify-between gap-4 p-4 text-left transition-colors hover:bg-gray-50/80 focus:outline-none focus:ring-4 focus:ring-inset focus:ring-primary-500/10 sm:p-5 cursor-pointer">
                 <div class="flex min-w-0 items-center gap-3 sm:gap-4">
                     <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl {{ $bgColor }} transition-transform duration-300 group-hover:scale-105 sm:h-12 sm:w-12">
                         <x-icon name="{{ $icon }}" class="h-6 w-6" />
@@ -90,7 +90,7 @@
                         <x-icon name="chevron-down" class="h-4 w-4 transition-transform duration-300" x-bind:class="open ? 'rotate-180' : ''" />
                     </span>
                 </div>
-            </button>
+            </div>
 
             {{-- Body (Permissions Matrix) --}}
             <div x-show="open"

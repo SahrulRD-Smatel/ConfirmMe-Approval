@@ -91,6 +91,36 @@
         </div>
     </x-slot>
 
+    {{-- Revision Requested Banner --}}
+    @if($document->status === 'revision_requested')
+        <div class="mb-7 rounded-3xl border border-danger-200 bg-danger-50/80 p-6 shadow-soft">
+            <div class="flex items-start gap-4">
+                <div class="flex-shrink-0 w-12 h-12 rounded-full bg-danger-100 flex items-center justify-center">
+                    <x-icon name="pencil-square" class="w-6 h-6 text-danger-600" />
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-lg font-bold text-danger-900 mb-1">Dokumen Perlu Direvisi</h3>
+                    <p class="text-sm text-danger-800 mb-4">
+                        Dokumen ini telah dikembalikan oleh approver untuk diperbaiki. Silakan edit dokumen ini dan klik "Kirim untuk Approval" untuk mensubmit ulang (proses approval akan mengulang dari awal).
+                    </p>
+
+                    @if($document->revision_notes)
+                        <div class="bg-white rounded-xl p-4 border border-danger-200 mb-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <x-icon name="chat-bubble-left-ellipsis" class="w-4 h-4 text-gray-500" />
+                                <p class="text-xs text-gray-500 font-medium">Catatan Revisi dari {{ $document->revisionRequester->name ?? 'Approver' }}</p>
+                            </div>
+                            <p class="text-sm text-gray-800 font-medium whitespace-pre-wrap">{{ $document->revision_notes }}</p>
+                            @if($document->revision_requested_at)
+                                <p class="text-xs text-gray-400 mt-2">{{ $document->revision_requested_at->format('d F Y, H:i') }}</p>
+                            @endif
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    @endif
+
     {{-- Requester Amount Confirmation Banner --}}
     @if($document->status === 'pending_requester_confirmation' && (int) $document->user_id === (int) auth()->id())
         <div class="mb-7 rounded-3xl border border-amber-200 bg-amber-50/80 p-6 shadow-soft">

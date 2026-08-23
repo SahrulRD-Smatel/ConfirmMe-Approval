@@ -243,6 +243,27 @@ class DatabaseSeeder extends Seeder
                 'manage-attendance',
                 'view-attendance',
             ],
+            'ga' => [
+                'create-document',
+                'view-document',
+                'approve-document',
+                'reject-document',
+                'view-reports',
+            ],
+            'manager_hrga' => [
+                'create-document',
+                'view-document',
+                'approve-document',
+                'reject-document',
+                'view-reports',
+            ],
+            'admin_operasional' => [
+                'create-document',
+                'view-document',
+                'approve-document',
+                'reject-document',
+                'view-reports',
+            ],
         ];
 
         foreach ($roles as $roleName => $rolePermissions) {
@@ -502,6 +523,39 @@ class DatabaseSeeder extends Seeder
                 'position' => 'HRD Coordinator',
                 'role' => 'hrd_coordinator',
             ],
+            // GA
+            [
+                'name' => 'Budi GA',
+                'email' => 'ga@confirmme.com',
+                'password' => Hash::make('password'),
+                'employee_id' => 'GA001',
+                'department' => 'General Affairs',
+                'division' => 'HRGA',
+                'position' => 'Staff GA',
+                'role' => 'ga',
+            ],
+            // Manager HRGA
+            [
+                'name' => 'Agus Manager HRGA',
+                'email' => 'manager.hrga@confirmme.com',
+                'password' => Hash::make('password'),
+                'employee_id' => 'HRGA001',
+                'department' => 'General Affairs',
+                'division' => 'HRGA',
+                'position' => 'Manager HRGA',
+                'role' => 'manager_hrga',
+            ],
+            // Admin Operational
+            [
+                'name' => 'Citra Admin Ops',
+                'email' => 'admin.ops@confirmme.com',
+                'password' => Hash::make('password'),
+                'employee_id' => 'OPS002',
+                'department' => 'Operations',
+                'division' => 'Operations',
+                'position' => 'Admin Operational',
+                'role' => 'admin_operasional',
+            ],
         ];
 
         foreach ($users as $userData) {
@@ -523,6 +577,7 @@ class DatabaseSeeder extends Seeder
                 'code' => 'VEHICLE_LOAN',
                 'description' => 'Template untuk permohonan peminjaman mobil operasional',
                 'approval_type' => 'only',
+                'workflow' => ['role:manager', 'role:ga', 'role:manager_hrga', 'role:direktur_operasional', 'role:direktur_finance', 'role:ga'],
                 'fields' => [
                     'title' => 'Permohonan Peminjaman Mobil Operasional',
                     'description' => 'Permohonan untuk peminjaman mobil operasional perusahaan sesuai SOP.',
@@ -550,6 +605,7 @@ class DatabaseSeeder extends Seeder
                 'code' => 'SURAT_IJIN_GUDANG',
                 'description' => 'Formulir untuk ijin keluar masuk barang dari gudang.',
                 'approval_type' => 'only',
+                'workflow' => ['role:manager', 'role:ga', 'role:admin_operasional', 'role:direktur_operasional', 'role:admin_operasional'],
                 'fields' => [
                     'title' => 'Surat Ijin Keluar/Masuk Barang Gudang',
                     'description' => 'Mohon ijin keluar/masuk barang.',
@@ -572,6 +628,7 @@ class DatabaseSeeder extends Seeder
                 'code' => 'PEMBELIAN_BARANG',
                 'description' => 'Formulir untuk permintaan pembelian ATK, P3K, atau Pantry.',
                 'approval_type' => 'po',
+                'workflow' => ['role:ga', 'role:manager_hrga', 'role:direktur_hr', 'role:direktur_operasional', 'role:direktur_finance', 'role:ga'],
                 'fields' => [
                     'title' => 'Permintaan Pembelian Barang',
                     'description' => 'Pengajuan pembelian barang kebutuhan kantor.',
