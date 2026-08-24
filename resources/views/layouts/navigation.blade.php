@@ -52,6 +52,22 @@
                                 @endif
                             </div>
                         </x-dropdown-link>
+                        <x-dropdown-link :href="route('lang.switch', 'zh')">
+                            <div class="flex items-center justify-between">
+                                <span>🇨🇳 中文 (Chinese)</span>
+                                @if(app()->getLocale() === 'zh')
+                                    <x-icon name="check" class="w-4 h-4 text-green-500" />
+                                @endif
+                            </div>
+                        </x-dropdown-link>
+                        <x-dropdown-link :href="route('lang.switch', 'ja')">
+                            <div class="flex items-center justify-between">
+                                <span>🇯🇵 日本語 (Japanese)</span>
+                                @if(app()->getLocale() === 'ja')
+                                    <x-icon name="check" class="w-4 h-4 text-green-500" />
+                                @endif
+                            </div>
+                        </x-dropdown-link>
                     </x-slot>
                 </x-dropdown>
             </div>

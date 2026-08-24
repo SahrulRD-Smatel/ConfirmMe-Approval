@@ -10,7 +10,7 @@ class LanguageController extends Controller
 {
     public function switch(Request $request, $locale)
     {
-        if (in_array($locale, ['en', 'id'])) {
+        if (in_array($locale, ['en', 'id', 'zh', 'ja'])) {
             if (Auth::check()) {
                 $user = Auth::user();
                 $user->locale = $locale;

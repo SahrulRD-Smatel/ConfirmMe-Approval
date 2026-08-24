@@ -48,20 +48,31 @@ Ensure the application texts in blade/php files are wrapped in the Laravel trans
 ### Steps
 
 1. **Extract New Keys**
-   Run the PHP synchronization script to scan all files and extract new translation keys into both `lang/en.json` and `lang/id.json`.
+   Run the PHP synchronization script to scan all files and extract new translation keys into `lang/en.json`, `lang/id.json`, `lang/zh.json`, and `lang/ja.json`.
    ```bash
    php sync_lang.php
    ```
    *Note: This script only extracts the keys and copies them as the default values. It does NOT translate them.*
 
 2. **Translate to English (EN)**
-   Run the AI Translator script for English. This script will intelligently identify untranslated keys in `lang/en.json` and translate them from Indonesian to English using the `deep-translator` library.
+   Run the AI Translator script for English.
    ```bash
    python translate_en.py
    ```
-   *Wait for the script to finish processing in the background. It may take a minute if there are many new keys.*
 
-3. **Fix Indonesian Keys (ID)**
+3. **Translate to Chinese (ZH)**
+   Run the AI Translator script for Chinese (Simplified).
+   ```bash
+   python translate_zh.py
+   ```
+
+4. **Translate to Japanese (JA)**
+   Run the AI Translator script for Japanese.
+   ```bash
+   python translate_ja.py
+   ```
+
+5. **Fix Indonesian Keys (ID)**
    Run the AI Translator script for Indonesian. This script is crucial because if the original hardcoded text in the codebase was in English (e.g., "Dashboard" or "Control Panel"), `sync_lang.php` would have copied that English text into `id.json` as the default value. This script detects and translates those English leftovers back into standard Indonesian.
    ```bash
    python translate_id.py

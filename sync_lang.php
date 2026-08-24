@@ -3,6 +3,8 @@
 $viewsPath = __DIR__ . '/resources/views';
 $enJsonPath = __DIR__ . '/lang/en.json';
 $idJsonPath = __DIR__ . '/lang/id.json';
+$zhJsonPath = __DIR__ . '/lang/zh.json';
+$jaJsonPath = __DIR__ . '/lang/ja.json';
 
 if (!is_dir($viewsPath)) {
     die("Views directory not found.\n");
@@ -49,7 +51,11 @@ function updateDictionary($path, $foundKeys) {
 
 $addedEn = updateDictionary($enJsonPath, $foundKeys);
 $addedId = updateDictionary($idJsonPath, $foundKeys);
+$addedZh = updateDictionary($zhJsonPath, $foundKeys);
+$addedJa = updateDictionary($jaJsonPath, $foundKeys);
 
 echo "Sync complete!\n";
 echo "Added $addedEn new keys to en.json\n";
 echo "Added $addedId new keys to id.json\n";
+echo "Added $addedZh new keys to zh.json\n";
+echo "Added $addedJa new keys to ja.json\n";
