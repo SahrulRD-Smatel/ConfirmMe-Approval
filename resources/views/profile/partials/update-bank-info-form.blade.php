@@ -1,10 +1,10 @@
 <section class="space-y-5">
     <header>
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
-            Informasi Rekening Bank
+            {{ __('Informasi Rekening Bank') }}
         </h2>
         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            Lengkapi informasi rekening bank Anda untuk keperluan pencairan pinjaman dan reimbursement.
+            {{ __('Lengkapi informasi rekening bank Anda untuk keperluan pencairan pinjaman dan reimbursement.') }}
         </p>
     </header>
 

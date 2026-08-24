@@ -1,23 +1,23 @@
 <x-app-layout>
-    <x-slot name="title">Invoice</x-slot>
+    <x-slot name="title">{{ __('Invoice') }}</x-slot>
 
     <x-slot name="header">
         <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Invoice</h1>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Kelola tagihan & pembayaran</p>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Invoice') }}</h1>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Kelola tagihan & pembayaran') }}</p>
             </div>
         </div>
     </x-slot>
 
     <!-- Summary Cards -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <x-ui.stat-card title="Total Invoice" :value="$invoices->total()" icon="document-text" />
-        <x-ui.stat-card title="Belum Bayar" :value="'Rp ' . number_format($unpaidAmount, 0, ',', '.')" icon="clock"
+        <x-ui.stat-card title="{{ __('Total Invoice') }}" :value="$invoices->total()" icon="document-text" />
+        <x-ui.stat-card title="{{ __('Belum Bayar') }}" :value="'Rp ' . number_format($unpaidAmount, 0, ',', '.')" icon="clock"
             status="warning" />
-        <x-ui.stat-card title="Lunas" :value="'Rp ' . number_format($paidAmount, 0, ',', '.')" icon="check-circle"
+        <x-ui.stat-card title="{{ __('Lunas') }}" :value="'Rp ' . number_format($paidAmount, 0, ',', '.')" icon="check-circle"
             status="success" />
-        <x-ui.stat-card title="Overdue" :value="$overdueCount" icon="exclamation-circle" status="danger" />
+        <x-ui.stat-card title="{{ __('Overdue') }}" :value="$overdueCount" icon="exclamation-circle" status="danger" />
     </div>
 
     <!-- Filters -->
@@ -26,19 +26,19 @@
             <div class="flex-1">
                 <input type="text" name="search" value="{{ request('search') }}"
                     class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
-                    placeholder="Cari invoice...">
+                    placeholder="{{ __('Cari invoice...') }}">
             </div>
             <div class="w-full sm:w-48">
                 <select name="status"
                     class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
-                    <option value="">Semua Status</option>
-                    <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>Draft</option>
-                    <option value="sent" {{ request('status') === 'sent' ? 'selected' : '' }}>Sent</option>
-                    <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>Paid</option>
-                    <option value="overdue" {{ request('status') === 'overdue' ? 'selected' : '' }}>Overdue</option>
+                    <option value="">{{ __('Semua Status') }}</option>
+                    <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>{{ __('Draft') }}</option>
+                    <option value="sent" {{ request('status') === 'sent' ? 'selected' : '' }}>{{ __('Sent') }}</option>
+                    <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>{{ __('Paid') }}</option>
+                    <option value="overdue" {{ request('status') === 'overdue' ? 'selected' : '' }}>{{ __('Overdue') }}</option>
                 </select>
             </div>
-            <x-ui.button type="submit" variant="secondary">Filter</x-ui.button>
+            <x-ui.button type="submit" variant="secondary">{{ __('Filter') }}</x-ui.button>
         </form>
     </x-ui.card>
 
@@ -52,8 +52,8 @@
                     <span class="relative inline-flex rounded-full h-3 w-3 bg-orange-500"></span>
                 </span>
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
-                    Menunggu Generate Invoice
-                    <span class="text-sm font-normal text-gray-500">({{ $pendingDocuments->count() }} dokumen)</span>
+                    {{ __('Menunggu Generate Invoice') }}
+                    <span class="text-sm font-normal text-gray-500">({{ $pendingDocuments->count() }} {{ __('dokumen') }})</span>
                 </h2>
             </div>
 
@@ -66,16 +66,16 @@
                                 <span class="text-sm font-medium text-primary-600 dark:text-primary-400">
                                     {{ $doc->document_number }}
                                 </span>
-                                <x-ui.badge status="approved">Disetujui</x-ui.badge>
+                                <x-ui.badge status="approved">{{ __('Disetujui') }}</x-ui.badge>
                             </div>
                             <p class="mt-1 text-sm text-gray-900 dark:text-white truncate">{{ $doc->title }}</p>
                             <div class="mt-1 flex items-center gap-4 text-xs text-gray-500">
-                                <span>Oleh: {{ $doc->user->name }}</span>
+                                <span>{{ __('Oleh') }}: {{ $doc->user->name }}</span>
                                 @if($doc->approved_budget)
-                                    <span class="font-medium text-green-600">Budget: Rp
+                                    <span class="font-medium text-green-600">{{ __('Budget') }}: Rp
                                         {{ number_format($doc->approved_budget, 0, ',', '.') }}</span>
                                 @elseif($doc->estimated_budget)
-                                    <span>Estimasi: Rp {{ number_format($doc->estimated_budget, 0, ',', '.') }}</span>
+                                    <span>{{ __('Estimasi') }}: Rp {{ number_format($doc->estimated_budget, 0, ',', '.') }}</span>
                                 @endif
                             </div>
                         </div>
@@ -86,7 +86,7 @@
                             </a>
                             <x-ui.button href="{{ route('finance.invoices.create', ['document_id' => $doc->id]) }}"
                                 variant="primary" icon="plus" size="sm">
-                                Generate Invoice
+                                {{ __('Generate Invoice') }}
                             </x-ui.button>
                         </div>
                     </div>
@@ -101,12 +101,12 @@
             <table class="min-w-[900px] w-full divide-y divide-gray-200/80 dark:divide-gray-700/80">
                 <thead class="bg-gray-50/80 dark:bg-gray-800">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No. Invoice</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Vendor</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jatuh Tempo</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('No. Invoice') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Vendor') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Jatuh Tempo') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Total') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Status') }}</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{{ __('Aksi') }}</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200/80 dark:divide-gray-700/80">
@@ -142,7 +142,7 @@
                                             class="inline">
                                             @csrf
                                             <button type="submit" class="text-success-600 hover:text-success-800"
-                                                title="Tandai Lunas">
+                                                title="{{ __('Tandai Lunas') }}">
                                                 <x-icon name="banknotes" class="w-5 h-5" />
                                             </button>
                                         </form>
@@ -152,7 +152,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-12 text-center text-gray-500">Belum ada invoice</td>
+                            <td colspan="6" class="px-6 py-12 text-center text-gray-500">{{ __('Belum ada invoice') }}</td>
                         </tr>
                     @endforelse
                 </tbody>

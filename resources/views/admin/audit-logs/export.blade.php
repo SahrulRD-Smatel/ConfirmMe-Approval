@@ -115,21 +115,21 @@
     </div>
 
     <div style="text-align: center; margin: 15px 0;">
-        <h1 style="font-size: 18px; color: #991b1b; text-transform: uppercase;">Audit Log Sistem</h1>
+        <h1 style="font-size: 18px; color: #991b1b; text-transform: uppercase;">{{ __('Audit Log Sistem') }}</h1>
     </div>
     
     <div class="meta">
-        <p>Tanggal Cetak: {{ now()->format('d M Y H:i') }} | Dicetak Oleh: System</p>
+        <p>{{ __('Tanggal Cetak') }}: {{ now()->format('d M Y H:i') }} | {{ __('Dicetak Oleh') }}: System</p>
     </div>
 
     <table>
         <thead>
             <tr>
-                <th style="width: 15%;">Waktu</th>
-                <th style="width: 12%;">Event</th>
-                <th style="width: 15%;">User</th>
-                <th style="width: 20%;">Model</th>
-                <th style="width: 38%;">Deskripsi</th>
+                <th style="width: 15%;">{{ __('Waktu') }}</th>
+                <th style="width: 12%;">{{ __('Event') }}</th>
+                <th style="width: 15%;">{{ __('User') }}</th>
+                <th style="width: 20%;">{{ __('Model') }}</th>
+                <th style="width: 38%;">{{ __('Deskripsi') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -145,15 +145,15 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5" style="text-align: center; padding: 20px;">Tidak ada data audit log</td>
+                    <td colspan="5" style="text-align: center; padding: 20px;">{{ __('Tidak ada data audit log') }}</td>
                 </tr>
             @endforelse
         </tbody>
     </table>
 
     <div class="footer">
-        <p>Total: {{ $logs->count() }} log entries</p>
-        <p>Dokumen ini digenerate secara otomatis oleh sistem ConfirmMe</p>
+        <p>{{ __('Total') }}: {{ $logs->count() }} {{ __('log entries') }}</p>
+        <p>{{ __('Dokumen ini digenerate secara otomatis oleh sistem ConfirmMe') }}</p>
         <p>Ac {{ date('Y') }} PT. Info Solusindo Data Utama</p>
     </div>
 </body>

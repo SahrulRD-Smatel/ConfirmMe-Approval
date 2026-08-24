@@ -77,12 +77,55 @@ class ExecutiveController extends Controller
             ->groupBy('approval_type')
             ->get();
 
+        // Financial Comprehensive Metrics
+        $year = now()->year;
+        $currentMonth = now()->month;
+        $lastMonth = now()->subMonth()->month;
+        $lastMonthYear = now()->subMonth()->year;
+
+        $calculateGrowth = function($current, $last) {
+            if ($last == 0) return $current > 0 ? 100 : 0;
+            return round((($current - $last) / $last) * 100, 1);
+        };
+
+        // PO
+        $poThisYear = Document::where('approval_type', 'po')->where('status', 'approved')->whereYear('approved_at', $year)->sum('approved_budget');
+        $poThisMonth = Document::where('approval_type', 'po')->where('status', 'approved')->whereYear('approved_at', $year)->whereMonth('approved_at', $currentMonth)->sum('approved_budget');
+        $poLastMonth = Document::where('approval_type', 'po')->where('status', 'approved')->whereYear('approved_at', $lastMonthYear)->whereMonth('approved_at', $lastMonth)->sum('approved_budget');
+        $poGrowth = $calculateGrowth($poThisMonth, $poLastMonth);
+
+        // Invoice
+        $invThisYear = Invoice::where('status', 'paid')->whereYear('paid_at', $year)->sum('total_amount');
+        $invThisMonth = Invoice::where('status', 'paid')->whereYear('paid_at', $year)->whereMonth('paid_at', $currentMonth)->sum('total_amount');
+        $invLastMonth = Invoice::where('status', 'paid')->whereYear('paid_at', $lastMonthYear)->whereMonth('paid_at', $lastMonth)->sum('total_amount');
+        $invGrowth = $calculateGrowth($invThisMonth, $invLastMonth);
+
+        // Loan
+        $loanThisYear = Document::where('approval_type', 'loan')->whereIn('status', ['approved', 'completed'])->whereYear('approved_at', $year)->sum('approved_budget');
+        $loanThisMonth = Document::where('approval_type', 'loan')->whereIn('status', ['approved', 'completed'])->whereYear('approved_at', $year)->whereMonth('approved_at', $currentMonth)->sum('approved_budget');
+        $loanLastMonth = Document::where('approval_type', 'loan')->whereIn('status', ['approved', 'completed'])->whereYear('approved_at', $lastMonthYear)->whereMonth('approved_at', $lastMonth)->sum('approved_budget');
+        $loanGrowth = $calculateGrowth($loanThisMonth, $loanLastMonth);
+
+        // Total
+        $totalThisYear = $poThisYear + $invThisYear;
+        $totalThisMonth = $poThisMonth + $invThisMonth;
+        $totalLastMonth = $poLastMonth + $invLastMonth;
+        $totalGrowth = $calculateGrowth($totalThisMonth, $totalLastMonth);
+
+        $financeStats = [
+            'total' => ['value' => $totalThisYear, 'growth' => $totalGrowth],
+            'po' => ['value' => $poThisYear, 'growth' => $poGrowth],
+            'invoice' => ['value' => $invThisYear, 'growth' => $invGrowth],
+            'loan' => ['value' => $loanThisYear, 'growth' => $loanGrowth],
+        ];
+
         return view('executive.dashboard', compact(
             'stats',
             'pendingApprovals',
             'monthlySpending',
             'divisionData',
-            'typeData'
+            'typeData',
+            'financeStats'
         ));
     }
 
@@ -236,86 +279,6 @@ class ExecutiveController extends Controller
             ->with('success', 'Permintaan revisi telah dikirim ke pemohon.');
     }
 
-    /**
-     * Company Insights - Global financial overview
-     */
-    public function insights(Request $request)
-    {
-        $year = $request->get('year', now()->year);
-
-        // Total PO approved
-        $totalPO = Document::where('approval_type', 'po')
-            ->where('status', 'approved')
-            ->whereYear('approved_at', $year)
-            ->sum('approved_budget');
-
-        $countPO = Document::where('approval_type', 'po')
-            ->where('status', 'approved')
-            ->whereYear('approved_at', $year)
-            ->count();
-
-        // Total Invoice paid
-        $totalInvoice = Invoice::where('status', 'paid')
-            ->whereYear('paid_at', $year)
-            ->sum('total_amount');
-
-        $countInvoice = Invoice::where('status', 'paid')
-            ->whereYear('paid_at', $year)
-            ->count();
-
-        // Active loans
-        $activeLoans = Document::where('approval_type', 'loan')
-            ->whereIn('status', ['approved', 'completed'])
-            ->whereYear('approved_at', $year)
-            ->get();
-
-        $totalLoans = $activeLoans->sum('approved_budget');
-
-        // Average approval time
-        $avgApprovalTime = Document::whereIn('status', ['approved', 'completed', 'paid'])
-            ->whereYear('approved_at', $year)
-            ->whereNotNull('approved_at')
-            ->selectRaw('AVG(TIMESTAMPDIFF(HOUR, created_at, approved_at)) as avg_hours')
-            ->value('avg_hours');
-
-        // Monthly breakdown
-        $monthlyBreakdown = Document::whereIn('status', ['approved', 'completed', 'paid'])
-            ->whereYear('approved_at', $year)
-            ->select(
-                DB::raw('MONTH(approved_at) as month'),
-                'approval_type',
-                DB::raw('SUM(approved_budget) as total'),
-                DB::raw('COUNT(*) as count')
-            )
-            ->groupBy('month', 'approval_type')
-            ->orderBy('month')
-            ->get();
-
-        // Division breakdown
-        $divisionBreakdown = Document::whereIn('status', ['approved', 'completed', 'paid'])
-            ->whereYear('approved_at', $year)
-            ->select(
-                'department',
-                DB::raw('SUM(approved_budget) as total'),
-                DB::raw('COUNT(*) as count')
-            )
-            ->groupBy('department')
-            ->orderByDesc('total')
-            ->get();
-
-        return view('executive.insights', compact(
-            'year',
-            'totalPO',
-            'countPO',
-            'totalInvoice',
-            'countInvoice',
-            'totalLoans',
-            'activeLoans',
-            'avgApprovalTime',
-            'monthlyBreakdown',
-            'divisionBreakdown'
-        ));
-    }
 
     /**
      * Audit & History - Strategic decision log (view-only)

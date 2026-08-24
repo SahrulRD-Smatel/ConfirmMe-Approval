@@ -1,17 +1,17 @@
 <x-app-layout>
-    <x-slot name="title">Bulk Approval</x-slot>
+    <x-slot name="title">{{ __('Bulk Approval') }}</x-slot>
 
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <div>
-                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Bulk Approval</h1>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Bulk Approval') }}</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Setujui atau tolak beberapa dokumen sekaligus
+                    {{ __('Setujui atau tolak beberapa dokumen sekaligus') }}
                 </p>
             </div>
             <a href="{{ route('approvals.index') }}">
                 <x-ui.button variant="secondary" icon="arrow-left">
-                    Kembali
+                    {{ __('Kembali') }}
                 </x-ui.button>
             </a>
         </div>
@@ -33,7 +33,7 @@
                                   },
                                   submitForm() {
                                       if (this.selectedIds.length === 0) {
-                                          showAlert('Pilih minimal satu dokumen');
+                                          showAlert('{{ __('Pilih minimal satu dokumen') }}');
                                           return;
                                       }
                                       this.showConfirmModal = true;
@@ -49,32 +49,32 @@
                         <label class="flex items-center gap-2 cursor-pointer">
                             <input type="checkbox" x-model="selectAll" @change="toggleAll()"
                                 class="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500/20">
-                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Pilih Semua</span>
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Pilih Semua') }}</span>
                         </label>
                         <span
                             class="px-3 py-1 text-sm text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-full"
-                            x-text="selectedIds.length + ' dokumen dipilih'"></span>
+                            x-text="selectedIds.length + ' {{ __('dokumen dipilih') }}'"></span>
                     </div>
 
                     {{-- Bottom row: Action controls --}}
                     <div
                         class="flex flex-col items-stretch gap-3 border-t border-gray-200/80 pt-4 dark:border-gray-700/80 sm:flex-row sm:items-center">
                         <div class="flex items-center gap-2">
-                            <label class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">Aksi:</label>
+                            <label class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">{{ __('Aksi:') }}</label>
                             <select name="action" x-model="action"
                                 class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-primary-500/20 text-sm min-w-[120px]">
-                                <option value="approve">✓ Setujui</option>
-                                <option value="reject">✗ Tolak</option>
+                                <option value="approve">✓ {{ __('Setujui') }}</option>
+                                <option value="reject">✗ {{ __('Tolak') }}</option>
                             </select>
                         </div>
 
-                        <input type="text" name="comment" x-model="comment" placeholder="Komentar (opsional)"
+                        <input type="text" name="comment" x-model="comment" placeholder="{{ __('Komentar (opsional)') }}"
                             class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-primary-500/20 text-sm min-w-0">
 
                         <button type="button" @click="submitForm()" x-bind:disabled="selectedIds.length === 0"
                             :class="action === 'approve' ? 'bg-success-600 hover:bg-success-700' : 'bg-danger-600 hover:bg-danger-700'"
                             class="px-4 py-2 text-white font-medium rounded-xl whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed">
-                            <span x-text="action === 'approve' ? '✓ Setujui Terpilih' : '✗ Tolak Terpilih'"></span>
+                            <span x-text="action === 'approve' ? '✓ ' + '{{ __('Setujui Terpilih') }}' : '✗ ' + '{{ __('Tolak Terpilih') }}'"></span>
                         </button>
                     </div>
                 </div>
@@ -91,7 +91,7 @@
                                                             {{ $type === 'invoice' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' : '' }}">
                             {{ config('workflow.type_labels.' . $type, ucfirst($type)) }}
                         </span>
-                        <span class="text-sm font-normal text-gray-500">({{ $docs->count() }} dokumen)</span>
+                        <span class="text-sm font-normal text-gray-500">({{ $docs->count() }} {{ __('dokumen') }})</span>
                     </h3>
 
                     <div class="divide-y divide-gray-200/80 dark:divide-gray-700/80">
@@ -118,8 +118,8 @@
                                         </span>
                                     </div>
                                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                        {{ $document->document_number }} •
-                                        Oleh {{ $document->user->name }} •
+                                        {{ $document->document_number }} &bull;
+                                        {{ __('Oleh') }} {{ $document->user->name }} &bull;
                                         {{ $document->created_at->diffForHumans() }}
                                     </p>
                                     @if($document->estimated_budget)
@@ -131,7 +131,7 @@
 
                                 <a href="{{ route('approvals.show', $document) }}"
                                     class="text-primary-600 hover:text-primary-700 text-sm font-medium">
-                                    Review →
+                                    {{ __('Review') }} &rarr;
                                 </a>
                             </div>
                         @endforeach
@@ -157,26 +157,26 @@
                                 <x-icon name="check-circle" class="w-10 h-10 text-success-600" />
                             </div>
                             <h3 class="text-xl font-semibold text-center text-gray-900 dark:text-white mb-2">
-                                Konfirmasi Persetujuan
+                                {{ __('Konfirmasi Persetujuan') }}
                             </h3>
                             <p class="text-center text-gray-600 dark:text-gray-400 mb-2">
-                                Anda yakin ingin <strong class="text-success-600">MENYETUJUI</strong>
+                                {{ __('Anda yakin ingin') }} <strong class="text-success-600">{{ __('MENYETUJUI') }}</strong>
                             </p>
                             <p class="text-center text-lg font-bold text-gray-900 dark:text-white mb-4">
-                                <span x-text="selectedIds.length"></span> dokumen?
+                                <span x-text="selectedIds.length"></span> {{ __('dokumen?') }}
                             </p>
                             <p class="text-center text-sm text-gray-500 mb-6">
-                                Tindakan ini tidak dapat dibatalkan.
+                                {{ __('Tindakan ini tidak dapat dibatalkan.') }}
                             </p>
 
                             <div class="flex gap-3">
                                 <button type="button" @click="showConfirmModal = false"
                                     class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-primary-50/60 dark:hover:bg-gray-700 transition-colors">
-                                    Batal
+                                    {{ __('Batal') }}
                                 </button>
                                 <button type="submit"
                                     class="flex-1 px-4 py-2 bg-success-600 hover:bg-success-700 text-white rounded-xl transition-colors">
-                                    Ya, Setujui Semua
+                                    {{ __('Ya, Setujui Semua') }}
                                 </button>
                             </div>
                         </div>
@@ -190,26 +190,26 @@
                                 <x-icon name="x-circle" class="w-10 h-10 text-danger-600" />
                             </div>
                             <h3 class="text-xl font-semibold text-center text-gray-900 dark:text-white mb-2">
-                                Konfirmasi Penolakan
+                                {{ __('Konfirmasi Penolakan') }}
                             </h3>
                             <p class="text-center text-gray-600 dark:text-gray-400 mb-2">
-                                Anda yakin ingin <strong class="text-danger-600">MENOLAK</strong>
+                                {{ __('Anda yakin ingin') }} <strong class="text-danger-600">{{ __('MENOLAK') }}</strong>
                             </p>
                             <p class="text-center text-lg font-bold text-gray-900 dark:text-white mb-4">
-                                <span x-text="selectedIds.length"></span> dokumen?
+                                <span x-text="selectedIds.length"></span> {{ __('dokumen?') }}
                             </p>
                             <p class="text-center text-sm text-gray-500 mb-6">
-                                Tindakan ini tidak dapat dibatalkan.
+                                {{ __('Tindakan ini tidak dapat dibatalkan.') }}
                             </p>
 
                             <div class="flex gap-3">
                                 <button type="button" @click="showConfirmModal = false"
                                     class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-primary-50/60 dark:hover:bg-gray-700 transition-colors">
-                                    Batal
+                                    {{ __('Batal') }}
                                 </button>
                                 <button type="submit"
                                     class="flex-1 px-4 py-2 bg-danger-600 hover:bg-danger-700 text-white rounded-xl transition-colors">
-                                    Ya, Tolak Semua
+                                    {{ __('Ya, Tolak Semua') }}
                                 </button>
                             </div>
                         </div>
@@ -221,8 +221,8 @@
         <x-ui.card>
             <div class="text-center py-12">
                 <x-icon name="check-circle" class="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Tidak ada dokumen menunggu approval</h3>
-                <p class="mt-2 text-sm text-gray-500">Semua dokumen sudah diproses.</p>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ __('Tidak ada dokumen menunggu approval') }}</h3>
+                <p class="mt-2 text-sm text-gray-500">{{ __('Semua dokumen sudah diproses.') }}</p>
             </div>
         </x-ui.card>
     @endif

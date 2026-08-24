@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Register - {{ config('app.name', 'ConfirmMe') }}</title>
+    <title>{{ __('Register') }} - {{ config('app.name', 'ConfirmMe') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -627,8 +627,8 @@
 
                 <!-- Welcome Text -->
                 <div class="welcome-text">
-                    <h1>Buat Akun Baru</h1>
-                    <p>Daftar untuk mulai mengelola persetujuan dokumen Anda</p>
+                    <h1>{{ __('Buat Akun Baru') }}</h1>
+                    <p>{{ __('Daftar untuk mulai mengelola persetujuan dokumen Anda') }}</p>
                 </div>
 
                 <!-- Session Status -->
@@ -653,9 +653,9 @@
 
                     <!-- Name -->
                     <div class="form-group">
-                        <label for="name">Nama Lengkap <span>*</span></label>
+                        <label for="name">{{ __('Nama Lengkap') }} <span>*</span></label>
                         <div class="input-wrapper">
-                            <input type="text" id="name" name="name" placeholder="Masukkan nama lengkap"
+                            <input type="text" id="name" name="name" placeholder="{{ __('Masukkan nama lengkap') }}"
                                 value="{{ old('name') }}" required autofocus autocomplete="name">
                             <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2">
@@ -666,9 +666,9 @@
 
                     <!-- Email -->
                     <div class="form-group">
-                        <label for="email">Email <span>*</span></label>
+                        <label for="email">{{ __('Email') }} <span>*</span></label>
                         <div class="input-wrapper">
-                            <input type="email" id="email" name="email" placeholder="nama@perusahaan.com"
+                            <input type="email" id="email" name="email" placeholder="{{ __('nama@perusahaan.com') }}"
                                 value="{{ old('email') }}" required autofocus autocomplete="username">
                             <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2">
@@ -680,9 +680,9 @@
 
                     <!-- Password -->
                     <div class="form-group">
-                        <label for="password">Password <span>*</span></label>
+                        <label for="password">{{ __('Password') }} <span>*</span></label>
                         <div class="input-wrapper">
-                            <input type="password" id="password" name="password" placeholder="Masukkan password"
+                            <input type="password" id="password" name="password" placeholder="{{ __('Masukkan password') }}"
                                 required autocomplete="current-password">
                             <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2">
@@ -701,9 +701,9 @@
 
                     <!-- Confirm Password -->
                     <div class="form-group">
-                        <label for="password_confirmation">Konfirmasi Password <span>*</span></label>
+                        <label for="password_confirmation">{{ __('Konfirmasi Password') }} <span>*</span></label>
                         <div class="input-wrapper">
-                            <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Konfirmasi password"
+                            <input type="password" id="password_confirmation" name="password_confirmation" placeholder="{{ __('Konfirmasi password') }}"
                                 required autocomplete="new-password">
                             <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2">
@@ -714,12 +714,12 @@
                     </div>
 
                     <div style="margin-bottom: 24px; text-align: right;">
-                        <a href="{{ route('login') }}" class="forgot-password" style="font-size: 14px;">Sudah punya akun? Masuk di sini</a>
+                        <a href="{{ route('login') }}" class="forgot-password" style="font-size: 14px;">{{ __('Sudah punya akun? Masuk di sini') }}</a>
                     </div>
 
                     <!-- Submit Button -->
                     <button type="submit" class="submit-btn" id="submitBtn">
-                        Daftar
+                        {{ __('Daftar') }}
                     </button>
                 </form>
             </div>
@@ -812,8 +812,8 @@
                 <!-- Hero Text -->
                 <div class="hero-text">
                     <h2>Document Approval System</h2>
-                    <p>Kelola persetujuan dokumen dengan <span class="highlight">Mudah</span>, <span
-                            class="highlight">Transparan</span>, dan <span class="highlight">Profesional</span></p>
+                    <p>{{ __('Kelola persetujuan dokumen dengan') }} <span class="highlight">{{ __('Mudah') }}</span>, <span
+                            class="highlight">{{ __('Transparan') }}</span>, {{ __('dan') }} <span class="highlight">{{ __('Profesional') }}</span></p>
                 </div>
 
                 <!-- Features -->
@@ -866,7 +866,7 @@
         document.getElementById('registerForm').addEventListener('submit', function () {
             const btn = document.getElementById('submitBtn');
             btn.classList.add('loading');
-            btn.textContent = 'Memproses';
+            btn.textContent = '{{ __('Memproses') }}';
         });
 
         // Add focus animations

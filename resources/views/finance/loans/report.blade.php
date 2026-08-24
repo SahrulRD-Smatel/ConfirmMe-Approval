@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Laporan Piutang Karyawan - {{ config('app.name', 'Laravel') }}</title>
+    <title>{{ __('Laporan Piutang Karyawan') }} - {{ config('app.name', 'Laravel') }}</title>
 
     <style>
         * {
@@ -109,7 +109,7 @@
 </head>
 
 <body>
-    <button onclick="window.print()" class="no-print print-btn">Cetak Laporan</button>
+    <button onclick="window.print()" class="no-print print-btn">{{ __('Cetak Laporan') }}</button>
 
     <div class="header">
         <table style="width: 100%; border-collapse: collapse; border: none; margin-bottom: 0;">
@@ -124,7 +124,7 @@
                         PT. Info Solusindo Data Utama
                     </div>
                     <div style="font-size: 10px; color: #4b5563; line-height: 1.5;">
-                        Gedung Menara Hijau | Lantai 9 Suite 903B |<br>
+                        Gedung Menara Hijau | {{ __('Lantai') }} 9 Suite 903B |<br>
                         Jl. MT. Haryono, Kav. 33 | Pancoran, Jakarta Selatan 12770, Indonesia<br>
                         Ph. +6221 7986 172 | Fax. +6221 7986 143
                     </div>
@@ -135,24 +135,24 @@
     </div>
 
     <div style="text-align: center; margin: 15px 0;">
-        <h1 style="font-size: 18px; color: #991b1b; text-transform: uppercase;">Laporan Piutang Karyawan</h1>
+        <h1 style="font-size: 18px; color: #991b1b; text-transform: uppercase;">{{ __('Laporan Piutang Karyawan') }}</h1>
     </div>
 
     <div class="meta">
-        <p>Tanggal Cetak: {{ now()->format('d M Y H:i') }} | Dicetak Oleh: {{ auth()->user()->name }}</p>
+        <p>{{ __('Tanggal Cetak') }}: {{ now()->format('d M Y H:i') }} | {{ __('Dicetak Oleh') }}: {{ auth()->user()->name }}</p>
     </div>
 
     <table>
         <thead>
             <tr>
-                <th style="width: 5%;">No</th>
-                <th style="width: 15%;">No. Pinjaman</th>
-                <th style="width: 20%;">Karyawan</th>
-                <th style="width: 15%;">Tanggal Cair</th>
-                <th class="text-right" style="width: 15%;">Total Pinjaman</th>
-                <th class="text-right" style="width: 10%;">Sudah Dibayar</th>
-                <th class="text-right" style="width: 10%;">Sisa Hutang</th>
-                <th class="text-center" style="width: 10%;">Status</th>
+                <th style="width: 5%;">{{ __('No') }}</th>
+                <th style="width: 15%;">{{ __('No. Pinjaman') }}</th>
+                <th style="width: 20%;">{{ __('Karyawan') }}</th>
+                <th style="width: 15%;">{{ __('Tanggal Cair') }}</th>
+                <th class="text-right" style="width: 15%;">{{ __('Total Pinjaman') }}</th>
+                <th class="text-right" style="width: 10%;">{{ __('Sudah Dibayar') }}</th>
+                <th class="text-right" style="width: 10%;">{{ __('Sisa Hutang') }}</th>
+                <th class="text-center" style="width: 10%;">{{ __('Status') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -178,10 +178,10 @@
                                 default => ''
                             };
                             $statusLabel = match ($loan->status) {
-                                'pending_disbursement' => 'Menunggu Cair',
-                                'disbursed' => 'Dicairkan',
-                                'repaying' => 'Sedang Nyicil',
-                                'paid_off' => 'Lunas',
+                                'pending_disbursement' => __('Menunggu Cair'),
+                                'disbursed' => __('Dicairkan'),
+                                'repaying' => __('Sedang Nyicil'),
+                                'paid_off' => __('Lunas'),
                                 default => $loan->status
                             };
                         ?>
@@ -190,13 +190,13 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="8" class="text-center" style="padding: 20px;">Tidak ada data piutang.</td>
+                    <td colspan="8" class="text-center" style="padding: 20px;">{{ __('Tidak ada data piutang.') }}</td>
                 </tr>
             @endforelse
         </tbody>
         <tfoot>
             <tr style="background-color: #f3f4f6;">
-                <td colspan="6" class="text-right" style="font-weight: bold; color: #111827; border-top: 2px solid #e5e7eb;">Total Piutang Karyawan:</td>
+                <td colspan="6" class="text-right" style="font-weight: bold; color: #111827; border-top: 2px solid #e5e7eb;">{{ __('Total Piutang Karyawan') }}:</td>
                 <td class="text-right" style="font-weight: bold; color: #991b1b; border-top: 2px solid #e5e7eb;">Rp {{ number_format($totalReceivables, 0, ',', '.') }}</td>
                 <td style="border-top: 2px solid #e5e7eb;"></td>
             </tr>
@@ -204,7 +204,7 @@
     </table>
 
     <div class="summary no-print">
-        <p><i>Catatan: Laporan ini hanya menampilkan pinjaman dengan status aktif/belum lunas, kecuali difilter lain.</i></p>
+        <p><i>{{ __('Catatan') }}: {{ __('Laporan ini hanya menampilkan pinjaman dengan status aktif/belum lunas, kecuali difilter lain.') }}</i></p>
     </div>
 </body>
 

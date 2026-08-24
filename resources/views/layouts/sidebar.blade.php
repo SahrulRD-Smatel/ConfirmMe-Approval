@@ -47,95 +47,8 @@
         {{-- Dashboard - All Roles except Presiden Direktur (has Executive Dashboard) --}}
         @if(!auth()->user()->hasRole('presiden_direktur'))
             <x-sidebar-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" icon="home">
-                Dashboard
+                {{ __('Dashboard') }}
             </x-sidebar-link>
-        @endif
-
-        {{-- Dokumen Menu - Based on permissions (Not for Presiden Direktur) --}}
-        @if(!auth()->user()->hasRole('presiden_direktur') && (auth()->user()->hasPermissionTo('create-document') || auth()->user()->hasPermissionTo('view-document')))
-            <x-sidebar-section title="Dokumen" :collapsed="$sidebarCollapsed ?? false">
-                @can('create', App\Models\Document::class)
-                    <x-sidebar-link :href="route('documents.create')" :active="request()->routeIs('documents.create')"
-                        icon="plus-circle">
-                        Buat Pengajuan
-                    </x-sidebar-link>
-                @endcan
-                @if(auth()->user()->hasPermissionTo('view-document'))
-                    <x-sidebar-link :href="route('documents.index')" :active="request()->routeIs('documents.index')"
-                        icon="document-text">
-                        Daftar Pengajuan
-                    </x-sidebar-link>
-                @endif
-                @if(feature_active('module_loan') && auth()->user()->hasPermissionTo('create-document') && !auth()->user()->hasRole('admin'))
-                    <x-sidebar-link :href="route('my-loans.index')" :active="request()->routeIs('my-loans.*')"
-                        icon="hand-raised">
-                        Pinjaman Saya
-                    </x-sidebar-link>
-                @endif
-                @if(feature_active('module_hris') && !auth()->user()->hasRole('admin'))
-                    <x-sidebar-link :href="route('leave-requests.index')" :active="request()->routeIs('leave-requests.*')"
-                        icon="calendar">
-                        Pengajuan Cuti
-                    </x-sidebar-link>
-                @endif
-            </x-sidebar-section>
-        @endif
-
-        {{-- Absensi - Active employees --}}
-        @if(feature_active('module_hris') && auth()->user()->roles->isNotEmpty())
-            <x-sidebar-section title="Absensi" :collapsed="$sidebarCollapsed ?? false">
-                <x-sidebar-link :href="route('attendance.index')" :active="request()->routeIs('attendance.index')"
-                    icon="clock">
-                    Check-in / Out
-                </x-sidebar-link>
-                <x-sidebar-link :href="route('attendance.history')" :active="request()->routeIs('attendance.history')"
-                    icon="calendar-days">
-                    Riwayat Absensi
-                </x-sidebar-link>
-            </x-sidebar-section>
-        @endif
-
-        {{-- Approval Menu - Dynamic via Permissions --}}
-        @if(auth()->user()->hasPermissionTo('approve-document'))
-            {{-- Presiden Direktur uses Executive section instead --}}
-            @if(!auth()->user()->hasRole('presiden_direktur'))
-                <x-sidebar-section title="Approval" :collapsed="$sidebarCollapsed ?? false">
-                    <x-sidebar-link :href="route('approvals.index')" :active="request()->routeIs('approvals.index')"
-                        icon="inbox-arrow-down">
-                        Approval Queue
-                        @if(($sidebarBadges['pendingApprovalCount'] ?? 0) > 0)
-                            <span
-                                class="ml-auto bg-danger-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $sidebarBadges['pendingApprovalCount'] }}</span>
-                        @endif
-                    </x-sidebar-link>
-                    @if(!auth()->user()->hasRole('presiden_direktur'))
-                        <x-sidebar-link :href="route('approvals.bulk')" :active="request()->routeIs('approvals.bulk')"
-                            icon="squares-2x2">
-                            Bulk Approval
-                        </x-sidebar-link>
-                    @endif
-                    <x-sidebar-link :href="route('approvals.history')" :active="request()->routeIs('approvals.history')"
-                        icon="clock">
-                        Riwayat Approval
-                    </x-sidebar-link>
-                </x-sidebar-section>
-            @endif
-        @endif
-
-        {{-- Leave Approval Menu --}}
-        @if(feature_active('module_hris') && auth()->user()->hasPermissionTo('approve-document') && !auth()->user()->hasRole('presiden_direktur'))
-            @php $pendingLeaveCount = $sidebarBadges['pendingLeaveCount'] ?? 0; @endphp
-
-            <x-sidebar-section title="Cuti" :collapsed="$sidebarCollapsed ?? false">
-                <x-sidebar-link :href="route('leave-approvals.index')" :active="request()->routeIs('leave-approvals.*')"
-                    icon="user-group">
-                    Approval Cuti
-                    @if($pendingLeaveCount > 0)
-                        <span
-                            class="ml-auto bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $pendingLeaveCount }}</span>
-                    @endif
-                </x-sidebar-link>
-            </x-sidebar-section>
         @endif
 
         {{-- Executive Menu - Presiden Direktur only --}}
@@ -143,13 +56,13 @@
             {{-- Executive Dashboard at top level --}}
             <x-sidebar-link :href="route('executive.dashboard')" :active="request()->routeIs('executive.dashboard')"
                 icon="building-office-2">
-                Dashboard
+                {{ __('Dashboard') }}
             </x-sidebar-link>
 
-            <x-sidebar-section title="Executive" :collapsed="$sidebarCollapsed ?? false">
+            <x-sidebar-section title="{{ __('Executive') }}" :collapsed="$sidebarCollapsed ?? false">
                 <x-sidebar-link :href="route('executive.approvals')" :active="request()->routeIs('executive.approvals*')"
                     icon="inbox-stack">
-                    Approval Queue
+                    {{ __('Approval Queue') }}
                     @if(($sidebarBadges['presdirPendingCount'] ?? 0) > 0)
                         <span
                             class="ml-auto bg-purple-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $sidebarBadges['presdirPendingCount'] }}</span>
@@ -159,35 +72,118 @@
                     @php $presdirLeaveCount = $sidebarBadges['presdirLeaveCount'] ?? 0; @endphp
                     <x-sidebar-link :href="route('leave-approvals.index')" :active="request()->routeIs('leave-approvals.*')"
                         icon="calendar-days">
-                        Approval Cuti
+                        {{ __('Approval Cuti') }}
                         @if($presdirLeaveCount > 0)
                             <span
                                 class="ml-auto bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $presdirLeaveCount }}</span>
                         @endif
                     </x-sidebar-link>
                 @endif
-                <x-sidebar-link :href="route('executive.insights')" :active="request()->routeIs('executive.insights')"
-                    icon="presentation-chart-bar">
-                    Company Insights
-                </x-sidebar-link>
+
                 <x-sidebar-link :href="route('executive.audit')" :active="request()->routeIs('executive.audit')"
                     icon="clock">
-                    Audit & History
+                    {{ __('Audit & History') }}
                 </x-sidebar-link>
             </x-sidebar-section>
         @endif
 
+        {{-- Dokumen Menu - Based on permissions (Not for Presiden Direktur) --}}
+        @if(!auth()->user()->hasRole('presiden_direktur') && (auth()->user()->hasPermissionTo('create-document') || auth()->user()->hasPermissionTo('view-document')))
+            <x-sidebar-section title="{{ __('Dokumen') }}" :collapsed="$sidebarCollapsed ?? false">
+                @can('create', App\Models\Document::class)
+                    <x-sidebar-link :href="route('documents.create')" :active="request()->routeIs('documents.create')"
+                        icon="plus-circle">
+                        {{ __('Buat Pengajuan') }}
+                    </x-sidebar-link>
+                @endcan
+                @if(auth()->user()->hasPermissionTo('view-document'))
+                    <x-sidebar-link :href="route('documents.index')" :active="request()->routeIs('documents.index')"
+                        icon="document-text">
+                        {{ __('Daftar Pengajuan') }}
+                    </x-sidebar-link>
+                @endif
+                @if(feature_active('module_loan') && auth()->user()->hasPermissionTo('create-document') && !auth()->user()->hasRole('admin'))
+                    <x-sidebar-link :href="route('my-loans.index')" :active="request()->routeIs('my-loans.*')"
+                        icon="hand-raised">
+                        {{ __('Pinjaman Saya') }}
+                    </x-sidebar-link>
+                @endif
+                @if(feature_active('module_hris') && !auth()->user()->hasRole('admin'))
+                    <x-sidebar-link :href="route('leave-requests.index')" :active="request()->routeIs('leave-requests.*')"
+                        icon="calendar">
+                        {{ __('Pengajuan Cuti') }}
+                    </x-sidebar-link>
+                @endif
+            </x-sidebar-section>
+        @endif
+
+        {{-- Absensi - Active employees --}}
+        @if(feature_active('module_hris') && auth()->user()->roles->isNotEmpty())
+            <x-sidebar-section title="{{ __('Absensi') }}" :collapsed="$sidebarCollapsed ?? false">
+                <x-sidebar-link :href="route('attendance.index')" :active="request()->routeIs('attendance.index')"
+                    icon="clock">
+                    {{ __('Check-in / Out') }}
+                </x-sidebar-link>
+                <x-sidebar-link :href="route('attendance.history')" :active="request()->routeIs('attendance.history')"
+                    icon="calendar-days">
+                    {{ __('Riwayat Absensi') }}
+                </x-sidebar-link>
+            </x-sidebar-section>
+        @endif
+
+        {{-- Approval Menu - Dynamic via Permissions --}}
+        @if(auth()->user()->hasPermissionTo('approve-document'))
+            {{-- Presiden Direktur uses Executive section instead --}}
+            @if(!auth()->user()->hasRole('presiden_direktur'))
+                <x-sidebar-section title="{{ __('Approval') }}" :collapsed="$sidebarCollapsed ?? false">
+                    <x-sidebar-link :href="route('approvals.index')" :active="request()->routeIs('approvals.index')"
+                        icon="inbox-arrow-down">
+                        {{ __('Approval Queue') }}
+                        @if(($sidebarBadges['pendingApprovalCount'] ?? 0) > 0)
+                            <span
+                                class="ml-auto bg-danger-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $sidebarBadges['pendingApprovalCount'] }}</span>
+                        @endif
+                    </x-sidebar-link>
+                    
+                    @if(feature_active('module_hris'))
+                        @php $pendingLeaveCount = $sidebarBadges['pendingLeaveCount'] ?? 0; @endphp
+                        <x-sidebar-link :href="route('leave-approvals.index')" :active="request()->routeIs('leave-approvals.*')"
+                            icon="user-group">
+                            {{ __('Approval Cuti') }}
+                            @if($pendingLeaveCount > 0)
+                                <span
+                                    class="ml-auto bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $pendingLeaveCount }}</span>
+                            @endif
+                        </x-sidebar-link>
+                    @endif
+
+                    @if(!auth()->user()->hasRole('presiden_direktur'))
+                        <x-sidebar-link :href="route('approvals.bulk')" :active="request()->routeIs('approvals.bulk')"
+                            icon="squares-2x2">
+                            {{ __('Bulk Approval') }}
+                        </x-sidebar-link>
+                    @endif
+                    <x-sidebar-link :href="route('approvals.history')" :active="request()->routeIs('approvals.history')"
+                        icon="clock">
+                        {{ __('Riwayat Approval') }}
+                    </x-sidebar-link>
+                </x-sidebar-section>
+            @endif
+        @endif
+
+
+
         <!-- Finance Menu - Dynamic via Permissions -->
         @if(feature_active('module_finance') && auth()->user()->hasAnyPermission(['manage-budget', 'create-po', 'create-invoice', 'print-po', 'print-invoice', 'manage-purchasing']))
-            <x-sidebar-section title="Keuangan" :collapsed="$sidebarCollapsed ?? false">
+            <x-sidebar-section title="{{ __('Keuangan') }}" :collapsed="$sidebarCollapsed ?? false">
 
                 <x-sidebar-link :href="route('finance.budgets.index')" :active="request()->routeIs('finance.budgets.*')"
                     icon="banknotes">
-                    Manajemen Anggaran
+                    {{ __('Manajemen Anggaran') }}
                 </x-sidebar-link>
                 <x-sidebar-link :href="route('finance.po.index')" :active="request()->routeIs('finance.po.*')"
                     icon="document-duplicate">
-                    Purchase Orders
+                    {{ __('Purchase Orders') }}
                     @if(($sidebarBadges['pendingPOCount'] ?? 0) > 0)
                         <span
                             class="ml-auto bg-primary-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-pulse">{{ $sidebarBadges['pendingPOCount'] }}</span>
@@ -195,7 +191,7 @@
                 </x-sidebar-link>
                 <x-sidebar-link :href="route('finance.invoices.index')" :active="request()->routeIs('finance.invoices.*')"
                     icon="receipt-percent">
-                    Invoices
+                    {{ __('Invoices') }}
                     @if(($sidebarBadges['pendingInvoiceCount'] ?? 0) > 0)
                         <span
                             class="ml-auto bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-pulse">{{ $sidebarBadges['pendingInvoiceCount'] }}</span>
@@ -204,7 +200,7 @@
                 @if(feature_active('module_loan'))
                     <x-sidebar-link :href="route('finance.loans.index')" :active="request()->routeIs('finance.loans.*')"
                         icon="currency-dollar">
-                        Pinjaman Karyawan
+                        {{ __('Pinjaman Karyawan') }}
                         @if(($sidebarBadges['pendingLoanCount'] ?? 0) > 0)
                             <span
                                 class="ml-auto bg-yellow-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $sidebarBadges['pendingLoanCount'] }}</span>
@@ -216,37 +212,37 @@
 
         <!-- Supervisory View - Dynamic via Permissions -->
         @if(auth()->user()->hasPermissionTo('approve-document'))
-            <x-sidebar-section title="Tim Saya" :collapsed="$sidebarCollapsed ?? false">
+            <x-sidebar-section title="{{ __('Tim Saya') }}" :collapsed="$sidebarCollapsed ?? false">
                 <x-sidebar-link :href="route('team.documents')" :active="request()->routeIs('team.*')" icon="user-group">
-                    Dokumen Tim
+                    {{ __('Dokumen Tim') }}
                 </x-sidebar-link>
             </x-sidebar-section>
         @endif
 
         {{-- Reports - Dynamic via Permissions --}}
         @if(auth()->user()->hasPermissionTo('view-reports'))
-            <x-sidebar-section title="Laporan" :collapsed="$sidebarCollapsed ?? false">
+            <x-sidebar-section title="{{ __('Laporan') }}" :collapsed="$sidebarCollapsed ?? false">
                 <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*')" icon="chart-bar">
-                    Laporan
+                    {{ __('Laporan') }}
                 </x-sidebar-link>
             </x-sidebar-section>
         @endif
 
         {{-- Attendance & Leave Admin - Dynamic via Permissions --}}
         @if(feature_active('module_hris') && auth()->user()->hasAnyPermission(['manage-attendance', 'view-attendance']))
-            <x-sidebar-section title="Kelola Karyawan" :collapsed="$sidebarCollapsed ?? false">
+            <x-sidebar-section title="{{ __('Kelola Karyawan') }}" :collapsed="$sidebarCollapsed ?? false">
                 <x-sidebar-link :href="route('attendance-admin.report')" :active="request()->routeIs('attendance-admin.report')"
                     icon="chart-bar-square">
-                    Laporan Absensi
+                    {{ __('Laporan Absensi') }}
                 </x-sidebar-link>
                 <x-sidebar-link :href="route('leave-reports.index')" :active="request()->routeIs('leave-reports.*')"
                     icon="document-duplicate">
-                    Laporan Cuti
+                    {{ __('Laporan Cuti') }}
                 </x-sidebar-link>
                 @if(auth()->user()->hasAnyRole(['admin', 'hrd', 'direktur_hr']))
                     <x-sidebar-link :href="route('attendance-admin.locations')" :active="request()->routeIs('attendance-admin.locations')"
                         icon="map-pin">
-                        Lokasi Kantor
+                        {{ __('Lokasi Kantor') }}
                     </x-sidebar-link>
                 @endif
             </x-sidebar-section>
@@ -257,54 +253,54 @@
             <x-sidebar-section title="HRIS" :collapsed="$sidebarCollapsed ?? false">
                 <x-sidebar-link :href="route('announcements.index')" :active="request()->routeIs('announcements.*')"
                     icon="megaphone">
-                    Pengumuman
+                    {{ __('Pengumuman') }}
                 </x-sidebar-link>
             </x-sidebar-section>
         @endif
 
         <!-- Admin Menu - Dynamic via Permissions -->
         @canany(['manage-users', 'manage-roles', 'manage-features', 'manage-workflow', 'manage-departments', 'manage-templates', 'view-audit-log'])
-            <x-sidebar-section title="Administrasi" :collapsed="$sidebarCollapsed ?? false">
+            <x-sidebar-section title="{{ __('Pengaturan Sistem') }}" :collapsed="$sidebarCollapsed ?? false">
                 @can('manage-users')
                 <x-sidebar-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')"
                     icon="users">
-                    Manajemen User
+                    {{ __('Manajemen User') }}
                 </x-sidebar-link>
                 @endcan
                 @can('manage-roles')
                 <x-sidebar-link :href="route('admin.roles.index')" :active="request()->routeIs('admin.roles.*')"
                     icon="shield-check">
-                    Role & Permission
+                    {{ __('Role & Permission') }}
                 </x-sidebar-link>
                 @endcan
                 @can('manage-features')
                 <x-sidebar-link :href="route('admin.features.index')" :active="request()->routeIs('admin.features.*')"
                     icon="adjustments-horizontal">
-                    Fitur & Modul
+                    {{ __('Fitur & Modul') }}
                 </x-sidebar-link>
                 @endcan
                 @can('manage-workflow')
                 <x-sidebar-link :href="route('admin.workflow.index')" :active="request()->routeIs('admin.workflow.*')"
                     icon="cog-6-tooth">
-                    Konfigurasi Workflow
+                    {{ __('Konfigurasi Workflow') }}
                 </x-sidebar-link>
                 @endcan
                 @can('manage-departments')
                 <x-sidebar-link :href="route('admin.departments.index')" :active="request()->routeIs('admin.departments.*')"
-                    icon="building-office">
-                    Departemen
+                    icon="building-office-2">
+                    {{ __('Departemen') }}
                 </x-sidebar-link>
                 @endcan
                 @can('manage-templates')
                 <x-sidebar-link :href="route('admin.templates.index')" :active="request()->routeIs('admin.templates.*')"
                     icon="document-text">
-                    Template Dokumen
+                    {{ __('Template Dokumen') }}
                 </x-sidebar-link>
                 @endcan
                 @can('view-audit-log')
                 <x-sidebar-link :href="route('admin.audit-logs.index')" :active="request()->routeIs('admin.audit-logs.*')"
                     icon="clipboard-document-list">
-                    Audit Log
+                    {{ __('Audit Log') }}
                 </x-sidebar-link>
                 @endcan
             </x-sidebar-section>
@@ -312,9 +308,9 @@
 
         {{-- Archive - All users with view-document permission (not Presiden Direktur) --}}
         @if(!auth()->user()->hasRole('presiden_direktur') && auth()->user()->hasPermissionTo('view-document'))
-            <x-sidebar-section title="Arsip" :collapsed="$sidebarCollapsed ?? false">
+            <x-sidebar-section title="{{ __('Arsip') }}" :collapsed="$sidebarCollapsed ?? false">
                 <x-sidebar-link :href="route('archive.index')" :active="request()->routeIs('archive.*')" icon="archive-box">
-                    Riwayat Dokumen
+                    {{ __('Riwayat Dokumen') }}
                 </x-sidebar-link>
             </x-sidebar-section>
         @endif
@@ -323,7 +319,7 @@
     <!-- Bottom Section -->
     <div class="shrink-0 border-t border-primary-700/40 p-4">
         <x-sidebar-link :href="route('profile.edit')" :active="request()->routeIs('profile.*')" icon="user-circle">
-            Profil
+            {{ __('Profil') }}
         </x-sidebar-link>
         <form method="POST" action="{{ route('logout') }}" class="mt-1">
             @csrf
@@ -333,7 +329,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
-                <span :class="sidebarCollapsed ? 'lg:hidden' : ''">Keluar</span>
+                <span :class="sidebarCollapsed ? 'lg:hidden' : ''">{{ __('Keluar') }}</span>
             </button>
         </form>
     </div>

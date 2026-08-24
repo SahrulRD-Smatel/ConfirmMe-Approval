@@ -9,13 +9,12 @@
             </a>
             <div>
                 <h2 class="text-xl font-semibold text-gray-900 dark:text-white">{{ $loan->loan_number }}</h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Detail Pinjaman Karyawan</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Detail Pinjaman Karyawan') }}</p>
             </div>
         </div>
     </x-slot>
 
-    <div class="py-4">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
             @if(session('success'))
                 <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-xl">
                     {{ session('success') }}
@@ -35,7 +34,7 @@
                     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft p-6">
                         <div class="flex items-start justify-between mb-6">
                             <div>
-                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Informasi Pinjaman</h3>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Informasi Pinjaman') }}</h3>
                                 <p class="text-sm text-gray-500">{{ $loan->created_at->format('d F Y') }}</p>
                             </div>
                             <x-ui.badge :type="$loan->status_color" size="lg">{{ $loan->status_label }}</x-ui.badge>
@@ -43,30 +42,30 @@
 
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                             <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
-                                <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">Jumlah Pinjaman</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ __('Jumlah Pinjaman') }}</p>
                                 <p class="text-lg font-bold text-gray-900 dark:text-white">
                                     {{ $loan->formatted_loan_amount }}
                                 </p>
                             </div>
                             <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
-                                <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">Cicilan
+                                <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ __('Cicilan') }}
                                     1-{{ $loan->installment_months - 1 }}</p>
                                 <p class="text-lg font-bold text-gray-900 dark:text-white">
                                     {{ $loan->formatted_monthly_installment }}
                                 </p>
                                 @if($loan->last_installment && $loan->last_installment != $loan->monthly_installment)
-                                    <p class="text-xs text-gray-500 mt-1">Terakhir: {{ $loan->formatted_last_installment }}
+                                    <p class="text-xs text-gray-500 mt-1">{{ __('Terakhir') }}: {{ $loan->formatted_last_installment }}
                                     </p>
                                 @endif
                             </div>
                             <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
-                                <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">Tenor</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ __('Tenor') }}</p>
                                 <p class="text-lg font-bold text-gray-900 dark:text-white">
-                                    {{ $loan->installment_months }} Bulan
+                                    {{ $loan->installment_months }} {{ __('Bulan') }}
                                 </p>
                             </div>
                             <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
-                                <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">Sisa Hutang</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ __('Sisa Hutang') }}</p>
                                 <p class="text-lg font-bold text-primary-600">{{ $loan->formatted_outstanding }}</p>
                             </div>
                         </div>
@@ -74,7 +73,7 @@
                         {{-- Progress Bar --}}
                         <div class="mt-6">
                             <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
-                                <span>Progress Pembayaran</span>
+                                <span>{{ __('Progress Pembayaran') }}</span>
                                 <span>{{ number_format($loan->getProgressPercentage(), 1) }}%</span>
                             </div>
                             <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
@@ -82,15 +81,15 @@
                                     style="width: {{ $loan->getProgressPercentage() }}%"></div>
                             </div>
                             <div class="flex justify-between text-xs text-gray-500 mt-1">
-                                <span>Dibayar: {{ $loan->formatted_total_paid }}</span>
-                                <span>Total: {{ $loan->formatted_loan_amount }}</span>
+                                <span>{{ __('Dibayar') }}: {{ $loan->formatted_total_paid }}</span>
+                                <span>{{ __('Total') }}: {{ $loan->formatted_loan_amount }}</span>
                             </div>
                         </div>
                     </div>
 
                     {{-- Repayment History --}}
                     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft p-6">
-                        <h3 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Riwayat Pembayaran</h3>
+                        <h3 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Riwayat Pembayaran') }}</h3>
 
                         @if($loan->repayments->count() > 0)
                             <div class="overflow-x-auto">
@@ -98,15 +97,15 @@
                                     <thead>
                                         <tr>
                                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                                                Cicilan</th>
+                                                {{ __('Cicilan') }}</th>
                                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                                                Tanggal</th>
+                                                {{ __('Tanggal') }}</th>
                                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                                                Jumlah</th>
+                                                {{ __('Jumlah') }}</th>
                                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                                                Metode</th>
+                                                {{ __('Metode') }}</th>
                                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                                                Dicatat Oleh</th>
+                                                {{ __('Dicatat Oleh') }}</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-200/80 dark:divide-gray-700/80">
@@ -134,7 +133,7 @@
                             </div>
                         @else
                             <p class="text-center text-gray-500 dark:text-gray-400 py-8">
-                                Belum ada pembayaran cicilan
+                                {{ __('Belum ada pembayaran cicilan') }}
                             </p>
                         @endif
                     </div>
@@ -144,7 +143,7 @@
                 <div class="space-y-6">
                     {{-- Employee Info --}}
                     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft p-6">
-                        <h3 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Info Karyawan</h3>
+                        <h3 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Info Karyawan') }}</h3>
                         <div class="flex items-center gap-4 mb-4">
                             <img class="h-12 w-12 rounded-full" src="{{ $loan->employee->avatar_url }}" alt="">
                             <div>
@@ -154,22 +153,22 @@
                         </div>
                         <div class="space-y-2 text-sm">
                             <div class="flex justify-between">
-                                <span class="text-gray-500">Employee ID:</span>
+                                <span class="text-gray-500">{{ __('Employee ID') }}:</span>
                                 <span
                                     class="text-gray-900 dark:text-white">{{ $loan->employee->employee_id ?? '-' }}</span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-gray-500">Bank:</span>
+                                <span class="text-gray-500">{{ __('Bank') }}:</span>
                                 <span
                                     class="text-gray-900 dark:text-white">{{ $loan->bank_name ?: $loan->employee->bank_name ?? '-' }}</span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-gray-500">No. Rekening:</span>
+                                <span class="text-gray-500">{{ __('No. Rekening') }}:</span>
                                 <span
                                     class="text-gray-900 dark:text-white">{{ $loan->bank_account_number ?: $loan->employee->bank_account_number ?? '-' }}</span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-gray-500">Nama Rekening:</span>
+                                <span class="text-gray-500">{{ __('Nama Rekening') }}:</span>
                                 <span
                                     class="text-gray-900 dark:text-white">{{ $loan->bank_account_name ?: $loan->employee->bank_account_name ?? '-' }}</span>
                             </div>
@@ -180,29 +179,29 @@
                     @if($loan->status === 'pending_disbursement')
                         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft p-6"
                             x-data="{ showConfirmModal: false }">
-                            <h3 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Cairkan Pinjaman</h3>
+                            <h3 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Cairkan Pinjaman') }}</h3>
                             <form id="disbursementForm" action="{{ route('finance.loans.disburse', $loan) }}" method="POST"
                                 enctype="multipart/form-data">
                                 @csrf
                                 <div class="space-y-4">
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                            Bukti Transfer (Opsional)
+                                            {{ __('Bukti Transfer') }} ({{ __('Opsional') }})
                                         </label>
                                         <input type="file" name="disbursement_proof" accept=".pdf,.jpg,.jpeg,.png"
                                             class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                            Catatan (Opsional)
+                                            {{ __('Catatan') }} ({{ __('Opsional') }})
                                         </label>
                                         <textarea name="notes" rows="2"
                                             class="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700"
-                                            placeholder="Catatan pencairan..."></textarea>
+                                            placeholder="{{ __('Catatan pencairan...') }}"></textarea>
                                     </div>
                                     <button type="button" @click="showConfirmModal = true"
                                         class="w-full py-2 px-4 bg-green-600 text-white rounded-xl hover:bg-green-700 font-medium">
-                                        Cairkan Pinjaman
+                                        {{ __('Cairkan Pinjaman') }}
                                     </button>
                                 </div>
                             </form>
@@ -243,7 +242,7 @@
                                                     </svg>
                                                 </div>
                                                 <h3 class="text-lg font-bold text-yellow-800 dark:text-yellow-200">
-                                                    Konfirmasi Pencairan Dana
+                                                    {{ __('Konfirmasi Pencairan Dana') }}
                                                 </h3>
                                             </div>
                                         </div>
@@ -251,36 +250,34 @@
                                         {{-- Body --}}
                                         <div class="px-6 py-5">
                                             <p class="text-gray-600 dark:text-gray-300 mb-4">
-                                                Anda akan mencairkan pinjaman dengan detail berikut:
+                                                {{ __('Anda akan mencairkan pinjaman dengan detail berikut') }}:
                                             </p>
 
                                             <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 space-y-3">
                                                 <div class="flex justify-between">
-                                                    <span class="text-sm text-gray-500 dark:text-gray-400">Pemohon:</span>
+                                                    <span class="text-sm text-gray-500 dark:text-gray-400">{{ __('Pemohon') }}:</span>
                                                     <span
                                                         class="text-sm font-medium text-gray-900 dark:text-white">{{ $loan->employee->name ?? '-' }}</span>
                                                 </div>
                                                 <div class="flex justify-between">
-                                                    <span class="text-sm text-gray-500 dark:text-gray-400">Jumlah
-                                                        Pinjaman:</span>
+                                                    <span class="text-sm text-gray-500 dark:text-gray-400">{{ __('Jumlah Pinjaman') }}:</span>
                                                     <span
                                                         class="text-lg font-bold text-green-600 dark:text-green-400">{{ $loan->formatted_loan_amount }}</span>
                                                 </div>
                                                 <div class="flex justify-between">
-                                                    <span class="text-sm text-gray-500 dark:text-gray-400">Tenor:</span>
+                                                    <span class="text-sm text-gray-500 dark:text-gray-400">{{ __('Tenor') }}:</span>
                                                     <span
                                                         class="text-sm font-medium text-gray-900 dark:text-white">{{ $loan->installment_months }}
-                                                        bulan</span>
+                                                        {{ __('bulan') }}</span>
                                                 </div>
                                                 <div class="flex justify-between">
-                                                    <span class="text-sm text-gray-500 dark:text-gray-400">Bank
-                                                        Tujuan:</span>
+                                                    <span class="text-sm text-gray-500 dark:text-gray-400">{{ __('Bank Tujuan') }}:</span>
                                                     <span class="text-sm font-medium text-gray-900 dark:text-white">
                                                         @if($loan->bank_name || $loan->employee->bank_name)
                                                             {{ $loan->bank_name ?: $loan->employee->bank_name ?? '-' }} -
                                                             {{ $loan->bank_account_number ?: $loan->employee->bank_account_number ?? '-' }}
                                                         @else
-                                                            <span class="text-yellow-600">Belum diisi</span>
+                                                            <span class="text-yellow-600">{{ __('Belum diisi') }}</span>
                                                         @endif
                                                     </span>
                                                 </div>
@@ -289,8 +286,7 @@
                                             <div
                                                 class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl">
                                                 <p class="text-sm text-yellow-700 dark:text-yellow-300">
-                                                    <strong>Perhatian:</strong> Pastikan dana telah ditransfer ke rekening
-                                                    karyawan sebelum mengkonfirmasi pencairan ini.
+                                                    <strong>{{ __('Perhatian') }}:</strong> {{ __('Pastikan dana telah ditransfer ke rekening karyawan sebelum mengkonfirmasi pencairan ini.') }}
                                                 </p>
                                             </div>
                                         </div>
@@ -299,7 +295,7 @@
                                         <div class="bg-gray-50 dark:bg-gray-700/50 px-6 py-4 flex justify-end gap-3">
                                             <button type="button" @click="showConfirmModal = false"
                                                 class="px-4 py-2 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-xl hover:bg-primary-50/60 dark:hover:bg-primary-50/600 font-medium">
-                                                Batal
+                                                {{ __('Batal') }}
                                             </button>
                                             <button type="button"
                                                 @click="document.getElementById('disbursementForm').submit()"
@@ -308,7 +304,7 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                         d="M5 13l4 4L19 7" />
                                                 </svg>
-                                                Ya, Cairkan Dana
+                                                {{ __('Ya, Cairkan Dana') }}
                                             </button>
                                         </div>
                                     </div>
@@ -320,15 +316,14 @@
                     {{-- Repayment Form --}}
                     @if(in_array($loan->status, ['disbursed', 'repaying']))
                         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft p-6">
-                            <h3 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Catat Pembayaran</h3>
+                            <h3 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Catat Pembayaran') }}</h3>
                             <form action="{{ route('finance.loans.repayment', $loan) }}" method="POST"
                                 enctype="multipart/form-data">
                                 @csrf
                                 <div class="space-y-4">
                                     <div>
                                         <label
-                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Jumlah
-                                            Pembayaran * (Cicilan ke-{{ $loan->getNextInstallmentNumber() }})</label>
+                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Jumlah Pembayaran') }} * ({{ __('Cicilan ke-') }}{{ $loan->getNextInstallmentNumber() }})</label>
                                         <div class="relative">
                                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">Rp</span>
                                             <input type="text" name="amount" required
@@ -337,45 +332,41 @@
                                                 inputmode="numeric">
                                         </div>
                                         @if($loan->getNextInstallmentNumber() == $loan->installment_months && $loan->last_installment != $loan->monthly_installment)
-                                            <p class="text-xs text-yellow-600 mt-1">* Cicilan terakhir disesuaikan untuk
-                                                pembulatan</p>
+                                            <p class="text-xs text-yellow-600 mt-1">* {{ __('Cicilan terakhir disesuaikan untuk pembulatan') }}</p>
                                         @endif
                                         @error('amount') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                                     </div>
                                     <div>
                                         <label
-                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tanggal
-                                            Pembayaran *</label>
+                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Tanggal Pembayaran') }} *</label>
                                         <input type="date" name="payment_date" required value="{{ date('Y-m-d') }}"
                                             class="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700">
                                     </div>
                                     <div>
                                         <label
-                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Metode
-                                            Pembayaran *</label>
+                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Metode Pembayaran') }} *</label>
                                         <select name="payment_method" required
                                             class="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700">
-                                            <option value="salary_deduction">Potong Gaji</option>
-                                            <option value="transfer">Transfer Bank</option>
-                                            <option value="cash">Tunai</option>
+                                            <option value="salary_deduction">{{ __('Potong Gaji') }}</option>
+                                            <option value="transfer">{{ __('Transfer Bank') }}</option>
+                                            <option value="cash">{{ __('Tunai') }}</option>
                                         </select>
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Bukti
-                                            Bayar (Opsional)</label>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Bukti Bayar') }} ({{ __('Opsional') }})</label>
                                         <input type="file" name="proof_file" accept=".pdf,.jpg,.jpeg,.png"
                                             class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100">
                                     </div>
                                     <div>
                                         <label
-                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Catatan</label>
+                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Catatan') }}</label>
                                         <textarea name="notes" rows="2"
                                             class="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700"
-                                            placeholder="Catatan pembayaran..."></textarea>
+                                            placeholder="{{ __('Catatan pembayaran...') }}"></textarea>
                                     </div>
                                     <button type="submit"
                                         class="w-full py-2 px-4 bg-primary-600 text-white rounded-xl hover:bg-primary-700 font-medium">
-                                        Catat Pembayaran
+                                        {{ __('Catat Pembayaran') }}
                                     </button>
                                 </div>
                             </form>
@@ -385,22 +376,22 @@
                     {{-- Disbursement Info --}}
                     @if($loan->disbursement_date)
                         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft p-6">
-                            <h3 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Info Pencairan</h3>
+                            <h3 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Info Pencairan') }}</h3>
                             <div class="space-y-2 text-sm">
                                 <div class="flex justify-between">
-                                    <span class="text-gray-500">Tanggal Cair:</span>
+                                    <span class="text-gray-500">{{ __('Tanggal Cair') }}:</span>
                                     <span
                                         class="text-gray-900 dark:text-white">{{ $loan->disbursement_date->format('d M Y') }}</span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span class="text-gray-500">Dicairkan Oleh:</span>
+                                    <span class="text-gray-500">{{ __('Dicairkan Oleh') }}:</span>
                                     <span class="text-gray-900 dark:text-white">{{ $loan->disbursedBy->name ?? '-' }}</span>
                                 </div>
                                 @if($loan->disbursement_proof)
                                     <div class="pt-2">
                                         <a href="{{ asset('storage/' . $loan->disbursement_proof) }}" target="_blank"
                                             class="text-primary-600 hover:underline text-sm">
-                                            Lihat Bukti Transfer →
+                                            {{ __('Lihat Bukti Transfer') }} →
                                         </a>
                                     </div>
                                 @endif
@@ -409,6 +400,5 @@
                     @endif
                 </div>
             </div>
-        </div>
-    </div>
+
 </x-app-layout>

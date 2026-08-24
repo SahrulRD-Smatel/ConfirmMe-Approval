@@ -1,11 +1,11 @@
 <x-app-layout>
-    <x-slot name="title">Arsip Dokumen</x-slot>
+    <x-slot name="title">{{ __('Arsip Dokumen') }}</x-slot>
 
     <x-slot name="header">
         <div>
-            <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Arsip Dokumen</h1>
+            <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Arsip Dokumen') }}</h1>
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Riwayat semua dokumen yang telah selesai diproses
+                {{ __('Riwayat semua dokumen yang telah selesai diproses') }}
             </p>
         </div>
     </x-slot>
@@ -16,24 +16,24 @@
             <div class="flex-1">
                 <input type="text" name="search" value="{{ request('search') }}"
                     class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
-                    placeholder="Cari nomor atau judul dokumen...">
+                    placeholder="{{ __('Cari nomor atau judul dokumen...') }}">
             </div>
 
             <div class="w-full sm:w-48">
                 <select name="status"
                     class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
-                    <option value="">Semua Status</option>
-                    <option value="approved" {{ request('status') === 'approved' ? 'selected' : '' }}>Disetujui</option>
-                    <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Ditolak</option>
-                    <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Selesai</option>
-                    <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>Dibayar</option>
+                    <option value="">{{ __('Semua Status') }}</option>
+                    <option value="approved" {{ request('status') === 'approved' ? 'selected' : '' }}>{{ __('Disetujui') }}</option>
+                    <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>{{ __('Ditolak') }}</option>
+                    <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>{{ __('Selesai') }}</option>
+                    <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>{{ __('Dibayar') }}</option>
                 </select>
             </div>
 
             <div class="w-full sm:w-48">
                 <select name="year"
                     class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
-                    <option value="">Semua Tahun</option>
+                    <option value="">{{ __('Semua Tahun') }}</option>
                     @for($y = date('Y'); $y >= 2020; $y--)
                         <option value="{{ $y }}" {{ request('year') == $y ? 'selected' : '' }}>{{ $y }}</option>
                     @endfor
@@ -41,17 +41,17 @@
             </div>
 
             <x-ui.button type="submit" variant="secondary">
-                Filter
+                {{ __('Filter') }}
             </x-ui.button>
         </form>
     </x-ui.card>
 
     <!-- Statistics -->
     <div class="mb-7 grid grid-cols-2 gap-4 md:grid-cols-4">
-        <x-ui.stat-card title="Total Arsip" :value="$documents->total()" icon="archive-box" />
-        <x-ui.stat-card title="Disetujui" :value="$stats['approved'] ?? 0" icon="check-circle" status="success" />
-        <x-ui.stat-card title="Ditolak" :value="$stats['rejected'] ?? 0" icon="x-circle" status="danger" />
-        <x-ui.stat-card title="Selesai" :value="$stats['completed'] ?? 0" icon="document-check" status="info" />
+        <x-ui.stat-card title="{{ __('Total Arsip') }}" :value="$documents->total()" icon="archive-box" />
+        <x-ui.stat-card title="{{ __('Disetujui') }}" :value="$stats['approved'] ?? 0" icon="check-circle" status="success" />
+        <x-ui.stat-card title="{{ __('Ditolak') }}" :value="$stats['rejected'] ?? 0" icon="x-circle" status="danger" />
+        <x-ui.stat-card title="{{ __('Selesai') }}" :value="$stats['completed'] ?? 0" icon="document-check" status="info" />
     </div>
 
     <!-- Archive Table -->
@@ -62,23 +62,23 @@
                     <tr>
                         <th scope="col"
                             class="px-5 py-3.5 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            No. Dokumen
+                            {{ __('No. Dokumen') }}
                         </th>
                         <th scope="col"
                             class="px-5 py-3.5 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Judul
+                            {{ __('Judul') }}
                         </th>
                         <th scope="col"
                             class="px-5 py-3.5 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Status
+                            {{ __('Status') }}
                         </th>
                         <th scope="col"
                             class="px-5 py-3.5 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Tanggal Selesai
+                            {{ __('Tanggal Selesai') }}
                         </th>
                         <th scope="col"
                             class="px-5 py-3.5 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Aksi
+                            {{ __('Aksi') }}
                         </th>
                     </tr>
                 </thead>
@@ -95,7 +95,7 @@
                                     {{ $document->title }}
                                 </div>
                                 <div class="text-xs text-gray-500 dark:text-gray-400">
-                                    oleh {{ $document->user->name }}
+                                    {{ __('oleh') }} {{ $document->user->name }}
                                 </div>
                             </td>
                             <td class="px-5 py-4 whitespace-nowrap">
@@ -109,12 +109,12 @@
                             <td class="px-5 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex flex-wrap items-center justify-end gap-2">
                                     <a href="{{ route('documents.show', $document) }}"
-                                        class="text-primary-600 hover:text-primary-800 dark:text-primary-400" title="Lihat">
+                                        class="text-primary-600 hover:text-primary-800 dark:text-primary-400" title="{{ __('Lihat') }}">
                                         <x-icon name="eye" class="w-5 h-5" />
                                     </a>
                                     @can('print', $document)
                                         <a href="{{ route('documents.print', $document) }}" target="_blank"
-                                            class="text-green-600 hover:text-green-800 dark:text-green-400" title="Cetak"
+                                            class="text-green-600 hover:text-green-800 dark:text-green-400" title="{{ __('Cetak') }}"
                                             onclick="setTimeout(() => { let f = document.createElement('iframe'); f.style.display='none'; f.src='{{ route('documents.download', $document) }}'; document.body.appendChild(f); setTimeout(() => f.remove(), 10000); }, 500)">
                                             <x-icon name="printer" class="w-5 h-5" />
                                         </a>
@@ -127,7 +127,7 @@
                             <td colspan="5" class="px-6 py-12 text-center">
                                 <x-icon name="archive-box"
                                     class="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-                                <p class="text-gray-500 dark:text-gray-400">Belum ada dokumen di arsip</p>
+                                <p class="text-gray-500 dark:text-gray-400">{{ __('Belum ada dokumen di arsip') }}</p>
                             </td>
                         </tr>
                     @endforelse

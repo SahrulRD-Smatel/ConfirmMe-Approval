@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="title">Riwayat Absensi</x-slot>
+    <x-slot name="title">{{ __('Riwayat Absensi') }}</x-slot>
 
     <div class="space-y-7">
         {{-- Header --}}
@@ -7,7 +7,7 @@
             <div class="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-primary-50/60 to-transparent rounded-full -mr-16 -mt-16 pointer-events-none"></div>
             <div class="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">Riwayat Absensi</h1>
+                    <h1 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Riwayat Absensi') }}</h1>
                     <p class="text-sm text-gray-500">{{ auth()->user()->name }}</p>
                 </div>
 
@@ -26,7 +26,7 @@
                         @endfor
                     </select>
                     <button type="submit" class="px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-xl hover:bg-primary-700 transition">
-                        Filter
+                        {{ __('Filter') }}
                     </button>
                 </form>
             </div>
@@ -37,23 +37,23 @@
             <div class="grid grid-cols-2 gap-3 sm:grid-cols-5">
                 <div class="p-4 bg-gray-100 dark:bg-gray-800 rounded-xl text-center border border-gray-200/80 dark:border-gray-700/80">
                     <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['total'] }}</p>
-                    <p class="text-xs text-gray-500 font-medium">Total Masuk</p>
+                    <p class="text-xs text-gray-500 font-medium">{{ __('Total Masuk') }}</p>
                 </div>
                 <div class="p-4 bg-success-50 dark:bg-success-900/30 rounded-xl text-center border border-success-200 dark:border-success-800/30">
                     <p class="text-2xl font-bold text-success-700 dark:text-success-400">{{ $stats['on_time'] }}</p>
-                    <p class="text-xs text-success-600 dark:text-success-500 font-medium">Tepat Waktu</p>
+                    <p class="text-xs text-success-600 dark:text-success-500 font-medium">{{ __('Tepat Waktu') }}</p>
                 </div>
                 <div class="p-4 bg-danger-50 dark:bg-danger-900/30 rounded-xl text-center border border-danger-200 dark:border-danger-800/30">
                     <p class="text-2xl font-bold text-danger-700 dark:text-danger-400">{{ $stats['late'] }}</p>
-                    <p class="text-xs text-danger-600 dark:text-danger-500 font-medium">Terlambat</p>
+                    <p class="text-xs text-danger-600 dark:text-danger-500 font-medium">{{ __('Terlambat') }}</p>
                 </div>
                 <div class="p-4 bg-primary-50 dark:bg-primary-900/30 rounded-xl text-center border border-primary-200 dark:border-primary-800/30">
                     <p class="text-2xl font-bold text-primary-700 dark:text-primary-400">{{ $stats['wfh'] }}</p>
-                    <p class="text-xs text-primary-600 dark:text-primary-500 font-medium">WFH</p>
+                    <p class="text-xs text-primary-600 dark:text-primary-500 font-medium">{{ __('WFH') }}</p>
                 </div>
                 <div class="p-4 bg-warning-50 dark:bg-warning-900/30 rounded-xl text-center border border-warning-200 dark:border-warning-800/30">
                     <p class="text-2xl font-bold text-warning-700 dark:text-warning-400">{{ $stats['early_leave'] }}</p>
-                    <p class="text-xs text-warning-600 dark:text-warning-500 font-medium">Pulang Awal</p>
+                    <p class="text-xs text-warning-600 dark:text-warning-500 font-medium">{{ __('Pulang Awal') }}</p>
                 </div>
             </div>
         </x-ui.card>
@@ -62,19 +62,19 @@
         <x-ui.card>
             <h2 class="mb-5 flex items-center gap-2 text-base font-semibold tracking-tight text-gray-900 dark:text-white">
                 <span class="w-1.5 h-1.5 rounded-full bg-primary-500"></span>
-                Detail Harian
+                {{ __('Detail Harian') }}
             </h2>
 
             <div class="overflow-x-auto border border-gray-200/80 dark:border-gray-700/80 rounded-xl">
                 <table class="min-w-[900px] w-full divide-y divide-gray-200/80 dark:divide-gray-700/80">
                     <thead class="bg-gray-50/80 dark:bg-gray-800">
                         <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tanggal</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Check In</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Check Out</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Durasi</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Lokasi / Catatan</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Tanggal') }}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Check In') }}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Check Out') }}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Durasi') }}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Lokasi / Catatan') }}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Status') }}</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200/80 dark:divide-gray-700/80">
@@ -126,8 +126,8 @@
                                         <div class="w-12 h-12 rounded-full bg-gray-50/80 dark:bg-gray-800 flex items-center justify-center mx-auto mb-3 border border-gray-200/80 dark:border-gray-700/80">
                                             <x-icon name="clock" class="w-6 h-6 text-gray-400" />
                                         </div>
-                                        <p class="text-sm font-medium text-gray-900 dark:text-white mb-1">Tidak ada riwayat</p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">Tidak ada data absensi untuk bulan ini.</p>
+                                        <p class="text-sm font-medium text-gray-900 dark:text-white mb-1">{{ __('Tidak ada riwayat') }}</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('Tidak ada data absensi untuk bulan ini.') }}</p>
                                     </div>
                                 </td>
                             </tr>
@@ -146,7 +146,7 @@
         {{-- Back to attendance --}}
         <div class="text-center">
             <a href="{{ route('attendance.index') }}" class="inline-flex items-center gap-2 text-sm font-medium text-primary-600 hover:text-primary-800">
-                ← Kembali ke Absensi
+                ← {{ __('Kembali ke Absensi') }}
             </a>
         </div>
     </div>

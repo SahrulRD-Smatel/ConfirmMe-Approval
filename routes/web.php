@@ -42,6 +42,8 @@ Route::get('/', function () {
 Route::get('/verify/{hash}', [VerificationController::class, 'show'])->name('verify.show');
 
 
+// Language Switcher Route
+Route::get('/lang/{locale}', [\App\Http\Controllers\LanguageController::class, 'switch'])->name('lang.switch');
 
 // Account Pending Route (auth only — no role/active check needed here)
 Route::middleware(['auth'])->group(function () {
@@ -215,7 +217,6 @@ Route::middleware(['auth', 'verified', 'active', 'has_role'])->group(function ()
         Route::post('/approvals/{document}/approve', [\App\Http\Controllers\ExecutiveController::class, 'approve'])->name('approvals.approve');
         Route::post('/approvals/{document}/reject', [\App\Http\Controllers\ExecutiveController::class, 'reject'])->name('approvals.reject');
         Route::post('/approvals/{document}/revise', [\App\Http\Controllers\ExecutiveController::class, 'revise'])->name('approvals.revise');
-        Route::get('/insights', [\App\Http\Controllers\ExecutiveController::class, 'insights'])->name('insights');
         Route::get('/audit', [\App\Http\Controllers\ExecutiveController::class, 'audit'])->name('audit');
     });
 

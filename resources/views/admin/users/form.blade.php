@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="title">{{ isset($user) ? 'Edit Pengguna' : 'Tambah Pengguna' }}</x-slot>
+    <x-slot name="title">{{ isset($user) ? __('Edit Pengguna') : __('Tambah Pengguna') }}</x-slot>
 
     <x-slot name="header">
         <div class="flex items-center gap-4">
@@ -8,9 +8,9 @@
             </a>
             <div>
                 <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                    {{ isset($user) ? 'Edit Pengguna' : 'Tambah Pengguna' }}
+                    {{ isset($user) ? __('Edit Pengguna') : __('Tambah Pengguna') }}
                 </h1>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Atur identitas, akses, dan detail direktori pengguna.</p>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Atur identitas, akses, dan detail direktori pengguna.') }}</p>
             </div>
         </div>
     </x-slot>
@@ -30,34 +30,40 @@
                                 <x-icon name="identification" class="h-5 w-5" />
                             </div>
                             <div>
-                                <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-primary-600 dark:text-primary-400">01 / Identity</p>
-                                <h2 class="mt-1 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Identitas pengguna</h2>
-                                <p class="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">Informasi utama yang digunakan untuk mengenali akun di seluruh sistem.</p>
+                                <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-primary-600 dark:text-primary-400">{{ __('01 / Identity') }}</p>
+                                <h2 class="mt-1 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Identitas pengguna') }}</h2>
+                                <p class="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">{{ __('Informasi utama yang digunakan untuk mengenali akun di seluruh sistem.') }}</p>
                             </div>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 gap-5 p-6 sm:grid-cols-2">
                         <div>
-                            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-200">Nama <span class="text-danger-500">*</span></label>
+                            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-200">{{ __('Nama') }} <span class="text-danger-500">*</span></label>
                             <input type="text" name="name" value="{{ old('name', $user->name ?? '') }}" required
                                 class="block h-12 w-full rounded-xl border border-gray-200 bg-gray-50/80 px-4 text-sm text-gray-900 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 dark:border-gray-700 dark:bg-gray-800/80 dark:text-white">
                             @error('name')<p class="mt-2 text-sm text-danger-600">{{ $message }}</p>@enderror
                         </div>
 
                         <div>
-                            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-200">Email <span class="text-danger-500">*</span></label>
+                            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-200">{{ __('Email') }} <span class="text-danger-500">*</span></label>
                             <input type="email" name="email" value="{{ old('email', $user->email ?? '') }}" required
                                 class="block h-12 w-full rounded-xl border border-gray-200 bg-gray-50/80 px-4 text-sm text-gray-900 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 dark:border-gray-700 dark:bg-gray-800/80 dark:text-white">
                             @error('email')<p class="mt-2 text-sm text-danger-600">{{ $message }}</p>@enderror
                         </div>
 
-                        <div class="sm:col-span-2">
+                        <div class="sm:col-span-2" x-data="{ show: false }">
                             <div class="mb-2 flex items-center justify-between gap-3">
-                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-200">Password {{ isset($user) ? '(kosongkan jika tidak diubah)' : '' }}</label>
-                                <span class="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400">Secure credential</span>
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-200">{{ __('Password') }} {{ isset($user) ? __('(kosongkan jika tidak diubah)') : '' }}</label>
+                                <span class="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400">{{ __('Secure credential') }}</span>
                             </div>
-                            <input type="password" name="password" {{ isset($user) ? '' : 'required' }}
-                                class="block h-12 w-full rounded-xl border border-gray-200 bg-gray-50/80 px-4 text-sm text-gray-900 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 dark:border-gray-700 dark:bg-gray-800/80 dark:text-white">
+                            <div class="relative">
+                                <input :type="show ? 'text' : 'password'" name="password" {{ isset($user) ? '' : 'required' }} autocomplete="new-password"
+                                    class="block h-12 w-full rounded-xl border border-gray-200 bg-gray-50/80 px-4 pr-12 text-sm text-gray-900 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 dark:border-gray-700 dark:bg-gray-800/80 dark:text-white">
+                                <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                                    <x-icon name="eye" class="h-5 w-5" x-show="!show" />
+                                    <x-icon name="eye-slash" class="h-5 w-5" x-show="show" x-cloak />
+                                </button>
+                            </div>
                             @error('password')<p class="mt-2 text-sm text-danger-600">{{ $message }}</p>@enderror
                         </div>
                     </div>
@@ -70,27 +76,27 @@
                                 <x-icon name="identification" class="h-5 w-5" />
                             </div>
                             <div>
-                                <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">03 / Directory</p>
-                                <h2 class="mt-1 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Detail direktori</h2>
-                                <p class="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">Informasi tambahan untuk pencarian dan konteks organisasi.</p>
+                                <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">{{ __('03 / Directory') }}</p>
+                                <h2 class="mt-1 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Detail direktori') }}</h2>
+                                <p class="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">{{ __('Informasi tambahan untuk pencarian dan konteks organisasi.') }}</p>
                             </div>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 gap-5 p-6 sm:grid-cols-2">
                         <div>
-                            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-200">Posisi/Jabatan</label>
+                            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-200">{{ __('Posisi/Jabatan') }}</label>
                             <input type="text" name="position" value="{{ old('position', $user->position ?? '') }}"
                                 class="block h-12 w-full rounded-xl border border-gray-200 bg-gray-50/80 px-4 text-sm text-gray-900 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 dark:border-gray-700 dark:bg-gray-800/80 dark:text-white">
                         </div>
 
                         <div>
-                            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-200">ID Karyawan</label>
+                            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-200">{{ __('ID Karyawan') }}</label>
                             <input type="text" name="employee_id" value="{{ old('employee_id', $user->employee_id ?? '') }}"
                                 class="block h-12 w-full rounded-xl border border-gray-200 bg-gray-50/80 px-4 text-sm text-gray-900 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 dark:border-gray-700 dark:bg-gray-800/80 dark:text-white">
                         </div>
 
                         <div class="sm:col-span-2">
-                            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-200">Telepon</label>
+                            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-200">{{ __('Telepon') }}</label>
                             <input type="text" name="phone" value="{{ old('phone', $user->phone ?? '') }}"
                                 class="block h-12 w-full rounded-xl border border-gray-200 bg-gray-50/80 px-4 text-sm text-gray-900 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 dark:border-gray-700 dark:bg-gray-800/80 dark:text-white">
                         </div>
@@ -106,18 +112,18 @@
                                 <x-icon name="shield-check" class="h-5 w-5" />
                             </div>
                             <div>
-                                <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-primary-600 dark:text-primary-300">02 / Access</p>
-                                <h2 class="mt-1 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Akses & penempatan</h2>
-                                <p class="mt-1 text-xs leading-5 text-gray-600 dark:text-gray-400">Role dan departemen menentukan pengalaman serta cakupan akses pengguna.</p>
+                                <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-primary-600 dark:text-primary-300">{{ __('02 / Access') }}</p>
+                                <h2 class="mt-1 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Akses & penempatan') }}</h2>
+                                <p class="mt-1 text-xs leading-5 text-gray-600 dark:text-gray-400">{{ __('Role dan departemen menentukan pengalaman serta cakupan akses pengguna.') }}</p>
                             </div>
                         </div>
                     </div>
                     <div class="space-y-5 p-6">
                         <div>
-                            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-200">Role <span class="text-danger-500">*</span></label>
+                            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-200">{{ __('Role') }} <span class="text-danger-500">*</span></label>
                             <select name="role" required
                                 class="block h-12 w-full rounded-xl border border-primary-200 bg-white px-4 text-sm text-gray-900 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 dark:border-primary-800 dark:bg-gray-900 dark:text-white">
-                                <option value="">Pilih Role</option>
+                                <option value="">{{ __('Pilih Role') }}</option>
                                 @foreach($roles as $role)
                                     <option value="{{ $role->name }}" {{ old('role', isset($user) ? $user->roles->first()?->name : '') === $role->name ? 'selected' : '' }}>
                                         {{ role_label($role->name) }}
@@ -128,10 +134,10 @@
                         </div>
 
                         <div>
-                            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-200">Departemen</label>
+                            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-200">{{ __('Departemen') }}</label>
                             <select name="department"
                                 class="block h-12 w-full rounded-xl border border-primary-200 bg-white px-4 text-sm text-gray-900 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 dark:border-primary-800 dark:bg-gray-900 dark:text-white">
-                                <option value="">Pilih Departemen</option>
+                                <option value="">{{ __('Pilih Departemen') }}</option>
                                 @foreach(\App\Models\Department::allActive() as $dept)
                                     <option value="{{ $dept->name }}" {{ old('department', $user->department ?? '') === $dept->name ? 'selected' : '' }}>
                                         {{ $dept->name }}
@@ -147,8 +153,8 @@
                     <div class="flex gap-3">
                         <x-icon name="information-circle" class="mt-0.5 h-5 w-5 shrink-0 text-primary-600 dark:text-primary-400" />
                         <div>
-                            <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">Sebelum menyimpan</p>
-                            <p class="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">Pastikan role dan departemen sudah sesuai dengan tanggung jawab pengguna.</p>
+                            <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">{{ __('Sebelum menyimpan') }}</p>
+                            <p class="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">{{ __('Pastikan role dan departemen sudah sesuai dengan tanggung jawab pengguna.') }}</p>
                         </div>
                     </div>
                 </div>
@@ -157,11 +163,11 @@
         </x-ui.card>
 
         <div class="sticky bottom-5 z-30 mt-6 flex flex-col gap-3 rounded-[1.5rem] border border-gray-200/80 bg-white/95 p-4 shadow-soft-lg backdrop-blur-xl dark:border-gray-800/80 dark:bg-gray-900/95 sm:flex-row sm:items-center sm:justify-between">
-            <p class="hidden text-xs text-gray-400 dark:text-gray-500 sm:block">Perubahan akan diterapkan setelah form disimpan.</p>
+            <p class="hidden text-xs text-gray-400 dark:text-gray-500 sm:block">{{ __('Perubahan akan diterapkan setelah form disimpan.') }}</p>
             <div class="flex items-center justify-end gap-3">
                 <x-ui.button type="button" variant="secondary"
-                    href="{{ route('admin.users.index') }}">Batal</x-ui.button>
-                <x-ui.button type="submit" icon="check">Simpan</x-ui.button>
+                    href="{{ route('admin.users.index') }}">{{ __('Batal') }}</x-ui.button>
+                <x-ui.button type="submit" icon="check">{{ __('Simpan') }}</x-ui.button>
             </div>
         </div>
     </form>

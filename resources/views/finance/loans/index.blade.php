@@ -2,8 +2,8 @@
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Pinjaman Karyawan</h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Kelola pencairan dan cicilan pinjaman karyawan</p>
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">{{ __('Pinjaman Karyawan') }}</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Kelola pencairan dan cicilan pinjaman karyawan') }}</p>
             </div>
             <div>
                 <a href="{{ route('finance.loans.receivables') }}" target="_blank"
@@ -12,21 +12,20 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
-                    Laporan Piutang
+                    {{ __('Laporan Piutang') }}
                 </a>
             </div>
         </div>
     </x-slot>
 
-    <div class="py-4">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
             {{-- Stats Cards --}}
             <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-                <x-ui.stat-card title="Menunggu Pencairan" :value="$stats['pending_disbursement']" icon="clock" color="warning" />
-                <x-ui.stat-card title="Pinjaman Aktif" :value="$stats['active']" icon="currency-dollar" color="primary" />
-                <x-ui.stat-card title="Lunas" :value="$stats['paid_off']" icon="check-circle" color="success" />
-                <x-ui.stat-card title="Total Kas Keluar" :value="'Rp ' . number_format($stats['total_disbursed'], 0, ',', '.')" icon="banknotes" />
-                <x-ui.stat-card title="Total Outstanding" :value="'Rp ' . number_format($stats['total_outstanding'], 0, ',', '.')" icon="arrow-trending-up" color="danger" />
+                <x-ui.stat-card title="{{ __('Menunggu Pencairan') }}" :value="$stats['pending_disbursement']" icon="clock" color="warning" />
+                <x-ui.stat-card title="{{ __('Pinjaman Aktif') }}" :value="$stats['active']" icon="currency-dollar" color="primary" />
+                <x-ui.stat-card title="{{ __('Lunas') }}" :value="$stats['paid_off']" icon="check-circle" color="success" />
+                <x-ui.stat-card title="{{ __('Total Kas Keluar') }}" :value="'Rp ' . number_format($stats['total_disbursed'], 0, ',', '.')" icon="banknotes" />
+                <x-ui.stat-card title="{{ __('Total Outstanding') }}" :value="'Rp ' . number_format($stats['total_outstanding'], 0, ',', '.')" icon="arrow-trending-up" color="danger" />
             </div>
 
             {{-- Filters --}}
@@ -34,25 +33,25 @@
                 <form action="{{ route('finance.loans.index') }}" method="GET" class="flex flex-wrap gap-4">
                     <div class="flex-1 min-w-[200px]">
                         <input type="text" name="search" value="{{ request('search') }}"
-                            placeholder="Cari nomor pinjaman atau nama..."
+                            placeholder="{{ __('Cari nomor pinjaman atau nama...') }}"
                             class="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700">
                     </div>
                     <select name="status" class="rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700">
-                        <option value="">Semua Status</option>
-                        <option value="pending_disbursement" {{ request('status') == 'pending_disbursement' ? 'selected' : '' }}>Menunggu Pencairan</option>
-                        <option value="disbursed" {{ request('status') == 'disbursed' ? 'selected' : '' }}>Dicairkan
+                        <option value="">{{ __('Semua Status') }}</option>
+                        <option value="pending_disbursement" {{ request('status') == 'pending_disbursement' ? 'selected' : '' }}>{{ __('Menunggu Pencairan') }}</option>
+                        <option value="disbursed" {{ request('status') == 'disbursed' ? 'selected' : '' }}>{{ __('Dicairkan') }}
                         </option>
-                        <option value="repaying" {{ request('status') == 'repaying' ? 'selected' : '' }}>Dalam Cicilan
+                        <option value="repaying" {{ request('status') == 'repaying' ? 'selected' : '' }}>{{ __('Dalam Cicilan') }}
                         </option>
-                        <option value="paid_off" {{ request('status') == 'paid_off' ? 'selected' : '' }}>Lunas</option>
+                        <option value="paid_off" {{ request('status') == 'paid_off' ? 'selected' : '' }}>{{ __('Lunas') }}</option>
                     </select>
                     <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700">
-                        Filter
+                        {{ __('Filter') }}
                     </button>
                     @if(request()->hasAny(['search', 'status']))
                         <a href="{{ route('finance.loans.index') }}"
                             class="px-4 py-2 text-gray-600 dark:text-gray-400 hover:underline">
-                            Reset
+                            {{ __('Reset') }}
                         </a>
                     @endif
                 </form>
@@ -66,25 +65,25 @@
                             <tr>
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    No. Pinjaman</th>
+                                    {{ __('No. Pinjaman') }}</th>
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Karyawan</th>
+                                    {{ __('Karyawan') }}</th>
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Jumlah</th>
+                                    {{ __('Jumlah') }}</th>
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Cicilan/Bulan</th>
+                                    {{ __('Cicilan/Bulan') }}</th>
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Outstanding</th>
+                                    {{ __('Outstanding') }}</th>
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Status</th>
+                                    {{ __('Status') }}</th>
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Aksi</th>
+                                    {{ __('Aksi') }}</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200/80 dark:divide-gray-700/80">
@@ -112,7 +111,7 @@
                                         {{ $loan->formatted_loan_amount }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                        {{ $loan->formatted_monthly_installment }} × {{ $loan->installment_months }} bln
+                                        {{ $loan->formatted_monthly_installment }} × {{ $loan->installment_months }} {{ __('bln') }}
                                     </td>
                                     <td
                                         class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
@@ -124,7 +123,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">
                                         <a href="{{ route('finance.loans.show', $loan) }}"
                                             class="text-primary-600 hover:text-primary-800 dark:text-primary-400">
-                                            Detail
+                                            {{ __('Detail') }}
                                         </a>
                                     </td>
                                 </tr>
@@ -136,7 +135,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                         </svg>
-                                        <p class="mt-2">Belum ada data pinjaman</p>
+                                        <p class="mt-2">{{ __('Belum ada data pinjaman') }}</p>
                                     </td>
                                 </tr>
                             @endforelse
@@ -150,6 +149,5 @@
                     </div>
                 @endif
             </div>
-        </div>
-    </div>
+
 </x-app-layout>

@@ -32,7 +32,7 @@ class UserController extends Controller
             ->when($request->filled('status'), function ($q) use ($request) {
                 $q->where('is_active', $request->status === 'active');
             })
-            ->latest()
+            ->orderBy('name', 'asc')
             ->paginate(20)
             ->withQueryString();
 
@@ -58,7 +58,7 @@ class UserController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => 'required|string|min:8',
             'employee_id' => 'nullable|string|max:50',
             'department' => 'nullable|string|max:100',
             'position' => 'nullable|string|max:100',
@@ -111,7 +111,7 @@ class UserController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:8|confirmed',
+            'password' => 'nullable|string|min:8',
             'employee_id' => 'nullable|string|max:50',
             'department' => 'nullable|string|max:100',
             'position' => 'nullable|string|max:100',

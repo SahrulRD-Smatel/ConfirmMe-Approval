@@ -30,21 +30,21 @@
                 this.currentTime = String(h12).padStart(2, '0') + '.' + mins + ' ' + ampm;
 
                 if (hours >= 5 && hours < 12) {
-                    this.greeting = 'Selamat Pagi';
+                    this.greeting = '{{ __('Selamat Pagi') }}';
                     this.greetingIcon = '☀️';
-                    this.subtitle = 'Semoga harimu menyenangkan! 🌟';
+                    this.subtitle = '{{ __('Semoga harimu menyenangkan! 🌟') }}';
                 } else if (hours >= 12 && hours < 15) {
-                    this.greeting = 'Selamat Siang';
+                    this.greeting = '{{ __('Selamat Siang') }}';
                     this.greetingIcon = '🌤️';
-                    this.subtitle = 'Tetap semangat ya! 💪';
+                    this.subtitle = '{{ __('Tetap semangat ya! 💪') }}';
                 } else if (hours >= 15 && hours < 18) {
-                    this.greeting = 'Selamat Sore';
+                    this.greeting = '{{ __('Selamat Sore') }}';
                     this.greetingIcon = '🌅';
-                    this.subtitle = 'Sedikit lagi, kamu pasti bisa! ✨';
+                    this.subtitle = '{{ __('Sedikit lagi, kamu pasti bisa! ✨') }}';
                 } else {
-                    this.greeting = 'Selamat Malam';
+                    this.greeting = '{{ __('Selamat Malam') }}';
                     this.greetingIcon = '🌙';
-                    this.subtitle = 'Istirahat yang cukup ya! 💤';
+                    this.subtitle = '{{ __('Istirahat yang cukup ya! 💤') }}';
                 }
             }
         }" class="space-y-8">
@@ -64,10 +64,10 @@
                         <div class="flex items-center gap-2 mb-1">
                             <span class="text-2xl" x-text="greetingIcon">☀️</span>
                             <h1 class="text-xl sm:text-2xl font-bold text-gray-800 font-display">
-                                <span x-text="greeting">Selamat Pagi</span>, {{ auth()->user()->name }}!
+                                <span x-text="greeting">{{ __('Selamat Pagi') }}</span>, {{ auth()->user()->name }}!
                             </h1>
                         </div>
-                        <p class="text-sm text-gray-400 ml-9" x-text="subtitle">Semoga harimu menyenangkan! 🌟</p>
+                        <p class="text-sm text-gray-400 ml-9" x-text="subtitle">{{ __('Semoga harimu menyenangkan! 🌟') }}</p>
 
                         {{-- Big Clock --}}
                         <div class="mt-4 ml-9">
@@ -83,12 +83,12 @@
                             <button @click="tab = 'workspace'"
                                 :class="{ 'bg-white shadow-md text-primary-700 font-semibold': tab === 'workspace', 'text-gray-500 hover:text-gray-700': tab !== 'workspace' }"
                                 class="rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-200 sm:px-5">
-                                Workspace
+                                {{ __('Workspace') }}
                             </button>
                             <button @click="tab = 'tasks'"
                                 :class="{ 'bg-white shadow-md text-primary-700 font-semibold': tab === 'tasks', 'text-gray-500 hover:text-gray-700': tab !== 'tasks' }"
                                 class="rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-200 sm:px-5">
-                                Tasks & Approval
+                                {{ __('Tasks & Approval') }}
                             </button>
                         </div>
 
@@ -96,7 +96,7 @@
                             <a href="{{ route('documents.create') }}"
                                 class="hidden items-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:bg-primary-700 hover:shadow-lg hover:shadow-primary-500/25 sm:inline-flex">
                                 <x-icon name="plus-circle" class="w-4 h-4" />
-                                Buat Pengajuan
+                                {{ __('Buat Pengajuan') }}
                             </a>
                         @endif
                     </div>
@@ -123,19 +123,19 @@
                             </div>
 
                             <h3 class="text-lg font-bold text-gray-900">{{ auth()->user()->name }}</h3>
-                            <p class="text-sm text-gray-500 mb-1">{{ auth()->user()->position ?? 'Karyawan' }}</p>
+                            <p class="text-sm text-gray-500 mb-1">{{ auth()->user()->position ?? __('Karyawan') }}</p>
 
                             {{-- Stats mini cards --}}
                             <div class="mt-4 grid grid-cols-2 gap-3">
                                 <div class="stat-mini bg-gradient-to-br from-primary-50 to-primary-100 rounded-xl">
                                     <span
                                         class="block text-2xl font-bold text-primary-700">{{ auth()->user()->annual_leave_balance }}</span>
-                                    <span class="text-[11px] font-medium text-primary-600/70">Sisa Cuti</span>
+                                    <span class="text-[11px] font-medium text-primary-600/70">{{ __('Sisa Cuti') }}</span>
                                 </div>
                                 <div class="stat-mini bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl">
                                     <span
                                         class="block text-2xl font-bold text-amber-700">{{ auth()->user()->sick_leave_used }}</span>
-                                    <span class="text-[11px] font-medium text-amber-600/70">Sakit (Hari)</span>
+                                    <span class="text-[11px] font-medium text-amber-600/70">{{ __('Sakit (Hari)') }}</span>
                                 </div>
                             </div>
                         </div>
@@ -145,7 +145,7 @@
                     <div class="card-elevated rounded-3xl p-5">
                         <h3 class="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
                             <span class="w-1.5 h-1.5 rounded-full bg-primary-500"></span>
-                            Quick Links
+                            {{ __('Quick Links') }}
                         </h3>
                         <div class="space-y-1">
                             <a href="{{ route('profile.edit') }}" class="quick-link-card">
@@ -153,8 +153,8 @@
                                     <x-icon name="user" class="w-5 h-5 text-blue-600" />
                                 </div>
                                 <div>
-                                    <span class="text-sm font-medium text-gray-700">Edit Profil</span>
-                                    <p class="text-[11px] text-gray-400">Perbarui data diri</p>
+                                    <span class="text-sm font-medium text-gray-700">{{ __('Edit Profil') }}</span>
+                                    <p class="text-[11px] text-gray-400">{{ __('Perbarui data diri') }}</p>
                                 </div>
                             </a>
                             @if(!auth()->user()->hasRole('admin'))
@@ -163,8 +163,8 @@
                                     <x-icon name="calendar" class="w-5 h-5 text-green-600" />
                                 </div>
                                 <div>
-                                    <span class="text-sm font-medium text-gray-700">Request Cuti</span>
-                                    <p class="text-[11px] text-gray-400">Ajukan permohonan</p>
+                                    <span class="text-sm font-medium text-gray-700">{{ __('Request Cuti') }}</span>
+                                    <p class="text-[11px] text-gray-400">{{ __('Ajukan permohonan') }}</p>
                                 </div>
                             </a>
                             @endif
@@ -176,7 +176,7 @@
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-sm font-bold text-gray-900 flex items-center gap-2">
                                 <span class="w-1.5 h-1.5 rounded-full bg-primary-500"></span>
-                                Who's Off Today
+                                {{ __('Who\'s Off Today') }}
                             </h3>
                             <span
                                 class="text-[11px] font-medium text-gray-400 bg-gray-100 px-2 py-1 rounded-full">{{ now()->format('D, d M') }}</span>
@@ -201,7 +201,7 @@
                                         class="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-2">
                                         <x-icon name="check-circle" class="w-6 h-6 text-green-400" />
                                     </div>
-                                    <p class="text-sm text-gray-400">Semua hadir 🎉</p>
+                                    <p class="text-sm text-gray-400">{{ __('Semua hadir 🎉') }}</p>
                                 </div>
                             @endforelse
                         </div>
@@ -215,11 +215,11 @@
                         <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-pink-500 to-rose-500 p-5 text-white shadow-soft-lg sm:p-6">
                             <div class="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                 <div>
-                                    <h2 class="text-lg font-bold">Halo Tim HR, {{ auth()->user()->name }}!</h2>
-                                    <p class="mt-1 text-sm text-pink-100">Kelola pengumuman dan informasi perusahaan di sini.</p>
+                                    <h2 class="text-lg font-bold">{{ __('Halo Tim HR') }}, {{ auth()->user()->name }}!</h2>
+                                    <p class="mt-1 text-sm text-pink-100">{{ __('Kelola pengumuman dan informasi perusahaan di sini.') }}</p>
                                 </div>
                                 <x-ui.button href="{{ route('announcements.index') }}" variant="secondary" size="sm">
-                                    Kelola Pengumuman
+                                    {{ __('Kelola Pengumuman') }}
                                 </x-ui.button>
                             </div>
                             <div class="pointer-events-none absolute bottom-0 right-0 translate-x-10 translate-y-10 opacity-10">
@@ -235,8 +235,8 @@
                                 <x-icon name="sparkles" class="h-4 w-4 text-primary-600" />
                             </div>
                             <div class="min-w-0">
-                                <h3 class="text-base font-bold text-gray-900 dark:text-white">Feed Terbaru</h3>
-                                <p class="text-[11px] text-gray-400">Pengumuman terbaru dan lampiran terkait</p>
+                                <h3 class="text-base font-bold text-gray-900 dark:text-white">{{ __('Feed Terbaru') }}</h3>
+                                <p class="text-[11px] text-gray-400">{{ __('Pengumuman terbaru dan lampiran terkait') }}</p>
                             </div>
                             <div class="h-px flex-1 bg-gradient-to-r from-gray-200 to-transparent"></div>
                         </div>
@@ -287,10 +287,10 @@
                                             <div x-show="open" style="display: none;"
                                                 class="absolute right-0 z-20 mt-2 w-48 rounded-xl border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800">
                                                 <a href="{{ route('announcements.edit', $announcement) }}"
-                                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">Edit Pengumuman</a>
+                                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">{{ __('Edit Pengumuman') }}</a>
                                                 <button
                                                     @click="deleteUrl = '{{ route('announcements.destroy', $announcement) }}'; open = false; $dispatch('open-modal', 'confirm-announcement-deletion')"
-                                                    class="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700">Hapus</button>
+                                                    class="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700">{{ __('Hapus') }}</button>
                                             </div>
                                         </div>
                                     @endif
@@ -373,7 +373,7 @@
                                     <div class="flex items-start justify-between gap-3">
                                         <h3 class="min-w-0 line-clamp-1 text-sm font-bold text-gray-900 dark:text-white">{{ $announcement->title }}</h3>
                                         @if($mediaCount > 0)
-                                            <span class="shrink-0 rounded-full bg-gray-100 px-2 py-1 text-[10px] font-medium text-gray-500 dark:bg-gray-700 dark:text-gray-300">{{ $mediaCount }} media</span>
+                                            <span class="shrink-0 rounded-full bg-gray-100 px-2 py-1 text-[10px] font-medium text-gray-500 dark:bg-gray-700 dark:text-gray-300">{{ $mediaCount }} {{ __('media') }}</span>
                                         @endif
                                     </div>
 
@@ -387,8 +387,8 @@
                                         @if($isLong)
                                             <button @click="expanded = !expanded"
                                                 class="mt-1 text-xs font-semibold text-primary-600 hover:text-primary-800 dark:text-primary-400">
-                                                <span x-show="!expanded">... selengkapnya</span>
-                                                <span x-show="expanded">sembunyikan</span>
+                                                <span x-show="!expanded">... {{ __('selengkapnya') }}</span>
+                                                <span x-show="expanded">{{ __('sembunyikan') }}</span>
                                             </button>
                                         @endif
                                     </div>
@@ -400,8 +400,8 @@
                                     @if($docs->isNotEmpty())
                                         <div class="mt-3 border-t border-gray-100 pt-3 dark:border-gray-700">
                                             <div class="mb-2 flex items-center justify-between">
-                                                <span class="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400">Lampiran</span>
-                                                <span class="text-[10px] text-gray-400">{{ $docs->count() }} file</span>
+                                                <span class="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400">{{ __('Lampiran') }}</span>
+                                                <span class="text-[10px] text-gray-400">{{ $docs->count() }} {{ __('file') }}</span>
                                             </div>
                                             <div class="max-h-36 space-y-1.5 overflow-y-auto pr-1">
                                                 @foreach($docs as $doc)
@@ -424,8 +424,8 @@
                                 <div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-primary-50">
                                     <x-icon name="sparkles" class="h-7 w-7 text-primary-400" />
                                 </div>
-                                <h3 class="text-base font-medium text-gray-900 dark:text-white">Belum Ada Kabar</h3>
-                                <p class="mt-1 text-sm text-gray-500">Semua informasi penting akan muncul di sini.</p>
+                                <h3 class="text-base font-medium text-gray-900 dark:text-white">{{ __('Belum Ada Kabar') }}</h3>
+                                <p class="mt-1 text-sm text-gray-500">{{ __('Semua informasi penting akan muncul di sini.') }}</p>
                             </div>
                         @endforelse
 
@@ -436,20 +436,20 @@
                                 @method('delete')
 
                                 <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                                    Hapus Pengumuman?
+                                    {{ __('Hapus Pengumuman?') }}
                                 </h2>
 
                                 <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                                    Apakah Anda yakin ingin menghapus pengumuman ini? Tindakan ini tidak dapat dibatalkan.
+                                    {{ __('Apakah Anda yakin ingin menghapus pengumuman ini? Tindakan ini tidak dapat dibatalkan.') }}
                                 </p>
 
                                 <div class="mt-6 flex justify-end">
                                     <x-secondary-button x-on:click="$dispatch('close')">
-                                        Batal
+                                        {{ __('Batal') }}
                                     </x-secondary-button>
 
                                     <x-danger-button class="ms-3">
-                                        Hapus Pengumuman
+                                        {{ __('Hapus Pengumuman') }}
                                     </x-danger-button>
                                 </div>
                             </form>
@@ -470,7 +470,7 @@
                             <div class="w-12 h-12 rounded-xl bg-primary-100 flex items-center justify-center mb-3">
                                 <x-icon name="document-text" class="w-6 h-6 text-primary-600" />
                             </div>
-                            <p class="text-sm text-gray-500 font-medium">Total Dokumen</p>
+                            <p class="text-sm text-gray-500 font-medium">{{ __('Total Dokumen') }}</p>
                             <p class="text-3xl font-bold text-gray-900 mt-1">{{ $stats['total_documents'] ?? 0 }}</p>
                         </div>
                         <a href="{{ route('documents.index') }}" class="absolute inset-0"></a>
@@ -485,10 +485,10 @@
                                 <x-icon name="{{ ($stats['is_approver'] ?? false) ? 'clock' : 'arrow-path' }}" class="w-6 h-6 text-amber-600" />
                             </div>
                             @if($stats['is_approver'] ?? false)
-                                <p class="text-sm text-gray-500 font-medium">Menunggu Review</p>
+                                <p class="text-sm text-gray-500 font-medium">{{ __('Menunggu Review') }}</p>
                                 <p class="text-3xl font-bold text-gray-900 mt-1">{{ $stats['pending_review'] ?? 0 }}</p>
                             @else
-                                <p class="text-sm text-gray-500 font-medium">Sedang Diproses</p>
+                                <p class="text-sm text-gray-500 font-medium">{{ __('Sedang Diproses') }}</p>
                                 <p class="text-3xl font-bold text-gray-900 mt-1">{{ $stats['in_progress'] ?? 0 }}</p>
                             @endif
                         </div>
@@ -503,7 +503,7 @@
                             <div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center mb-3">
                                 <x-icon name="check-circle" class="w-6 h-6 text-green-600" />
                             </div>
-                            <p class="text-sm text-gray-500 font-medium">Disetujui Bulan Ini</p>
+                            <p class="text-sm text-gray-500 font-medium">{{ __('Disetujui Bulan Ini') }}</p>
                             <p class="text-3xl font-bold text-gray-900 mt-1">{{ $stats['approved_this_month'] ?? 0 }}
                             </p>
                         </div>
@@ -517,7 +517,7 @@
                             <div class="w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center mb-3">
                                 <x-icon name="x-circle" class="w-6 h-6 text-red-600" />
                             </div>
-                            <p class="text-sm text-gray-500 font-medium">Ditolak Bulan Ini</p>
+                            <p class="text-sm text-gray-500 font-medium">{{ __('Ditolak Bulan Ini') }}</p>
                             <p class="text-3xl font-bold text-gray-900 mt-1">{{ $stats['rejected_this_month'] ?? 0 }}
                             </p>
                         </div>
@@ -531,11 +531,11 @@
                             <div class="flex items-center justify-between mb-6">
                                 <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
                                     <span class="w-1.5 h-1.5 rounded-full bg-primary-500"></span>
-                                    Dokumen Terbaru
+                                    {{ __('Dokumen Terbaru') }}
                                 </h2>
                                 <a href="{{ route('documents.index') }}"
                                     class="text-sm font-medium text-primary-600 hover:text-primary-800 dark:text-primary-400 flex items-center gap-1 group">
-                                    Lihat Semua
+                                    {{ __('Lihat Semua') }}
                                     <span class="group-hover:translate-x-1 transition-transform duration-200">→</span>
                                 </a>
                             </div>
@@ -570,7 +570,7 @@
                                             class="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center mx-auto mb-3">
                                             <x-icon name="document-text" class="w-8 h-8 text-gray-300" />
                                         </div>
-                                        <p class="text-sm text-gray-500">Belum ada dokumen</p>
+                                        <p class="text-sm text-gray-500">{{ __('Belum ada dokumen') }}</p>
                                     </div>
                                 @endforelse
                             </div>
@@ -584,7 +584,7 @@
                                 <div class="flex items-center justify-between mb-4">
                                     <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
                                         <span class="w-1.5 h-1.5 rounded-full bg-primary-500"></span>
-                                        Menunggu Approval
+                                        {{ __('Menunggu Approval') }}
                                     </h2>
                                     <span
                                         class="bg-primary-100 text-primary-700 text-xs font-bold px-2.5 py-1 rounded-full">
@@ -603,7 +603,7 @@
                                                         {{ $document->title }}
                                                     </p>
                                                     <p class="text-xs text-gray-500 mt-0.5">
-                                                        dari {{ $document->user->name }}
+                                                        {{ __('dari') }} {{ $document->user->name }}
                                                     </p>
                                                 </div>
                                                 <x-ui.badge :status="$document->priority_color" size="sm">
@@ -617,7 +617,7 @@
                                                 class="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-2">
                                                 <x-icon name="check-circle" class="w-6 h-6 text-green-400" />
                                             </div>
-                                            <p class="text-sm text-gray-500">Tidak ada dokumen yang menunggu 👍</p>
+                                            <p class="text-sm text-gray-500">{{ __('Tidak ada dokumen yang menunggu 👍') }}</p>
                                         </div>
                                     @endforelse
                                 </div>
@@ -626,7 +626,7 @@
                                     <div class="mt-4 pt-4 border-t border-gray-200">
                                         <a href="{{ route('approvals.index') }}"
                                             class="flex items-center justify-center gap-2 w-full py-2.5 text-sm font-medium text-primary-600 hover:text-primary-800 hover:bg-primary-50 rounded-xl transition-all duration-300">
-                                            Lihat Semua Approval
+                                            {{ __('Lihat Semua Approval') }}
                                             <span>→</span>
                                         </a>
                                     </div>

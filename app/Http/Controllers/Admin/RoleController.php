@@ -34,7 +34,32 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $roles = Role::with('permissions')->get();
+        $hierarchy = [
+            'staff',
+            'ga',
+            'supervisor',
+            'hrd_coordinator',
+            'purchasing',
+            'finance',
+            'hrd',
+            'manager_hrga',
+            'manager',
+            'direktur_operasional',
+            'direktur_hr',
+            'direktur_finance',
+            'direktur_it',
+            'direktur_sales',
+            'direktur',
+            'presiden_direktur',
+            'admin'
+        ];
+
+        $roles = Role::with('permissions')->get()->sortBy(function($role) use ($hierarchy) {
+            $pos = array_search(strtolower($role->name), $hierarchy);
+            // Default position for custom roles not in hierarchy is 999
+            return $pos === false ? 999 : $pos;
+        });
+
         $permGroups = $this->getGroupedPermissions();
 
         return view('admin.roles.index', compact('roles', 'permGroups'));

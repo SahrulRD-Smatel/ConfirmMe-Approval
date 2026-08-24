@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="title">Laporan Absensi</x-slot>
+    <x-slot name="title">{{ __('Laporan Absensi') }}</x-slot>
 
     <div class="space-y-7">
         {{-- Header --}}
@@ -9,8 +9,8 @@
                 {{-- Title Row --}}
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
-                        <h1 class="text-xl font-bold text-gray-900">Laporan Absensi</h1>
-                        <p class="text-sm text-gray-500">Rekap absensi seluruh karyawan</p>
+                        <h1 class="text-xl font-bold text-gray-900">{{ __('Laporan Absensi') }}</h1>
+                        <p class="text-sm text-gray-500">{{ __('Rekap absensi seluruh karyawan') }}</p>
                     </div>
 
                     {{-- Export/Import Buttons --}}
@@ -54,7 +54,7 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                                 </svg>
-                                Import
+                                {{ __('Import') }}
                             </button>
                         @endif
                     </div>
@@ -75,13 +75,13 @@
                         @endfor
                     </select>
                     <select name="department" class="rounded-xl border-gray-300 text-sm focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20/10">
-                        <option value="">Semua Departemen</option>
+                        <option value="">{{ __('Semua Departemen') }}</option>
                         @foreach($departments as $dept)
                             <option value="{{ $dept }}" {{ $department == $dept ? 'selected' : '' }}>{{ $dept }}</option>
                         @endforeach
                     </select>
                     <button type="submit" class="px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-xl hover:bg-primary-700 transition">
-                        Filter
+                        {{ __('Filter') }}
                     </button>
                 </form>
             </div>
@@ -96,7 +96,7 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <h3 class="font-bold text-lg">Import Completed</h3>
+                        <h3 class="font-bold text-lg">{{ __('Import Selesai') }}</h3>
                     </div>
                     <p class="text-green-100 text-xs mt-1">{{ $summary['file_name'] ?? 'file' }} ({{ $summary['file_size_kb'] ?? '0' }} KB)</p>
                 </div>
@@ -126,7 +126,7 @@
 
                     @if(session('import_errors') && count(session('import_errors')) > 0)
                         <div class="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-xl">
-                            <p class="text-xs font-semibold text-amber-700 mb-2">Detail baris yang dilewati:</p>
+                            <p class="text-xs font-semibold text-amber-700 mb-2">{{ __('Detail baris yang dilewati:') }}</p>
                             <ul class="text-xs text-amber-600 list-disc list-inside space-y-0.5 max-h-32 overflow-y-auto">
                                 @foreach(session('import_errors') as $err)
                                     <li>{{ $err }}</li>
@@ -176,16 +176,16 @@
                 <table class="min-w-[1180px] w-full text-sm">
                     <thead>
                         <tr class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider">
-                            <th class="px-6 py-3 text-left font-semibold">Karyawan</th>
-                            <th class="px-4 py-3 text-center font-semibold">Departemen</th>
-                            <th class="px-4 py-3 text-center font-semibold">Hadir</th>
-                            <th class="px-4 py-3 text-center font-semibold">Tepat Waktu</th>
-                            <th class="px-4 py-3 text-center font-semibold">Terlambat</th>
-                            <th class="px-4 py-3 text-center font-semibold">WFH</th>
-                            <th class="px-4 py-3 text-center font-semibold">Pulang Awal</th>
-                            <th class="px-4 py-3 text-center font-semibold">Cuti Tahunan</th>
-                            <th class="px-4 py-3 text-center font-semibold">Sakit</th>
-                            <th class="px-4 py-3 text-center font-semibold">Tanpa Gaji</th>
+                            <th class="px-6 py-3 text-left font-semibold">{{ __('Karyawan') }}</th>
+                            <th class="px-4 py-3 text-center font-semibold">{{ __('Departemen') }}</th>
+                            <th class="px-4 py-3 text-center font-semibold">{{ __('Hadir') }}</th>
+                            <th class="px-4 py-3 text-center font-semibold">{{ __('Tepat Waktu') }}</th>
+                            <th class="px-4 py-3 text-center font-semibold">{{ __('Terlambat') }}</th>
+                            <th class="px-4 py-3 text-center font-semibold">{{ __('WFH') }}</th>
+                            <th class="px-4 py-3 text-center font-semibold">{{ __('Pulang Awal') }}</th>
+                            <th class="px-4 py-3 text-center font-semibold">{{ __('Cuti Tahunan') }}</th>
+                            <th class="px-4 py-3 text-center font-semibold">{{ __('Sakit') }}</th>
+                            <th class="px-4 py-3 text-center font-semibold">{{ __('Tanpa Gaji') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
@@ -244,7 +244,7 @@
                                     <div class="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mx-auto mb-2">
                                         <x-icon name="users" class="w-6 h-6 text-gray-300" />
                                     </div>
-                                    <p class="text-sm text-gray-400">Tidak ada data absensi</p>
+                                    <p class="text-sm text-gray-400">{{ __('Tidak ada data absensi') }}</p>
                                 </td>
                             </tr>
                         @endforelse
@@ -273,8 +273,8 @@
                     {{-- Modal Header --}}
                     <div class="flex items-center justify-between p-6 border-b border-gray-100">
                         <div>
-                            <h3 class="text-lg font-bold text-gray-900">Import Data Absensi</h3>
-                            <p class="text-sm text-gray-500 mt-0.5">Upload file CSV atau XLSX</p>
+                            <h3 class="text-lg font-bold text-gray-900">{{ __('Import Data Absensi') }}</h3>
+                            <p class="text-sm text-gray-500 mt-0.5">{{ __('Upload file CSV atau XLSX') }}</p>
                         </div>
                         <button type="button"
                                 onclick="document.getElementById('import-modal').classList.add('hidden')"
@@ -296,12 +296,12 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                                 <div class="text-xs text-blue-700">
-                                    <p class="font-semibold mb-1">Format kolom yang diharapkan:</p>
+                                    <p class="font-semibold mb-1">{{ __('Format kolom yang diharapkan:') }}</p>
                                     <code class="text-[11px] bg-blue-100 px-1.5 py-0.5 rounded">employee_id, date, check_in_time, check_out_time, status, is_wfh, notes</code>
                                     <ul class="mt-2 space-y-0.5 text-blue-600">
-                                        <li>• Status: <code class="bg-blue-100 px-1 rounded">on_time</code>, <code class="bg-blue-100 px-1 rounded">late</code>, <code class="bg-blue-100 px-1 rounded">wfh</code></li>
-                                        <li>• Data yang sudah ada akan <strong>diperbarui/replace</strong></li>
-                                        <li>• Format tanggal: <code class="bg-blue-100 px-1 rounded">YYYY-MM-DD</code></li>
+                                        <li>• {{ __('Status:') }} <code class="bg-blue-100 px-1 rounded">on_time</code>, <code class="bg-blue-100 px-1 rounded">late</code>, <code class="bg-blue-100 px-1 rounded">wfh</code></li>
+                                        <li>• {{ __('Data yang sudah ada akan') }} <strong>{{ __('diperbarui/replace') }}</strong></li>
+                                        <li>• {{ __('Format tanggal:') }} <code class="bg-blue-100 px-1 rounded">YYYY-MM-DD</code></li>
                                     </ul>
                                 </div>
                             </div>
@@ -313,12 +313,12 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                             </svg>
-                            Download Template CSV
+                            {{ __('Download Template CSV') }}
                         </a>
 
                         {{-- File Upload --}}
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Pilih File</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Pilih File') }}</label>
                             <div class="relative">
                                 <input type="file"
                                        name="file"
@@ -334,7 +334,7 @@
                                               cursor-pointer border border-gray-200 rounded-xl
                                               focus:outline-none focus:ring-4 focus:ring-primary-500/20/10 focus:border-primary-500">
                             </div>
-                            <p class="mt-1.5 text-xs text-gray-400">Format: CSV, XLSX — Maksimal 5MB</p>
+                            <p class="mt-1.5 text-xs text-gray-400">{{ __('Format: CSV, XLSX — Maksimal 5MB') }}</p>
                             @error('file')
                                 <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                             @enderror
@@ -345,7 +345,7 @@
                             <button type="button"
                                     onclick="document.getElementById('import-modal').classList.add('hidden')"
                                     class="px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition">
-                                Batal
+                                {{ __('Batal') }}
                             </button>
                             <button type="submit"
                                     class="px-5 py-2.5 text-sm font-medium text-white bg-amber-600 rounded-xl hover:bg-amber-700 transition shadow-soft inline-flex items-center gap-2"
@@ -353,7 +353,7 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                                 </svg>
-                                Import Data
+                                {{ __('Import Data') }}
                             </button>
                         </div>
                     </form>

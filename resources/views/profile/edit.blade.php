@@ -3,7 +3,7 @@
         <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Profile') }}</h1>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Kelola identitas, keamanan, dan informasi organisasi Anda dari satu ruang kerja.</p>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Kelola identitas, keamanan, dan informasi organisasi Anda dari satu ruang kerja.') }}</p>
             </div>
         </div>
     </x-slot>
@@ -18,8 +18,8 @@
                             <x-icon name="camera" class="h-5 w-5" />
                         </div>
                         <div>
-                            <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-primary-600 dark:text-primary-400">Profile identity</p>
-                            <h2 class="mt-1 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Foto profil</h2>
+                            <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-primary-600 dark:text-primary-400">{{ __('Profile identity') }}</p>
+                            <h2 class="mt-1 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Foto profil') }}</h2>
                         </div>
                     </div>
                 </div>
@@ -33,7 +33,7 @@
                 <div class="border-b border-gray-200/80 px-6 py-6 dark:border-gray-800/80">
                     <div class="flex items-start justify-between gap-4">
                         <div>
-                            <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400">Organization context</p>
+                            <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400">{{ __('Organization context') }}</p>
                             <h2 class="mt-1 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Informasi Jabatan') }}</h2>
                             <p class="mt-1 max-w-xl text-xs leading-5 text-gray-500 dark:text-gray-400">{{ __('Informasi jabatan dan divisi Anda dalam organisasi.') }}</p>
                         </div>
@@ -47,7 +47,7 @@
                     {{-- Role Badge --}}
                     <div class="rounded-2xl border border-gray-200/80 bg-gray-50/70 p-4 dark:border-gray-800/80 dark:bg-gray-800/60 sm:col-span-2">
                         <div class="mb-2 flex items-center justify-between gap-3">
-                            <span class="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400">Role</span>
+                            <span class="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400">{{ __('Role') }}</span>
                             <x-icon name="shield-check" class="h-4 w-4 text-primary-500" />
                         </div>
                         @php
@@ -93,19 +93,19 @@
 
                     {{-- Position --}}
                     <div class="rounded-2xl border border-gray-200/80 bg-gray-50/70 p-4 dark:border-gray-800/80 dark:bg-gray-800/60">
-                        <span class="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400">Jabatan</span>
+                        <span class="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400">{{ __('Jabatan') }}</span>
                         <span class="mt-2 block truncate text-sm font-semibold text-gray-900 dark:text-gray-100">{{ $user->position ?? '-' }}</span>
                     </div>
 
                     {{-- Department --}}
                     <div class="rounded-2xl border border-gray-200/80 bg-gray-50/70 p-4 dark:border-gray-800/80 dark:bg-gray-800/60">
-                        <span class="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400">Departemen</span>
+                        <span class="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400">{{ __('Departemen') }}</span>
                         <span class="mt-2 block truncate text-sm font-semibold text-gray-900 dark:text-gray-100">{{ $user->department ?? '-' }}</span>
                     </div>
 
                     {{-- Division --}}
                     <div class="rounded-2xl border border-gray-200/80 bg-gray-50/70 p-4 dark:border-gray-800/80 dark:bg-gray-800/60">
-                        <span class="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400">Divisi</span>
+                        <span class="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400">{{ __('Divisi') }}</span>
                         @php
                             $divisionColors = [
                                 'HR' => 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-300',
@@ -126,7 +126,7 @@
 
                     {{-- Employee ID --}}
                     <div class="rounded-2xl border border-gray-200/80 bg-gray-50/70 p-4 dark:border-gray-800/80 dark:bg-gray-800/60">
-                        <span class="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400">Employee ID</span>
+                        <span class="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400">{{ __('Employee ID') }}</span>
                         <span class="mt-2 block truncate font-mono text-sm font-semibold text-gray-900 dark:text-gray-100">{{ $user->employee_id ?? '-' }}</span>
                     </div>
                 </div>
@@ -136,8 +136,8 @@
         <div class="grid grid-cols-1 items-start gap-6 xl:grid-cols-2">
             <x-ui.card class="overflow-hidden !p-0">
                 <div class="border-b border-gray-200/80 px-6 py-5 dark:border-gray-800/80">
-                    <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400">Personal details</p>
-                    <h2 class="mt-1 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Informasi profil</h2>
+                    <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400">{{ __('Personal details') }}</p>
+                    <h2 class="mt-1 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Informasi profil') }}</h2>
                 </div>
                 <div class="p-6">
                     @include('profile.partials.update-profile-information-form')
@@ -146,8 +146,8 @@
 
             <x-ui.card class="overflow-hidden !p-0">
                 <div class="border-b border-gray-200/80 px-6 py-5 dark:border-gray-800/80">
-                    <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400">Security</p>
-                    <h2 class="mt-1 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Keamanan akun</h2>
+                    <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400">{{ __('Security') }}</p>
+                    <h2 class="mt-1 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Keamanan akun') }}</h2>
                 </div>
                 <div class="p-6">
                     @include('profile.partials.update-password-form')
@@ -158,8 +158,8 @@
         <div class="grid grid-cols-1 items-start gap-6 xl:grid-cols-2">
             <x-ui.card class="overflow-hidden !p-0">
                 <div class="border-b border-gray-200/80 px-6 py-5 dark:border-gray-800/80">
-                    <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400">Finance profile</p>
-                    <h2 class="mt-1 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Informasi bank</h2>
+                    <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400">{{ __('Finance profile') }}</p>
+                    <h2 class="mt-1 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Informasi bank') }}</h2>
                 </div>
                 <div class="p-6">
                     @include('profile.partials.update-bank-info-form')
@@ -168,8 +168,8 @@
 
             <x-ui.card class="overflow-hidden border-danger-200/80 !p-0 dark:border-danger-800/60">
                 <div class="border-b border-danger-200/70 bg-danger-50/60 px-6 py-5 dark:border-danger-800/60 dark:bg-danger-900/10">
-                    <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-danger-600 dark:text-danger-400">Danger zone</p>
-                    <h2 class="mt-1 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Hapus akun</h2>
+                    <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-danger-600 dark:text-danger-400">{{ __('Danger zone') }}</p>
+                    <h2 class="mt-1 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Hapus akun') }}</h2>
                 </div>
                 <div class="p-6">
                     @include('profile.partials.delete-user-form')

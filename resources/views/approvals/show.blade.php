@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="title">Review: {{ $document->document_number }}</x-slot>
+    <x-slot name="title">{{ __('Review') }}: {{ $document->document_number }}</x-slot>
 
     <x-slot name="header">
         <div class="flex items-center gap-4">
@@ -17,7 +17,7 @@
                     </x-ui.badge>
                 </div>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Review dan berikan keputusan approval
+                    {{ __('Review dan berikan keputusan approval') }}
                 </p>
             </div>
         </div>
@@ -32,19 +32,19 @@
 
                 <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                     <div>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Jenis Approval</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Jenis Approval') }}</dt>
                         <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $document->approval_type_label }}</dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Pengaju</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Pengaju') }}</dt>
                         <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $document->user->name }}</dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Departemen</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Departemen') }}</dt>
                         <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $document->department ?? '-' }}</dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Tanggal Pengajuan</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Tanggal Pengajuan') }}</dt>
                         <dd class="mt-1 text-sm text-gray-900 dark:text-white">
                             {{ $document->submitted_at?->format('d F Y H:i') ?? $document->created_at->format('d F Y H:i') }}
                         </dd>
@@ -59,7 +59,7 @@
                                     ->first();
                                 $budgetChanged = $financeApproval && (float) $financeApproval->approved_amount !== (float) $document->estimated_budget;
                             @endphp
-                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Estimasi Anggaran</dt>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Estimasi Anggaran') }}</dt>
                             @if($budgetChanged)
                                 <dd class="mt-1 text-base text-gray-400 line-through">Rp
                                     {{ number_format($document->estimated_budget, 0, ',', '.') }}
@@ -68,7 +68,7 @@
                                     <span class="text-xl font-bold text-primary-600 dark:text-primary-400">Rp
                                         {{ number_format($financeApproval->approved_amount, 0, ',', '.') }}</span>
                                     <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
-                                        Diubah oleh Finance
+                                        {{ __('Diubah oleh Finance') }}
                                     </span>
                                 </dd>
                             @else
@@ -81,7 +81,7 @@
                 </dl>
 
                 <div class="border-t border-gray-200/80 dark:border-gray-700/80 pt-4">
-                    <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Deskripsi</h3>
+                    <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">{{ __('Deskripsi') }}</h3>
                     <div class="prose prose-sm dark:prose-invert max-w-none">
                         {!! nl2br(e($document->description)) !!}
                     </div>
@@ -91,7 +91,7 @@
             <!-- Attachments -->
             @if($document->attachments->count() > 0)
                 <x-ui.card>
-                    <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Lampiran
+                    <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Lampiran') }}
                         ({{ $document->attachments->count() }})</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         @foreach($document->attachments as $attachment)
@@ -119,7 +119,7 @@
             @endphp
             @if($previousApprovals->count() > 0)
                 <x-ui.card>
-                    <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Approval Sebelumnya</h2>
+                    <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Approval Sebelumnya') }}</h2>
                     <div class="space-y-3">
                         @foreach($previousApprovals as $approval)
                             <div
@@ -147,7 +147,7 @@
                                     @endif
                                     @if($approval->approved_amount)
                                         <p class="text-sm text-primary-600 dark:text-primary-400 mt-1 font-medium">
-                                            💰 Nominal disetujui: Rp {{ number_format($approval->approved_amount, 0, ',', '.') }}
+                                            💰 {{ __('Nominal disetujui') }}: Rp {{ number_format($approval->approved_amount, 0, ',', '.') }}
                                         </p>
                                     @endif
                                 </div>
@@ -162,7 +162,7 @@
         <div class="space-y-6">
             <!-- Approval Form -->
             <x-ui.card>
-                <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Keputusan Anda</h2>
+                <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Keputusan Anda') }}</h2>
 
                 <div x-data="{ 
                     action: null, 
@@ -184,21 +184,21 @@
                             :class="action === 'approve' ? 'ring-2 ring-success-500 bg-success-50 dark:bg-success-900/30' : 'bg-gray-50 dark:bg-gray-800'"
                             class="flex flex-col items-center justify-center p-4 rounded-xl border border-gray-200/80 dark:border-gray-700/80 hover:border-success-300 transition-all">
                             <x-icon name="check-circle" class="w-8 h-8 text-success-600 mb-2" />
-                            <span class="text-sm font-medium text-gray-900 dark:text-white">Setujui</span>
+                            <span class="text-sm font-medium text-gray-900 dark:text-white">{{ __('Setujui') }}</span>
                         </button>
 
                         <button type="button" @click="action = 'revise'"
                             :class="action === 'revise' ? 'ring-2 ring-amber-500 bg-amber-50 dark:bg-amber-900/30' : 'bg-gray-50 dark:bg-gray-800'"
                             class="flex flex-col items-center justify-center p-4 rounded-xl border border-gray-200/80 dark:border-gray-700/80 hover:border-amber-300 transition-all">
                             <x-icon name="pencil-square" class="w-8 h-8 text-amber-600 mb-2" />
-                            <span class="text-sm font-medium text-gray-900 dark:text-white">Revisi</span>
+                            <span class="text-sm font-medium text-gray-900 dark:text-white">{{ __('Revisi') }}</span>
                         </button>
 
                         <button type="button" @click="action = 'reject'"
                             :class="action === 'reject' ? 'ring-2 ring-danger-500 bg-danger-50 dark:bg-danger-900/30' : 'bg-gray-50 dark:bg-gray-800'"
                             class="flex flex-col items-center justify-center p-4 rounded-xl border border-gray-200/80 dark:border-gray-700/80 hover:border-danger-300 transition-all">
                             <x-icon name="x-circle" class="w-8 h-8 text-danger-600 mb-2" />
-                            <span class="text-sm font-medium text-gray-900 dark:text-white">Tolak</span>
+                            <span class="text-sm font-medium text-gray-900 dark:text-white">{{ __('Tolak') }}</span>
                         </button>
                     </div>
 
@@ -209,7 +209,7 @@
                                 {{-- Any approver can edit the approved amount in the dynamic system --}}
                                 <label for="approved_amount"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    Jumlah Disetujui
+                                    {{ __('Jumlah Disetujui') }}
                                 </label>
                                 <div class="relative">
                                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">Rp</span>
@@ -225,17 +225,17 @@
                         <div>
                             <label for="approve_comment"
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Catatan (Opsional)
+                                {{ __('Catatan (Opsional)') }}
                             </label>
                             <textarea x-model="approveComment" id="approve_comment" rows="3"
                                 class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
-                                placeholder="Tambahkan catatan..."></textarea>
+                                placeholder="{{ __('Tambahkan catatan...') }}"></textarea>
                         </div>
 
                         <button type="button" @click="showConfirmModal = true"
                             class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-success-600 hover:bg-success-700 text-white font-medium rounded-xl transition-colors">
                             <x-icon name="check-circle" class="w-5 h-5" />
-                            Lanjutkan Persetujuan
+                            {{ __('Lanjutkan Persetujuan') }}
                         </button>
                     </div>
 
@@ -244,18 +244,18 @@
                         <div>
                             <label for="reject_comment"
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Alasan Penolakan <span class="text-danger-500">*</span>
+                                {{ __('Alasan Penolakan') }} <span class="text-danger-500">*</span>
                             </label>
                             <textarea x-model="rejectComment" id="reject_comment" rows="3"
                                 class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
-                                placeholder="Jelaskan alasan penolakan..."></textarea>
+                                placeholder="{{ __('Jelaskan alasan penolakan...') }}"></textarea>
                         </div>
 
                         <button type="button"
-                            @click="rejectComment.trim() ? showConfirmModal = true : showAlert('Alasan penolakan wajib diisi')"
+                            @click="rejectComment.trim() ? showConfirmModal = true : showAlert('{{ __('Alasan penolakan wajib diisi') }}')"
                             class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-danger-600 hover:bg-danger-700 text-white font-medium rounded-xl transition-colors">
                             <x-icon name="x-circle" class="w-5 h-5" />
-                            Lanjutkan Penolakan
+                            {{ __('Lanjutkan Penolakan') }}
                         </button>
                     </div>
 
@@ -264,24 +264,24 @@
                         <div class="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800">
                             <p class="text-sm text-amber-800 dark:text-amber-300">
                                 <x-icon name="information-circle" class="w-4 h-4 inline" />
-                                Dokumen akan dikembalikan ke pengaju untuk direvisi. Tuliskan catatan revisi yang jelas agar pengaju mengetahui apa yang perlu diperbaiki.
+                                {{ __('Dokumen akan dikembalikan ke pengaju untuk direvisi. Tuliskan catatan revisi yang jelas agar pengaju mengetahui apa yang perlu diperbaiki.') }}
                             </p>
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Catatan Revisi <span class="text-danger-500">*</span>
+                                {{ __('Catatan Revisi') }} <span class="text-danger-500">*</span>
                             </label>
                             <textarea x-model="reviseComment" rows="3"
                                 class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-                                placeholder="Tuliskan catatan revisi, misalnya: Mohon lampirkan surat penawaran vendor..."></textarea>
+                                placeholder="{{ __('Tuliskan catatan revisi, misalnya: Mohon lampirkan surat penawaran vendor...') }}"></textarea>
                         </div>
 
                         <button type="button"
-                            @click="reviseComment.trim() ? showConfirmModal = true : showAlert('Catatan revisi wajib diisi')"
+                            @click="reviseComment.trim() ? showConfirmModal = true : showAlert('{{ __('Catatan revisi wajib diisi') }}')"
                             class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-medium rounded-xl transition-colors">
                             <x-icon name="pencil-square" class="w-5 h-5" />
-                            Minta Revisi
+                            {{ __('Minta Revisi') }}
                         </button>
                     </div>
 
@@ -298,12 +298,11 @@
                                         <x-icon name="check-circle" class="w-10 h-10 text-success-600" />
                                     </div>
                                     <h3 class="text-xl font-semibold text-center text-gray-900 dark:text-white mb-2">
-                                        Konfirmasi Persetujuan
+                                        {{ __('Konfirmasi Persetujuan') }}
                                     </h3>
                                     <p class="text-center text-gray-600 dark:text-gray-400 mb-6">
-                                        Anda yakin ingin <strong class="text-success-600">MENYETUJUI</strong> dokumen
-                                        ini?
-                                        <br><span class="text-sm">Tindakan ini tidak dapat dibatalkan.</span>
+                                        {{ __('Anda yakin ingin') }} <strong class="text-success-600">{{ __('MENYETUJUI') }}</strong> {{ __('dokumen ini?') }}
+                                        <br><span class="text-sm">{{ __('Tindakan ini tidak dapat dibatalkan.') }}</span>
                                     </p>
 
                                     <form action="{{ route('approvals.approve', $document) }}" method="POST">
@@ -314,11 +313,11 @@
                                         <div class="flex gap-3">
                                             <button type="button" @click="showConfirmModal = false"
                                                 class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-primary-50/60 dark:hover:bg-gray-700 transition-colors">
-                                                Batal
+                                                {{ __('Batal') }}
                                             </button>
-                                            <button type="submit" data-loading-text="Menyetujui..."
+                                            <button type="submit" data-loading-text="{{ __('Menyetujui...') }}"
                                                 class="flex-1 px-4 py-2 bg-success-600 hover:bg-success-700 text-white rounded-xl transition-colors">
-                                                Ya, Setujui
+                                                {{ __('Ya, Setujui') }}
                                             </button>
                                         </div>
                                     </form>
@@ -333,11 +332,11 @@
                                         <x-icon name="x-circle" class="w-10 h-10 text-danger-600" />
                                     </div>
                                     <h3 class="text-xl font-semibold text-center text-gray-900 dark:text-white mb-2">
-                                        Konfirmasi Penolakan
+                                        {{ __('Konfirmasi Penolakan') }}
                                     </h3>
                                     <p class="text-center text-gray-600 dark:text-gray-400 mb-6">
-                                        Anda yakin ingin <strong class="text-danger-600">MENOLAK</strong> dokumen ini?
-                                        <br><span class="text-sm">Tindakan ini tidak dapat dibatalkan.</span>
+                                        {{ __('Anda yakin ingin') }} <strong class="text-danger-600">{{ __('MENOLAK') }}</strong> {{ __('dokumen ini?') }}
+                                        <br><span class="text-sm">{{ __('Tindakan ini tidak dapat dibatalkan.') }}</span>
                                     </p>
 
                                     <form action="{{ route('approvals.reject', $document) }}" method="POST">
@@ -347,11 +346,11 @@
                                         <div class="flex gap-3">
                                             <button type="button" @click="showConfirmModal = false"
                                                 class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-primary-50/60 dark:hover:bg-gray-700 transition-colors">
-                                                Batal
+                                                {{ __('Batal') }}
                                             </button>
-                                            <button type="submit" data-loading-text="Menolak..."
+                                            <button type="submit" data-loading-text="{{ __('Menolak...') }}"
                                                 class="flex-1 px-4 py-2 bg-danger-600 hover:bg-danger-700 text-white rounded-xl transition-colors">
-                                                Ya, Tolak
+                                                {{ __('Ya, Tolak') }}
                                             </button>
                                         </div>
                                     </form>
@@ -366,11 +365,11 @@
                                         <x-icon name="pencil-square" class="w-10 h-10 text-amber-600" />
                                     </div>
                                     <h3 class="text-xl font-semibold text-center text-gray-900 dark:text-white mb-2">
-                                        Konfirmasi Permintaan Revisi
+                                        {{ __('Konfirmasi Permintaan Revisi') }}
                                     </h3>
                                     <p class="text-center text-gray-600 dark:text-gray-400 mb-6">
-                                        Anda yakin ingin <strong class="text-amber-600">MEMINTA REVISI</strong> dokumen ini?
-                                        <br><span class="text-sm">Dokumen akan dikembalikan ke pengaju untuk diperbaiki.</span>
+                                        {{ __('Anda yakin ingin') }} <strong class="text-amber-600">{{ __('MEMINTA REVISI') }}</strong> {{ __('dokumen ini?') }}
+                                        <br><span class="text-sm">{{ __('Dokumen akan dikembalikan ke pengaju untuk diperbaiki.') }}</span>
                                     </p>
 
                                     <form action="{{ route('approvals.revise', $document) }}" method="POST">
@@ -380,11 +379,11 @@
                                         <div class="flex gap-3">
                                             <button type="button" @click="showConfirmModal = false"
                                                 class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-primary-50/60 dark:hover:bg-gray-700 transition-colors">
-                                                Batal
+                                                {{ __('Batal') }}
                                             </button>
-                                            <button type="submit" data-loading-text="Mengirim..."
+                                            <button type="submit" data-loading-text="{{ __('Mengirim...') }}"
                                                 class="flex-1 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl transition-colors">
-                                                Ya, Minta Revisi
+                                                {{ __('Ya, Minta Revisi') }}
                                             </button>
                                         </div>
                                     </form>
@@ -397,7 +396,7 @@
 
             <!-- Approval Progress -->
             <x-ui.card>
-                <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Status Approval</h2>
+                <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Status Approval') }}</h2>
 
                 <div class="space-y-3">
                     @foreach($document->approvals as $approval)
@@ -420,7 +419,7 @@
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $approval->role_label }}</p>
                                 <p class="text-xs text-gray-500">
-                                    {{ $approval->status === 'pending' && $approval->approver_id === auth()->id() ? 'Menunggu Anda' : $approval->status_label }}
+                                    {{ $approval->status === 'pending' && $approval->approver_id === auth()->id() ? __('Menunggu Anda') : $approval->status_label }}
                                 </p>
                             </div>
                         </div>

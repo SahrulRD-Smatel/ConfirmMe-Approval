@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="title">Buat Pengajuan Baru</x-slot>
+    <x-slot name="title">{{ __('Buat Pengajuan Baru') }}</x-slot>
 
     <x-slot name="header">
         <div class="flex items-center gap-4">
@@ -8,9 +8,9 @@
                 <x-icon name="arrow-left" class="w-5 h-5" />
             </a>
             <div>
-                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Buat Pengajuan Baru</h1>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Buat Pengajuan Baru') }}</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Pilih modul dokumen dan lengkapi form pengajuan Anda (Bisa lebih dari satu sekaligus)
+                    {{ __('Pilih modul dokumen dan lengkapi form pengajuan Anda (Bisa lebih dari satu sekaligus)') }}
                 </p>
             </div>
         </div>
@@ -95,7 +95,7 @@
                     taxAmount: 0
                 });
             } else {
-                window.showAlert('Maksimal 10 dokumen sekaligus.', 'warning');
+                window.showAlert('{{ __('Maksimal 10 dokumen sekaligus.') }}', 'warning');
             }
         },
         removeForm(index) {
@@ -118,24 +118,24 @@
                 <div class="max-w-xl">
                     <div class="mb-3 inline-flex items-center gap-2 rounded-full border border-primary-200/80 bg-primary-50 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-primary-700 dark:border-primary-800/70 dark:bg-primary-900/30 dark:text-primary-300">
                         <span class="h-1.5 w-1.5 rounded-full bg-primary-500"></span>
-                        Pengajuan Baru
+                        {{ __('Pengajuan Baru') }}
                     </div>
-                    <h2 class="font-display text-2xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-3xl">Satu alur untuk semua kebutuhan.</h2>
-                    <p class="mt-2 max-w-lg text-sm leading-6 text-gray-500 dark:text-gray-400">Pilih modul yang sesuai, lalu lengkapi detailnya dalam satu ruang kerja yang terarah.</p>
+                    <h2 class="font-display text-2xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-3xl">{{ __('Satu alur untuk semua kebutuhan.') }}</h2>
+                    <p class="mt-2 max-w-lg text-sm leading-6 text-gray-500 dark:text-gray-400">{{ __('Pilih modul yang sesuai, lalu lengkapi detailnya dalam satu ruang kerja yang terarah.') }}</p>
                 </div>
                 <div class="w-full max-w-md lg:min-w-[22rem]">
                     <div class="mb-3 flex items-center justify-between text-[11px] font-bold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">
-                        <span>Progress pengajuan</span>
+                        <span>{{ __('Progress pengajuan') }}</span>
                         <span class="text-primary-600 dark:text-primary-400" x-text="step === 1 ? '01 / 02' : '02 / 02'"></span>
                     </div>
                     <div class="flex items-center gap-3">
                         <div class="flex min-w-0 flex-1 items-center gap-2">
                             <span :class="step === 1 ? 'bg-primary-600 text-white shadow-soft' : 'bg-primary-100 text-primary-700 dark:bg-primary-900/50 dark:text-primary-300'" class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors">01</span>
-                            <span class="hidden text-xs font-semibold text-gray-700 dark:text-gray-300 sm:block">Pilih modul</span>
+                            <span class="hidden text-xs font-semibold text-gray-700 dark:text-gray-300 sm:block">{{ __('Pilih modul') }}</span>
                         </div>
                         <div :class="step === 2 ? 'bg-primary-500' : 'bg-gray-200 dark:bg-gray-700'" class="h-1 min-w-8 flex-1 rounded-full transition-colors"></div>
                         <div class="flex min-w-0 flex-1 items-center justify-end gap-2">
-                            <span class="hidden text-xs font-semibold text-gray-700 dark:text-gray-300 sm:block">Lengkapi detail</span>
+                            <span class="hidden text-xs font-semibold text-gray-700 dark:text-gray-300 sm:block">{{ __('Lengkapi detail') }}</span>
                             <span :class="step === 2 ? 'bg-primary-600 text-white shadow-soft' : 'bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500'" class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors">02</span>
                         </div>
                     </div>
@@ -151,10 +151,10 @@
             <div class="mx-auto max-w-4xl">
                 <div class="mb-4 flex items-end justify-between gap-4">
                     <div>
-                        <p class="text-xs font-bold uppercase tracking-[0.18em] text-primary-600 dark:text-primary-400">Langkah pertama</p>
-                        <h3 class="mt-1 text-xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-2xl">Pilih modul pengajuan</h3>
+                        <p class="text-xs font-bold uppercase tracking-[0.18em] text-primary-600 dark:text-primary-400">{{ __('Langkah pertama') }}</p>
+                        <h3 class="mt-1 text-xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-2xl">{{ __('Pilih modul pengajuan') }}</h3>
                     </div>
-                    <span class="hidden rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-500 dark:bg-gray-800 dark:text-gray-400 sm:inline-flex">{{ count($templates) }} modul tersedia</span>
+                    <span class="hidden rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-500 dark:bg-gray-800 dark:text-gray-400 sm:inline-flex">{{ count($templates) }} {{ __('modul tersedia') }}</span>
                 </div>
             </div>
 
@@ -165,7 +165,7 @@
                 </div>
                 <input type="text" x-model="searchQuery"
                     class="block w-full rounded-2xl border-0 bg-white py-4 pl-12 pr-4 text-lg text-gray-900 shadow-soft ring-1 ring-inset ring-gray-200 transition-shadow focus:ring-4 focus:ring-inset focus:ring-primary-500/20 dark:bg-gray-900 dark:text-white dark:ring-gray-700"
-                    placeholder="Cari modul pengajuan (misal: Cuti, Dinas, Pengadaan)...">
+                    placeholder="{{ __('Cari modul pengajuan (misal: Cuti, Dinas, Pengadaan)...') }}">
             </div>
 
             <!-- Categories -->
@@ -201,12 +201,12 @@
                                             <h4 class="min-h-[3rem] text-base font-bold leading-6 text-gray-900 transition-colors group-hover:text-primary-600 dark:text-white dark:group-hover:text-primary-400" x-text="tpl.name"></h4>
                                             <x-icon name="arrow-up-right" class="mt-0.5 h-4 w-4 shrink-0 text-gray-300 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary-500" />
                                         </div>
-                                        <p class="mt-1 min-h-[2.5rem] line-clamp-2 text-xs leading-5 text-gray-500 dark:text-gray-400" x-text="tpl.description || 'Tidak ada deskripsi.'"></p>
+                                        <p class="mt-1 min-h-[2.5rem] line-clamp-2 text-xs leading-5 text-gray-500 dark:text-gray-400" x-text="tpl.description || '{{ __('Tidak ada deskripsi.') }}'"></p>
                                     </div>
                                 </div>
                                 <div class="mt-auto flex items-center justify-between border-t border-gray-100 pt-3 text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400 dark:border-gray-800 dark:text-gray-500">
                                     <span x-text="tpl.category"></span>
-                                    <span class="text-primary-600 transition-colors group-hover:text-primary-700 dark:text-primary-400">Pilih modul</span>
+                                    <span class="text-primary-600 transition-colors group-hover:text-primary-700 dark:text-primary-400">{{ __('Pilih modul') }}</span>
                                 </div>
                             </div>
                         </template>
@@ -222,9 +222,9 @@
              x-transition:enter-end="opacity-100 transform translate-y-0">
 
             <div class="mb-6 flex flex-col gap-2">
-                <p class="text-xs font-bold uppercase tracking-[0.18em] text-primary-600 dark:text-primary-400">Langkah kedua</p>
-                <h3 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-2xl">Lengkapi detail pengajuan</h3>
-                <p class="max-w-2xl text-sm leading-6 text-gray-500 dark:text-gray-400">Tinjau modul terpilih, lengkapi setiap dokumen, lalu kirim seluruh pengajuan dari satu ruang kerja.</p>
+                <p class="text-xs font-bold uppercase tracking-[0.18em] text-primary-600 dark:text-primary-400">{{ __('Langkah kedua') }}</p>
+                <h3 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-2xl">{{ __('Lengkapi detail pengajuan') }}</h3>
+                <p class="max-w-2xl text-sm leading-6 text-gray-500 dark:text-gray-400">{{ __('Tinjau modul terpilih, lengkapi setiap dokumen, lalu kirim seluruh pengajuan dari satu ruang kerja.') }}</p>
             </div>
 
             <form action="{{ route('documents.store') }}" method="POST" enctype="multipart/form-data" class="space-y-7">
@@ -237,13 +237,13 @@
                                 <x-icon name="sparkles" class="h-5 w-5" />
                             </div>
                             <div>
-                                <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-primary-600 dark:text-primary-300">Modul aktif</p>
-                                <p class="mt-1 text-sm font-semibold text-gray-900 dark:text-white" x-text="selectedTemplate ? selectedTemplate.name : 'Melanjutkan form tersimpan'"></p>
+                                <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-primary-600 dark:text-primary-300">{{ __('Modul aktif') }}</p>
+                                <p class="mt-1 text-sm font-semibold text-gray-900 dark:text-white" x-text="selectedTemplate ? selectedTemplate.name : '{{ __('Melanjutkan form tersimpan') }}'"></p>
                             </div>
                         </div>
                         <div class="flex items-center gap-2 rounded-xl border border-primary-200/80 bg-white/70 px-3 py-2 text-xs font-semibold text-primary-700 dark:border-primary-800/70 dark:bg-gray-900/40 dark:text-primary-300">
                             <span class="h-2 w-2 rounded-full bg-primary-500"></span>
-                            <span x-text="`${forms.length} dokumen dalam pengajuan`"></span>
+                            <span x-text="`${forms.length} {{ __('dokumen dalam pengajuan') }}`"></span>
                         </div>
                     </div>
                 </div>
@@ -253,13 +253,13 @@
                         <div class="flex gap-3">
                             <x-icon name="exclamation-triangle" class="w-5 h-5 text-danger-500 shrink-0 mt-0.5" />
                             <div>
-                                <h3 class="text-sm font-bold text-danger-800 dark:text-danger-200">Terjadi kesalahan pada validasi (Beberapa isian wajib diperbaiki)</h3>
+                                <h3 class="text-sm font-bold text-danger-800 dark:text-danger-200">{{ __('Terjadi kesalahan pada validasi (Beberapa isian wajib diperbaiki)') }}</h3>
                                 <ul class="mt-2 text-sm text-danger-700 dark:text-danger-300 list-disc list-inside">
                                     @foreach ($errors->all() as $error)
                                         <li>{{ $error }}</li>
                                     @endforeach
                                 </ul>
-                                <p class="mt-2 text-sm text-danger-600 dark:text-danger-400 font-medium">Catatan: Harap unggah ulang file lampiran Anda (jika ada) demi keamanan.</p>
+                                <p class="mt-2 text-sm text-danger-600 dark:text-danger-400 font-medium">{{ __('Catatan: Harap unggah ulang file lampiran Anda (jika ada) demi keamanan.') }}</p>
                             </div>
                         </div>
                     </div>
@@ -272,12 +272,12 @@
                             <x-icon name="sparkles" class="w-5 h-5" />
                         </div>
                         <div>
-                            <p class="text-xs text-primary-600 dark:text-primary-400 font-semibold uppercase tracking-wider">Modul Terpilih (Bulk Request)</p>
-                            <h3 class="text-base font-bold text-gray-900 dark:text-white" x-text="selectedTemplate ? selectedTemplate.name : 'Melanjutkan Form'"></h3>
+                            <p class="text-xs text-primary-600 dark:text-primary-400 font-semibold uppercase tracking-wider">{{ __('Modul Terpilih (Bulk Request)') }}</p>
+                            <h3 class="text-base font-bold text-gray-900 dark:text-white" x-text="selectedTemplate ? selectedTemplate.name : '{{ __('Melanjutkan Form') }}'"></h3>
                         </div>
                     </div>
                     <button type="button" @click="resetSelection()" class="text-sm font-medium text-primary-600 hover:text-primary-700 bg-white/50 dark:bg-gray-800/50 hover:bg-white dark:hover:bg-gray-800/80 px-3 py-1.5 rounded-xl transition-colors border border-primary-200 dark:border-primary-700/50">
-                        Ganti Modul
+                        {{ __('Ganti Modul') }}
                     </button>
                 </div>
 
@@ -290,11 +290,11 @@
                             <div class="bg-gray-50/80 dark:bg-gray-900/50 px-5 py-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-700">
                                 <h3 class="font-bold text-gray-800 dark:text-gray-200 flex items-center gap-3">
                                     <span class="bg-primary-500 text-white w-7 h-7 rounded-full flex items-center justify-center text-sm shadow-soft" x-text="index + 1"></span>
-                                    <span>Dokumen #<span x-text="index + 1"></span></span>
+                                    <span>{{ __('Dokumen') }} #<span x-text="index + 1"></span></span>
                                 </h3>
                                 <button type="button" @click="removeForm(index)" x-show="forms.length > 1" 
                                     class="text-danger-500 hover:text-danger-700 hover:bg-danger-50 dark:hover:bg-danger-900/30 px-3 py-1.5 rounded-xl text-sm font-medium flex items-center gap-1.5 transition-colors">
-                                    <x-icon name="trash" class="w-4 h-4"/> Hapus
+                                    <x-icon name="trash" class="w-4 h-4"/> {{ __('Hapus') }}
                                 </button>
                             </div>
 
@@ -308,29 +308,31 @@
                                     <div class="mb-5 flex items-center gap-3">
                                         <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-primary-100 text-xs font-bold text-primary-700 dark:bg-primary-900/50 dark:text-primary-300">01</span>
                                         <div>
-                                            <h4 class="text-sm font-bold uppercase tracking-[0.14em] text-gray-700 dark:text-gray-200">Informasi Utama</h4>
-                                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Identitas dan konteks utama dokumen.</p>
+                                            <h4 class="text-sm font-bold uppercase tracking-[0.14em] text-gray-700 dark:text-gray-200">{{ __('Informasi Utama') }}</h4>
+                                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('Identitas dan konteks utama dokumen.') }}</p>
                                         </div>
                                     </div>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         <div class="md:col-span-2">
-                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Judul Dokumen <span class="text-danger-500">*</span></label>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Judul Dokumen') }} <span class="text-danger-500">*</span></label>
                                             <input type="text" :name="`documents[${index}][title]`" required x-model="form.title"
-                                                class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20">
+                                                class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20"
+                                                placeholder="{{ __('Tulis ringkasan dari dokumen pengajuan...') }}">
                                         </div>
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Prioritas <span class="text-danger-500">*</span></label>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Prioritas') }} <span class="text-danger-500">*</span></label>
                                             <select :name="`documents[${index}][priority]`" required class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20">
-                                                <option value="low">Rendah</option>
-                                                <option value="normal" selected>Normal</option>
-                                                <option value="high">Tinggi</option>
-                                                <option value="urgent">Urgent</option>
+                                                <option value="low">{{ __('Rendah') }}</option>
+                                                <option value="normal" selected>{{ __('Normal') }}</option>
+                                                <option value="high">{{ __('Tinggi') }}</option>
+                                                <option value="urgent">{{ __('Urgent') }}</option>
                                             </select>
                                         </div>
                                         <div class="md:col-span-2">
-                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Deskripsi <span class="text-danger-500">*</span></label>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Deskripsi') }} <span class="text-danger-500">*</span></label>
                                             <textarea :name="`documents[${index}][description]`" rows="3" required x-model="form.description"
-                                                class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20"></textarea>
+                                                class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20"
+                                                placeholder="{{ __('Tulis keterangan lebih rinci mengenai pengajuan ini...') }}"></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -348,36 +350,36 @@
                                         },
                                         fmt(n) { return new Intl.NumberFormat('id-ID').format(n); }
                                      }">
-                                    <h4 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Detail Purchase Order</h4>
+                                    <h4 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">{{ __('Detail Purchase Order') }}</h4>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Vendor <span class="text-danger-500">*</span></label>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Nama Vendor') }} <span class="text-danger-500">*</span></label>
                                             <input type="text" :name="`documents[${index}][vendor_name]`" class="block w-full px-4 py-3 border border-gray-300 rounded-xl bg-white focus:ring-4 focus:ring-primary-500/20">
                                         </div>
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kategori Pembelian <span class="text-danger-500">*</span></label>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Kategori Pembelian') }} <span class="text-danger-500">*</span></label>
                                             <select :name="`documents[${index}][po_category]`" class="block w-full px-4 py-3 border border-gray-300 rounded-xl bg-white focus:ring-4 focus:ring-primary-500/20">
-                                                <option value="internal">Internal Use</option>
-                                                <option value="external">External / Client</option>
+                                                <option value="internal">{{ __('Internal Use') }}</option>
+                                                <option value="external">{{ __('External / Client') }}</option>
                                             </select>
                                         </div>
                                         <div class="md:col-span-2">
-                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rincian Barang/Jasa <span class="text-danger-500">*</span></label>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Rincian Barang/Jasa') }} <span class="text-danger-500">*</span></label>
                                             <textarea :name="`documents[${index}][item_description]`" rows="2" class="block w-full px-4 py-3 border border-gray-300 rounded-xl bg-white focus:ring-4 focus:ring-primary-500/20"></textarea>
                                         </div>
                                         <div class="md:col-span-2 bg-gray-50/80 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
                                             <div class="grid grid-cols-2 gap-4">
                                                 <div>
-                                                    <label class="block text-sm font-medium text-gray-700 mb-1">Subtotal (DPP) <span class="text-danger-500">*</span></label>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Subtotal (DPP)') }} <span class="text-danger-500">*</span></label>
                                                     <input type="number" :name="`documents[${index}][subtotal]`" x-model="subtotal" @input="calc" min="0" class="block w-full px-4 py-3 border border-gray-300 rounded-xl bg-white">
                                                 </div>
                                                 <div>
-                                                    <label class="block text-sm font-medium text-gray-700 mb-1">PPN 11%</label>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('PPN 11%') }}</label>
                                                     <input type="number" :name="`documents[${index}][tax_amount]`" x-model="taxAmount" @input="grandTotal = parseInt(subtotal||0) + parseInt(taxAmount||0)" class="block w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-100" readonly>
                                                 </div>
                                             </div>
                                             <div class="mt-4 flex justify-between items-center text-lg font-bold text-primary-700">
-                                                <span>Grand Total</span>
+                                                <span>{{ __('Grand Total') }}</span>
                                                 <span x-text="'Rp ' + fmt(grandTotal)">Rp 0</span>
                                             </div>
                                         </div>
@@ -388,18 +390,18 @@
                                 <div x-show="approvalType === 'only'" class="rounded-2xl border border-gray-100 bg-gray-50/60 p-4 dark:border-gray-800 dark:bg-gray-800/40 sm:p-5">
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Kategori Dokumen</label>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Kategori Dokumen') }}</label>
                                             <input type="text" :name="`documents[${index}][document_category]`" readonly :value="selectedTemplate ? selectedTemplate.defaultCategory : ''" class="block w-full px-4 py-3 border border-gray-200 bg-gray-50 rounded-xl text-gray-500 cursor-not-allowed">
                                         </div>
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Berlaku</label>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Tanggal Berlaku') }}</label>
                                             <input type="date" :name="`documents[${index}][effective_date]`" class="block w-full px-4 py-3 border border-gray-300 rounded-xl">
                                         </div>
                                     </div>
                                 </div>
                                 <!-- DYNAMIC FIELDS -->
                                 <div x-show="selectedTemplate && selectedTemplate.dynamicFields && selectedTemplate.dynamicFields.length > 0" class="rounded-2xl border border-gray-100 bg-gray-50/60 p-4 dark:border-gray-800 dark:bg-gray-800/40 sm:p-5">
-                                    <h4 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Informasi Spesifik</h4>
+                                    <h4 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">{{ __('Informasi Spesifik') }}</h4>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         <template x-for="field in (selectedTemplate?.dynamicFields || [])" :key="field.name">
                                             <div :class="['textarea', 'table'].includes(field.type) ? 'md:col-span-2' : ''">
@@ -424,7 +426,7 @@
                                                 <template x-if="field.type === 'select'">
                                                     <select :name="`documents[${index}][metadata][${field.name}]`" :required="field.required == '1'"
                                                         class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20">
-                                                        <option value="">-- Pilih --</option>
+                                                        <option value="">{{ __('-- Pilih --') }}</option>
                                                         <template x-for="opt in (field.options ? field.options.split(',').map(s=>s.trim()) : [])">
                                                             <option :value="opt" x-text="opt"></option>
                                                         </template>
@@ -453,7 +455,7 @@
                                                                         <template x-for="col in getCols(field.columns)">
                                                                             <th class="px-4 py-3" x-text="col"></th>
                                                                         </template>
-                                                                        <th class="px-4 py-3 w-16 text-center">Aksi</th>
+                                                                        <th class="px-4 py-3 w-16 text-center">{{ __('Aksi') }}</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
@@ -466,7 +468,7 @@
                                                                                 </td>
                                                                             </template>
                                                                             <td class="p-2 text-center">
-                                                                                <button type="button" @click="removeRow(rIndex)" class="text-danger-500 hover:text-danger-700" title="Hapus Baris">
+                                                                                <button type="button" @click="removeRow(rIndex)" class="text-danger-500 hover:text-danger-700" title="{{ __('Hapus Baris') }}">
                                                                                     <x-icon name="trash" class="w-4 h-4 mx-auto" />
                                                                                 </button>
                                                                             </td>
@@ -477,7 +479,7 @@
                                                         </div>
                                                         <div class="p-3 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
                                                             <button type="button" @click="addRow" class="text-xs font-semibold text-primary-600 hover:text-primary-700 flex items-center gap-1">
-                                                                <x-icon name="plus" class="w-3 h-3" /> Tambah Baris
+                                                                <x-icon name="plus" class="w-3 h-3" /> {{ __('Tambah Baris') }}
                                                             </button>
                                                         </div>
                                                     </div>
@@ -489,11 +491,11 @@
 
                                 <!-- ATTACHMENTS -->
                                 <div class="rounded-2xl border border-gray-100 bg-gray-50/60 p-4 dark:border-gray-800 dark:bg-gray-800/40 sm:p-5" x-data="{ files: [] }">
-                                    <h4 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Lampiran Tambahan <span class="lowercase normal-case font-medium">(Opsional)</span></h4>
+                                    <h4 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">{{ __('Lampiran Tambahan') }} <span class="lowercase normal-case font-medium">({{ __('Opsional') }})</span></h4>
                                     <label class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl cursor-pointer bg-gray-50/80 dark:bg-gray-800/50 hover:bg-gray-100 transition-colors">
                                         <div class="flex flex-col items-center justify-center pt-5 pb-6">
                                             <x-icon name="cloud-arrow-up" class="w-6 h-6 text-gray-400 mb-1" />
-                                            <p class="text-sm text-gray-500"><span class="font-semibold text-primary-600">Pilih File Tambahan</span> (Jika ada) untuk Dokumen #<span x-text="index+1"></span></p>
+                                            <p class="text-sm text-gray-500"><span class="font-semibold text-primary-600">{{ __('Pilih File Tambahan') }}</span> ({{ __('Jika ada') }}) {{ __('untuk Dokumen') }} #<span x-text="index+1"></span></p>
                                         </div>
                                         <input :name="`attachments[${index}][]`" type="file" multiple class="hidden" @change="files = Array.from($event.target.files)" />
                                     </label>
@@ -516,23 +518,23 @@
                             <x-icon name="plus" class="w-6 h-6"/>
                         </div>
                         <div>
-                            <span class="block font-bold text-primary-700 dark:text-primary-400 text-lg">Tambah Pengajuan Lain</span>
-                            <span class="block text-sm text-primary-500/70" x-text="`${forms.length} dari maksimal 10 form`"></span>
+                            <span class="block font-bold text-primary-700 dark:text-primary-400 text-lg">{{ __('Tambah Pengajuan Lain') }}</span>
+                            <span class="block text-sm text-primary-500/70" x-text="`${forms.length} {{ __('dari maksimal 10 form') }}`"></span>
                         </div>
                     </button>
                     
                     <div x-show="forms.length >= 10" class="text-center p-6 text-gray-500">
-                        Batas maksimal 10 pengajuan tercapai.
+                        {{ __('Batas maksimal 10 pengajuan tercapai.') }}
                     </div>
                 </div>
 
                 <!-- SUBMIT ACTIONS -->
                 <div class="sticky bottom-5 z-40 mt-8 flex flex-col gap-3 rounded-[1.75rem] border border-gray-200/80 bg-white/95 p-4 shadow-soft-lg shadow-primary-500/10 backdrop-blur-xl dark:border-gray-700/80 dark:bg-gray-900/95 sm:flex-row sm:items-center sm:justify-end">
                     <x-ui.button type="button" variant="secondary" @click="resetSelection()">
-                        Batal
+                        {{ __('Batal') }}
                     </x-ui.button>
                     <x-ui.button type="submit" icon="paper-airplane" class="shadow-lg shadow-primary-500/30 font-bold px-8">
-                        Ajukan <span x-text="forms.length"></span> Dokumen Sekaligus
+                        {{ __('Ajukan') }} <span x-text="forms.length"></span> {{ __('Dokumen Sekaligus') }}
                     </x-ui.button>
                 </div>
             </form>

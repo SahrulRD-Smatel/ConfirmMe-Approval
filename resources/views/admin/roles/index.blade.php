@@ -1,13 +1,13 @@
 <x-app-layout>
-    <x-slot name="title">Kelola Role & Permission</x-slot>
+    <x-slot name="title">{{ __('Kelola Role & Permission') }}</x-slot>
 
     <x-slot name="header">
         <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Role & Permission</h1>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Atur hak akses secara dinamis untuk mengontrol visibilitas menu dan fitur setiap divisi.</p>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Role & Permission') }}</h1>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Atur hak akses secara dinamis untuk mengontrol visibilitas menu dan fitur setiap divisi.') }}</p>
             </div>
-            <x-ui.button href="{{ route('admin.roles.create') }}" icon="plus" class="shadow-soft shadow-primary-500/20">Tambah Role</x-ui.button>
+            <x-ui.button href="{{ route('admin.roles.create') }}" icon="plus" class="shadow-soft shadow-primary-500/20">{{ __('Tambah Role') }}</x-ui.button>
         </div>
     </x-slot>
 
@@ -41,7 +41,7 @@
             $icon = 'users';
             $bgColor = 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300';
             if($role->name === 'admin') { $icon = 'shield-check'; $bgColor = 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400'; }
-            elseif(str_starts_with($role->name, 'direktur') || $role->name === 'presiden_direktur') { $icon = 'building-office'; $bgColor = 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'; }
+            elseif(str_starts_with($role->name, 'direktur') || $role->name === 'presiden_direktur') { $icon = 'building-office-2'; $bgColor = 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'; }
             elseif($role->name === 'hrd' || $role->name === 'hrd_coordinator') { $icon = 'user-group'; $bgColor = 'bg-pink-100 text-pink-600 dark:bg-pink-900/30 dark:text-pink-400'; }
             elseif($role->name === 'finance' || $role->name === 'purchasing') { $icon = 'banknotes'; $bgColor = 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400'; }
             elseif($role->name === 'manager' || $role->name === 'supervisor') { $icon = 'star'; $bgColor = 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400'; }
@@ -60,13 +60,13 @@
                         <div class="flex flex-wrap items-center gap-2 sm:gap-3">
                             <h3 class="truncate text-base font-bold text-gray-900 dark:text-white sm:text-lg">{{ role_label($role->name) }}</h3>
                             @if($isProtected)
-                                <span class="rounded-full bg-primary-100 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.12em] text-primary-700 dark:bg-primary-900/50 dark:text-primary-400">Sistem</span>
+                                <span title="{{ __('Role bawaan sistem yang tidak dapat dihapus') }}" data-tip="{{ __('Role bawaan sistem yang tidak dapat dihapus') }}" class="cursor-help rounded-full bg-primary-100 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.12em] text-primary-700 dark:bg-primary-900/50 dark:text-primary-400">{{ __('Permanen') }}</span>
                             @endif
                         </div>
                         <div class="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
-                            <span class="inline-flex items-center gap-1.5"><x-icon name="check-circle" class="h-3.5 w-3.5 text-emerald-500" /><b>{{ count($rolePerms) }}</b> Akses</span>
+                            <span class="inline-flex items-center gap-1.5"><x-icon name="check-circle" class="h-3.5 w-3.5 text-emerald-500" /><b>{{ count($rolePerms) }}</b> {{ __('Akses') }}</span>
                             <span class="hidden text-gray-300 dark:text-gray-600 sm:inline">•</span>
-                            <span class="inline-flex items-center gap-1.5"><x-icon name="user" class="h-3.5 w-3.5" /><b>{{ $role->users()->count() }}</b> Pengguna</span>
+                            <span class="inline-flex items-center gap-1.5"><x-icon name="user" class="h-3.5 w-3.5" /><b>{{ $role->users()->count() }}</b> {{ __('Pengguna') }}</span>
                         </div>
                     </div>
                 </div>
@@ -74,13 +74,13 @@
                 <div class="flex shrink-0 items-center gap-2 sm:gap-3">
                     <div class="flex items-center gap-1 opacity-100 transition-opacity duration-300 sm:opacity-0 sm:group-hover:opacity-100">
                         <a href="{{ route('admin.roles.edit', $role) }}" @click.stop
-                           class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-primary-50 text-primary-600 transition-colors hover:bg-primary-100 dark:bg-primary-900/20 dark:hover:bg-primary-900/40" data-tip="Edit Hak Akses" aria-label="Edit Hak Akses">
+                           class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-primary-50 text-primary-600 transition-colors hover:bg-primary-100 dark:bg-primary-900/20 dark:hover:bg-primary-900/40" data-tip="{{ __('Edit Hak Akses') }}" aria-label="{{ __('Edit Hak Akses') }}">
                             <x-icon name="pencil" class="h-4 w-4" />
                         </a>
                         @if(!$isProtected)
-                        <form action="{{ route('admin.roles.destroy', $role) }}" method="POST" @click.stop onsubmit="confirmAction(event, 'Hapus role {{ $role->name }} beserta hak aksesnya?')">
+                        <form action="{{ route('admin.roles.destroy', $role) }}" method="POST" @click.stop onsubmit="confirmAction(event, '{{ __('Hapus role') }} {{ $role->name }} {{ __('beserta hak aksesnya?') }}')">
                             @csrf @method('DELETE')
-                            <button type="submit" class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-danger-50 text-danger-600 transition-colors hover:bg-danger-100 dark:bg-danger-900/20 dark:hover:bg-danger-900/40" data-tip="Hapus Role" aria-label="Hapus Role">
+                            <button type="submit" class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-danger-50 text-danger-600 transition-colors hover:bg-danger-100 dark:bg-danger-900/20 dark:hover:bg-danger-900/40" data-tip="{{ __('Hapus Role') }}" aria-label="{{ __('Hapus Role') }}">
                                 <x-icon name="trash" class="h-4 w-4" />
                             </button>
                         </form>
@@ -109,7 +109,7 @@
                                 @if($isAll)
                                     <div class="absolute top-0 right-0 w-16 h-16 overflow-hidden">
                                         <div class="absolute transform rotate-45 bg-emerald-500 text-white text-[9px] font-bold py-1 right-[-35px] top-[15px] w-[120px] text-center shadow-soft">
-                                            FULL AKSES
+                                            {{ __('FULL AKSES') }}
                                         </div>
                                     </div>
                                 @endif
@@ -127,7 +127,7 @@
                                             @php $hasPerm = in_array($perm, $rolePerms); @endphp
                                             @php
                                                 $isAction = in_array($perm, ['edit-document', 'delete-document', 'submit-document', 'reject-document', 'print-document', 'view-all-documents', 'view-department-documents', 'view-finance-documents', 'export-reports']);
-                                                $badgeLabel = $isAction ? 'FITUR' : 'MENU';
+                                                $badgeLabel = $isAction ? __('FITUR') : __('MENU');
                                                 $badgeClass = $hasPerm
                                                     ? ($isAction ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-400')
                                                     : 'bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500';
@@ -163,7 +163,7 @@
 
                 <div class="flex justify-end border-t border-gray-200/80 bg-white/60 px-4 py-3 dark:border-gray-800/80 dark:bg-gray-900/60 sm:px-5">
                     <x-ui.button href="{{ route('admin.roles.edit', $role) }}" variant="secondary" icon="pencil" class="shadow-sm">
-                        Ubah Konfigurasi Akses
+                        {{ __('Ubah Konfigurasi Akses') }}
                     </x-ui.button>
                 </div>
             </div>

@@ -1,13 +1,13 @@
 <x-app-layout>
-    <x-slot name="title">Template Dokumen</x-slot>
+    <x-slot name="title">{{ __('Template Dokumen') }}</x-slot>
 
     <x-slot name="header">
         <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Template Dokumen</h1>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Kelola template pengajuan dokumen dari satu katalog yang ringkas dan mudah dipindai.</p>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Template Dokumen') }}</h1>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Kelola template pengajuan dokumen dari satu katalog yang ringkas dan mudah dipindai.') }}</p>
             </div>
-            <x-ui.button href="{{ route('admin.templates.create') }}" icon="plus">Buat Template</x-ui.button>
+            <x-ui.button href="{{ route('admin.templates.create') }}" icon="plus">{{ __('Buat Template') }}</x-ui.button>
         </div>
     </x-slot>
 
@@ -18,11 +18,11 @@
                     <x-icon name="document-text" class="h-4.5 w-4.5 text-primary-600 dark:text-primary-400" />
                 </div>
                 <div>
-                    <p class="text-sm font-semibold text-gray-900 dark:text-white">Katalog template pengajuan</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">Setiap template menentukan jalur approval yang tersedia.</p>
+                    <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ __('Katalog template pengajuan') }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('Setiap template menentukan jalur approval yang tersedia.') }}</p>
                 </div>
             </div>
-            <span class="w-fit rounded-full bg-gray-100 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-gray-500 dark:bg-gray-800 dark:text-gray-400">Template registry</span>
+            <span class="w-fit rounded-full bg-gray-100 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-gray-500 dark:bg-gray-800 dark:text-gray-400">{{ __('Template registry') }}</span>
         </div>
 
         <div class="grid grid-cols-1 items-stretch gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -41,26 +41,26 @@
                                 </div>
                             </div>
                             <x-ui.badge :status="$template->is_active ? 'success' : 'danger'">
-                                {{ $template->is_active ? 'Aktif' : 'Nonaktif' }}
+                                {{ $template->is_active ? __('Aktif') : __('Nonaktif') }}
                             </x-ui.badge>
                         </div>
 
                         <p class="mt-4 min-h-[2.75rem] line-clamp-2 text-xs leading-5 text-gray-600 dark:text-gray-400">{{ Str::limit($template->description, 80) }}</p>
 
                         <div class="mt-4 flex items-center justify-between gap-3 rounded-xl border border-gray-100 bg-gray-50/80 px-3 py-2.5 dark:border-gray-800 dark:bg-gray-800/50">
-                            <span class="text-[10px] font-bold uppercase tracking-[0.12em] text-gray-400">Approval flow</span>
-                            <span class="max-w-[55%] truncate text-right text-xs font-semibold text-gray-700 dark:text-gray-300">{{ $template->approval_type_label }}</span>
+                            <span class="text-[10px] font-bold uppercase tracking-[0.12em] text-gray-400">{{ __('Approval flow') }}</span>
+                            <span class="max-w-[55%] truncate text-right text-xs font-semibold text-gray-700 dark:text-gray-300">{{ __($template->approval_type_label) }}</span>
                         </div>
                     </div>
 
                     <div class="flex items-center justify-between gap-2 border-t border-gray-200/80 bg-gray-50/60 px-5 py-3 dark:border-gray-800/80 dark:bg-gray-800/30">
-                        <span class="text-[10px] font-medium uppercase tracking-[0.12em] text-gray-400">Template action</span>
+                        <span class="text-[10px] font-medium uppercase tracking-[0.12em] text-gray-400">{{ __('Template action') }}</span>
                         <div class="flex items-center gap-2">
-                            <x-ui.button href="{{ route('admin.templates.edit', $template) }}" variant="secondary" size="sm">Edit</x-ui.button>
+                            <x-ui.button href="{{ route('admin.templates.edit', $template) }}" variant="secondary" size="sm">{{ __('Edit') }}</x-ui.button>
                             <form action="{{ route('admin.templates.destroy', $template) }}" method="POST"
-                                onsubmit="confirmAction(event, 'Hapus template?')">
+                                onsubmit="confirmAction(event, '{{ __('Hapus template?') }}')">
                                 @csrf @method('DELETE')
-                                <x-ui.button type="submit" variant="danger" size="sm">Hapus</x-ui.button>
+                                <x-ui.button type="submit" variant="danger" size="sm">{{ __('Hapus') }}</x-ui.button>
                             </form>
                         </div>
                     </div>
@@ -71,9 +71,9 @@
                         <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-50 dark:bg-primary-900/30">
                             <x-icon name="document-text" class="h-7 w-7 text-primary-400" />
                         </div>
-                        <p class="text-sm font-semibold text-gray-700 dark:text-gray-300">Belum ada template</p>
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Mulai dengan membuat template pengajuan pertama.</p>
-                        <x-ui.button href="{{ route('admin.templates.create') }}" class="mt-4">Buat Template Pertama</x-ui.button>
+                        <p class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ __('Belum ada template') }}</p>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('Mulai dengan membuat template pengajuan pertama.') }}</p>
+                        <x-ui.button href="{{ route('admin.templates.create') }}" class="mt-4">{{ __('Buat Template Pertama') }}</x-ui.button>
                     </x-ui.card>
                 </div>
             @endforelse

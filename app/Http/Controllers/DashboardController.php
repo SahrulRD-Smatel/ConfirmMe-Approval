@@ -21,6 +21,47 @@ class DashboardController extends Controller
             return redirect()->route('executive.dashboard');
         }
 
+        // System Administrator dashboard
+        if ($user->hasRole('admin')) {
+            $adminStats = [
+                'total_users' => \App\Models\User::count(),
+                'users_growth' => \App\Models\User::whereMonth('created_at', now()->month)->count(),
+                'total_departments' => \App\Models\Department::count(),
+                'total_roles' => \Spatie\Permission\Models\Role::count(),
+                'active_features' => \Illuminate\Support\Facades\DB::table('system_features')->where('is_active', true)->count(),
+                'total_features' => \Illuminate\Support\Facades\DB::table('system_features')->count(),
+            ];
+
+            // Traffic Proxy: Audit Logs
+            $todayLogs = \App\Models\AuditLog::whereDate('created_at', today())->count();
+            $yesterdayLogs = \App\Models\AuditLog::whereDate('created_at', today()->subDay())->count();
+
+            // Recent Users
+            $recentUsers = \App\Models\User::with('roles')->latest()->take(5)->get();
+
+            // Role Distribution
+            $roles = \Spatie\Permission\Models\Role::withCount('users')->get();
+            $roleDistribution = [
+                'labels' => $roles->pluck('name')->map(fn($name) => ucwords(str_replace('_', ' ', $name)))->toArray(),
+                'data' => $roles->pluck('users_count')->toArray(),
+            ];
+
+            // Activity Chart (Last 7 days)
+            $activityData = [];
+            $activityLabels = [];
+            for ($i = 6; $i >= 0; $i--) {
+                $date = today()->subDays($i);
+                $activityLabels[] = $date->format('d M');
+                $activityData[] = \App\Models\AuditLog::whereDate('created_at', $date)->count();
+            }
+            $trafficChart = [
+                'labels' => $activityLabels,
+                'data' => $activityData,
+            ];
+
+            return view('admin.dashboard', compact('adminStats', 'todayLogs', 'yesterdayLogs', 'recentUsers', 'roleDistribution', 'trafficChart'));
+        }
+
         // Base stats query based on role
         $documentsQuery = Document::query();
 

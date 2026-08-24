@@ -2,12 +2,12 @@
     <x-slot name="header">
         <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Fitur & Modul Sistem</h1>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Aktifkan atau nonaktifkan fitur utama pada sistem. Perubahan akan langsung berdampak pada seluruh pengguna.</p>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Fitur & Modul Sistem') }}</h1>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Aktifkan atau nonaktifkan fitur utama pada sistem. Perubahan akan langsung berdampak pada seluruh pengguna.') }}</p>
             </div>
             <div class="rounded-xl border border-warning-200/80 bg-warning-50 px-4 py-2 text-xs leading-5 text-warning-800 shadow-sm dark:border-warning-800/60 dark:bg-warning-900/10 dark:text-warning-300">
-                <div class="flex items-center gap-2 font-semibold"><x-icon name="exclamation-triangle" class="h-4 w-4" /> Perubahan bersifat global</div>
-                <p class="mt-1 text-warning-700/80 dark:text-warning-400/80">Pastikan modul siap digunakan sebelum diaktifkan.</p>
+                <div class="flex items-center gap-2 font-semibold"><x-icon name="exclamation-triangle" class="h-4 w-4" /> {{ __('Perubahan bersifat global') }}</div>
+                <p class="mt-1 text-warning-700/80 dark:text-warning-400/80">{{ __('Pastikan modul siap digunakan sebelum diaktifkan.') }}</p>
             </div>
         </div>
     </x-slot>
@@ -38,11 +38,11 @@
                         <x-icon name="adjustments-horizontal" class="h-5 w-5" />
                     </div>
                     <div>
-                        <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400">Feature registry</p>
-                        <h2 class="mt-1 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">System modules</h2>
+                        <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400">{{ __('Feature registry') }}</p>
+                        <h2 class="mt-1 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('System modules') }}</h2>
                     </div>
                 </div>
-                <p class="max-w-sm text-xs leading-5 text-gray-400 sm:text-right">Setiap modul berdiri sendiri. Gunakan toggle untuk mengontrol ketersediaannya tanpa membuka halaman konfigurasi lain.</p>
+                <p class="max-w-sm text-xs leading-5 text-gray-400 sm:text-right">{{ __('Setiap modul berdiri sendiri. Gunakan toggle untuk mengontrol ketersediaannya tanpa membuka halaman konfigurasi lain.') }}</p>
             </div>
 
             <!-- Features Grid -->
@@ -76,10 +76,10 @@
                                     @endif
                                 </div>
                                 <div class="min-w-0">
-                                    <h3 class="truncate text-sm font-bold text-gray-900 dark:text-white">{{ $feature->name }}</h3>
+                                    <h3 class="truncate text-sm font-bold text-gray-900 dark:text-white">{{ __($feature->name) }}</h3>
                                     <span class="mt-2 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.12em] {{ $feature->is_active ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300' }} rounded-full px-2.5 py-1">
                                         <span class="h-1.5 w-1.5 rounded-full {{ $feature->is_active ? 'bg-green-500' : 'bg-gray-500' }}"></span>
-                                        {{ $feature->is_active ? 'Aktif' : 'Nonaktif' }}
+                                        {{ $feature->is_active ? __('Aktif') : __('Nonaktif') }}
                                     </span>
                                 </div>
                             </div>
@@ -92,17 +92,17 @@
                                     class="relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-4 focus:ring-primary-600/20 focus:ring-offset-2 {{ $feature->is_active ? 'bg-primary-600' : 'bg-gray-200 dark:bg-gray-600' }}"
                                     role="switch"
                                     aria-checked="{{ $feature->is_active ? 'true' : 'false' }}">
-                                    <span class="sr-only">Toggle feature</span>
+                                    <span class="sr-only">{{ __('Toggle feature') }}</span>
                                     <span aria-hidden="true"
                                         class="pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out {{ $feature->is_active ? 'translate-x-5' : 'translate-x-0' }}">
                                     </span>
                                 </button>
                             </form>
                         </div>
-                        <p class="mt-4 line-clamp-2 min-h-[2.5rem] text-xs leading-5 text-gray-500 dark:text-gray-400">{{ $feature->description }}</p>
+                        <p class="mt-4 line-clamp-2 min-h-[2.5rem] text-xs leading-5 text-gray-500 dark:text-gray-400">{{ __($feature->description) }}</p>
                         <div class="mt-auto flex items-center justify-between border-t border-gray-200/70 pt-3 text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400 dark:border-gray-700/70 dark:text-gray-500">
-                            <span>System feature</span>
-                            <span class="inline-flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full {{ $feature->is_active ? 'bg-green-500' : 'bg-gray-400' }}"></span>{{ $feature->is_active ? 'Ready' : 'Paused' }}</span>
+                            <span>{{ __('System feature') }}</span>
+                            <span class="inline-flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full {{ $feature->is_active ? 'bg-green-500' : 'bg-gray-400' }}"></span>{{ $feature->is_active ? __('Ready') : __('Paused') }}</span>
                         </div>
                     </article>
                 @endforeach

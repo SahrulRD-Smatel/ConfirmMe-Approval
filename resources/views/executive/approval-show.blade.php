@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="title">Review Dokumen - Executive</x-slot>
+    <x-slot name="title">{{ __('Review Dokumen - Executive') }}</x-slot>
 
     <x-slot name="header">
         <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
@@ -41,26 +41,26 @@
             {{-- Document Details --}}
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft border border-gray-200/80 dark:border-gray-700/80">
                 <div class="px-6 py-4 border-b border-gray-200/80 dark:border-gray-700/80">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Detail Dokumen</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Detail Dokumen') }}</h3>
                 </div>
                 <div class="p-6 space-y-4">
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Pengaju</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Pengaju') }}</p>
                             <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $document->user->name }}</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Departemen</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Departemen') }}</p>
                             <p class="text-sm font-medium text-gray-900 dark:text-white">
                                 {{ $document->department ?? '-' }}</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Tanggal Pengajuan</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Tanggal Pengajuan') }}</p>
                             <p class="text-sm font-medium text-gray-900 dark:text-white">
                                 {{ $document->created_at->format('d M Y, H:i') }}</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Priority</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Priority') }}</p>
                             @php
                                 $priorityColors = [
                                     'urgent' => 'bg-red-100 text-red-800',
@@ -77,13 +77,13 @@
                     </div>
 
                     <div class="pt-4 border-t border-gray-200/80 dark:border-gray-700/80">
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Deskripsi</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">{{ __('Deskripsi') }}</p>
                         <p class="text-sm text-gray-900 dark:text-white">
-                            {{ $document->description ?? 'Tidak ada deskripsi' }}</p>
+                            {{ $document->description ?? __('Tidak ada deskripsi') }}</p>
                     </div>
 
                     <div class="pt-4 border-t border-gray-200/80 dark:border-gray-700/80">
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Nilai Dokumen</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">{{ __('Nilai Dokumen') }}</p>
                         @php
                             $financeApproval = $document->approvals()
                                 ->where('status', 'approved')
@@ -104,12 +104,12 @@
                                     Rp {{ number_format($financeApproval->approved_amount, 0, ',', '.') }}
                                 </p>
                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
-                                    Diubah oleh Finance
+                                    {{ __('Diubah oleh Finance') }}
                                 </span>
                             </div>
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                Selisih: Rp {{ number_format(abs($document->estimated_budget - $financeApproval->approved_amount), 0, ',', '.') }}
-                                ({{ $financeApproval->approved_amount < $document->estimated_budget ? 'dikurangi' : 'ditambah' }})
+                                {{ __('Selisih') }}: Rp {{ number_format(abs($document->estimated_budget - $financeApproval->approved_amount), 0, ',', '.') }}
+                                ({{ $financeApproval->approved_amount < $document->estimated_budget ? __('dikurangi') : __('ditambah') }})
                             </p>
                         @else
                             <p class="text-2xl font-bold text-gray-900 dark:text-white">
@@ -128,7 +128,7 @@
             @if($document->attachments->isNotEmpty())
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft border border-gray-200/80 dark:border-gray-700/80">
                     <div class="px-6 py-4 border-b border-gray-200/80 dark:border-gray-700/80">
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Lampiran</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Lampiran') }}</h3>
                     </div>
                     <div class="p-6">
                         <div class="space-y-2">
@@ -141,7 +141,7 @@
                                     </svg>
                                     <div class="flex-1 min-w-0">
                                         <p class="text-sm font-medium text-gray-900 dark:text-white truncate">
-                                            {{ $attachment->original_filename ?? $attachment->original_name ?? 'File' }}</p>
+                                            {{ $attachment->original_filename ?? $attachment->original_name ?? __('File') }}</p>
                                         <p class="text-xs text-gray-500 dark:text-gray-400">
                                             {{ $attachment->file_size_human ?? $attachment->human_file_size ?? '' }}</p>
                                     </div>
@@ -159,18 +159,17 @@
             {{-- Action Card - 2FA will be checked in controller when submitting --}}
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft border border-gray-200/80 dark:border-gray-700/80">
                     <div class="px-6 py-4 border-b border-gray-200/80 dark:border-gray-700/80">
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Keputusan Anda</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Keputusan Anda') }}</h3>
                     </div>
                     <div class="p-6 space-y-4">
                         {{-- Approve Form --}}
                         <form action="{{ route('executive.approvals.approve', $document) }}" method="POST">
                             @csrf
                             <div class="mb-3">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Catatan
-                                    (opsional)</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Catatan (opsional)') }}</label>
                                 <textarea name="comment" rows="2"
                                     class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-xl"
-                                    placeholder="Tambahkan catatan..."></textarea>
+                                    placeholder="{{ __('Tambahkan catatan...') }}"></textarea>
                             </div>
                             <button type="submit"
                                 class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl">
@@ -178,7 +177,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M5 13l4 4L19 7" />
                                 </svg>
-                                Setujui Dokumen
+                                {{ __('Setujui Dokumen') }}
                             </button>
                         </form>
 
@@ -187,7 +186,7 @@
                                 <div class="w-full border-t border-gray-200/80 dark:border-gray-700/80"></div>
                             </div>
                             <div class="relative flex justify-center text-sm">
-                                <span class="px-2 bg-white dark:bg-gray-800 text-gray-500">atau</span>
+                                <span class="px-2 bg-white dark:bg-gray-800 text-gray-500">{{ __('atau') }}</span>
                             </div>
                         </div>
 
@@ -202,24 +201,23 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M6 18L18 6M6 6l12 12" />
                                 </svg>
-                                Tolak Dokumen
+                                {{ __('Tolak Dokumen') }}
                             </button>
                             <div x-show="showReject" x-cloak class="space-y-3">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Alasan
-                                        penolakan <span class="text-red-500">*</span></label>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Alasan penolakan') }} <span class="text-red-500">*</span></label>
                                     <textarea name="comment" rows="3" required
                                         class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-xl"
-                                        placeholder="Jelaskan alasan penolakan..."></textarea>
+                                        placeholder="{{ __('Jelaskan alasan penolakan...') }}"></textarea>
                                 </div>
                                 <div class="flex gap-2">
                                     <button type="button" @click="showReject = false"
                                         class="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium rounded-xl">
-                                        Batal
+                                        {{ __('Batal') }}
                                     </button>
                                     <button type="submit"
                                         class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl">
-                                        Konfirmasi Tolak
+                                        {{ __('Konfirmasi Tolak') }}
                                     </button>
                                 </div>
                             </div>
@@ -230,7 +228,7 @@
                                 <div class="w-full border-t border-gray-200/80 dark:border-gray-700/80"></div>
                             </div>
                             <div class="relative flex justify-center text-sm">
-                                <span class="px-2 bg-white dark:bg-gray-800 text-gray-500">atau</span>
+                                <span class="px-2 bg-white dark:bg-gray-800 text-gray-500">{{ __('atau') }}</span>
                             </div>
                         </div>
 
@@ -245,29 +243,28 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
                                 </svg>
-                                Minta Revisi
+                                {{ __('Minta Revisi') }}
                             </button>
                             <div x-show="showRevise" x-cloak class="space-y-3">
                                 <div class="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800">
                                     <p class="text-xs text-amber-800 dark:text-amber-300">
-                                        Dokumen akan dikembalikan ke pengaju untuk diperbaiki sesuai catatan Anda.
+                                        {{ __('Dokumen akan dikembalikan ke pengaju untuk diperbaiki sesuai catatan Anda.') }}
                                     </p>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Catatan
-                                        revisi <span class="text-red-500">*</span></label>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Catatan revisi') }} <span class="text-red-500">*</span></label>
                                     <textarea name="comment" rows="3" required
                                         class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-xl"
-                                        placeholder="Tuliskan apa yang perlu diperbaiki..."></textarea>
+                                        placeholder="{{ __('Tuliskan apa yang perlu diperbaiki...') }}"></textarea>
                                 </div>
                                 <div class="flex gap-2">
                                     <button type="button" @click="showRevise = false"
                                         class="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium rounded-xl">
-                                        Batal
+                                        {{ __('Batal') }}
                                     </button>
                                     <button type="submit"
                                         class="flex-1 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-medium rounded-xl">
-                                        Konfirmasi Revisi
+                                        {{ __('Konfirmasi Revisi') }}
                                     </button>
                                 </div>
                             </div>
@@ -319,7 +316,7 @@
                                 </div>
                             </div>
                         @empty
-                            <p class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">Belum ada aktivitas</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">{{ __('Belum ada aktivitas') }}</p>
                         @endforelse
                     </div>
                 </div>

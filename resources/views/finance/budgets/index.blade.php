@@ -1,25 +1,25 @@
 <x-app-layout>
-    <x-slot name="title">Kelola Anggaran</x-slot>
+    <x-slot name="title">{{ __('Kelola Anggaran') }}</x-slot>
 
     <x-slot name="header">
         <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Kelola Anggaran</h1>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Manajemen budget departemen</p>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Kelola Anggaran') }}</h1>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Manajemen budget departemen') }}</p>
             </div>
-            <x-ui.button href="{{ route('finance.budgets.create') }}" icon="plus">Tambah Budget</x-ui.button>
+            <x-ui.button href="{{ route('finance.budgets.create') }}" icon="plus">{{ __('Tambah Budget') }}</x-ui.button>
         </div>
     </x-slot>
 
     <!-- Summary Cards -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <x-ui.stat-card title="Total Budget" :value="'Rp ' . number_format($totalBudget, 0, ',', '.')"
+        <x-ui.stat-card title="{{ __('Total Budget') }}" :value="'Rp ' . number_format($totalBudget, 0, ',', '.')"
             icon="banknotes" />
-        <x-ui.stat-card title="Terpakai" :value="'Rp ' . number_format($usedBudget, 0, ',', '.')"
+        <x-ui.stat-card title="{{ __('Terpakai') }}" :value="'Rp ' . number_format($usedBudget, 0, ',', '.')"
             icon="arrow-trending-down" status="warning" />
-        <x-ui.stat-card title="Tersedia" :value="'Rp ' . number_format($availableBudget, 0, ',', '.')"
+        <x-ui.stat-card title="{{ __('Tersedia') }}" :value="'Rp ' . number_format($availableBudget, 0, ',', '.')"
             icon="arrow-trending-up" status="success" />
-        <x-ui.stat-card title="Budget Aktif" :value="$activeBudgets" icon="check-circle" status="info" />
+        <x-ui.stat-card title="{{ __('Budget Aktif') }}" :value="$activeBudgets" icon="check-circle" status="info" />
     </div>
 
     <!-- Budgets Table -->
@@ -28,12 +28,12 @@
             <table class="min-w-[760px] w-full divide-y divide-gray-200/80 dark:divide-gray-700/80">
                 <thead class="bg-gray-50/80 dark:bg-gray-800">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Budget</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Departemen</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Terpakai</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Progress</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Nama Budget') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Departemen') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Total') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Terpakai') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Progress') }}</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{{ __('Aksi') }}</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200/80 dark:divide-gray-700/80">
@@ -69,7 +69,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-12 text-center text-gray-500">Belum ada budget</td>
+                            <td colspan="6" class="px-6 py-12 text-center text-gray-500">{{ __('Belum ada budget') }}</td>
                         </tr>
                     @endforelse
                 </tbody>

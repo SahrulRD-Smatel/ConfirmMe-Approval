@@ -6,8 +6,7 @@
         </div>
     </x-slot>
 
-    <div class="py-5">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
             {{-- Stats Cards --}}
             <div class="mb-7 grid grid-cols-2 gap-4 md:grid-cols-4">
                 <x-ui.stat-card title="Pinjaman Aktif" :value="$stats['active_loans']" icon="currency-dollar" color="primary" />
@@ -97,6 +96,5 @@
                     {{ $loans->links() }}
                 </div>
             @endif
-        </div>
-    </div>
+
 </x-app-layout>

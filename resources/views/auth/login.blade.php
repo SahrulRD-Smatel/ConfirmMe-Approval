@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Login - {{ config('app.name', 'ConfirmMe') }}</title>
+    <title>{{ __('Login') }} - {{ config('app.name', 'ConfirmMe') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -627,8 +627,8 @@
 
                 <!-- Welcome Text -->
                 <div class="welcome-text">
-                    <h1>Selamat Datang! 👋</h1>
-                    <p>Silakan masuk untuk melanjutkan ke dashboard Anda</p>
+                    <h1>{{ __('Selamat Datang!') }} 👋</h1>
+                    <p>{{ __('Silakan masuk untuk melanjutkan ke dashboard Anda') }}</p>
                 </div>
 
                 <!-- Session Status -->
@@ -653,9 +653,9 @@
 
                     <!-- Email -->
                     <div class="form-group">
-                        <label for="email">Email <span>*</span></label>
+                        <label for="email">{{ __('Email') }} <span>*</span></label>
                         <div class="input-wrapper">
-                            <input type="email" id="email" name="email" placeholder="nama@perusahaan.com"
+                            <input type="email" id="email" name="email" placeholder="{{ __('nama@perusahaan.com') }}"
                                 value="{{ old('email') }}" required autofocus autocomplete="username">
                             <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2">
@@ -667,9 +667,9 @@
 
                     <!-- Password -->
                     <div class="form-group">
-                        <label for="password">Password <span>*</span></label>
+                        <label for="password">{{ __('Password') }} <span>*</span></label>
                         <div class="input-wrapper">
-                            <input type="password" id="password" name="password" placeholder="Masukkan password"
+                            <input type="password" id="password" name="password" placeholder="{{ __('Masukkan password') }}"
                                 required autocomplete="current-password">
                             <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2">
@@ -690,7 +690,7 @@
                     <div class="form-options">
                         <label class="remember-me">
                             <input type="checkbox" name="remember" id="remember">
-                            <span>Ingat saya</span>
+                            <span>{{ __('Ingat saya') }}</span>
                         </label>
                         <!-- @if (Route::has('password.request'))
                             <a href="{{ route('password.request') }}" class="forgot-password">Lupa password?</a>
@@ -699,7 +699,7 @@
 
                     <!-- Submit Button -->
                     <button type="submit" class="submit-btn" id="submitBtn">
-                        Masuk
+                        {{ __('Masuk') }}
                     </button>
                 </form>
             </div>
@@ -792,8 +792,8 @@
                 <!-- Hero Text -->
                 <div class="hero-text">
                     <h2>Document Approval System</h2>
-                    <p>Kelola persetujuan dokumen dengan <span class="highlight">Mudah</span>, <span
-                            class="highlight">Transparan</span>, dan <span class="highlight">Profesional</span></p>
+                    <p>{{ __('Kelola persetujuan dokumen dengan') }} <span class="highlight">{{ __('Mudah') }}</span>, <span
+                            class="highlight">{{ __('Transparan') }}</span>, {{ __('dan') }} <span class="highlight">{{ __('Profesional') }}</span></p>
                 </div>
 
                 <!-- Features -->
@@ -846,7 +846,7 @@
         document.getElementById('loginForm').addEventListener('submit', function () {
             const btn = document.getElementById('submitBtn');
             btn.classList.add('loading');
-            btn.textContent = 'Memproses';
+            btn.textContent = '{{ __('Memproses') }}';
         });
 
         // Add focus animations

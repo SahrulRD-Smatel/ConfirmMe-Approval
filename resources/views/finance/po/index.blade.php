@@ -1,11 +1,11 @@
 <x-app-layout>
-    <x-slot name="title">Purchase Orders</x-slot>
+    <x-slot name="title">{{ __('Purchase Orders') }}</x-slot>
 
     <x-slot name="header">
         <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Purchase Orders</h1>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Kelola Purchase Order</p>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Purchase Orders') }}</h1>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Kelola Purchase Order') }}</p>
             </div>
         </div>
     </x-slot>
@@ -16,19 +16,19 @@
             <div class="flex-1">
                 <input type="text" name="search" value="{{ request('search') }}"
                     class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
-                    placeholder="Cari nomor PO...">
+                    placeholder="{{ __('Cari nomor PO...') }}">
             </div>
             <div class="w-full sm:w-48">
                 <select name="status"
                     class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
-                    <option value="">Semua Status</option>
-                    <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>Draft</option>
-                    <option value="issued" {{ request('status') === 'issued' ? 'selected' : '' }}>Issued</option>
-                    <option value="received" {{ request('status') === 'received' ? 'selected' : '' }}>Received</option>
-                    <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                    <option value="">{{ __('Semua Status') }}</option>
+                    <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>{{ __('Draft') }}</option>
+                    <option value="issued" {{ request('status') === 'issued' ? 'selected' : '' }}>{{ __('Issued') }}</option>
+                    <option value="received" {{ request('status') === 'received' ? 'selected' : '' }}>{{ __('Received') }}</option>
+                    <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>{{ __('Cancelled') }}</option>
                 </select>
             </div>
-            <x-ui.button type="submit" variant="secondary">Filter</x-ui.button>
+            <x-ui.button type="submit" variant="secondary">{{ __('Filter') }}</x-ui.button>
         </form>
     </x-ui.card>
 
@@ -42,8 +42,8 @@
                     <span class="relative inline-flex rounded-full h-3 w-3 bg-primary-500"></span>
                 </span>
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
-                    Menunggu Generate PO
-                    <span class="text-sm font-normal text-gray-500">({{ $pendingDocuments->count() }} dokumen)</span>
+                    {{ __('Menunggu Generate PO') }}
+                    <span class="text-sm font-normal text-gray-500">({{ $pendingDocuments->count() }} {{ __('dokumen') }})</span>
                 </h2>
             </div>
 
@@ -56,16 +56,16 @@
                                 <span class="text-sm font-medium text-primary-600 dark:text-primary-400">
                                     {{ $doc->document_number }}
                                 </span>
-                                <x-ui.badge status="approved">Disetujui</x-ui.badge>
+                                <x-ui.badge status="approved">{{ __('Disetujui') }}</x-ui.badge>
                             </div>
                             <p class="mt-1 text-sm text-gray-900 dark:text-white truncate">{{ $doc->title }}</p>
                             <div class="mt-1 flex items-center gap-4 text-xs text-gray-500">
-                                <span>Oleh: {{ $doc->user->name }}</span>
+                                <span>{{ __('Oleh') }}: {{ $doc->user->name }}</span>
                                 @if($doc->approved_budget)
-                                    <span class="font-medium text-green-600">Budget: Rp
+                                    <span class="font-medium text-green-600">{{ __('Budget') }}: Rp
                                         {{ number_format($doc->approved_budget, 0, ',', '.') }}</span>
                                 @elseif($doc->estimated_budget)
-                                    <span>Estimasi: Rp {{ number_format($doc->estimated_budget, 0, ',', '.') }}</span>
+                                    <span>{{ __('Estimasi') }}: Rp {{ number_format($doc->estimated_budget, 0, ',', '.') }}</span>
                                 @endif
                             </div>
                         </div>
@@ -76,7 +76,7 @@
                             </a>
                             <x-ui.button href="{{ route('finance.po.create', ['document_id' => $doc->id]) }}" variant="primary"
                                 icon="plus" size="sm">
-                                Generate PO
+                                {{ __('Generate PO') }}
                             </x-ui.button>
                         </div>
                     </div>
@@ -91,12 +91,12 @@
             <table class="min-w-[900px] w-full divide-y divide-gray-200/80 dark:divide-gray-700/80">
                 <thead class="bg-gray-50/80 dark:bg-gray-800">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No. PO</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Dokumen</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Vendor</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('No. PO') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Dokumen') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Vendor') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Total') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Status') }}</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{{ __('Aksi') }}</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200/80 dark:divide-gray-700/80">
@@ -133,7 +133,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-12 text-center text-gray-500">Belum ada PO</td>
+                            <td colspan="6" class="px-6 py-12 text-center text-gray-500">{{ __('Belum ada PO') }}</td>
                         </tr>
                     @endforelse
                 </tbody>

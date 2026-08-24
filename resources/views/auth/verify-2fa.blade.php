@@ -29,10 +29,10 @@
                 {{-- Header --}}
                 <div class="text-center">
                     <h2 class="text-2xl font-bold text-gray-900 dark:text-white font-display">
-                        Verifikasi 2FA
+                        {{ __('Verifikasi 2FA') }}
                     </h2>
                     <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                        Masukkan kode OTP 6 digit yang telah dikirim ke email Anda
+                        {{ __('Masukkan kode OTP 6 digit yang telah dikirim ke email Anda') }}
                     </p>
                 </div>
 
@@ -46,7 +46,7 @@
                             </svg>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <p class="text-xs font-medium text-primary-600/70 dark:text-primary-400/70 uppercase tracking-wider">Dokumen yang akan disetujui</p>
+                            <p class="text-xs font-medium text-primary-600/70 dark:text-primary-400/70 uppercase tracking-wider">{{ __('Dokumen yang akan disetujui') }}</p>
                             <p class="mt-1 text-sm font-semibold text-gray-900 dark:text-white truncate">{{ $document->title }}</p>
                             <p class="text-xs text-gray-500 dark:text-gray-400 font-mono">{{ $document->document_number }}</p>
                             @if($document->estimated_budget)
@@ -63,7 +63,7 @@
                                     </p>
                                     <p class="text-sm font-bold text-primary-600 dark:text-primary-400">
                                         Rp {{ number_format($financeApproval2fa->approved_amount, 0, ',', '.') }}
-                                        <span class="text-xs font-normal text-yellow-600 dark:text-yellow-400">(Disetujui Finance)</span>
+                                        <span class="text-xs font-normal text-yellow-600 dark:text-yellow-400">({{ __('Disetujui Finance') }})</span>
                                     </p>
                                 @else
                                     <p class="mt-1.5 text-sm font-bold text-primary-600 dark:text-primary-400">
@@ -80,7 +80,7 @@
                     <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/50 rounded-xl p-4">
                         <div class="flex items-center gap-2 mb-2">
                             <span class="flex h-2 w-2 rounded-full bg-amber-500 animate-pulse"></span>
-                            <span class="text-xs font-bold text-amber-700 dark:text-amber-300 uppercase tracking-wider">Debug Mode</span>
+                            <span class="text-xs font-bold text-amber-700 dark:text-amber-300 uppercase tracking-wider">{{ __('Debug Mode') }}</span>
                         </div>
                         <div class="bg-white dark:bg-gray-800 rounded-lg p-3 text-center border border-amber-100 dark:border-amber-800/30">
                             <span class="text-2xl font-mono font-bold tracking-[0.5em] text-amber-700 dark:text-amber-300">
@@ -125,7 +125,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                         </svg>
-                        Verifikasi
+                        {{ __('Verifikasi') }}
                     </button>
                 </form>
 
@@ -142,15 +142,15 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        <span>Kode berlaku <span id="countdown" class="font-semibold text-primary-600 dark:text-primary-400 tabular-nums">10:00</span></span>
+                        <span>{{ __('Kode berlaku') }} <span id="countdown" class="font-semibold text-primary-600 dark:text-primary-400 tabular-nums">10:00</span></span>
                     </div>
 
                     <p class="text-sm text-gray-500 dark:text-gray-400">
-                        Tidak menerima kode?
+                        {{ __('Tidak menerima kode?') }}
                         <form method="POST" action="{{ route('2fa.resend', $document) }}" class="inline">
                             @csrf
                             <button type="submit" class="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300 font-semibold hover:underline transition-colors">
-                                Kirim ulang OTP
+                                {{ __('Kirim ulang OTP') }}
                             </button>
                         </form>
                     </p>
@@ -164,7 +164,7 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
-                    Kembali ke daftar approval
+                    {{ __('Kembali ke daftar approval') }}
                 </a>
             </div>
         </div>
@@ -297,7 +297,7 @@
                 }
 
                 if (timeLeft <= 0) {
-                    countdownEl.textContent = 'Kadaluarsa';
+                    countdownEl.textContent = '{{ __('Kadaluarsa') }}';
                     countdownEl.classList.add('text-red-600');
                     clearInterval(timer);
                     return;

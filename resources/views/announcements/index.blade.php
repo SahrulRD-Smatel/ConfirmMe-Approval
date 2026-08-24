@@ -1,14 +1,14 @@
 <x-app-layout>
-    <x-slot name="title">Kelola Pengumuman</x-slot>
+    <x-slot name="title">{{ __('Kelola Pengumuman') }}</x-slot>
 
     <x-slot name="header">
         <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Kelola Pengumuman</h1>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Manage announcements for the dashboard feed.
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Kelola Pengumuman') }}</h1>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Manage announcements for the dashboard feed.') }}
                 </p>
             </div>
-            <x-ui.button href="{{ route('announcements.create') }}" icon="plus">Buat Pengumuman</x-ui.button>
+            <x-ui.button href="{{ route('announcements.create') }}" icon="plus">{{ __('Buat Pengumuman') }}</x-ui.button>
         </div>
     </x-slot>
 
@@ -17,12 +17,12 @@
             <table class="min-w-full divide-y divide-gray-200/80 dark:divide-gray-700/80">
                 <thead class="bg-gray-50/80 dark:bg-gray-800">
                     <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Judul</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Created By</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
-                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Aksi</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Judul') }}</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Type') }}</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Status') }}</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Created By') }}</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Date') }}</th>
+                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Aksi') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200/80 dark:divide-gray-700/80">
@@ -43,10 +43,10 @@
                                             <td class="px-4 py-3">
                                                 <span
                                                     class="px-2 py-1 rounded-full text-xs {{ $announcement->is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
-                                                    {{ $announcement->is_active ? 'Active' : 'Archived' }}
+                                                    {{ $announcement->is_active ? __('Active') : __('Archived') }}
                                                 </span>
                                             </td>
-                                            <td class="px-4 py-3 text-gray-500">{{ $announcement->creator->name ?? 'System' }}</td>
+                                            <td class="px-4 py-3 text-gray-500">{{ $announcement->creator->name ?? __('System') }}</td>
                                             <td class="px-4 py-3 text-gray-500">{{ $announcement->created_at->format('d M Y') }}</td>
                                             <td class="px-4 py-3 text-right flex justify-end gap-2">
                                                 <a href="{{ route('announcements.edit', $announcement) }}"
@@ -54,7 +54,7 @@
                                                     <x-icon name="pencil" class="w-5 h-5" />
                                                 </a>
                                                 <form action="{{ route('announcements.destroy', $announcement) }}" method="POST"
-                                                    onsubmit="confirmAction(event, 'Hapus pengumuman ini?')">
+                                                    onsubmit="confirmAction(event, '{{ __('Hapus pengumuman ini?') }}')">
                                                     @csrf @method('DELETE')
                                                     <button type="submit" class="text-red-600 hover:text-red-800">
                                                         <x-icon name="trash" class="w-5 h-5" />
@@ -64,7 +64,7 @@
                                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-4 py-8 text-center text-gray-500">Belum ada pengumuman.</td>
+                            <td colspan="6" class="px-4 py-8 text-center text-gray-500">{{ __('Belum ada pengumuman.') }}</td>
                         </tr>
                     @endforelse
                 </tbody>

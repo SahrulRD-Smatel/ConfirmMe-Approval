@@ -1,19 +1,19 @@
 <x-app-layout>
-    <x-slot name="title">Finance Dashboard</x-slot>
+    <x-slot name="title">{{ __('Finance Dashboard') }}</x-slot>
 
     <x-slot name="header">
         <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Finance Dashboard</h1>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Overview Keuangan & Approval</p>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Finance Dashboard') }}</h1>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Overview Keuangan & Approval') }}</p>
             </div>
             <div class="flex items-center gap-2">
                 <x-ui.button href="{{ route('finance.budgets.index') }}" variant="secondary" icon="banknotes" size="sm">
-                    Budget
+                    {{ __('Budget') }}
                 </x-ui.button>
                 <x-ui.button href="{{ route('reports.index') }}" variant="secondary" icon="document-chart-bar"
                     size="sm">
-                    Laporan
+                    {{ __('Laporan') }}
                 </x-ui.button>
             </div>
         </div>
@@ -34,37 +34,91 @@
 
     {{-- SECTION 1: Financial Health (Budget KPIs) --}}
     <section class="mb-8 animate-fade-in-down">
-        <h2 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Financial Health (Tahun {{ date('Y') }})</h2>
+        <h2 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">{{ __('Financial Health (Tahun') }} {{ date('Y') }})</h2>
         <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
             {{-- Total Budget --}}
-            <x-ui.stat-card title="Total Budget" :value="'Rp ' . number_format($budgetKPIs['total'] / 1000000000, 1, ',', '.') . ' M'" icon="banknotes" color="primary">
-                <p class="text-xs text-gray-500 mt-1">Rp {{ number_format($budgetKPIs['total'], 0, ',', '.') }}</p>
-            </x-ui.stat-card>
+            <div class="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl p-5 relative overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <p class="text-white/80 text-xs font-bold uppercase tracking-wider mb-1">{{ __('Total Budget') }}</p>
+                        <h3 class="text-3xl font-bold text-white mb-1 truncate" title="Rp {{ number_format($budgetKPIs['total'], 0, ',', '.') }}">
+                            Rp {{ number_format($budgetKPIs['total'] / 1000000000, 1, ',', '.') }} M
+                        </h3>
+                    </div>
+                    <div class="p-2.5 bg-white/20 rounded-xl shrink-0">
+                        <x-icon name="banknotes" class="w-5 h-5 text-white" />
+                    </div>
+                </div>
+                <div>
+                    <span class="text-white/80 text-xs">Rp {{ number_format($budgetKPIs['total'], 0, ',', '.') }}</span>
+                </div>
+            </div>
 
             {{-- Committed --}}
-            <x-ui.stat-card title="Committed (PO)" :value="'Rp ' . number_format($budgetKPIs['committed'] / 1000000, 0, ',', '.') . ' Jt'" icon="lock-closed" color="info">
-                <div class="flex items-center gap-2 mt-1">
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
-                        <div class="bg-blue-500 h-1.5 rounded-full transition-all duration-1000 ease-out" style="width: {{ $budgetKPIs['committed_percentage'] }}%"></div>
+            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-5 relative overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <p class="text-white/80 text-xs font-bold uppercase tracking-wider mb-1">{{ __('Committed (PO)') }}</p>
+                        <h3 class="text-3xl font-bold text-white mb-1 truncate">
+                            Rp {{ number_format($budgetKPIs['committed'] / 1000000, 0, ',', '.') }} Jt
+                        </h3>
                     </div>
-                    <span class="text-xs text-gray-500">{{ $budgetKPIs['committed_percentage'] }}%</span>
+                    <div class="p-2.5 bg-white/20 rounded-xl shrink-0">
+                        <x-icon name="document-duplicate" class="w-5 h-5 text-white" />
+                    </div>
                 </div>
-            </x-ui.stat-card>
+                <div class="mt-2">
+                    <div class="flex justify-between items-center mb-1 text-white">
+                        <span class="text-white/80 text-[10px]">{{ __('Progress') }}</span>
+                        <span class="text-white font-bold text-[10px]">{{ $budgetKPIs['committed_percentage'] }}%</span>
+                    </div>
+                    <div class="w-full bg-black/20 rounded-full h-1.5 overflow-hidden">
+                        <div class="bg-white h-1.5 rounded-full" style="width: {{ $budgetKPIs['committed_percentage'] }}%"></div>
+                    </div>
+                </div>
+            </div>
 
             {{-- Used --}}
-            <x-ui.stat-card title="Terpakai (Actual)" :value="$budgetKPIs['used'] == 0 ? 'Rp 0' : 'Rp ' . number_format($budgetKPIs['used'] / 1000000, 0, ',', '.') . ' Jt'" icon="arrow-trending-up" color="warning">
-                <div class="flex items-center gap-2 mt-1">
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
-                        <div class="bg-orange-500 h-1.5 rounded-full transition-all duration-1000 ease-out" style="width: {{ $budgetKPIs['usage_percentage'] }}%"></div>
+            <div class="bg-gradient-to-br from-red-500 to-rose-600 rounded-2xl p-5 relative overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <p class="text-white/80 text-xs font-bold uppercase tracking-wider mb-1">{{ __('Terpakai (Actual)') }}</p>
+                        <h3 class="text-3xl font-bold text-white mb-1 truncate">
+                            {{ $budgetKPIs['used'] == 0 ? 'Rp 0' : 'Rp ' . number_format($budgetKPIs['used'] / 1000000, 0, ',', '.') . ' Jt' }}
+                        </h3>
                     </div>
-                    <span class="text-xs text-gray-500 font-medium">{{ $budgetKPIs['usage_percentage'] }}%</span>
+                    <div class="p-2.5 bg-white/20 rounded-xl shrink-0">
+                        <x-icon name="arrow-trending-up" class="w-5 h-5 text-white" />
+                    </div>
                 </div>
-            </x-ui.stat-card>
+                <div class="mt-2">
+                    <div class="flex justify-between items-center mb-1 text-white">
+                        <span class="text-white/80 text-[10px]">{{ __('Usage') }}</span>
+                        <span class="text-white font-bold text-[10px]">{{ $budgetKPIs['usage_percentage'] }}%</span>
+                    </div>
+                    <div class="w-full bg-black/20 rounded-full h-1.5 overflow-hidden">
+                        <div class="bg-white h-1.5 rounded-full" style="width: {{ $budgetKPIs['usage_percentage'] }}%"></div>
+                    </div>
+                </div>
+            </div>
 
             {{-- Remaining --}}
-            <x-ui.stat-card title="Sisa Budget" :value="$budgetKPIs['remaining'] == 0 ? 'Rp 0' : 'Rp ' . number_format($budgetKPIs['remaining'] / 1000000000, 1, ',', '.') . ' M'" icon="currency-dollar" color="success">
-                <p class="text-xs text-success-600/70 mt-1 font-medium tracking-wide uppercase">Available for use</p>
-            </x-ui.stat-card>
+            <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-5 relative overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <p class="text-white/80 text-xs font-bold uppercase tracking-wider mb-1">{{ __('Sisa Budget') }}</p>
+                        <h3 class="text-3xl font-bold text-white mb-1 truncate" title="Rp {{ number_format($budgetKPIs['remaining'], 0, ',', '.') }}">
+                            {{ $budgetKPIs['remaining'] == 0 ? 'Rp 0' : 'Rp ' . number_format($budgetKPIs['remaining'] / 1000000000, 1, ',', '.') . ' M' }}
+                        </h3>
+                    </div>
+                    <div class="p-2.5 bg-white/20 rounded-xl shrink-0">
+                        <x-icon name="currency-dollar" class="w-5 h-5 text-white" />
+                    </div>
+                </div>
+                <div>
+                    <span class="text-white/80 text-xs">{{ __('Available for use') }}</span>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -76,8 +130,7 @@
             {{-- Approval Queue --}}
             <div>
                 <div class="mb-4">
-                    <h2 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Menunggu
-                        Persetujuan</h2>
+                    <h2 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Menunggu Approval') }}</h2>
                 </div>
 
                 @if($approvalQueue->count() > 0)
@@ -86,10 +139,10 @@
                             <table class="min-w-[720px] w-full text-left text-sm">
                                 <thead class="bg-gray-50 dark:bg-gray-700/50 text-gray-500 font-medium">
                                     <tr>
-                                        <th class="px-4 py-3">Dokumen</th>
-                                        <th class="px-4 py-3">Type</th>
-                                        <th class="px-4 py-3 text-right">Nominal</th>
-                                        <th class="px-4 py-3 text-right">Aksi</th>
+                                        <th class="px-4 py-3">{{ __('Dokumen') }}</th>
+                                        <th class="px-4 py-3">{{ __('Type') }}</th>
+                                        <th class="px-4 py-3 text-right">{{ __('Nominal') }}</th>
+                                        <th class="px-4 py-3 text-right">{{ __('Aksi') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-200/80 dark:divide-gray-700/80">
@@ -112,7 +165,7 @@
                                             </td>
                                             <td class="px-4 py-3 text-right">
                                                 <x-ui.button href="{{ route('approvals.show', $doc) }}" size="xs"
-                                                    variant="primary">Review</x-ui.button>
+                                                    variant="primary">{{ __('Review') }}</x-ui.button>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -125,8 +178,8 @@
                         <div class="w-16 h-16 rounded-full bg-gray-50/80 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4">
                             <x-icon name="document-check" class="w-8 h-8 text-gray-300 dark:text-gray-600" />
                         </div>
-                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-1">Semua Selesai!</h3>
-                        <p class="text-gray-500 dark:text-gray-400">Tidak ada dokumen menunggu persetujuan Anda saat ini.</p>
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-1">{{ __('Semua Selesai!') }}</h3>
+                        <p class="text-gray-500 dark:text-gray-400">{{ __('Tidak ada dokumen menunggu persetujuan Anda saat ini.') }}</p>
                     </x-ui.card>
                 @endif
             </div>
@@ -138,14 +191,14 @@
                 <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
                     {{-- Cash Flow --}}
                     <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200/80 dark:border-gray-700/80">
-                        <h3 class="text-sm font-semibold mb-4 text-gray-900 dark:text-white">Cash Flow (YTD)</h3>
+                        <h3 class="text-sm font-semibold mb-4 text-gray-900 dark:text-white">{{ __('Cash Flow (YTD)') }}</h3>
                         <div class="h-48">
                             <canvas id="cashFlowChart"></canvas>
                         </div>
                     </div>
                     {{-- Budget vs Actual --}}
                     <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200/80 dark:border-gray-700/80">
-                        <h3 class="text-sm font-semibold mb-4 text-gray-900 dark:text-white">Budget vs Actual</h3>
+                        <h3 class="text-sm font-semibold mb-4 text-gray-900 dark:text-white">{{ __('Budget vs Actual') }}</h3>
                         <div class="h-48">
                             <canvas id="budgetChart"></canvas>
                         </div>
@@ -160,7 +213,7 @@
             {{-- Outstanding Invoices Table --}}
             <x-ui.card>
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-semibold text-gray-900 dark:text-white">Invoice Outstanding</h3>
+                    <h3 class="font-semibold text-gray-900 dark:text-white">{{ __('Invoice Outstanding') }}</h3>
                     <span class="text-xs font-bold text-red-600 bg-red-50 dark:bg-red-900/30 px-2 py-1 rounded">
                         {{ $outstandingTotal == 0 ? 'Rp 0' : 'Rp ' . number_format($outstandingTotal / 1000000, 0, ',', '.') . ' Jt' }}
                     </span>
@@ -178,11 +231,11 @@
                             <div class="text-right">
                                 <div class="font-medium {{ $invoice->isOverdue() ? 'text-red-600' : 'text-gray-700' }}">Rp
                                     {{ number_format(($invoice->total_amount - $invoice->paid_amount) / 1000000, 1) }}jt</div>
-                                @if($invoice->isOverdue()) <span class="text-[10px] text-red-500">OVERDUE</span> @endif
+                                @if($invoice->isOverdue()) <span class="text-[10px] text-red-500">{{ __('OVERDUE') }}</span> @endif
                             </div>
                         </div>
                     @empty
-                        <p class="text-sm text-gray-500 text-center py-2">Semua aman!</p>
+                        <p class="text-sm text-gray-500 text-center py-2">{{ __('Semua aman!') }}</p>
                     @endforelse
                 </div>
             </x-ui.card>
@@ -190,7 +243,7 @@
             {{-- Pending PO --}}
             <x-ui.card>
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-semibold text-gray-900 dark:text-white">Pending Invoice (PO)</h3>
+                    <h3 class="font-semibold text-gray-900 dark:text-white">{{ __('Pending Invoice (PO)') }}</h3>
                     <span class="text-xs font-bold text-blue-600 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded">
                         {{ $pendingPOTotal == 0 ? 'Rp 0' : 'Rp ' . number_format($pendingPOTotal / 1000000, 0, ',', '.') . ' Jt' }}
                     </span>
@@ -210,14 +263,14 @@
                             </div>
                         </div>
                     @empty
-                        <p class="text-sm text-gray-500 text-center py-2">Tidak ada PO pending.</p>
+                        <p class="text-sm text-gray-500 text-center py-2">{{ __('Tidak ada PO pending.') }}</p>
                     @endforelse
                 </div>
             </x-ui.card>
 
             {{-- Distribution Stats --}}
             <x-ui.card>
-                <h3 class="font-semibold text-gray-900 dark:text-white mb-2">Distribusi</h3>
+                <h3 class="font-semibold text-gray-900 dark:text-white mb-2">{{ __('Distribusi per Divisi') }}</h3>
                 <div class="h-40 flex justify-center">
                     <canvas id="distributionChart"></canvas>
                 </div>
@@ -228,33 +281,31 @@
     {{-- SECTION 3: Employee Loans --}}
     <section class="mb-8">
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Pinjaman
-                Karyawan</h2>
+            <h2 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Pinjaman Karyawan') }}</h2>
         </div>
 
         <x-ui.card>
             <div class="grid grid-cols-2 md:grid-cols-5 gap-4 divide-x divide-gray-100 dark:divide-gray-700">
                 <div class="px-4">
-                    <p class="text-xs text-gray-500">Total Outstanding</p>
+                    <p class="text-xs text-gray-500">{{ __('Total Outstanding') }}</p>
                     <p class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ $loanStats['total_outstanding'] == 0 ? 'Rp 0' : 'Rp ' . number_format($loanStats['total_outstanding'] / 1000000, 1, ',', '.') . ' Jt' }}</p>
                 </div>
                 <div class="px-4">
-                    <p class="text-xs text-gray-500">Aktif</p>
+                    <p class="text-xs text-gray-500">{{ __('Aktif') }}</p>
                     <p class="text-xl font-bold text-blue-600">{{ $loanStats['active'] }} <span
-                            class="text-xs text-gray-400 font-normal">Karyawan</span></p>
+                            class="text-xs text-gray-400 font-normal">{{ __('Karyawan') }}</span></p>
                 </div>
                 <div class="px-4">
-                    <p class="text-xs text-gray-500">Menunggu Cair</p>
+                    <p class="text-xs text-gray-500">{{ __('Menunggu Cair') }}</p>
                     <p class="text-xl font-bold text-yellow-600">{{ $loanStats['pending_disbursement'] }} <span
-                            class="text-xs text-gray-400 font-normal">Request</span></p>
+                            class="text-xs text-gray-400 font-normal">{{ __('Request') }}</span></p>
                 </div>
                 <div class="px-4">
-                    <p class="text-xs text-gray-500">Total Cair</p>
+                    <p class="text-xs text-gray-500">{{ __('Total Cair') }}</p>
                     <p class="text-xl font-bold text-green-600">{{ $loanStats['total_disbursed'] == 0 ? 'Rp 0' : 'Rp ' . number_format($loanStats['total_disbursed'] / 1000000, 1, ',', '.') . ' Jt' }}</p>
                 </div>
                 <div class="px-4 flex items-center justify-end">
-                    <x-ui.button href="{{ route('finance.loans.index') }}" size="sm" variant="primary">Detail
-                        Loans</x-ui.button>
+                    <x-ui.button href="{{ route('finance.loans.index') }}" size="sm" variant="primary">{{ __('Detail Loans') }}</x-ui.button>
                 </div>
             </div>
         </x-ui.card>

@@ -153,7 +153,7 @@
                         <input type="text" name="related_department" id="related_department"
                             value="{{ old('related_department', $metadata['related_department'] ?? '') }}"
                             class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
-                            placeholder="IT, HR, Finance, dll">
+                            placeholder="{{ __('IT, HR, Finance, dll') }}">
                     </div>
                 </div>
             </x-ui.card>
@@ -180,10 +180,10 @@
                             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Nama Vendor <span class="text-danger-500">*</span>
                         </label>
-                        <input type="text" name="vendor_name" id="vendor_name"
+                        <input type="text" name="vendor_name" id="invoice_vendor_name"
                             value="{{ old('vendor_name', $metadata['vendor_name'] ?? '') }}"
                             class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
-                            placeholder="PT Supplier Indonesia">
+                            placeholder="{{ __('PT Supplier Indonesia') }}">
                     </div>
                     <div>
                         <label for="vendor_npwp"
@@ -193,7 +193,7 @@
                         <input type="text" name="vendor_npwp" id="vendor_npwp"
                             value="{{ old('vendor_npwp', $metadata['vendor_npwp'] ?? '') }}"
                             class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
-                            placeholder="XX.XXX.XXX.X-XXX.XXX">
+                            placeholder="{{ __('XX.XXX.XXX.X-XXX.XXX') }}">
                     </div>
                     <div class="md:col-span-2">
                         <label for="item_description"
@@ -202,7 +202,7 @@
                         </label>
                         <textarea name="item_description" id="item_description" rows="3"
                             class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
-                            placeholder="1. Laptop x 5 unit @ Rp 15.000.000">{{ old('item_description', $metadata['item_description'] ?? '') }}</textarea>
+                            placeholder="{{ __('1. Laptop x 5 unit @ Rp 15.000.000') }}">{{ old('item_description', $metadata['item_description'] ?? '') }}</textarea>
                     </div>
                     <div>
                         <label for="subtotal" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -244,7 +244,7 @@
                         <input type="text" name="budget_code" id="budget_code"
                             value="{{ old('budget_code', $metadata['budget_code'] ?? '') }}"
                             class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
-                            placeholder="IT-2026-001">
+                            placeholder="{{ __('IT-2026-001') }}">
                     </div>
                     <div>
                         <label for="expected_delivery"
@@ -272,7 +272,7 @@
                         <input type="text" name="invoice_number" id="invoice_number"
                             value="{{ old('invoice_number', $metadata['invoice_number'] ?? '') }}"
                             class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
-                            placeholder="INV-2026-0001">
+                            placeholder="{{ __('INV-2026-0001') }}">
                     </div>
                     <div>
                         <label for="invoice_date"
@@ -291,7 +291,7 @@
                         <input type="text" name="related_po_number" id="related_po_number"
                             value="{{ old('related_po_number', $metadata['related_po_number'] ?? '') }}"
                             class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
-                            placeholder="PO-2026-0001">
+                            placeholder="{{ __('PO-2026-0001') }}">
                     </div>
                     <div>
                         <label for="vendor_name_invoice"
@@ -334,7 +334,7 @@
                         <input type="text" name="bank_account" id="bank_account"
                             value="{{ old('bank_account', $metadata['bank_account'] ?? '') }}"
                             class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
-                            placeholder="BCA - 1234567890 a.n. PT Supplier">
+                            placeholder="{{ __('BCA - 1234567890 a.n. PT Supplier') }}">
                     </div>
                     <div>
                         <label for="tax_invoice"
@@ -344,7 +344,7 @@
                         <input type="text" name="tax_invoice" id="tax_invoice"
                             value="{{ old('tax_invoice', $metadata['tax_invoice'] ?? '') }}"
                             class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
-                            placeholder="010.000-26.00000001">
+                            placeholder="{{ __('010.000-26.00000001') }}">
                     </div>
                 </div>
             </x-ui.card>

@@ -23,7 +23,7 @@
                    name="q" 
                    type="search" 
                    class="block h-full w-full border-0 py-0 pl-8 pr-0 text-gray-900 dark:text-white bg-transparent placeholder:text-gray-400 focus:ring-0 sm:text-sm" 
-                   placeholder="Cari dokumen, nomor, atau judul...">
+                   placeholder="{{ __('Cari dokumen, nomor, atau judul...') }}">
         </form>
 
         <div class="flex items-center gap-x-4 lg:gap-x-6">
@@ -56,7 +56,7 @@
                      class="absolute right-0 mt-2 w-80 origin-top-right rounded-lg bg-white dark:bg-gray-800 shadow-lg ring-1 ring-gray-200 dark:ring-gray-700 focus:outline-none"
                      style="display: none;">
                     <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-                        <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Notifikasi</h3>
+                        <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ __('Notifikasi') }}</h3>
                     </div>
                     <div class="max-h-96 overflow-y-auto">
                         @forelse(auth()->user()->notifications->take(5) as $notification)
@@ -98,8 +98,8 @@
                                     @endif
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-xs font-semibold text-gray-700 dark:text-gray-300">{{ $notification->data['title'] ?? 'Notifikasi' }}</p>
-                                    <p class="text-sm text-gray-900 dark:text-white line-clamp-2">{{ $notification->data['message'] ?? 'Notifikasi baru' }}</p>
+                                    <p class="text-xs font-semibold text-gray-700 dark:text-gray-300">{{ $notification->data['title'] ?? __('Notifikasi') }}</p>
+                                    <p class="text-sm text-gray-900 dark:text-white line-clamp-2">{{ $notification->data['message'] ?? __('Notifikasi baru') }}</p>
                                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $notification->created_at->diffForHumans() }}</p>
                                 </div>
                                 @unless($notification->read_at)
@@ -108,13 +108,49 @@
                             </a>
                         @empty
                             <div class="px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
-                                Tidak ada notifikasi
+                                {{ __('Tidak ada notifikasi') }}
                             </div>
                         @endforelse
                     </div>
                     <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
                         <a href="{{ route('notifications.index') }}" class="text-sm font-medium text-primary-600 hover:text-primary-800 dark:text-primary-400">
-                            Lihat semua notifikasi
+                            {{ __('Lihat semua notifikasi') }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Separator -->
+            <div class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200 dark:lg:bg-gray-700"></div>
+
+            <!-- Language Dropdown -->
+            <div x-data="{ open: false }" class="relative">
+                <button @click="open = !open" type="button" class="flex items-center gap-x-2 -m-1.5 p-1.5 text-sm font-semibold leading-6 text-gray-900 dark:text-white hover:text-primary-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
+                    </svg>
+                    <span class="hidden lg:block">{{ strtoupper(app()->getLocale()) }}</span>
+                    <svg class="hidden lg:block h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+                <div x-show="open" 
+                     @click.away="open = false"
+                     x-transition
+                     class="absolute right-0 mt-2 w-32 origin-top-right rounded-lg bg-white dark:bg-gray-800 shadow-lg ring-1 ring-gray-200 dark:ring-gray-700"
+                     style="display: none;">
+                    <div class="py-1">
+                        <a href="{{ route('lang.switch', 'id') }}" class="flex items-center justify-between px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <span>🇮🇩 ID</span>
+                            @if(app()->getLocale() === 'id')
+                                <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            @endif
+                        </a>
+                        <a href="{{ route('lang.switch', 'en') }}" class="flex items-center justify-between px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <span>🇺🇸 EN</span>
+                            @if(app()->getLocale() === 'en')
+                                <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            @endif
                         </a>
                     </div>
                 </div>
@@ -190,7 +226,7 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                             </svg>
-                            Profil Saya
+                            {{ __('Profil Saya') }}
                         </a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
@@ -198,7 +234,7 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                                 </svg>
-                                Keluar
+                                {{ __('Keluar') }}
                             </button>
                         </form>
                     </div>

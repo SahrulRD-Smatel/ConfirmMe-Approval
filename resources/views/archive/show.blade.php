@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="title">Arsip: {{ $document->document_number }}</x-slot>
+    <x-slot name="title">{{ __('Arsip') }}: {{ $document->document_number }}</x-slot>
 
     <x-slot name="header">
         <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
@@ -28,7 +28,7 @@
                     <x-ui.button href="{{ route('documents.print', $document) }}" target="_blank" variant="success"
                         icon="printer" size="sm"
                         onclick="setTimeout(() => { let f = document.createElement('iframe'); f.style.display='none'; f.src='{{ route('documents.download', $document) }}'; document.body.appendChild(f); setTimeout(() => f.remove(), 10000); }, 500)">
-                        Cetak PDF
+                        {{ __('Cetak PDF') }}
                     </x-ui.button>
                 @endcan
             </div>
@@ -40,39 +40,39 @@
         <div class="lg:col-span-2 space-y-6">
             <!-- Document Info -->
             <x-ui.card>
-                <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Informasi Dokumen</h2>
+                <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Informasi Dokumen') }}</h2>
 
                 <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Nomor Dokumen</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Nomor Dokumen') }}</dt>
                         <dd class="mt-1 text-sm text-gray-900 dark:text-white font-medium">
                             {{ $document->document_number }}
                         </dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Jenis Approval</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Jenis Approval') }}</dt>
                         <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $document->approval_type_label }}</dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Dibuat Oleh</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Dibuat Oleh') }}</dt>
                         <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $document->user->name }}</dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Tanggal Dibuat</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Tanggal Dibuat') }}</dt>
                         <dd class="mt-1 text-sm text-gray-900 dark:text-white">
                             {{ $document->created_at->format('d M Y H:i') }}
                         </dd>
                     </div>
                     @if($document->approved_budget)
                         <div>
-                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Anggaran</dt>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Anggaran') }}</dt>
                             <dd class="mt-1 text-sm text-gray-900 dark:text-white font-medium">
                                 Rp {{ number_format($document->approved_budget, 0, ',', '.') }}
                             </dd>
                         </div>
                     @endif
                     <div>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Status Akhir</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Status Akhir') }}</dt>
                         <dd class="mt-1">
                             <x-ui.badge :status="$document->status_color">{{ $document->status_label }}</x-ui.badge>
                         </dd>
@@ -82,7 +82,7 @@
 
             <!-- Content -->
             <x-ui.card>
-                <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Isi Dokumen</h2>
+                <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Isi Dokumen') }}</h2>
                 <div class="prose prose-sm max-w-none dark:prose-invert">
                     {!! nl2br(e($document->content)) !!}
                 </div>
@@ -91,14 +91,14 @@
             <!-- Attachments -->
             @if($document->attachments->count())
                 <x-ui.card>
-                    <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Lampiran</h2>
+                    <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Lampiran') }}</h2>
                     <ul class="divide-y divide-gray-200/80 dark:divide-gray-700/80">
                         @foreach($document->attachments as $attachment)
                             <li class="py-3 flex items-center justify-between">
                                 <span class="text-sm text-gray-700 dark:text-gray-300">{{ $attachment->original_name }}</span>
                                 <a href="{{ Storage::url($attachment->file_path) }}" target="_blank"
                                     class="text-primary-600 hover:text-primary-800 text-sm">
-                                    Download
+                                    {{ __('Download') }}
                                 </a>
                             </li>
                         @endforeach
@@ -111,7 +111,7 @@
         <div class="space-y-6">
             <!-- Approval Timeline -->
             <x-ui.card>
-                <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">Riwayat Approval</h3>
+                <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">{{ __('Riwayat Approval') }}</h3>
 
                 <div class="space-y-4">
                     @foreach($document->approvals as $approval)

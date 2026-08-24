@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Laporan Absensi - {{ \Carbon\Carbon::create()->month($month)->translatedFormat('F') }} {{ $year }}</title>
+    <title>{{ __('Laporan Absensi') }} - {{ \Carbon\Carbon::create()->month($month)->translatedFormat('F') }} {{ $year }}</title>
     <style>
         * {
             margin: 0;
@@ -167,37 +167,37 @@
     </div>
 
     {{-- Report Title --}}
-    <div class="report-title">Laporan Absensi Karyawan</div>
+    <div class="report-title">{{ __('Laporan Absensi Karyawan') }}</div>
     <div class="report-subtitle">
-        Periode: {{ \Carbon\Carbon::create()->month($month)->translatedFormat('F') }} {{ $year }}
+        {{ __('Periode') }}: {{ \Carbon\Carbon::create()->month($month)->translatedFormat('F') }} {{ $year }}
         @if($department)
-            | Departemen: {{ $department }}
+            | {{ __('Departemen') }}: {{ $department }}
         @endif
     </div>
 
     {{-- Summary Statistics --}}
     <div class="summary">
-        <h2>Ringkasan</h2>
+        <h2>{{ __('Ringkasan') }}</h2>
         <div class="summary-grid">
             <div class="summary-item">
                 <div class="number">{{ $totalStats['total_employees'] }}</div>
-                <div class="label">Total Karyawan</div>
+                <div class="label">{{ __('Total Karyawan') }}</div>
             </div>
             <div class="summary-item">
                 <div class="number">{{ $totalStats['total_on_time'] }}</div>
-                <div class="label">Tepat Waktu</div>
+                <div class="label">{{ __('Tepat Waktu') }}</div>
             </div>
             <div class="summary-item">
                 <div class="number">{{ $totalStats['total_late'] }}</div>
-                <div class="label">Terlambat</div>
+                <div class="label">{{ __('Terlambat') }}</div>
             </div>
             <div class="summary-item">
                 <div class="number">{{ $totalStats['total_wfh'] }}</div>
-                <div class="label">WFH</div>
+                <div class="label">{{ __('WFH') }}</div>
             </div>
             <div class="summary-item">
                 <div class="number">{{ $totalStats['total_early_leave'] }}</div>
-                <div class="label">Pulang Awal</div>
+                <div class="label">{{ __('Pulang Awal') }}</div>
             </div>
         </div>
     </div>
@@ -207,18 +207,18 @@
         <thead>
             <tr>
                 <th>No</th>
-                <th>Nama Karyawan</th>
-                <th>Employee ID</th>
-                <th>Departemen</th>
-                <th>Posisi</th>
-                <th class="text-center">Hadir</th>
-                <th class="text-center">Tepat Waktu</th>
-                <th class="text-center">Terlambat</th>
-                <th class="text-center">WFH</th>
-                <th class="text-center">Pulang Awal</th>
-                <th class="text-center">Cuti Tahunan</th>
-                <th class="text-center">Sakit</th>
-                <th class="text-center">Tanpa Gaji</th>
+                <th>{{ __('Nama Karyawan') }}</th>
+                <th>{{ __('Employee ID') }}</th>
+                <th>{{ __('Departemen') }}</th>
+                <th>{{ __('Posisi') }}</th>
+                <th class="text-center">{{ __('Hadir') }}</th>
+                <th class="text-center">{{ __('Tepat Waktu') }}</th>
+                <th class="text-center">{{ __('Terlambat') }}</th>
+                <th class="text-center">{{ __('WFH') }}</th>
+                <th class="text-center">{{ __('Pulang Awal') }}</th>
+                <th class="text-center">{{ __('Cuti Tahunan') }}</th>
+                <th class="text-center">{{ __('Sakit') }}</th>
+                <th class="text-center">{{ __('Tanpa Gaji') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -255,7 +255,7 @@
             @empty
                 <tr>
                     <td colspan="13" class="text-center" style="padding: 20px;">
-                        Tidak ada data absensi untuk periode ini.
+                        {{ __('Tidak ada data absensi untuk periode ini.') }}
                     </td>
                 </tr>
             @endforelse
@@ -264,7 +264,7 @@
 
     {{-- Footer --}}
     <div class="footer">
-        <p>Dokumen ini dicetak secara otomatis oleh sistem ConfirmMe pada {{ now()->translatedFormat('d F Y, H:i') }} WIB</p>
+        <p>{{ __('Dokumen ini dicetak secara otomatis oleh sistem ConfirmMe pada') }} {{ now()->translatedFormat('d F Y, H:i') }} WIB</p>
         <p style="margin-top: 5px;">© {{ date('Y') }} PT. Info Solusindo Data Utama — Confidential</p>
     </div>
 </body>

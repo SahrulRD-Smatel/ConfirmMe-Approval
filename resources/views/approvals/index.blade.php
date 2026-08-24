@@ -1,18 +1,18 @@
 <x-app-layout>
-    <x-slot name="title">Approval Queue</x-slot>
+    <x-slot name="title">{{ __('Approval Queue') }}</x-slot>
 
     <x-slot name="header">
         <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Dokumen Menunggu Approval</h1>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Dokumen Menunggu Approval') }}</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Berikut dokumen yang memerlukan approval dari Anda
+                    {{ __('Berikut dokumen yang memerlukan approval dari Anda') }}
                 </p>
             </div>
 
             <div class="flex items-center gap-2">
                 <x-ui.button href="{{ route('approvals.bulk') }}" variant="secondary" icon="squares-2x2">
-                    Bulk Approval
+                    {{ __('Bulk Approval') }}
                 </x-ui.button>
             </div>
         </div>
@@ -24,30 +24,29 @@
             <div class="w-full sm:w-48">
                 <select name="priority"
                     class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
-                    <option value="">Semua Prioritas</option>
-                    <option value="urgent" {{ request('priority') === 'urgent' ? 'selected' : '' }}>Urgent</option>
-                    <option value="high" {{ request('priority') === 'high' ? 'selected' : '' }}>Tinggi</option>
-                    <option value="normal" {{ request('priority') === 'normal' ? 'selected' : '' }}>Normal</option>
-                    <option value="low" {{ request('priority') === 'low' ? 'selected' : '' }}>Rendah</option>
+                    <option value="">{{ __('Semua Prioritas') }}</option>
+                    <option value="urgent" {{ request('priority') === 'urgent' ? 'selected' : '' }}>{{ __('Urgent') }}</option>
+                    <option value="high" {{ request('priority') === 'high' ? 'selected' : '' }}>{{ __('Tinggi') }}</option>
+                    <option value="normal" {{ request('priority') === 'normal' ? 'selected' : '' }}>{{ __('Normal') }}</option>
+                    <option value="low" {{ request('priority') === 'low' ? 'selected' : '' }}>{{ __('Rendah') }}</option>
                 </select>
             </div>
 
             <div class="w-full sm:w-48">
                 <select name="approval_type"
                     class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
-                    <option value="">Semua Jenis</option>
-                    <option value="only" {{ request('approval_type') === 'only' ? 'selected' : '' }}>Approval Only
+                    <option value="">{{ __('Semua Jenis') }}</option>
+                    <option value="only" {{ request('approval_type') === 'only' ? 'selected' : '' }}>{{ __('Approval Only') }}
                     </option>
-                    <option value="po" {{ request('approval_type') === 'po' ? 'selected' : '' }}>Approval to PO</option>
-                    <option value="invoice" {{ request('approval_type') === 'invoice' ? 'selected' : '' }}>Approval to
-                        Invoice</option>
-                    <option value="bulk" {{ request('approval_type') === 'bulk' ? 'selected' : '' }}>Approval Bulk
+                    <option value="po" {{ request('approval_type') === 'po' ? 'selected' : '' }}>{{ __('Approval to PO') }}</option>
+                    <option value="invoice" {{ request('approval_type') === 'invoice' ? 'selected' : '' }}>{{ __('Approval to Invoice') }}</option>
+                    <option value="bulk" {{ request('approval_type') === 'bulk' ? 'selected' : '' }}>{{ __('Approval Bulk') }}
                     </option>
                 </select>
             </div>
 
             <x-ui.button type="submit" variant="secondary">
-                Filter
+                {{ __('Filter') }}
             </x-ui.button>
         </form>
     </x-ui.card>
@@ -87,7 +86,7 @@
 
                         <a href="{{ route('approvals.show', $document) }}"
                             class="text-sm font-medium text-primary-600 hover:text-primary-800 dark:text-primary-400">
-                            Review →
+                            {{ __('Review') }} &rarr;
                         </a>
                     </div>
                 </x-ui.card>
@@ -102,8 +101,8 @@
     @else
         <x-ui.card class="text-center py-12">
             <x-icon name="check-circle" class="w-16 h-16 text-success-500 mx-auto mb-4" />
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Semua Beres! 🎉</h3>
-            <p class="text-gray-500 dark:text-gray-400">Tidak ada dokumen yang menunggu approval dari Anda.</p>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">{{ __('Semua Beres! 🎉') }}</h3>
+            <p class="text-gray-500 dark:text-gray-400">{{ __('Tidak ada dokumen yang menunggu approval dari Anda.') }}</p>
         </x-ui.card>
     @endif
 </x-app-layout>
