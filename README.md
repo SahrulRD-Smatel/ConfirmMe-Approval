@@ -1,59 +1,67 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<div align="center">
+  <img src="public/images/logo-infodata.jpg" alt="Logo" width="150" height="auto" />
+  <h1>🚀 ConfirmMe-Approval</h1>
+  <p><strong>Advanced Dynamic Workflow & Approval System</strong></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+  [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+  [![Laravel](https://img.shields.io/badge/Laravel-FF2D20?style=flat&logo=laravel&logoColor=white)](https://laravel.com)
+  [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+  [![Alpine.js](https://img.shields.io/badge/Alpine.js-8BC0D0?style=flat&logo=alpine.js&logoColor=white)](https://alpinejs.dev/)
+</div>
 
-## About Laravel
+<br>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+**ConfirmMe-Approval** is a state-of-the-art document approval and workflow management system built on Laravel. It transforms rigid, hardcoded approval hierarchies into a fully dynamic and adaptable workflow engine that scales with modern organizational structures.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## ✨ Features & Capabilities
 
-## Learning Laravel
+### 🔄 Dynamic Templates & Workflows
+No more hardcoded routes! The approval logic is entirely decoupled from the source code. Administrators can build document templates with embedded, flexible JSON-based workflows. The system inherently knows how to route documents based on the chosen template without a single line of `middleware('role:...')` logic.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### 🧠 Hybrid Approver Algorithm
+The core of ConfirmMe is its intelligent **Hybrid Approver Algorithm**. When routing a document, the system calculates the next approver dynamically:
+1. **Direct User Assignment**: Bypasses roles and points straight to a specific user.
+2. **Meta-Role Detection**: Understands hierarchical contexts (e.g., dynamically finding the "Director" of the requester's specific department).
+3. **Department Isolation**: Ensures cross-department collision does not happen. "Manager of IT" will only approve "IT Staff" documents.
+4. **Global Fallback**: Falls back to global roles for company-wide positions (e.g., Finance or HR).
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 🌍 Multi-language & AI Localization
+Fully integrated translation engine supporting multiple languages (ID, EN). New keys can be automatically extracted via synchronization scripts and localized using built-in AI Translation scripts (`translate_en.py`, `translate_id.py`), ensuring a seamless experience for both local and international executives.
 
-## Laravel Sponsors
+### 🛡️ Zero Hardcode Policy & Fallback Security
+Strict architectural guidelines prevent hardcoded roles in controllers and routes. Features adapt to newly created organizational roles instantly. For unseen or undefined roles, the system enforces strict fallback data protection to prevent accidental data leaks.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 💼 Comprehensive Modules
+- **Finance**: Budget Tracking, Purchase Orders (PO), Invoices, Employee Loans.
+- **HR / People**: Leave Requests, Geofenced Attendance tracking.
+- **Executive**: High-level Dashboards, bulk approvals, announcements.
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## 🛠️ Tech Stack
 
-## Contributing
+- **Backend**: [Laravel](https://laravel.com/) (PHP)
+- **Frontend**: Blade Templates, [Alpine.js](https://alpinejs.dev/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Icons**: Phosphor Icons / Heroicons
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## 👨‍💻 Author & Contact
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+**Sahrul Ramadhani**
+- 📧 Email: sahrul.r.dhani@gmail.com
+- 🐙 GitHub: [@SahrulRD-Smatel](https://github.com/SahrulRD-Smatel)
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 📄 License
 
-## License
+This project is licensed under the [MIT License](LICENSE) - see the LICENSE file for details.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+<br>
+<div align="center">
+  <i>Built with passion for seamless enterprise automation.</i>
+</div>
