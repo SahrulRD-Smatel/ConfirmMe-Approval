@@ -10,6 +10,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use App\Traits\LocaleSwitchable;
 
 /**
  * Email Notification Service
@@ -24,6 +25,8 @@ use Illuminate\Support\Facades\Cache;
  */
 class EmailNotificationService
 {
+    use LocaleSwitchable;
+
     /**
      * Cache TTL for email templates (in seconds)
      */
@@ -210,27 +213,27 @@ class EmailNotificationService
         return match ($action) {
             'pending_approval' => [
                 'id' => 'EML-00',
-                'subject' => '[ConfirmMe] Mohon Review: {{doc_subject}}',
-                'greeting' => 'Yth. {{next_approver_name}},',
-                'body' => 'Ada dokumen **{{doc_id}}** yang memerlukan persetujuan Anda.',
+                'subject' => '[ConfirmMe] ' . __('Mohon Review') . ': {{doc_subject}}',
+                'greeting' => __('Yth.') . ' {{next_approver_name}},',
+                'body' => __('Ada dokumen') . ' **{{doc_id}}** ' . __('yang memerlukan persetujuan Anda') . '.',
             ],
             'rejected' => [
                 'id' => 'EML-08',
-                'subject' => '[ConfirmMe] Dokumen DITOLAK: {{doc_id}}',
-                'greeting' => 'Halo {{staff_name}},',
-                'body' => 'Dokumen Anda **{{doc_id}}** telah ditolak. Alasan: {{reason}}.',
+                'subject' => '[ConfirmMe] ' . __('Dokumen DITOLAK') . ': {{doc_id}}',
+                'greeting' => __('Halo') . ' {{staff_name}},',
+                'body' => __('Dokumen Anda') . ' **{{doc_id}}** ' . __('telah ditolak') . '. ' . __('Alasan') . ': {{reason}}.',
             ],
             'completed' => [
                 'id' => 'EML-10',
-                'subject' => '[ConfirmMe] Dokumen {{doc_id}} - APPROVED',
-                'greeting' => 'Selamat {{staff_name}},',
-                'body' => 'Dokumen **{{doc_id}}** telah selesai diproses dan disetujui.',
+                'subject' => '[ConfirmMe] ' . __('Dokumen') . ' {{doc_id}} - APPROVED',
+                'greeting' => __('Selamat') . ' {{staff_name}},',
+                'body' => __('Dokumen') . ' **{{doc_id}}** ' . __('telah selesai diproses dan disetujui') . '.',
             ],
             default => [
                 'id' => 'EML-00',
-                'subject' => '[ConfirmMe] Notifikasi: {{doc_id}}',
-                'greeting' => 'Halo,',
-                'body' => 'Ada update untuk dokumen **{{doc_id}}**.',
+                'subject' => '[ConfirmMe] ' . __('Notifikasi') . ': {{doc_id}}',
+                'greeting' => __('Halo') . ',',
+                'body' => __('Ada update untuk dokumen') . ' **{{doc_id}}**.',
             ],
         };
     }
@@ -305,43 +308,61 @@ class EmailNotificationService
         }
 
         try {
-            // Get template from database
-            $template = $this->getEmailTemplate($document, $action);
-            $placeholders = $this->buildPlaceholders($document, $actor);
+            // Determine the primary recipient (TO) to set locale
+            $primaryRecipient = match ($action) {
+                'pending_approval' => $this->getNextApprover($document),
+                'rejected', 'completed' => $document->user,
+                default => $document->user,
+            };
 
-            if ($template) {
-                $templateId = $template->code;
-                $subject = $template->getProcessedSubject($placeholders);
-                $greeting = $template->getProcessedGreeting($placeholders);
-                $bodyContent = $template->getProcessedBody($placeholders);
-            } else {
-                // Use fallback if no database template found
-                $fallback = $this->getFallbackTemplate($action);
-                $templateId = $fallback['id'];
-                $subject = $this->replacePlaceholders($fallback['subject'], $placeholders);
-                $greeting = $this->replacePlaceholders($fallback['greeting'], $placeholders);
-                $bodyContent = $this->replacePlaceholders($fallback['body'], $placeholders);
-
-                Log::warning("No database template found for {$document->approval_type}/{$action}, using fallback");
+            if (!$primaryRecipient) {
+                Log::warning("No primary recipient found for document {$document->document_number}, action: {$action}");
+                return;
             }
 
-            switch ($action) {
-                case 'pending_approval':
-                    $this->sendPendingApprovalEmail($document, $templateId, $subject, $greeting, $bodyContent);
-                    break;
+            // Switch locale to recipient's language, render and send, then restore
+            $this->withRecipientLocale($primaryRecipient, function () use ($document, $action, $actor) {
+                $recipientLocale = app()->getLocale();
 
-                case 'approved':
-                    $this->sendApprovedEmail($document, $actor, $templateId, $subject, $greeting, $bodyContent);
-                    break;
+                // Get template from database
+                $template = $this->getEmailTemplate($document, $action);
+                $placeholders = $this->buildPlaceholders($document, $actor);
 
-                case 'rejected':
-                    $this->sendRejectedEmail($document, $actor, $templateId, $subject, $greeting, $bodyContent);
-                    break;
+                if ($template) {
+                    $templateId = $template->code;
+                    $subject = $template->getProcessedSubject($placeholders, $recipientLocale);
+                    $greeting = $template->getProcessedGreeting($placeholders, $recipientLocale);
+                    $bodyContent = $template->getProcessedBody($placeholders, $recipientLocale);
+                } else {
+                    // Use fallback if no database template found
+                    // Note: __() calls inside getFallbackTemplate() will use the switched locale
+                    $fallback = $this->getFallbackTemplate($action);
+                    $templateId = $fallback['id'];
+                    $subject = $this->replacePlaceholders($fallback['subject'], $placeholders);
+                    $greeting = $this->replacePlaceholders($fallback['greeting'], $placeholders);
+                    $bodyContent = $this->replacePlaceholders($fallback['body'], $placeholders);
 
-                case 'completed':
-                    $this->sendCompletedEmail($document, $templateId, $subject, $greeting, $bodyContent);
-                    break;
-            }
+                    Log::warning("No database template found for {$document->approval_type}/{$action}, using fallback");
+                }
+
+                switch ($action) {
+                    case 'pending_approval':
+                        $this->sendPendingApprovalEmail($document, $templateId, $subject, $greeting, $bodyContent);
+                        break;
+
+                    case 'approved':
+                        $this->sendApprovedEmail($document, $actor, $templateId, $subject, $greeting, $bodyContent);
+                        break;
+
+                    case 'rejected':
+                        $this->sendRejectedEmail($document, $actor, $templateId, $subject, $greeting, $bodyContent);
+                        break;
+
+                    case 'completed':
+                        $this->sendCompletedEmail($document, $templateId, $subject, $greeting, $bodyContent);
+                        break;
+                }
+            });
         } catch (\Throwable $e) {
             Log::error("Failed to send email notification for document {$document->document_number}: " . $e->getMessage(), [
                 'exception' => get_class($e),

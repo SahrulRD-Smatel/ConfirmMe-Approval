@@ -270,26 +270,26 @@
         <div class="info-section">
             <div class="info-left">
                 <div class="info-box">
-                    <h3>Vendor</h3>
+                    <h3>{{ __("Vendor") }}</h3>
                     <p class="value">{{ $po->vendor_name }}</p>
                     <p>{{ $po->vendor_address ?? '-' }}</p>
                 </div>
                 <div class="info-box">
-                    <h3>Referensi Dokumen</h3>
-                    <p>No. Dokumen: <span class="value">{{ $po->document->document_number }}</span></p>
-                    <p>Judul: {{ $po->document->title }}</p>
+                    <h3>{{ __("Referensi Dokumen") }}</h3>
+                    <p>{{ __('No. Dokumen') }}: <span class="value">{{ $po->document->document_number }}</span></p>
+                    <p>{{ __('Judul') }}: {{ $po->document->title }}</p>
                 </div>
             </div>
             <div class="info-right" style="padding-left: 15px;">
                 <div class="info-box">
-                    <h3>Detail PO</h3>
-                    <p>Tanggal PO: <span class="value">{{ $po->order_date->format('d F Y') }}</span></p>
+                    <h3>{{ __("Detail PO") }}</h3>
+                    <p>{{ __('Tanggal PO') }}: <span class="value">{{ $po->order_date->format('d F Y') }}</span></p>
                     <p>Expected Delivery: <span
                             class="value">{{ $po->expected_delivery_date?->format('d F Y') ?? '-' }}</span></p>
                     <p>Status: <span class="value">{{ strtoupper($po->status) }}</span></p>
                 </div>
                 <div class="info-box">
-                    <h3>Dibuat Oleh</h3>
+                    <h3>{{ __("Dibuat Oleh") }}</h3>
                     <p class="value">{{ $po->creator->name }}</p>
                     <p>{{ $po->created_at->format('d F Y H:i') }}</p>
                 </div>
@@ -301,10 +301,10 @@
             <thead>
                 <tr>
                     <th style="width: 30px;">No</th>
-                    <th>Deskripsi Item</th>
+                    <th>{{ __("Deskripsi Item") }}</th>
                     <th style="width: 60px;">Qty</th>
-                    <th style="width: 50px;">Satuan</th>
-                    <th style="width: 100px;">Harga Satuan</th>
+                    <th style="width: 50px;">{{ __("Satuan") }}</th>
+                    <th style="width: 100px;">{{ __("Harga Satuan") }}</th>
                     <th style="width: 100px;">Total</th>
                 </tr>
             </thead>
@@ -325,7 +325,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" style="text-align: center; padding: 20px;">Tidak ada item</td>
+                        <td colspan="6" style="text-align: center; padding: 20px;">{{ __("Tidak ada item") }}</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -351,11 +351,11 @@
         @if($po->terms || $po->notes)
             <div class="terms">
                 @if($po->terms)
-                    <h4>Syarat & Ketentuan</h4>
+                    <h4>{{ __("Syarat & Ketentuan") }}</h4>
                     <p>{{ $po->terms }}</p>
                 @endif
                 @if($po->notes)
-                    <h4 style="margin-top: 10px;">Catatan</h4>
+                    <h4 style="margin-top: 10px;">{{ __("Catatan") }}</h4>
                     <p>{{ $po->notes }}</p>
                 @endif
             </div>
@@ -365,7 +365,7 @@
         <div class="footer">
             <div class="footer-left">
                 <div class="signature-box" style="width: 200px;">
-                    <div class="signature-label">Disetujui oleh,</div>
+                    <div class="signature-label">{{ __("Disetujui oleh") }},</div>
                     <div class="signature-name">
                         {{ $po->document->approvals->where('status', 'approved')->last()?->approver?->name ?? '________________' }}
                     </div>
@@ -376,13 +376,13 @@
                     @if(isset($qrCode))
                         <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code">
                     @endif
-                    <div class="qr-label">Scan untuk verifikasi</div>
+                    <div class="qr-label">{{ __("Scan untuk verifikasi") }}</div>
                 </div>
             </div>
         </div>
 
         <div class="print-footer">
-            Dicetak pada: {{ now()->format('d F Y H:i:s') }} | ConfirmMe - PT. Info Solusindo Data Utama
+            {{ __("Dicetak pada") }}: {{ now()->format('d F Y H:i:s') }} | ConfirmMe - PT. Info Solusindo Data Utama
         </div>
     </div>
 </body>

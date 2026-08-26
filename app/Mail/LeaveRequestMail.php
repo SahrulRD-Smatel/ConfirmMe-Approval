@@ -72,12 +72,12 @@ class LeaveRequestMail extends Mailable
         $type = $this->leaveRequest->type_label;
 
         return match ($this->action) {
-            'submitted' => "[ConfirmMe] Pengajuan Cuti: {$requester->name} - {$type}",
-            'tier1_approved' => "[ConfirmMe] Cuti Disetujui Atasan - Menunggu Validasi HR",
-            'pending_hr' => "[ConfirmMe] Validasi Cuti: {$requester->name} - {$type}",
-            'approved' => "[ConfirmMe] Cuti Disetujui: {$requester->name}",
-            'rejected' => "[ConfirmMe] Cuti Ditolak: {$requester->name}",
-            default => "[ConfirmMe] Notifikasi Cuti",
+            'submitted' => '[ConfirmMe] ' . __('Pengajuan Cuti') . ": {$requester->name} - {$type}",
+            'tier1_approved' => '[ConfirmMe] ' . __('Cuti Disetujui Atasan - Menunggu Validasi HR'),
+            'pending_hr' => '[ConfirmMe] ' . __('Validasi Cuti') . ": {$requester->name} - {$type}",
+            'approved' => '[ConfirmMe] ' . __('Cuti Disetujui') . ": {$requester->name}",
+            'rejected' => '[ConfirmMe] ' . __('Cuti Ditolak') . ": {$requester->name}",
+            default => '[ConfirmMe] ' . __('Notifikasi Cuti'),
         };
     }
 
@@ -86,7 +86,7 @@ class LeaveRequestMail extends Mailable
      */
     protected function getGreeting(): string
     {
-        return "Yth. {$this->recipient->name},";
+        return __('Yth.') . " {$this->recipient->name},";
     }
 
     /**
@@ -100,12 +100,12 @@ class LeaveRequestMail extends Mailable
         $actorName = $this->actor->name ?? 'Unknown';
 
         return match ($this->action) {
-            'submitted' => "<strong>{$requester->name}</strong> mengajukan <strong>{$type}</strong> selama <strong>{$duration} hari</strong>. Mohon review dan berikan keputusan Anda.",
-            'tier1_approved' => "Pengajuan {$type} Anda telah <strong>disetujui</strong> oleh <strong>{$actorName}</strong>. Saat ini menunggu validasi administratif dari HR.",
-            'pending_hr' => "Pengajuan {$type} dari <strong>{$requester->name}</strong> telah disetujui atasan (<strong>{$actorName}</strong>). Mohon lakukan validasi administratif.",
-            'approved' => "Pengajuan {$type} Anda telah <strong>disetujui sepenuhnya</strong> oleh <strong>{$actorName}</strong>. Selamat menikmati waktu istirahat Anda!",
-            'rejected' => "Mohon maaf, pengajuan {$type} Anda telah <strong>ditolak</strong> oleh <strong>{$actorName}</strong>.",
-            default => "Ada update terkait pengajuan cuti.",
+            'submitted' => '<strong>' . $requester->name . '</strong> ' . __('mengajukan') . ' <strong>' . $type . '</strong> ' . __('selama') . ' <strong>' . $duration . ' ' . __('hari') . '</strong>. ' . __('Mohon review dan berikan keputusan Anda.'),
+            'tier1_approved' => __('Pengajuan') . " {$type} " . __('Anda telah') . ' <strong>' . __('disetujui') . '</strong> ' . __('oleh') . ' <strong>' . $actorName . '</strong>. ' . __('Saat ini menunggu validasi administratif dari HR.'),
+            'pending_hr' => __('Pengajuan') . " {$type} " . __('dari') . ' <strong>' . $requester->name . '</strong> ' . __('telah disetujui atasan') . ' (<strong>' . $actorName . '</strong>). ' . __('Mohon lakukan validasi administratif.'),
+            'approved' => __('Pengajuan') . " {$type} " . __('Anda telah') . ' <strong>' . __('disetujui sepenuhnya') . '</strong> ' . __('oleh') . ' <strong>' . $actorName . '</strong>. ' . __('Selamat menikmati waktu istirahat Anda!'),
+            'rejected' => __('Mohon maaf, pengajuan') . " {$type} " . __('Anda telah') . ' <strong>' . __('ditolak') . '</strong> ' . __('oleh') . ' <strong>' . $actorName . '</strong>.',
+            default => __('Ada update terkait pengajuan cuti.'),
         };
     }
 

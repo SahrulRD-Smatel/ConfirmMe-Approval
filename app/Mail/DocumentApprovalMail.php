@@ -85,11 +85,11 @@ class DocumentApprovalMail extends Mailable
     protected function getDefaultSubject(): string
     {
         return match ($this->action) {
-            'pending_approval' => "[ConfirmMe] Mohon Review: {$this->document->title}",
-            'approved' => "[ConfirmMe] Dokumen Disetujui: {$this->document->document_number}",
-            'rejected' => "[ConfirmMe] Dokumen Ditolak: {$this->document->document_number}",
-            'completed' => "[ConfirmMe] Dokumen Selesai: {$this->document->document_number}",
-            default => "[ConfirmMe] Notifikasi: {$this->document->document_number}",
+            'pending_approval' => '[ConfirmMe] ' . __('Mohon Review') . ": {$this->document->title}",
+            'approved' => '[ConfirmMe] ' . __('Dokumen Disetujui') . ": {$this->document->document_number}",
+            'rejected' => '[ConfirmMe] ' . __('Dokumen Ditolak') . ": {$this->document->document_number}",
+            'completed' => '[ConfirmMe] ' . __('Dokumen Selesai') . ": {$this->document->document_number}",
+            default => '[ConfirmMe] ' . __('Notifikasi') . ": {$this->document->document_number}",
         };
     }
 
@@ -98,7 +98,7 @@ class DocumentApprovalMail extends Mailable
      */
     protected function getDefaultGreeting(): string
     {
-        return "Yth. {$this->recipient->name},";
+        return __('Yth.') . " {$this->recipient->name},";
     }
 
     /**
@@ -107,11 +107,11 @@ class DocumentApprovalMail extends Mailable
     protected function getDefaultBody(): string
     {
         return match ($this->action) {
-            'pending_approval' => "Ada dokumen **{$this->document->document_number}** yang memerlukan persetujuan Anda.",
-            'approved' => "Dokumen Anda **{$this->document->document_number}** telah disetujui.",
-            'rejected' => "Dokumen Anda **{$this->document->document_number}** telah ditolak.",
-            'completed' => "Dokumen Anda **{$this->document->document_number}** telah selesai diproses.",
-            default => "Ada update untuk dokumen **{$this->document->document_number}**.",
+            'pending_approval' => __('Ada dokumen') . " **{$this->document->document_number}** " . __('yang memerlukan persetujuan Anda') . '.',
+            'approved' => __('Dokumen Anda') . " **{$this->document->document_number}** " . __('telah disetujui') . '.',
+            'rejected' => __('Dokumen Anda') . " **{$this->document->document_number}** " . __('telah ditolak') . '.',
+            'completed' => __('Dokumen Anda') . " **{$this->document->document_number}** " . __('telah selesai diproses') . '.',
+            default => __('Ada update untuk dokumen') . " **{$this->document->document_number}**.",
         };
     }
 

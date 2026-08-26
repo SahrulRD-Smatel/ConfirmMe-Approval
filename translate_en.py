@@ -28,7 +28,8 @@ def main():
             try:
                 # Basic protection for variables like :attribute
                 result = translator.translate(key)
-                translated_data[key] = result
+                if result and "Error 500" not in result:
+                    translated_data[key] = result
                 
                 if (i + 1) % 20 == 0:
                     print(f"Translated {i + 1}/{len(to_translate)}", flush=True)

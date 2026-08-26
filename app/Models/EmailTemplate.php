@@ -15,8 +15,11 @@ class EmailTemplate extends Model
         'workflow',
         'target',
         'subject',
+        'subject_translations',
         'greeting',
+        'greeting_translations',
         'body',
+        'body_translations',
         'to_config',
         'cc_config',
         'is_active',
@@ -26,6 +29,9 @@ class EmailTemplate extends Model
     protected $casts = [
         'to_config' => 'array',
         'cc_config' => 'array',
+        'subject_translations' => 'array',
+        'greeting_translations' => 'array',
+        'body_translations' => 'array',
         'is_active' => 'boolean',
     ];
 
@@ -62,27 +68,52 @@ class EmailTemplate extends Model
     }
 
     /**
-     * Replace placeholders in subject
+     * Get the translated text for a field, with fallback to original (ID) column.
      */
-    public function getProcessedSubject(array $placeholders): string
+    protected function getTranslatedField(string $field, string $translationsField, ?string $locale = null): string
     {
-        return $this->replacePlaceholders($this->subject, $placeholders);
+        $locale = $locale ?? app()->getLocale();
+
+        // If locale is 'id', use original column directly (it's the Indonesian source)
+        if ($locale === 'id') {
+            return $this->{$field};
+        }
+
+        // Try translations JSON
+        $translations = $this->{$translationsField} ?? [];
+        if (!empty($translations[$locale])) {
+            return $translations[$locale];
+        }
+
+        // Fallback to original column (Indonesian)
+        return $this->{$field};
     }
 
     /**
-     * Replace placeholders in greeting
+     * Replace placeholders in subject (locale-aware)
      */
-    public function getProcessedGreeting(array $placeholders): string
+    public function getProcessedSubject(array $placeholders, ?string $locale = null): string
     {
-        return $this->replacePlaceholders($this->greeting, $placeholders);
+        $text = $this->getTranslatedField('subject', 'subject_translations', $locale);
+        return $this->replacePlaceholders($text, $placeholders);
     }
 
     /**
-     * Replace placeholders in body
+     * Replace placeholders in greeting (locale-aware)
      */
-    public function getProcessedBody(array $placeholders): string
+    public function getProcessedGreeting(array $placeholders, ?string $locale = null): string
     {
-        return $this->replacePlaceholders($this->body, $placeholders);
+        $text = $this->getTranslatedField('greeting', 'greeting_translations', $locale);
+        return $this->replacePlaceholders($text, $placeholders);
+    }
+
+    /**
+     * Replace placeholders in body (locale-aware)
+     */
+    public function getProcessedBody(array $placeholders, ?string $locale = null): string
+    {
+        $text = $this->getTranslatedField('body', 'body_translations', $locale);
+        return $this->replacePlaceholders($text, $placeholders);
     }
 
     /**

@@ -18,12 +18,12 @@ class RoleController extends Controller
         
         $groups = [];
         foreach ($permissions as $perm) {
-            if (str_contains($perm, 'document')) $groups['Dokumen'][] = $perm;
-            elseif (str_contains($perm, 'budget') || str_contains($perm, 'po') || str_contains($perm, 'invoice') || str_contains($perm, 'purchasing')) $groups['Keuangan'][] = $perm;
-            elseif (str_contains($perm, 'attendance')) $groups['HR & Absensi'][] = $perm;
-            elseif (str_contains($perm, 'reports')) $groups['Laporan'][] = $perm;
-            elseif (str_contains($perm, 'users') || str_contains($perm, 'roles') || str_contains($perm, 'workflow') || str_contains($perm, 'templates') || str_contains($perm, 'features') || str_contains($perm, 'departments') || str_contains($perm, 'audit-log')) $groups['Administrasi'][] = $perm;
-            else $groups['Lainnya'][] = $perm;
+            if (str_contains($perm, 'document')) $groups[__('Dokumen')][] = $perm;
+            elseif (str_contains($perm, 'budget') || str_contains($perm, 'po') || str_contains($perm, 'invoice') || str_contains($perm, 'purchasing')) $groups[__('Keuangan')][] = $perm;
+            elseif (str_contains($perm, 'attendance')) $groups[__('HR & Absensi')][] = $perm;
+            elseif (str_contains($perm, 'reports')) $groups[__('Laporan')][] = $perm;
+            elseif (str_contains($perm, 'users') || str_contains($perm, 'roles') || str_contains($perm, 'workflow') || str_contains($perm, 'templates') || str_contains($perm, 'features') || str_contains($perm, 'departments') || str_contains($perm, 'audit-log')) $groups[__('Administrasi')][] = $perm;
+            else $groups[__('Lainnya')][] = $perm;
         }
         
         return $groups;

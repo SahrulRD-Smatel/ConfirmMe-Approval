@@ -28,7 +28,7 @@ def main():
             while retries > 0:
                 try:
                     result = translator.translate(key)
-                    if result:
+                    if result and "Error 500" not in result:
                         translated_data[key] = result
                     break
                 except Exception as e:

@@ -157,6 +157,7 @@
                                     <p class="text-[11px] text-gray-400">{{ __('Perbarui data diri') }}</p>
                                 </div>
                             </a>
+                            @if(feature_active('module_hris'))
                             @if(!auth()->user()->hasRole('admin'))
                             <a href="{{ route('leave-requests.create') }}" class="quick-link-card">
                                 <div class="icon-wrap bg-green-100">
@@ -168,10 +169,12 @@
                                 </div>
                             </a>
                             @endif
+                            @endif
                         </div>
                     </div>
 
                     {{-- Who's Off Widget (Timeline Style) --}}
+                    @if(feature_active('module_hris'))
                     <div class="card-elevated rounded-3xl p-5">
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-sm font-bold text-gray-900 flex items-center gap-2">
@@ -206,9 +209,11 @@
                             @endforelse
                         </div>
                     </div>
+                    @endif
                 </div>
 
                 {{-- Center Column: Announcements (Compact Feed) --}}
+                @if(feature_active('module_hris'))
                 <div class="space-y-4 xl:col-span-3 xl:space-y-5">
                     {{-- HR Banner (Only for HR) --}}
                     @if(auth()->user()->hasAnyRole(['hrd', 'direktur_hr', 'admin']) || auth()->user()->department === 'Human Resources')
@@ -456,6 +461,7 @@
                         </x-modal>
                     </div>
                 </div>
+                @endif
             </div>
 
             {{-- TAB 2: TASKS (ORIGINAL DASHBOARD) --}}

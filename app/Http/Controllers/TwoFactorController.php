@@ -167,7 +167,7 @@ class TwoFactorController extends Controller
                 'document' => $document,
             ], function ($message) use ($user) {
                 $message->to($user->email)
-                    ->subject('Kode Verifikasi OTP - ConfirmMe');
+                    ->subject(__('Kode Verifikasi OTP') . ' - ConfirmMe');
             });
 
             config(['mail.mailers.smtp.timeout' => $previousTimeout]);

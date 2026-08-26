@@ -78,33 +78,33 @@
                                     <td style="padding: 20px;">
                                         <p
                                             style="margin: 0 0 12px; font-size: 13px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">
-                                            Detail Dokumen</p>
+                                            {{ __("Detail Dokumen") }}</p>
                                         <table role="presentation" cellspacing="0" cellpadding="0" border="0"
                                             width="100%">
                                             <tr>
                                                 <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
-                                                    <span style="font-size: 13px; color: #6b7280;">Nomor:</span>
+                                                    <span style="font-size: 13px; color: #6b7280;">{{ __('Nomor') }}:</span>
                                                     <span
                                                         style="font-size: 14px; font-weight: 600; color: #111827; float: right;">{{ $document->document_number }}</span>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
-                                                    <span style="font-size: 13px; color: #6b7280;">Judul:</span>
+                                                    <span style="font-size: 13px; color: #6b7280;">{{ __('Judul') }}:</span>
                                                     <span
                                                         style="font-size: 14px; color: #111827; float: right;">{{ Str::limit($document->title, 40) }}</span>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
-                                                    <span style="font-size: 13px; color: #6b7280;">Jenis:</span>
+                                                    <span style="font-size: 13px; color: #6b7280;">{{ __('Jenis') }}:</span>
                                                     <span
                                                         style="font-size: 14px; color: #111827; float: right;">{{ $document->approval_type_label }}</span>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
-                                                    <span style="font-size: 13px; color: #6b7280;">Pemohon:</span>
+                                                    <span style="font-size: 13px; color: #6b7280;">{{ __('Pemohon') }}:</span>
                                                     <span
                                                         style="font-size: 14px; color: #111827; float: right;">{{ $document->user->name ?? 'Unknown' }}</span>
                                                 </td>
@@ -112,8 +112,7 @@
                                             @if($document->estimated_budget)
                                                 <tr>
                                                     <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
-                                                        <span style="font-size: 13px; color: #6b7280;">Total
-                                                            Pengajuan:</span>
+                                                        <span style="font-size: 13px; color: #6b7280;">{{ __('Total Pengajuan') }}:</span>
                                                         @php
                                                             $financeApproval = $document->approvals()
                                                                 ->where('status', 'approved')
@@ -132,7 +131,7 @@
                                                         <td
                                                             style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; background-color: #fefce8;">
                                                             <span style="font-size: 13px; color: #854d0e; font-weight: 600;">✏️
-                                                                Total Disetujui (Finance):</span>
+                                                                {{ __('Total Disetujui (Finance)') }}:</span>
                                                             <span
                                                                 style="font-size: 15px; font-weight: 700; color: #1E40AF; float: right;">Rp
                                                                 {{ number_format($financeApproval->approved_amount, 0, ',', '.') }}</span>
@@ -151,7 +150,7 @@
                                             @endif
                                             <tr>
                                                 <td style="padding: 8px 0;">
-                                                    <span style="font-size: 13px; color: #6b7280;">Prioritas:</span>
+                                                    <span style="font-size: 13px; color: #6b7280;">{{ __('Prioritas') }}:</span>
                                                     <span
                                                         style="font-size: 14px; color: #111827; float: right;">{{ $document->priority_label }}</span>
                                                 </td>
@@ -169,7 +168,7 @@
                             <td style="padding: 0 40px 20px;">
                                 <p
                                     style="margin: 0 0 10px; font-size: 13px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">
-                                    Riwayat Persetujuan</p>
+                                    {{ __("Riwayat Persetujuan") }}</p>
                                 <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%"
                                     style="background-color: #f0fdf4; border-radius: 6px; border: 1px solid #bbf7d0;">
                                     @foreach($previousApprovers as $index => $approver)
@@ -213,9 +212,9 @@
                                             <a href="{{ $approvalUrl }}" target="_blank"
                                                 style="display: inline-block; padding: 14px 40px; font-size: 15px; font-weight: 600; color: #ffffff; text-decoration: none; background-color: #1E40AF; border-radius: 6px;">
                                                 @if($action === 'pending_approval')
-                                                    Buka Aplikasi ConfirmMe
+                                                    {{ __("Buka Aplikasi ConfirmMe") }}
                                                 @else
-                                                    Lihat Detail Dokumen
+                                                    {{ __("Lihat Detail Dokumen") }}
                                                 @endif
                                             </a>
                                         </td>
@@ -234,7 +233,7 @@
                                     <tr>
                                         <td style="padding: 16px;">
                                             <p style="margin: 0 0 8px; font-size: 13px; font-weight: 600; color: #dc2626;">
-                                                Alasan Penolakan:</p>
+                                                {{ __("Alasan Penolakan") }}:</p>
                                             <p style="margin: 0; font-size: 14px; color: #7f1d1d; line-height: 1.5;">
                                                 {{ $document->rejection_reason }}
                                             </p>
@@ -250,8 +249,7 @@
                         <td
                             style="padding: 20px 40px; background-color: #f9fafb; border-top: 1px solid #e5e7eb; border-radius: 0 0 8px 8px;">
                             <p style="margin: 0; font-size: 12px; color: #6b7280; line-height: 1.6;">
-                                Email ini dikirim secara otomatis oleh sistem <strong>ConfirmMe</strong>. Jangan
-                                membalas email ini.
+                                {{ __("Email ini dikirim secara otomatis oleh sistem ConfirmMe. Jangan membalas email ini.") }}
                             </p>
                             <p style="margin: 12px 0 0; font-size: 11px; color: #9ca3af;">
                                 © {{ date('Y') }} PT INFO SOLUSINDO DATA UTAMA - ConfirmMe Document Approval System

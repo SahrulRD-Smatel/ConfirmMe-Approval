@@ -27,7 +27,7 @@ class NewUserRegisteredMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: "[ConfirmMe] User Baru Mendaftar: {$this->newUser->name}",
+            subject: '[ConfirmMe] ' . __('User Baru Mendaftar') . ": {$this->newUser->name}",
         );
     }
 

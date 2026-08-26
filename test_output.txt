@@ -1,0 +1,8 @@
+--- id.json ---
+Riwayat pinjaman karyawan Anda: Riwayat pinjaman karyawan Anda
+--- en.json ---
+Riwayat pinjaman karyawan Anda: Your employee's loan history
+--- zh.json ---
+Riwayat pinjaman karyawan Anda: 您员工的贷款历史
+--- ja.json ---
+Riwayat pinjaman karyawan Anda: Riwayat pinjaman karyawan Anda

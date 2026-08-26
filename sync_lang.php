@@ -1,6 +1,7 @@
 <?php
 
 $viewsPath = __DIR__ . '/resources/views';
+$appPath = __DIR__ . '/app';
 $enJsonPath = __DIR__ . '/lang/en.json';
 $idJsonPath = __DIR__ . '/lang/id.json';
 $zhJsonPath = __DIR__ . '/lang/zh.json';
@@ -10,19 +11,36 @@ if (!is_dir($viewsPath)) {
     die("Views directory not found.\n");
 }
 
+$foundKeys = [];
+
+// 1. Scan blade templates in resources/views
 $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($viewsPath));
 $bladeFiles = new RegexIterator($iterator, '/^.+\.blade\.php$/i', RecursiveRegexIterator::GET_MATCH);
 
-$foundKeys = [];
-
 foreach ($bladeFiles as $file) {
     $content = file_get_contents($file[0]);
-    // Match __("text") or __('text')
-    preg_match_all("/__\(\s*['\"](.*?)['\"]\s*\)/is", $content, $matches);
+    preg_match_all("/__\(\s*['\"](.+?)['\"]\s*\)/is", $content, $matches);
     if (!empty($matches[1])) {
         foreach ($matches[1] as $key) {
-            $key = stripslashes($key); // Handle escaped quotes inside
+            $key = stripslashes($key);
             $foundKeys[$key] = $key;
+        }
+    }
+}
+
+// 2. Scan PHP files in app/ (Mail, Services, Controllers, etc.)
+if (is_dir($appPath)) {
+    $appIterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($appPath));
+    $phpFiles = new RegexIterator($appIterator, '/^.+\.php$/i', RecursiveRegexIterator::GET_MATCH);
+
+    foreach ($phpFiles as $file) {
+        $content = file_get_contents($file[0]);
+        preg_match_all("/__\(\s*['\"](.+?)['\"]\s*\)/is", $content, $matches);
+        if (!empty($matches[1])) {
+            foreach ($matches[1] as $key) {
+                $key = stripslashes($key);
+                $foundKeys[$key] = $key;
+            }
         }
     }
 }

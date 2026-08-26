@@ -248,60 +248,60 @@
 
         <!-- Document Info -->
         <div class="section">
-            <div class="section-title">INFORMASI DOKUMEN</div>
+            <div class="section-title">{{ __("INFORMASI DOKUMEN") }}</div>
             <table class="info-table">
                 <tr>
-                    <th>Nomor Dokumen</th>
+                    <th>{{ __("Nomor Dokumen") }}</th>
                     <td>{{ $document->document_number }}</td>
                 </tr>
                 <tr>
-                    <th>Judul</th>
+                    <th>{{ __("Judul") }}</th>
                     <td>{{ $document->title }}</td>
                 </tr>
                 <tr>
-                    <th>Jenis Approval</th>
+                    <th>{{ __("Jenis Approval") }}</th>
                     <td>{{ $document->approval_type_label }}</td>
                 </tr>
                 <tr>
-                    <th>Prioritas</th>
+                    <th>{{ __("Prioritas") }}</th>
                     <td>{{ $document->priority_label }}</td>
                 </tr>
                 <tr>
-                    <th>Departemen</th>
+                    <th>{{ __("Departemen") }}</th>
                     <td>{{ $document->department ?? '-' }}</td>
                 </tr>
                 <tr>
-                    <th>Pengaju</th>
+                    <th>{{ __("Pengaju") }}</th>
                     <td>{{ $document->user->name }} ({{ $document->user->employee_id ?? $document->user->email }})</td>
                 </tr>
                 <tr>
-                    <th>Tanggal Pengajuan</th>
+                    <th>{{ __("Tanggal Pengajuan") }}</th>
                     <td>{{ $document->submitted_at ? $document->submitted_at->format('d F Y H:i') : '-' }}</td>
                 </tr>
                 <tr>
-                    <th>Status</th>
+                    <th>{{ __("Status") }}</th>
                     <td><strong>{{ strtoupper($document->status_label) }}</strong></td>
                 </tr>
                 @if($document->approval_type === 'loan' && isset($document->metadata['loan_amount']))
                     <tr>
-                        <th>Jumlah Pinjaman</th>
+                        <th>{{ __("Jumlah Pinjaman") }}</th>
                         <td><strong>Rp {{ number_format($document->metadata['loan_amount'], 0, ',', '.') }}</strong></td>
                     </tr>
                     @if(isset($document->metadata['installment_count']))
                         <tr>
-                            <th>Tenor Cicilan</th>
-                            <td>{{ $document->metadata['installment_count'] }} bulan</td>
+                            <th>{{ __("Tenor Cicilan") }}</th>
+                            <td>{{ $document->metadata['installment_count'] }} {{ __("bulan") }}</td>
                         </tr>
                     @endif
                 @elseif($document->estimated_budget)
                     <tr>
-                        <th>Estimasi Anggaran</th>
+                        <th>{{ __("Estimasi Anggaran") }}</th>
                         <td>Rp {{ number_format($document->estimated_budget, 0, ',', '.') }}</td>
                     </tr>
                 @endif
                 @if($document->approved_budget)
                     <tr>
-                        <th>Anggaran Disetujui</th>
+                        <th>{{ __("Anggaran Disetujui") }}</th>
                         <td><strong>Rp {{ number_format($document->approved_budget, 0, ',', '.') }}</strong></td>
                     </tr>
                 @endif
@@ -310,7 +310,7 @@
 
         <!-- Description -->
         <div class="section">
-            <div class="section-title">DESKRIPSI / KETERANGAN</div>
+            <div class="section-title">{{ __("DESKRIPSI / KETERANGAN") }}</div>
             <div class="content-box">
                 {!! nl2br(e($document->description)) !!}
             </div>
@@ -322,9 +322,9 @@
         <div class="footer">
             <div class="footer-left">
                 <div class="verification-note">
-                    <strong>Catatan Verifikasi:</strong><br>
-                    Dokumen ini diterbitkan secara elektronik oleh sistem ConfirmMe.
-                    Scan QR Code untuk memverifikasi keaslian dokumen ini.<br>
+                    <strong>{{ __("Catatan Verifikasi") }}:</strong><br>
+                    {{ __("Dokumen ini diterbitkan secara elektronik oleh sistem ConfirmMe.") }}
+                    {{ __("Scan QR Code untuk memverifikasi keaslian dokumen ini.") }}<br>
                     <strong>Hash:</strong> {{ substr($document->approval_hash ?? 'N/A', 0, 32) }}...
                 </div>
             </div>
@@ -337,13 +337,13 @@
                             <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code">
                         @endif
                     @endif
-                    <div class="qr-label">Scan untuk verifikasi</div>
+                    <div class="qr-label">{{ __("Scan untuk verifikasi") }}</div>
                 </div>
             </div>
         </div>
 
         <div style="margin-top: 30px; text-align: center; font-size: 10px; color: #999;">
-            Dicetak pada: {{ now()->format('d F Y H:i:s') }} | ConfirmMe - PT. Info Solusindo Data Utama
+            {{ __("Dicetak pada") }}: {{ now()->format('d F Y H:i:s') }} | ConfirmMe - PT. Info Solusindo Data Utama
         </div>
     </div>
 </body>

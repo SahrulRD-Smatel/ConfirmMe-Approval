@@ -28,7 +28,7 @@ The core of ConfirmMe is its intelligent **Hybrid Approver Algorithm**. When rou
 4. **Global Fallback**: Falls back to global roles for company-wide positions (e.g., Finance or HR).
 
 ### 🌍 Multi-language & AI Localization
-Fully integrated translation engine supporting multiple languages (ID, EN). New keys can be automatically extracted via synchronization scripts and localized using built-in AI Translation scripts (`translate_en.py`, `translate_id.py`), ensuring a seamless experience for both local and international executives.
+Fully integrated translation engine supporting multiple languages (ID, EN, ZH, JA). New keys can be automatically extracted via synchronization scripts and localized using built-in AI Translation scripts (`translate_en.py`, `translate_id.py`, `translate_zh.py`, `translate_ja.py`), ensuring a seamless experience for both local and international executives across Southeast Asia, China, and Japan.
 
 ### 🛡️ Zero Hardcode Policy & Fallback Security
 Strict architectural guidelines prevent hardcoded roles in controllers and routes. Features adapt to newly created organizational roles instantly. For unseen or undefined roles, the system enforces strict fallback data protection to prevent accidental data leaks.

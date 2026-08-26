@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notifikasi Cuti - ConfirmMe</title>
+    <title>{{ __("Notifikasi Cuti") }} - ConfirmMe</title>
 </head>
 
 <body
@@ -43,7 +43,7 @@
                                     <td style="text-align: right; vertical-align: middle;">
                                         <span
                                             style="display: inline-block; padding: 6px 14px; background-color: {{ $actionColor }}; color: #ffffff; font-size: 12px; font-weight: 600; border-radius: 20px;">
-                                            CUTI
+                                            {{ __("CUTI") }}
                                         </span>
                                     </td>
                                 </tr>
@@ -78,57 +78,55 @@
                                     <td style="padding: 20px;">
                                         <p
                                             style="margin: 0 0 12px; font-size: 13px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">
-                                            Detail Pengajuan Cuti</p>
+                                            {{ __("Detail Pengajuan Cuti") }}</p>
                                         <table role="presentation" cellspacing="0" cellpadding="0" border="0"
                                             width="100%">
                                             <tr>
                                                 <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
-                                                    <span style="font-size: 13px; color: #6b7280;">Pemohon:</span>
+                                                    <span style="font-size: 13px; color: #6b7280;">{{ __('Pemohon') }}:</span>
                                                     <span
                                                         style="font-size: 14px; font-weight: 600; color: #111827; float: right;">{{ $leaveRequest->user->name }}</span>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
-                                                    <span style="font-size: 13px; color: #6b7280;">Departemen:</span>
+                                                    <span style="font-size: 13px; color: #6b7280;">{{ __('Departemen') }}:</span>
                                                     <span
                                                         style="font-size: 14px; color: #111827; float: right;">{{ $leaveRequest->user->department }}</span>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
-                                                    <span style="font-size: 13px; color: #6b7280;">Jenis Cuti:</span>
+                                                    <span style="font-size: 13px; color: #6b7280;">{{ __('Jenis Cuti') }}:</span>
                                                     <span
                                                         style="font-size: 14px; font-weight: 600; color: #1E40AF; float: right;">{{ $leaveRequest->type_label }}</span>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
-                                                    <span style="font-size: 13px; color: #6b7280;">Tanggal
-                                                        Mulai:</span>
+                                                    <span style="font-size: 13px; color: #6b7280;">{{ __('Tanggal Mulai') }}:</span>
                                                     <span
                                                         style="font-size: 14px; color: #111827; float: right;">{{ $leaveRequest->start_date->format('d M Y') }}</span>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
-                                                    <span style="font-size: 13px; color: #6b7280;">Tanggal
-                                                        Selesai:</span>
+                                                    <span style="font-size: 13px; color: #6b7280;">{{ __('Tanggal Selesai') }}:</span>
                                                     <span
                                                         style="font-size: 14px; color: #111827; float: right;">{{ $leaveRequest->end_date->format('d M Y') }}</span>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
-                                                    <span style="font-size: 13px; color: #6b7280;">Durasi:</span>
+                                                    <span style="font-size: 13px; color: #6b7280;">{{ __('Durasi') }}:</span>
                                                     <span
                                                         style="font-size: 14px; font-weight: 700; color: #1E40AF; float: right;">{{ $leaveRequest->duration }}
-                                                        hari</span>
+                                                        {{ __("hari") }}</span>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td style="padding: 8px 0;">
-                                                    <span style="font-size: 13px; color: #6b7280;">Alasan:</span>
+                                                    <span style="font-size: 13px; color: #6b7280;">{{ __('Alasan') }}:</span>
                                                     <span
                                                         style="font-size: 14px; color: #111827; float: right;">{{ Str::limit($leaveRequest->reason, 50) }}</span>
                                                 </td>
@@ -150,7 +148,7 @@
                                         <td style="padding: 16px;">
                                             <p
                                                 style="margin: 0 0 8px; font-size: 13px; font-weight: 600; color: #dc2626;">
-                                                Alasan Penolakan:</p>
+                                                {{ __("Alasan Penolakan") }}:</p>
                                             <p style="margin: 0; font-size: 14px; color: #7f1d1d; line-height: 1.5;">
                                                 {{ $leaveRequest->rejection_reason }}
                                             </p>
@@ -171,9 +169,9 @@
                                         <td style="padding: 16px;">
                                             <p
                                                 style="margin: 0 0 8px; font-size: 13px; font-weight: 600; color: #1e40af;">
-                                                ℹ️ Informasi Status:</p>
+                                                ℹ️ {{ __("Informasi Status") }}:</p>
                                             <p style="margin: 0; font-size: 14px; color: #1e3a5f; line-height: 1.5;">
-                                                Cuti Anda telah mendapat persetujuan atasan. Selanjutnya akan divalidasi oleh <strong>Manager HR</strong> untuk administrasi kepegawaian.
+                                                {{ __("Cuti Anda telah mendapat persetujuan atasan. Selanjutnya akan divalidasi oleh Manager HR untuk administrasi kepegawaian.") }}
                                             </p>
                                         </td>
                                     </tr>
@@ -191,9 +189,9 @@
                                         <a href="{{ $leaveUrl }}" target="_blank"
                                             style="display: inline-block; padding: 14px 40px; font-size: 15px; font-weight: 600; color: #ffffff; text-decoration: none; background-color: #1E40AF; border-radius: 6px;">
                                             @if(in_array($action, ['submitted', 'pending_hr']))
-                                                Review Pengajuan Cuti
+                                                {{ __("Review Pengajuan Cuti") }}
                                             @else
-                                                Lihat Detail Cuti
+                                                {{ __("Lihat Detail Cuti") }}
                                             @endif
                                         </a>
                                     </td>
@@ -207,8 +205,7 @@
                         <td
                             style="padding: 20px 40px; background-color: #f9fafb; border-top: 1px solid #e5e7eb; border-radius: 0 0 8px 8px;">
                             <p style="margin: 0; font-size: 12px; color: #6b7280; line-height: 1.6;">
-                                Email ini dikirim secara otomatis oleh sistem <strong>ConfirmMe</strong>. Jangan
-                                membalas email ini.
+                                {{ __("Email ini dikirim secara otomatis oleh sistem ConfirmMe. Jangan membalas email ini.") }}
                             </p>
                             <p style="margin: 12px 0 0; font-size: 11px; color: #9ca3af;">
                                 © {{ date('Y') }} PT INFO SOLUSINDO DATA UTAMA - ConfirmMe Document Approval System

@@ -14,9 +14,11 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use App\Traits\LocaleSwitchable;
 
 class RegisteredUserController extends Controller
 {
+    use LocaleSwitchable;
     /**
      * Display the registration view.
      */
@@ -52,7 +54,7 @@ class RegisteredUserController extends Controller
 
         // Do NOT auto-login — redirect to login with pending message
         return redirect()->route('login')->with('status',
-            'Pendaftaran berhasil! Akun Anda sedang menunggu persetujuan administrator. Silakan hubungi admin untuk aktivasi dan penugasan role.'
+            __('Pendaftaran berhasil! Akun Anda sedang menunggu persetujuan administrator. Silakan hubungi admin untuk aktivasi dan penugasan role.')
         );
     }
 
@@ -64,14 +66,15 @@ class RegisteredUserController extends Controller
         $admins = User::role('admin')->where('is_active', true)->get();
 
         foreach ($admins as $admin) {
-            // In-app notification (database)
+            // In-app notification (database) — no locale needed
             $admin->notify(new NewUserRegisteredNotification($newUser));
 
-            // Email notification (wrapped in try-catch so mail failure
-            // doesn't prevent registration from completing)
+            // Email notification — switch locale to admin's language
             if (config('app.env') !== 'testing') {
                 try {
-                    Mail::to($admin->email)->send(new NewUserRegisteredMail($newUser, $admin));
+                    $this->withRecipientLocale($admin, function () use ($admin, $newUser) {
+                        Mail::to($admin->email)->send(new NewUserRegisteredMail($newUser, $admin));
+                    });
                 } catch (\Exception $e) {
                     Log::warning('Failed to send new user registration email to admin', [
                         'admin_id' => $admin->id,

@@ -1,28 +1,28 @@
 <x-app-layout>
-    <x-slot name="title">Laporan</x-slot>
+    <x-slot name="title">{{ __('Laporan') }}</x-slot>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in-down">
             <div>
-                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Laporan & Statistik</h1>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Laporan & Statistik') }}</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Ringkasan performa dan aktivitas dokumen
+                    {{ __('Ringkasan performa dan aktivitas dokumen') }}
                 </p>
             </div>
 
             <div class="flex flex-wrap gap-2">
                 <x-ui.button href="{{ route('reports.documents') }}" variant="secondary" icon="document-text"
                     class="hover:scale-105 transition-transform">
-                    Laporan Dokumen
+                    {{ __('Laporan Dokumen') }}
                 </x-ui.button>
                 <x-ui.button href="{{ route('reports.finance') }}" variant="secondary" icon="banknotes"
                     class="hover:scale-105 transition-transform">
-                    Laporan Keuangan
+                    {{ __('Laporan Keuangan') }}
                 </x-ui.button>
                 <x-ui.button href="{{ route('reports.export') }}" variant="secondary" icon="arrow-down-tray"
                     class="hover:scale-105 transition-transform">
-                    Export PDF
+                    {{ __('Export PDF') }}
                 </x-ui.button>
             </div>
         </div>
@@ -34,7 +34,7 @@
             class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl p-4 text-white shadow-lg transform hover:-translate-y-1 transition duration-300">
             <div class="flex justify-between items-start">
                 <div>
-                    <p class="text-indigo-100 text-xs font-medium uppercase tracking-wider">Total Dokumen</p>
+                    <p class="text-indigo-100 text-xs font-medium uppercase tracking-wider">{{ __('Total Dokumen') }}</p>
                     <p class="text-3xl font-bold mt-1">{{ number_format($stats['total']) }}</p>
                 </div>
                 <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
@@ -44,7 +44,7 @@
             <div class="mt-4 text-xs text-indigo-100 flex items-center gap-1">
                 <span
                     class="bg-white/20 px-1.5 py-0.5 rounded text-white font-semibold">+{{ $stats['this_month'] }}</span>
-                <span>bulan ini</span>
+                <span>{{ __('bulan ini') }}</span>
             </div>
         </div>
 
@@ -52,7 +52,7 @@
             class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl p-4 text-white shadow-lg transform hover:-translate-y-1 transition duration-300">
             <div class="flex justify-between items-start">
                 <div>
-                    <p class="text-green-100 text-xs font-medium uppercase tracking-wider">Disetujui</p>
+                    <p class="text-green-100 text-xs font-medium uppercase tracking-wider">{{ __('Disetujui') }}</p>
                     <p class="text-3xl font-bold mt-1">{{ number_format($stats['approved']) }}</p>
                 </div>
                 <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
@@ -68,7 +68,7 @@
             class="bg-gradient-to-br from-red-500 to-pink-600 rounded-xl p-4 text-white shadow-lg transform hover:-translate-y-1 transition duration-300">
             <div class="flex justify-between items-start">
                 <div>
-                    <p class="text-red-100 text-xs font-medium uppercase tracking-wider">Ditolak</p>
+                    <p class="text-red-100 text-xs font-medium uppercase tracking-wider">{{ __('Ditolak') }}</p>
                     <p class="text-3xl font-bold mt-1">{{ number_format($stats['rejected']) }}</p>
                 </div>
                 <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
@@ -92,7 +92,7 @@
                 </div>
             </div>
             <div class="mt-4 text-xs text-yellow-100">
-                Avg Process: {{ $stats['avg_days'] ?? '~' }} hari
+                {{ __('Avg Process') }}: {{ $stats['avg_days'] ?? '~' }} {{ __('hari') }}
             </div>
         </div>
     </div>
@@ -101,7 +101,7 @@
         <!-- Main Chart -->
         <div
             class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200/80 dark:border-gray-700/80 shadow-soft">
-            <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Tren Dokumen Departemen</h2>
+            <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Tren Dokumen Departemen') }}</h2>
             <div class="h-64">
                 <canvas id="deptChart"></canvas>
             </div>
@@ -109,7 +109,7 @@
 
         <!-- Secondary Chart -->
         <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200/80 dark:border-gray-700/80 shadow-soft">
-            <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Komposisi Dokumen</h2>
+            <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Komposisi Dokumen') }}</h2>
             <div class="h-64 flex items-center justify-center">
                 <canvas id="typeChart"></canvas>
             </div>
@@ -119,18 +119,18 @@
     <!-- Recent Activity Table -->
     <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200/80 dark:border-gray-700/80 shadow-soft">
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Aktivitas Terbaru</h2>
-            <span class="text-xs text-gray-500">5 Dokumen Terakhir</span>
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Aktivitas Terbaru') }}</h2>
+            <span class="text-xs text-gray-500">{{ __('5 Dokumen Terakhir') }}</span>
         </div>
 
         <div class="overflow-hidden">
             <table class="min-w-[760px] w-full divide-y divide-gray-200/80 dark:divide-gray-700/80">
                 <thead class="bg-gray-50/80 dark:bg-gray-800">
                     <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider rounded-l-lg">Dokumen</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">User</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Waktu</th>
-                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider rounded-r-lg">Status</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider rounded-l-lg">{{ __('Dokumen') }}</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('User') }}</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Waktu') }}</th>
+                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider rounded-r-lg">{{ __('Status') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
@@ -159,7 +159,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="px-4 py-8 text-center text-gray-500 italic">Belum ada aktivitas dokumen.
+                            <td colspan="4" class="px-4 py-8 text-center text-gray-500 italic">{{ __('Belum ada aktivitas dokumen.') }}
                             </td>
                         </tr>
                     @endforelse

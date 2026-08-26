@@ -306,7 +306,7 @@
                     @elseif($invoice->status === 'partial') status-partial
                     @else status-unpaid
                     @endif">
-                    {{ $invoice->status === 'paid' ? 'LUNAS' : ($invoice->status === 'partial' ? 'SEBAGIAN' : 'BELUM BAYAR') }}
+                    {{ $invoice->status === 'paid' ? __('LUNAS') : ($invoice->status === 'partial' ? __('SEBAGIAN') : __('BELUM BAYAR')) }}
                 </span>
             </div>
         </div>
@@ -315,30 +315,30 @@
         <div class="info-section">
             <div class="info-left">
                 <div class="info-box">
-                    <h3>Vendor / Penerima</h3>
+                    <h3>{{ __("Vendor / Penerima") }}</h3>
                     <p class="value">{{ $invoice->vendor_name }}</p>
                     <p>{{ $invoice->vendor_address ?? '-' }}</p>
                 </div>
                 <div class="info-box">
-                    <h3>Referensi</h3>
-                    <p>No. Dokumen: <span class="value">{{ $invoice->document->document_number }}</span></p>
-                    <p>Judul: {{ $invoice->document->title }}</p>
+                    <h3>{{ __("Referensi") }}</h3>
+                    <p>{{ __('No. Dokumen') }}: <span class="value">{{ $invoice->document->document_number }}</span></p>
+                    <p>{{ __('Judul') }}: {{ $invoice->document->title }}</p>
                     @if($invoice->purchaseOrder)
-                        <p>No. PO: <span class="value">{{ $invoice->purchaseOrder->po_number }}</span></p>
+                        <p>{{ __('No. PO') }}: <span class="value">{{ $invoice->purchaseOrder->po_number }}</span></p>
                     @endif
                 </div>
             </div>
             <div class="info-right" style="padding-left: 15px;">
                 <div class="info-box">
-                    <h3>Detail Invoice</h3>
-                    <p>Tanggal Invoice: <span class="value">{{ $invoice->invoice_date->format('d F Y') }}</span></p>
-                    <p>Jatuh Tempo: <span class="value">{{ $invoice->due_date->format('d F Y') }}</span></p>
+                    <h3>{{ __("Detail Invoice") }}</h3>
+                    <p>{{ __('Tanggal Invoice') }}: <span class="value">{{ $invoice->invoice_date->format('d F Y') }}</span></p>
+                    <p>{{ __('Jatuh Tempo') }}: <span class="value">{{ $invoice->due_date->format('d F Y') }}</span></p>
                     @if($invoice->due_date->isPast() && $invoice->status !== 'paid')
                         <p style="color: #DC2626; font-weight: bold;">⚠️ OVERDUE</p>
                     @endif
                 </div>
                 <div class="info-box">
-                    <h3>Dibuat Oleh</h3>
+                    <h3>{{ __("Dibuat Oleh") }}</h3>
                     <p class="value">{{ $invoice->creator->name }}</p>
                     <p>{{ $invoice->created_at->format('d F Y H:i') }}</p>
                 </div>
@@ -349,8 +349,8 @@
         <table class="amount-table">
             <thead>
                 <tr>
-                    <th style="width: 70%;">Deskripsi</th>
-                    <th style="width: 30%; text-align: right;">Jumlah</th>
+                    <th style="width: 70%;">{{ __("Deskripsi") }}</th>
+                    <th style="width: 30%; text-align: right;">{{ __("Jumlah") }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -359,7 +359,7 @@
                     <td class="number">Rp {{ number_format($invoice->subtotal, 0, ',', '.') }}</td>
                 </tr>
                 <tr>
-                    <td>Pajak</td>
+                    <td>{{ __("Pajak") }}</td>
                     <td class="number">Rp {{ number_format($invoice->tax_amount, 0, ',', '.') }}</td>
                 </tr>
                 <tr class="total-row">
@@ -371,22 +371,21 @@
 
         <!-- Payment Summary -->
         <div class="payment-summary">
-            <h4 style="font-size: 10px; text-transform: uppercase; color: #666; margin-bottom: 10px;">Ringkasan
-                Pembayaran</h4>
+            <h4 style="font-size: 10px; text-transform: uppercase; color: #666; margin-bottom: 10px;">{{ __("Ringkasan Pembayaran") }}</h4>
 
             <div class="payment-row">
-                <div class="payment-label">Total Invoice</div>
+                <div class="payment-label">{{ __("Total Invoice") }}</div>
                 <div class="payment-value">Rp {{ number_format($invoice->total_amount, 0, ',', '.') }}</div>
             </div>
             <div class="payment-row">
-                <div class="payment-label">Sudah Dibayar</div>
+                <div class="payment-label">{{ __("Sudah Dibayar") }}</div>
                 <div class="payment-value">Rp {{ number_format($invoice->paid_amount, 0, ',', '.') }}</div>
             </div>
 
             @if($invoice->outstanding_amount > 0)
                 <div class="payment-outstanding">
                     <div class="payment-row" style="margin-bottom: 0;">
-                        <div class="payment-label"><strong>Sisa Pembayaran</strong></div>
+                        <div class="payment-label"><strong>{{ __("Sisa Pembayaran") }}</strong></div>
                         <div class="payment-value">Rp {{ number_format($invoice->outstanding_amount, 0, ',', '.') }}</div>
                     </div>
                 </div>
@@ -396,7 +395,7 @@
         <!-- Notes -->
         @if($invoice->notes)
             <div class="notes">
-                <h4>Catatan</h4>
+                <h4>{{ __("Catatan") }}</h4>
                 <p>{{ $invoice->notes }}</p>
             </div>
         @endif
@@ -405,7 +404,7 @@
         <div class="footer">
             <div class="footer-left">
                 <div class="signature-box" style="width: 200px;">
-                    <div class="signature-label">Disetujui oleh,</div>
+                    <div class="signature-label">{{ __("Disetujui oleh") }},</div>
                     <div class="signature-name">
                         {{ $invoice->document->approvals->where('status', 'approved')->last()?->approver?->name ?? '________________' }}
                     </div>
@@ -416,13 +415,13 @@
                     @if(isset($qrCode))
                         <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code">
                     @endif
-                    <div class="qr-label">Scan untuk verifikasi</div>
+                    <div class="qr-label">{{ __("Scan untuk verifikasi") }}</div>
                 </div>
             </div>
         </div>
 
         <div class="print-footer">
-            Dicetak pada: {{ now()->format('d F Y H:i:s') }} | ConfirmMe - PT. Info Solusindo Data Utama
+            {{ __("Dicetak pada") }}: {{ now()->format('d F Y H:i:s') }} | ConfirmMe - PT. Info Solusindo Data Utama
         </div>
     </div>
 </body>

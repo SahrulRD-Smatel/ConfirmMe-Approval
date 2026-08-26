@@ -1,21 +1,21 @@
 <x-app-layout>
-    <x-slot name="title">Pengajuan Cuti Saya</x-slot>
+    <x-slot name="title">{{ __('Pengajuan Cuti Saya') }}</x-slot>
 
     <x-slot name="header">
         <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Pengajuan Cuti Saya</h1>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Riwayat dan status pengajuan cuti Anda</p>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Pengajuan Cuti Saya') }}</h1>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Riwayat dan status pengajuan cuti Anda') }}</p>
             </div>
-            <x-ui.button href="{{ route('leave-requests.create') }}" icon="plus">Ajukan Cuti</x-ui.button>
+            <x-ui.button href="{{ route('leave-requests.create') }}" icon="plus">{{ __('Ajukan Cuti') }}</x-ui.button>
         </div>
     </x-slot>
 
     {{-- Leave Balance Cards --}}
     <div class="mb-7 grid grid-cols-2 gap-4 sm:grid-cols-3">
-        <x-ui.stat-card title="Sisa Cuti Tahunan" :value="auth()->user()->annual_leave_balance ?? 12" icon="calendar" color="primary" />
-        <x-ui.stat-card title="Hari Sakit (Digunakan)" :value="auth()->user()->sick_leave_used ?? 0" icon="heart" color="danger" />
-        <x-ui.stat-card title="Menunggu Persetujuan" :value="auth()->user()->leaveRequests()->pending()->count()" icon="clock" color="warning" />
+        <x-ui.stat-card title="{{ __('Sisa Cuti Tahunan') }}" :value="auth()->user()->annual_leave_balance ?? 12" icon="calendar" color="primary" />
+        <x-ui.stat-card title="{{ __('Hari Sakit (Digunakan)') }}" :value="auth()->user()->sick_leave_used ?? 0" icon="heart" color="danger" />
+        <x-ui.stat-card title="{{ __('Menunggu Persetujuan') }}" :value="auth()->user()->leaveRequests()->pending()->count()" icon="clock" color="warning" />
     </div>
 
     <x-ui.card>
@@ -25,10 +25,10 @@
                     class="bg-gray-50 dark:bg-gray-700 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                     <x-icon name="calendar" class="w-8 h-8 text-gray-400" />
                 </div>
-                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Belum Ada Pengajuan</h3>
-                <p class="text-gray-500 text-sm mt-1">Anda belum pernah mengajukan cuti.</p>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ __('Belum Ada Pengajuan') }}</h3>
+                <p class="text-gray-500 text-sm mt-1">{{ __('Anda belum pernah mengajukan cuti.') }}</p>
                 <div class="mt-4">
-                    <x-ui.button href="{{ route('leave-requests.create') }}" icon="plus">Ajukan Cuti Pertama</x-ui.button>
+                    <x-ui.button href="{{ route('leave-requests.create') }}" icon="plus">{{ __('Ajukan Cuti Pertama') }}</x-ui.button>
                 </div>
             </div>
         @else
@@ -36,12 +36,12 @@
                 <table class="min-w-[760px] w-full divide-y divide-gray-200/80 dark:divide-gray-700/80">
                     <thead class="bg-gray-50/80 dark:bg-gray-800">
                         <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tanggal</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Jenis</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Durasi</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Alasan</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Aksi</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Tanggal') }}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Jenis') }}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Durasi') }}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Alasan') }}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Status') }}</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Aksi') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200/80 dark:divide-gray-700/80">
@@ -64,7 +64,7 @@
                                                     {{ $leave->type_label }}
                                                 </span>
                                             </td>
-                                            <td class="px-4 py-3 text-gray-500">{{ $leave->duration }} hari</td>
+                                            <td class="px-4 py-3 text-gray-500">{{ $leave->duration }} {{ __('hari') }}</td>
                                             <td class="px-4 py-3 text-gray-500 max-w-xs truncate">{{ $leave->reason }}</td>
                                             <td class="px-4 py-3">
                                                 <span class="px-2 py-1 rounded-full text-xs font-medium

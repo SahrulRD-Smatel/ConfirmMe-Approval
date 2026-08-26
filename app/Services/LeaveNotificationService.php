@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Mail\LeaveRequestMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use App\Traits\LocaleSwitchable;
 
 /**
  * Leave Email Notification Service
@@ -19,6 +20,7 @@ use Illuminate\Support\Facades\Log;
  */
 class LeaveNotificationService
 {
+    use LocaleSwitchable;
     /**
      * Send notification when a leave request is submitted
      */
@@ -33,14 +35,16 @@ class LeaveNotificationService
                 return;
             }
 
-            $mail = new LeaveRequestMail(
-                leaveRequest: $leaveRequest,
-                action: 'submitted',
-                recipient: $approver,
-                actor: $requester,
-            );
+            $this->withRecipientLocale($approver, function () use ($leaveRequest, $approver, $requester) {
+                $mail = new LeaveRequestMail(
+                    leaveRequest: $leaveRequest,
+                    action: 'submitted',
+                    recipient: $approver,
+                    actor: $requester,
+                );
 
-            Mail::to($approver)->send($mail);
+                Mail::to($approver)->send($mail);
+            });
 
             Log::info("Sent leave submitted email for #{$leaveRequest->id} to {$approver->email}");
         } catch (\Throwable $e) {
@@ -57,24 +61,28 @@ class LeaveNotificationService
             $requester = $leaveRequest->user;
 
             // 1. Email to staff: "Atasan Anda telah menyetujui, menunggu validasi HR"
-            $mailToStaff = new LeaveRequestMail(
-                leaveRequest: $leaveRequest,
-                action: 'tier1_approved',
-                recipient: $requester,
-                actor: $approver,
-            );
-            Mail::to($requester)->send($mailToStaff);
+            $this->withRecipientLocale($requester, function () use ($leaveRequest, $requester, $approver) {
+                $mailToStaff = new LeaveRequestMail(
+                    leaveRequest: $leaveRequest,
+                    action: 'tier1_approved',
+                    recipient: $requester,
+                    actor: $approver,
+                );
+                Mail::to($requester)->send($mailToStaff);
+            });
 
             // 2. Email to HR Manager: "Ada cuti yang perlu divalidasi"
             $hrManager = $this->findHRManager();
             if ($hrManager && $hrManager->id !== $approver->id) {
-                $mailToHR = new LeaveRequestMail(
-                    leaveRequest: $leaveRequest,
-                    action: 'pending_hr',
-                    recipient: $hrManager,
-                    actor: $approver,
-                );
-                Mail::to($hrManager)->cc($requester->email)->send($mailToHR);
+                $this->withRecipientLocale($hrManager, function () use ($leaveRequest, $hrManager, $approver, $requester) {
+                    $mailToHR = new LeaveRequestMail(
+                        leaveRequest: $leaveRequest,
+                        action: 'pending_hr',
+                        recipient: $hrManager,
+                        actor: $approver,
+                    );
+                    Mail::to($hrManager)->cc($requester->email)->send($mailToHR);
+                });
 
                 Log::info("Sent leave pending_hr email for #{$leaveRequest->id} to HR Manager {$hrManager->email}");
             }
@@ -93,14 +101,16 @@ class LeaveNotificationService
         try {
             $requester = $leaveRequest->user;
 
-            $mail = new LeaveRequestMail(
-                leaveRequest: $leaveRequest,
-                action: 'approved',
-                recipient: $requester,
-                actor: $approver,
-            );
+            $this->withRecipientLocale($requester, function () use ($leaveRequest, $requester, $approver) {
+                $mail = new LeaveRequestMail(
+                    leaveRequest: $leaveRequest,
+                    action: 'approved',
+                    recipient: $requester,
+                    actor: $approver,
+                );
 
-            Mail::to($requester)->send($mail);
+                Mail::to($requester)->send($mail);
+            });
 
             Log::info("Sent leave approved email for #{$leaveRequest->id} to {$requester->email}");
         } catch (\Throwable $e) {
@@ -116,14 +126,16 @@ class LeaveNotificationService
         try {
             $requester = $leaveRequest->user;
 
-            $mail = new LeaveRequestMail(
-                leaveRequest: $leaveRequest,
-                action: 'rejected',
-                recipient: $requester,
-                actor: $rejector,
-            );
+            $this->withRecipientLocale($requester, function () use ($leaveRequest, $requester, $rejector) {
+                $mail = new LeaveRequestMail(
+                    leaveRequest: $leaveRequest,
+                    action: 'rejected',
+                    recipient: $requester,
+                    actor: $rejector,
+                );
 
-            Mail::to($requester)->send($mail);
+                Mail::to($requester)->send($mail);
+            });
 
             Log::info("Sent leave rejected email for #{$leaveRequest->id} to {$requester->email}");
         } catch (\Throwable $e) {

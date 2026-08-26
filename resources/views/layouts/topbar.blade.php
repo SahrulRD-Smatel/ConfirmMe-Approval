@@ -141,14 +141,26 @@
                      style="display: none;">
                     <div class="py-1">
                         <a href="{{ route('lang.switch', 'id') }}" class="flex items-center justify-between px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-                            <span>🇮🇩 ID</span>
+                            <span class="flex items-center gap-2"><img src="https://flagcdn.com/id.svg" width="16" alt="ID" class="rounded-sm shadow-sm"> ID</span>
                             @if(app()->getLocale() === 'id')
                                 <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                             @endif
                         </a>
                         <a href="{{ route('lang.switch', 'en') }}" class="flex items-center justify-between px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-                            <span>🇺🇸 EN</span>
+                            <span class="flex items-center gap-2"><img src="https://flagcdn.com/us.svg" width="16" alt="EN" class="rounded-sm shadow-sm"> EN</span>
                             @if(app()->getLocale() === 'en')
+                                <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            @endif
+                        </a>
+                        <a href="{{ route('lang.switch', 'zh') }}" class="flex items-center justify-between px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <span class="flex items-center gap-2"><img src="https://flagcdn.com/cn.svg" width="16" alt="ZH" class="rounded-sm shadow-sm"> ZH</span>
+                            @if(app()->getLocale() === 'zh')
+                                <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            @endif
+                        </a>
+                        <a href="{{ route('lang.switch', 'ja') }}" class="flex items-center justify-between px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <span class="flex items-center gap-2"><img src="https://flagcdn.com/jp.svg" width="16" alt="JA" class="rounded-sm shadow-sm"> JA</span>
+                            @if(app()->getLocale() === 'ja')
                                 <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                             @endif
                         </a>

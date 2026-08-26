@@ -82,10 +82,12 @@ Route::middleware(['auth', 'verified', 'active', 'has_role'])->group(function ()
 
     // Leave Requests (All authenticated users)
     Route::resource('leave-requests', \App\Http\Controllers\LeaveRequestController::class)
-        ->except(['edit', 'update', 'destroy']);
+        ->except(['edit', 'update', 'destroy'])
+        ->middleware('feature:module_hris');
 
     // Leave Approval (Supervisor for staff, HR Manager/Director for higher roles)
     Route::prefix('leave-approvals')->name('leave-approvals.')
+        ->middleware('feature:module_hris')
         ->group(function () {
             Route::get('/', [\App\Http\Controllers\LeaveApprovalController::class, 'index'])->name('index');
             Route::post('/{leaveRequest}/approve', [\App\Http\Controllers\LeaveApprovalController::class, 'approve'])->name('approve');
@@ -94,7 +96,7 @@ Route::middleware(['auth', 'verified', 'active', 'has_role'])->group(function ()
 
 
     // HRIS: Announcements (Authorization handled in Controller)
-    Route::resource('announcements', \App\Http\Controllers\AnnouncementController::class);
+    Route::resource('announcements', \App\Http\Controllers\AnnouncementController::class)->middleware('feature:module_hris');
     Route::resource('documents', DocumentController::class);
     Route::get('/documents/template-data/{code}', [DocumentController::class, 'getTemplate'])->name('documents.template-data');
     Route::post('/documents/{document}/submit', [DocumentController::class, 'submit'])->name('documents.submit');
@@ -145,7 +147,7 @@ Route::middleware(['auth', 'verified', 'active', 'has_role'])->group(function ()
     });
 
     // Finance Routes (Dynamic - Permissions based)
-    Route::prefix('finance')->name('finance.')->middleware('permission:manage-budget|create-po|create-invoice|manage-purchasing|print-po|print-invoice')->group(function () {
+    Route::prefix('finance')->name('finance.')->middleware(['permission:manage-budget|create-po|create-invoice|manage-purchasing|print-po|print-invoice', 'feature:module_finance'])->group(function () {
         // Dashboard
         Route::get('/', [FinanceDashboardController::class, 'index'])->name('dashboard');
 
@@ -165,11 +167,13 @@ Route::middleware(['auth', 'verified', 'active', 'has_role'])->group(function ()
         Route::post('/po/{po}/create-invoice', [InvoiceController::class, 'createFromPO'])->name('invoices.from-po');
 
         // Employee Loans
-        Route::get('/loans', [LoanController::class, 'index'])->name('loans.index');
-        Route::get('/loans/reports/receivables', [LoanController::class, 'receivablesReport'])->name('loans.receivables');
-        Route::get('/loans/{loan}', [LoanController::class, 'show'])->name('loans.show');
-        Route::post('/loans/{loan}/disburse', [LoanController::class, 'disburse'])->name('loans.disburse');
-        Route::post('/loans/{loan}/repayment', [LoanController::class, 'recordRepayment'])->name('loans.repayment');
+        Route::middleware('feature:module_loan')->group(function () {
+            Route::get('/loans', [LoanController::class, 'index'])->name('loans.index');
+            Route::get('/loans/reports/receivables', [LoanController::class, 'receivablesReport'])->name('loans.receivables');
+            Route::get('/loans/{loan}', [LoanController::class, 'show'])->name('loans.show');
+            Route::post('/loans/{loan}/disburse', [LoanController::class, 'disburse'])->name('loans.disburse');
+            Route::post('/loans/{loan}/repayment', [LoanController::class, 'recordRepayment'])->name('loans.repayment');
+        });
     });
 
     // Admin Routes (Role-based - Admin only)
@@ -221,11 +225,13 @@ Route::middleware(['auth', 'verified', 'active', 'has_role'])->group(function ()
     });
 
     // My Loans (Employee view of their own loans)
-    Route::get('/my-loans', [MyLoanController::class, 'index'])->name('my-loans.index');
-    Route::get('/my-loans/{loan}', [MyLoanController::class, 'show'])->name('my-loans.show');
+    Route::middleware('feature:module_loan')->group(function () {
+        Route::get('/my-loans', [MyLoanController::class, 'index'])->name('my-loans.index');
+        Route::get('/my-loans/{loan}', [MyLoanController::class, 'show'])->name('my-loans.show');
+    });
 
     // Attendance (All authenticated users)
-    Route::prefix('attendance')->name('attendance.')->group(function () {
+    Route::prefix('attendance')->name('attendance.')->middleware('feature:module_hris')->group(function () {
         Route::get('/', [AttendanceController::class, 'index'])->name('index');
         Route::post('/check-in', [AttendanceController::class, 'checkIn'])->name('check-in');
         Route::post('/check-out', [AttendanceController::class, 'checkOut'])->name('check-out');
@@ -233,7 +239,7 @@ Route::middleware(['auth', 'verified', 'active', 'has_role'])->group(function ()
     });
 
     // Attendance Admin (Dynamic - Permissions based)
-    Route::prefix('attendance-admin')->name('attendance-admin.')->middleware('permission:manage-attendance|view-attendance')->group(function () {
+    Route::prefix('attendance-admin')->name('attendance-admin.')->middleware(['permission:manage-attendance|view-attendance', 'feature:module_hris'])->group(function () {
         Route::get('/report', [AttendanceController::class, 'report'])->name('report');
         Route::get('/report/export-pdf', [AttendanceController::class, 'exportPdf'])->name('export-pdf');
         Route::get('/report/export-csv', [AttendanceController::class, 'exportCsv'])->name('export-csv');
@@ -244,7 +250,7 @@ Route::middleware(['auth', 'verified', 'active', 'has_role'])->group(function ()
         Route::post('/locations', [AttendanceController::class, 'storeLocation'])->name('locations.store');
     });
     // Leave Reports (Dynamic - Permissions based)
-    Route::prefix('leave-reports')->name('leave-reports.')->middleware('permission:view-reports|manage-attendance')->group(function () {
+    Route::prefix('leave-reports')->name('leave-reports.')->middleware(['permission:view-reports|manage-attendance', 'feature:module_hris'])->group(function () {
         Route::get('/', [\App\Http\Controllers\LeaveReportController::class, 'index'])->name('index');
     });
 });
