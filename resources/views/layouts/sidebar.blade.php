@@ -51,8 +51,8 @@
             </x-sidebar-link>
         @endif
 
-        {{-- Executive Menu - Presiden Direktur only --}}
-        @if(auth()->user()->hasRole('presiden_direktur'))
+        {{-- Executive Menu - Dynamic via Permissions --}}
+        @can('menu-executive-dashboard')
             {{-- Executive Dashboard at top level --}}
             <x-sidebar-link :href="route('executive.dashboard')" :active="request()->routeIs('executive.dashboard')"
                 icon="building-office-2">
@@ -102,13 +102,13 @@
                         {{ __('Daftar Pengajuan') }}
                     </x-sidebar-link>
                 @endif
-                @if(feature_active('module_loan') && auth()->user()->hasPermissionTo('create-document') && !auth()->user()->hasRole('admin'))
+                @if(feature_active('module_loan') && auth()->user()->hasPermissionTo('menu-my-loans'))
                     <x-sidebar-link :href="route('my-loans.index')" :active="request()->routeIs('my-loans.*')"
                         icon="hand-raised">
                         {{ __('Pinjaman Saya') }}
                     </x-sidebar-link>
                 @endif
-                @if(feature_active('module_hris') && !auth()->user()->hasRole('admin'))
+                @if(feature_active('module_hris') && auth()->user()->hasPermissionTo('menu-my-leaves'))
                     <x-sidebar-link :href="route('leave-requests.index')" :active="request()->routeIs('leave-requests.*')"
                         icon="calendar">
                         {{ __('Pengajuan Cuti') }}
@@ -157,12 +157,12 @@
                         </x-sidebar-link>
                     @endif
 
-                    @if(!auth()->user()->hasRole('presiden_direktur'))
+                    @can('menu-bulk-approval')
                         <x-sidebar-link :href="route('approvals.bulk')" :active="request()->routeIs('approvals.bulk')"
                             icon="squares-2x2">
                             {{ __('Bulk Approval') }}
                         </x-sidebar-link>
-                    @endif
+                    @endcan
                     <x-sidebar-link :href="route('approvals.history')" :active="request()->routeIs('approvals.history')"
                         icon="clock">
                         {{ __('Riwayat Approval') }}
@@ -211,13 +211,13 @@
         @endif
 
         <!-- Supervisory View - Dynamic via Permissions -->
-        @if(auth()->user()->hasPermissionTo('approve-document'))
+        @can('menu-team-documents')
             <x-sidebar-section title="{{ __('Tim Saya') }}" :collapsed="$sidebarCollapsed ?? false">
                 <x-sidebar-link :href="route('team.documents')" :active="request()->routeIs('team.*')" icon="user-group">
                     {{ __('Dokumen Tim') }}
                 </x-sidebar-link>
             </x-sidebar-section>
-        @endif
+        @endcan
 
         {{-- Reports - Dynamic via Permissions --}}
         @if(auth()->user()->hasPermissionTo('view-reports'))
@@ -239,17 +239,17 @@
                     icon="document-duplicate">
                     {{ __('Laporan Cuti') }}
                 </x-sidebar-link>
-                @if(auth()->user()->hasAnyRole(['admin', 'hrd', 'direktur_hr']))
+                @can('menu-office-locations')
                     <x-sidebar-link :href="route('attendance-admin.locations')" :active="request()->routeIs('attendance-admin.locations')"
                         icon="map-pin">
                         {{ __('Lokasi Kantor') }}
                     </x-sidebar-link>
-                @endif
+                @endcan
             </x-sidebar-section>
         @endif
 
         {{-- Pengumuman - Dynamic via Permissions --}}
-        @if(feature_active('module_hris') && (auth()->user()->hasPermissionTo('manage-attendance') || auth()->user()->department === 'Human Resources'))
+        @if(feature_active('module_hris') && auth()->user()->hasPermissionTo('menu-announcements'))
             <x-sidebar-section title="HRIS" :collapsed="$sidebarCollapsed ?? false">
                 <x-sidebar-link :href="route('announcements.index')" :active="request()->routeIs('announcements.*')"
                     icon="megaphone">
@@ -306,14 +306,14 @@
             </x-sidebar-section>
         @endcanany
 
-        {{-- Archive - All users with view-document permission (not Presiden Direktur) --}}
-        @if(!auth()->user()->hasRole('presiden_direktur') && auth()->user()->hasPermissionTo('view-document'))
+        {{-- Archive - Dynamic via Permissions --}}
+        @can('menu-archive')
             <x-sidebar-section title="{{ __('Arsip') }}" :collapsed="$sidebarCollapsed ?? false">
                 <x-sidebar-link :href="route('archive.index')" :active="request()->routeIs('archive.*')" icon="archive-box">
                     {{ __('Riwayat Dokumen') }}
                 </x-sidebar-link>
             </x-sidebar-section>
-        @endif
+        @endcan
     </nav>
 
     <!-- Bottom Section -->

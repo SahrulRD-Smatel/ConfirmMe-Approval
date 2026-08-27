@@ -13,6 +13,7 @@ class ArchiveController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
+        abort_unless($user->hasPermissionTo('menu-archive'), 403, 'Anda tidak memiliki akses ke fitur ini.');
 
         $query = Document::with(['user', 'approvals'])
             ->whereIn('status', ['approved', 'rejected', 'completed', 'paid'])
@@ -75,6 +76,7 @@ class ArchiveController extends Controller
      */
     public function show(Document $document)
     {
+        abort_unless(auth()->user()->hasPermissionTo('menu-archive'), 403, 'Anda tidak memiliki akses ke fitur ini.');
         $this->authorize('view', $document);
 
         $document->load([

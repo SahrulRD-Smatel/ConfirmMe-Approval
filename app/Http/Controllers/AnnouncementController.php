@@ -16,11 +16,7 @@ class AnnouncementController extends Controller
     private function authorizeAnnouncementAccess(): void
     {
         $user = auth()->user();
-        $allowedRoles = ['hrd', 'direktur_hr', 'admin', 'presiden_direktur'];
-
-        if (!$user->hasAnyRole($allowedRoles) && $user->department !== 'Human Resources') {
-            abort(403, 'Anda tidak memiliki akses untuk mengelola pengumuman.');
-        }
+        abort_unless($user->hasPermissionTo('menu-announcements'), 403, 'Anda tidak memiliki akses untuk mengelola pengumuman.');
     }
 
     /**

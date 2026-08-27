@@ -106,20 +106,20 @@
                     {{-- Group Body --}}
                     <div x-show="groupOpen" x-collapse>
                         <div class="p-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-y-4 gap-x-8">
-                            @foreach($groupPerms as $perm)
+                            @foreach($groupPerms as $permData)
                                 @php 
-                                    $hasPerm = isset($role) ? $role->hasPermissionTo($perm) : false; 
-                                    $isAction = in_array($perm, ['edit-document', 'delete-document', 'submit-document', 'reject-document', 'print-document', 'view-all-documents', 'view-department-documents', 'view-finance-documents', 'export-reports']);
-                                    $badgeLabel = $isAction ? __('FITUR') : __('MENU');
-                                    $badgeClass = $isAction ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-400';
+                                    $permName = $permData['name'];
+                                    $hasPerm = isset($role) ? $role->hasPermissionTo($permName) : false; 
+                                    $badgeLabel = $permData['type'];
+                                    $badgeClass = $badgeLabel == 'FITUR' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-400';
                                 @endphp
                                 <label class="flex items-center justify-between group cursor-pointer p-3 rounded-xl hover:bg-primary-50/60 dark:hover:bg-gray-800/80/50 transition-colors border border-transparent hover:border-gray-100 dark:hover:border-gray-700/50">
                                     <span class="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors flex items-center gap-2">
-                                        {{ str_replace('-', ' ', $perm) }}
+                                        {{ $permData['label'] }}
                                         <span class="px-1.5 py-0.5 rounded text-[9px] font-bold {{ $badgeClass }}">{{ $badgeLabel }}</span>
                                     </span>
                                     <div class="relative inline-flex items-center">
-                                        <input type="checkbox" name="permissions[]" value="{{ $perm }}" class="sr-only peer" {{ $hasPerm ? 'checked' : '' }}>
+                                        <input type="checkbox" name="permissions[]" value="{{ $permName }}" class="sr-only peer" {{ $hasPerm ? 'checked' : '' }}>
                                         <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500"></div>
                                     </div>
                                 </label>

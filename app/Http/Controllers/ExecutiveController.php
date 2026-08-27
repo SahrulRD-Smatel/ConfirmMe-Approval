@@ -18,6 +18,10 @@ class ExecutiveController extends Controller
     public function __construct(ApprovalWorkflowService $workflowService)
     {
         $this->workflowService = $workflowService;
+        $this->middleware(function ($request, $next) {
+            abort_unless(auth()->user()->hasPermissionTo('menu-executive-dashboard'), 403, 'Akses ditolak.');
+            return $next($request);
+        });
     }
 
     /**

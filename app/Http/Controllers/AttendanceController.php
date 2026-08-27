@@ -315,9 +315,7 @@ class AttendanceController extends Controller
     public function locations()
     {
         $user = auth()->user();
-        if (!$user->hasAnyRole(['admin', 'hrd', 'direktur_hr'])) {
-            abort(403);
-        }
+        abort_unless($user->hasPermissionTo('menu-office-locations'), 403, 'Anda tidak memiliki akses ke fitur ini.');
 
         $locations = OfficeLocation::orderBy('name')->get();
 
@@ -330,9 +328,7 @@ class AttendanceController extends Controller
     public function storeLocation(Request $request)
     {
         $user = auth()->user();
-        if (!$user->hasAnyRole(['admin', 'hrd', 'direktur_hr'])) {
-            abort(403);
-        }
+        abort_unless($user->hasPermissionTo('menu-office-locations'), 403, 'Anda tidak memiliki akses ke fitur ini.');
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',

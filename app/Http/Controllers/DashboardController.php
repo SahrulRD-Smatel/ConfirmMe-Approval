@@ -16,8 +16,8 @@ class DashboardController extends Controller
             return redirect()->route('finance.dashboard');
         }
 
-        // Executive dashboard for Board of Directors
-        if ($user->department === 'Board of Directors') {
+        // Executive dashboard
+        if ($user->hasPermissionTo('menu-executive-dashboard')) {
             return redirect()->route('executive.dashboard');
         }
 

@@ -13,6 +13,7 @@ class TeamController extends Controller
     public function documents(Request $request)
     {
         $user = auth()->user();
+        abort_unless($user->hasPermissionTo('menu-team-documents'), 403, 'Anda tidak memiliki akses ke fitur ini.');
 
         $documents = Document::where('department', $user->department)
             ->with(['user', 'currentApprover'])

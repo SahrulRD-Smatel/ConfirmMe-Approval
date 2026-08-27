@@ -100,7 +100,8 @@
                     <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
                         @foreach($permGroups as $groupName => $groupPerms)
                             @php
-                                $activeInGroup = array_intersect($groupPerms, $rolePerms);
+                                $groupPermNames = array_column($groupPerms, 'name');
+                                $activeInGroup = array_intersect($groupPermNames, $rolePerms);
                                 $hasAny = count($activeInGroup) > 0;
                                 $isAll = count($activeInGroup) === count($groupPerms);
                             @endphp
@@ -123,13 +124,15 @@
 
                                 <div class="min-h-0 flex-1 overflow-y-auto pr-1">
                                     <div class="grid grid-cols-1 gap-1.5">
-                                        @foreach($groupPerms as $perm)
-                                            @php $hasPerm = in_array($perm, $rolePerms); @endphp
+                                        @foreach($groupPerms as $permData)
+                                            @php 
+                                                $permName = $permData['name'];
+                                                $hasPerm = in_array($permName, $rolePerms); 
+                                            @endphp
                                             @php
-                                                $isAction = in_array($perm, ['edit-document', 'delete-document', 'submit-document', 'reject-document', 'print-document', 'view-all-documents', 'view-department-documents', 'view-finance-documents', 'export-reports']);
-                                                $badgeLabel = $isAction ? __('FITUR') : __('MENU');
+                                                $badgeLabel = $permData['type'];
                                                 $badgeClass = $hasPerm
-                                                    ? ($isAction ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-400')
+                                                    ? ($badgeLabel == 'FITUR' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-400')
                                                     : 'bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500';
                                             @endphp
                                             @if($hasPerm)
@@ -138,18 +141,18 @@
                                                         <x-icon name="check" class="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
                                                     </div>
                                                     <span class="min-w-0 flex flex-wrap items-center gap-1.5 font-medium leading-5 text-gray-900 dark:text-gray-100">
-                                                        <span class="break-words">{{ str_replace('-', ' ', $perm) }}</span>
-                                                        <span class="rounded px-1.5 py-0.5 text-[8px] font-bold {{ $badgeClass }}">{{ $badgeLabel }}</span>
+                                                        <span class="break-words">{{ $permData['label'] }}</span>
+                                                        <span class="shrink-0 rounded px-1.5 py-0.5 text-[9px] font-bold tracking-wide {{ $badgeClass }}">{{ $badgeLabel }}</span>
                                                     </span>
                                                 </div>
                                             @else
-                                                <div class="group/item flex min-w-0 items-start gap-2 rounded-lg px-1.5 py-1 text-xs transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/70">
+                                                <div class="group/item flex min-w-0 items-start gap-2 rounded-lg px-1.5 py-1 text-xs transition-colors opacity-60">
                                                     <div class="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
-                                                        <x-icon name="x-mark" class="h-3 w-3 text-gray-400" />
+                                                        <x-icon name="x-mark" class="h-3 w-3 text-gray-400 dark:text-gray-500" />
                                                     </div>
-                                                    <span class="min-w-0 flex flex-wrap items-center gap-1.5 leading-5 text-gray-400 dark:text-gray-500">
-                                                        <span class="break-words">{{ str_replace('-', ' ', $perm) }}</span>
-                                                        <span class="rounded px-1.5 py-0.5 text-[8px] font-bold {{ $badgeClass }}">{{ $badgeLabel }}</span>
+                                                    <span class="min-w-0 flex items-center gap-1.5 text-gray-400 dark:text-gray-500 line-through decoration-gray-300 dark:decoration-gray-600">
+                                                        <span class="break-words truncate">{{ $permData['label'] }}</span>
+                                                        <span class="shrink-0 rounded px-1.5 py-0.5 text-[9px] font-bold tracking-wide {{ $badgeClass }}">{{ $badgeLabel }}</span>
                                                     </span>
                                                 </div>
                                             @endif
