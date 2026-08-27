@@ -368,7 +368,7 @@ class DatabaseSeeder extends Seeder
                 'department' => 'IT',
                 'division' => 'IT',
                 'position' => 'Software Developer',
-                'role' => 'staff',
+                'role' => ['staff', 'it_internal'],
             ],
             [
                 'name' => 'Rina Wulandari',
@@ -378,7 +378,7 @@ class DatabaseSeeder extends Seeder
                 'department' => 'IT',
                 'division' => 'IT',
                 'position' => 'UI/UX Designer',
-                'role' => 'staff',
+                'role' => ['staff', 'it_internal'],
             ],
 
             // === HR DIVISION ===
@@ -638,6 +638,44 @@ class DatabaseSeeder extends Seeder
                         ['name' => 'keterangan', 'label' => 'Keterangan/Projek', 'type' => 'text', 'required' => true],
                         ['name' => 'expected_delivery', 'label' => 'Perkiraan Tgl Penerimaan', 'type' => 'date', 'required' => true],
                         ['name' => 'items', 'label' => 'Daftar Barang', 'type' => 'table', 'columns' => 'Nama Barang, Keterangan, Max Perbulan, Stock Saat Ini, Permintaan (Qty), Harga Perk./Item', 'required' => true]
+                    ]
+                ]
+            ],
+            [
+                'name' => 'Dokumen Khusus IT Internal (Email)',
+                'code' => 'IT_EMAIL',
+                'description' => 'Permintaan pembuatan atau penonaktifan email.',
+                'approval_type' => 'only',
+                'workflow' => ['role:manager', 'role:manager_hrga', 'role:it_internal'],
+                'fields' => [
+                    'title' => 'Permintaan Email',
+                    'description' => 'Formulir untuk pembuatan atau penonaktifan email karyawan.',
+                    'priority' => 'normal',
+                    'document_category' => 'lainnya',
+                    'dynamic_fields' => [
+                        ['name' => 'jenis_request', 'label' => 'Jenis Request', 'type' => 'select', 'options' => 'Buat Baru, Nonaktifkan Email', 'required' => true],
+                        ['name' => 'nama_karyawan', 'label' => 'Nama Karyawan', 'type' => 'text', 'required' => true],
+                        ['name' => 'email_address', 'label' => 'Alamat Email', 'type' => 'text', 'required' => true],
+                        ['name' => 'keterangan', 'label' => 'Keterangan Tambahan', 'type' => 'textarea', 'required' => false],
+                    ]
+                ]
+            ],
+            [
+                'name' => 'Dokumen Khusus IT Internal (Hardware)',
+                'code' => 'IT_HARDWARE',
+                'description' => 'Permintaan hardware baru, service, atau laporan kehilangan.',
+                'approval_type' => 'only',
+                'workflow' => ['role:manager', 'role:it_internal', 'role:manager_hrga', 'role:direktur_finance', 'role:it_internal'],
+                'fields' => [
+                    'title' => 'Permintaan Hardware IT',
+                    'description' => 'Formulir untuk pengadaan, service, atau kehilangan hardware.',
+                    'priority' => 'normal',
+                    'document_category' => 'lainnya',
+                    'dynamic_fields' => [
+                        ['name' => 'jenis_request', 'label' => 'Jenis Request', 'type' => 'select', 'options' => 'Permintaan Baru, Service, Kehilangan', 'required' => true],
+                        ['name' => 'nama_hardware', 'label' => 'Nama Hardware', 'type' => 'text', 'required' => true],
+                        ['name' => 'spesifikasi', 'label' => 'Spesifikasi / Detail Kerusakan', 'type' => 'textarea', 'required' => true],
+                        ['name' => 'alasan_kebutuhan', 'label' => 'Alasan Kebutuhan', 'type' => 'textarea', 'required' => true],
                     ]
                 ]
             ]

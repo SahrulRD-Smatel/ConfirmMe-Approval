@@ -189,15 +189,16 @@ class DocumentController extends Controller
                 $metadata = $docData['metadata'] ?? []; // Start with dynamic metadata from builder
                 switch ($docData['approval_type']) {
                     case 'only':
-                        $metadata = array_merge($metadata, [
+                        $onlyData = array_filter([
                             'document_category' => $docData['document_category'] ?? null,
                             'effective_date' => $docData['effective_date'] ?? null,
                             'expiry_date' => $docData['expiry_date'] ?? null,
                             'related_department' => $docData['related_department'] ?? null,
-                        ]);
+                        ], fn($val) => $val !== null);
+                        $metadata = array_merge($metadata, $onlyData);
                         break;
                     case 'po':
-                        $metadata = array_merge($metadata, [
+                        $poData = array_filter([
                             'vendor_name' => $docData['vendor_name'] ?? null,
                             'vendor_npwp' => $docData['vendor_npwp'] ?? null,
                             'item_description' => $docData['item_description'] ?? null,
@@ -205,10 +206,12 @@ class DocumentController extends Controller
                             'tax_amount' => $docData['tax_amount'] ?? 0,
                             'budget_code' => $docData['budget_code'] ?? null,
                             'expected_delivery' => $docData['expected_delivery'] ?? null,
-                        ]);
+                        ], fn($val) => $val !== null);
+                        
+                        $metadata = array_merge($metadata, $poData);
                         break;
                     case 'invoice':
-                        $metadata = array_merge($metadata, [
+                        $invoiceData = array_filter([
                             'invoice_number' => $docData['invoice_number'] ?? null,
                             'invoice_date' => $docData['invoice_date'] ?? null,
                             'related_po_number' => $docData['related_po_number'] ?? null,
@@ -217,16 +220,18 @@ class DocumentController extends Controller
                             'payment_due_date' => $docData['payment_due_date'] ?? null,
                             'bank_account' => $docData['bank_account'] ?? null,
                             'tax_invoice' => $docData['tax_invoice'] ?? null,
-                        ]);
+                        ], fn($val) => $val !== null);
+                        $metadata = array_merge($metadata, $invoiceData);
                         break;
                     case 'loan':
-                        $metadata = array_merge($metadata, [
+                        $loanData = array_filter([
                             'loan_type' => $docData['loan_type'] ?? null,
                             'loan_amount' => $docData['loan_amount'] ?? 0,
                             'installment_count' => $docData['installment_count'] ?? 1,
                             'repayment_start' => $docData['repayment_start'] ?? null,
                             'loan_reason' => $docData['loan_reason'] ?? null,
-                        ]);
+                        ], fn($val) => $val !== null);
+                        $metadata = array_merge($metadata, $loanData);
                         break;
                 }
 
@@ -315,7 +320,7 @@ class DocumentController extends Controller
                 }
                 
                 // Automatically assign workflow based on template or legacy rules
-                $this->workflowService->assignWorkflow($document);
+                $this->workflowService->initializeWorkflow($document);
             }
 
             return redirect()->route('documents.index')
@@ -330,7 +335,7 @@ class DocumentController extends Controller
     {
         $this->authorize('view', $document);
 
-        $document->load(['user', 'attachments', 'approvals.user']);
+        $document->load(['user', 'attachments', 'approvals.approver']);
         
         // Add debugging to see why actions aren't showing
         // \Log::info('Document Status: ' . $document->status);
@@ -354,7 +359,7 @@ class DocumentController extends Controller
         $this->authorize('update', $document);
 
         // Only draft or revision requested documents can be edited
-        if (!in_array($document->status, ['draft', 'revision_requested'])) {
+        if (!in_array($document->status, ['draft', 'revision'])) {
             return redirect()->route('documents.show', $document)
                 ->with('error', 'Hanya dokumen berstatus Draft atau Perlu Revisi yang dapat diedit.');
         }
@@ -384,7 +389,7 @@ class DocumentController extends Controller
     {
         $this->authorize('update', $document);
 
-        if (!in_array($document->status, ['draft', 'revision_requested'])) {
+        if (!in_array($document->status, ['draft', 'revision'])) {
             return redirect()->route('documents.show', $document)
                 ->with('error', 'Dokumen tidak dapat diubah pada status saat ini.');
         }
@@ -444,15 +449,16 @@ class DocumentController extends Controller
 
         switch ($validated['approval_type']) {
             case 'only':
-                $metadata = array_merge($metadata, [
+                $onlyData = array_filter([
                     'document_category' => $request->input('document_category'),
                     'effective_date' => $request->input('effective_date'),
                     'expiry_date' => $request->input('expiry_date'),
                     'related_department' => $request->input('related_department'),
-                ]);
+                ], fn($val) => $val !== null);
+                $metadata = array_merge($metadata, $onlyData);
                 break;
             case 'po':
-                $metadata = array_merge($metadata, [
+                $poData = array_filter([
                     'vendor_name' => $request->input('vendor_name'),
                     'vendor_npwp' => $request->input('vendor_npwp'),
                     'item_description' => $request->input('item_description'),
@@ -460,10 +466,12 @@ class DocumentController extends Controller
                     'tax_amount' => $request->input('tax_amount'),
                     'budget_code' => $request->input('budget_code'),
                     'expected_delivery' => $request->input('expected_delivery'),
-                ]);
+                ], fn($val) => $val !== null);
+                
+                $metadata = array_merge($metadata, $poData);
                 break;
             case 'invoice':
-                $metadata = array_merge($metadata, [
+                $invoiceData = array_filter([
                     'invoice_number' => $request->input('invoice_number'),
                     'invoice_date' => $request->input('invoice_date'),
                     'related_po_number' => $request->input('related_po_number'),
@@ -472,16 +480,18 @@ class DocumentController extends Controller
                     'payment_due_date' => $request->input('payment_due_date'),
                     'bank_account' => $request->input('bank_account'),
                     'tax_invoice' => $request->input('tax_invoice'),
-                ]);
+                ], fn($val) => $val !== null);
+                $metadata = array_merge($metadata, $invoiceData);
                 break;
             case 'loan':
-                $metadata = array_merge($metadata, [
+                $loanData = array_filter([
                     'loan_type' => $request->input('loan_type'),
                     'loan_amount' => $request->input('loan_amount'),
                     'installment_count' => $request->input('installment_count'),
                     'repayment_start' => $request->input('repayment_start'),
                     'loan_reason' => $request->input('loan_reason'),
-                ]);
+                ], fn($val) => $val !== null);
+                $metadata = array_merge($metadata, $loanData);
                 break;
         }
 
@@ -573,12 +583,12 @@ class DocumentController extends Controller
     {
         $this->authorize('update', $document);
 
-        if (!in_array($document->status, ['draft', 'revision_requested'])) {
+        if (!in_array($document->status, ['draft', 'revision'])) {
             return back()->with('error', 'Hanya dokumen berstatus Draft atau Perlu Revisi yang dapat disubmit.');
         }
 
         // Handle Resubmit after revision
-        if ($document->status === 'revision_requested') {
+        if ($document->status === 'revision') {
             $this->workflowService->resubmitAfterRevision($document);
             
             return redirect()->route('documents.show', $document)
@@ -589,7 +599,7 @@ class DocumentController extends Controller
         // Validate that workflow is assigned
         if (!$document->current_approver_id) {
             // Try to assign it now
-            $this->workflowService->assignWorkflow($document);
+            $this->workflowService->initializeWorkflow($document);
             $document->refresh();
 
             if (!$document->current_approver_id) {
@@ -645,7 +655,7 @@ class DocumentController extends Controller
     {
         $this->authorize('update', $document);
 
-        if (!in_array($document->status, ['draft', 'revision_requested'])) {
+        if (!in_array($document->status, ['draft', 'revision'])) {
             return response()->json(['message' => 'Tidak dapat menghapus lampiran pada status dokumen saat ini.'], 403);
         }
 
@@ -662,7 +672,7 @@ class DocumentController extends Controller
     {
         $this->authorize('view', $document);
 
-        $document->load(['user', 'approvals.user']);
+        $document->load(['user', 'approvals.approver']);
         
         // Ensure QR Hash exists
         if (!$document->approval_hash) {
@@ -673,8 +683,17 @@ class DocumentController extends Controller
         $verificationUrl = route('verify.show', $document->approval_hash);
         $qrCode = base64_encode(QrCode::format('svg')->size(100)->generate($verificationUrl));
 
-        // Render the generic PDF template for all documents
-        $pdf = Pdf::loadView('pdf.document', compact('document', 'qrCode'));
+        // Determine the view name based on template code
+        $templateCode = strtolower($document->template->code ?? 'document');
+        $viewName = 'pdf.' . $templateCode;
+
+        // Fallback to generic document view if specific view doesn't exist
+        if (!view()->exists($viewName)) {
+            $viewName = 'pdf.document';
+        }
+
+        // Render the PDF template
+        $pdf = Pdf::loadView($viewName, compact('document', 'qrCode'));
         
         // Set paper size to A4
         $pdf->setPaper('A4', 'portrait');

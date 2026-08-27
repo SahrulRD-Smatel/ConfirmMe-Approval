@@ -22,7 +22,12 @@
 
     <form action="{{ route('documents.update', $document) }}" method="POST" enctype="multipart/form-data"
         class="space-y-7" x-data="{ 
-              approvalType: '{{ old('approval_type', $document->approval_type) }}'
+              approvalType: '{{ old('approval_type', $document->approval_type) }}',
+              selectedTemplate: {
+                  code: '{{ $document->template }}',
+                  dynamicFields: {{ Js::from($templates->where('code', $document->template)->first()?->fields['dynamic_fields'] ?? []) }}
+              },
+              metadata: {{ Js::from($metadata ?: new stdClass) }}
           }">
         @csrf
         @method('PUT')
@@ -119,41 +124,18 @@
                 <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Detail Dokumen Administratif</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
-                        <label for="document_category"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        <label for="document_category" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Kategori Dokumen
                         </label>
-                        <input type="text" name="document_category" id="document_category"
-                            value="{{ old('document_category', $metadata['document_category'] ?? '') }}" readonly
+                        <input type="text" name="document_category" id="document_category" readonly :value="selectedTemplate ? selectedTemplate.code : ''"
                             class="block w-full px-3 py-2 border border-gray-200/80 dark:border-gray-700/80 rounded-xl bg-gray-50/80 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed">
                     </div>
                     <div>
-                        <label for="effective_date"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        <label for="effective_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Tanggal Berlaku
                         </label>
-                        <input type="date" name="effective_date" id="effective_date"
-                            value="{{ old('effective_date', $metadata['effective_date'] ?? '') }}"
+                        <input type="date" name="effective_date" id="effective_date" value="{{ old('effective_date', $metadata['effective_date'] ?? '') }}"
                             class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
-                    </div>
-                    <div>
-                        <label for="expiry_date"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Tanggal Kadaluarsa (Opsional)
-                        </label>
-                        <input type="date" name="expiry_date" id="expiry_date"
-                            value="{{ old('expiry_date', $metadata['expiry_date'] ?? '') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
-                    </div>
-                    <div>
-                        <label for="related_department"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Departemen Terkait
-                        </label>
-                        <input type="text" name="related_department" id="related_department"
-                            value="{{ old('related_department', $metadata['related_department'] ?? '') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
-                            placeholder="{{ __('IT, HR, Finance, dll') }}">
                     </div>
                 </div>
             </x-ui.card>
@@ -176,244 +158,146 @@
                 <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Detail Purchase Order</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
-                        <label for="vendor_name"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        <label for="vendor_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Nama Vendor <span class="text-danger-500">*</span>
                         </label>
-                        <input type="text" name="vendor_name" id="invoice_vendor_name"
-                            value="{{ old('vendor_name', $metadata['vendor_name'] ?? '') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
-                            placeholder="{{ __('PT Supplier Indonesia') }}">
-                    </div>
-                    <div>
-                        <label for="vendor_npwp"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            NPWP Vendor
-                        </label>
-                        <input type="text" name="vendor_npwp" id="vendor_npwp"
-                            value="{{ old('vendor_npwp', $metadata['vendor_npwp'] ?? '') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
-                            placeholder="{{ __('XX.XXX.XXX.X-XXX.XXX') }}">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label for="item_description"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Rincian Barang/Jasa <span class="text-danger-500">*</span>
-                        </label>
-                        <textarea name="item_description" id="item_description" rows="3"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
-                            placeholder="{{ __('1. Laptop x 5 unit @ Rp 15.000.000') }}">{{ old('item_description', $metadata['item_description'] ?? '') }}</textarea>
-                    </div>
-                    <div>
-                        <label for="subtotal" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Subtotal (Sebelum Pajak) <span class="text-danger-500">*</span>
-                        </label>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">Rp</span>
-                            <input type="text" name="subtotal" id="subtotal"
-                                value="{{ old('subtotal', $metadata['subtotal'] ?? 0) }}"
-                                class="currency-input block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
-                                inputmode="numeric"
-                                @currency-change="subtotal = $event.detail.value; calculateTax()">
-                        </div>
-                    </div>
-                    <div>
-                        <label for="tax_amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            PPN (11%) <span class="text-xs text-gray-400">- Auto</span>
-                        </label>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">Rp</span>
-                            <input type="text" :value="formatNumber(taxAmount)" readonly
-                                class="block w-full pl-10 pr-3 py-2 border border-gray-200/80 dark:border-gray-700/80 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-not-allowed">
-                            <input type="hidden" name="tax_amount" :value="taxAmount">
-                        </div>
-                    </div>
-                    <div class="md:col-span-2 p-4 bg-primary-50 dark:bg-primary-900/20 rounded-xl">
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Grand Total (Termasuk
-                                PPN)</span>
-                            <span class="text-xl font-bold text-primary-600 dark:text-primary-400"
-                                x-text="'Rp ' + formatNumber(grandTotal)"></span>
-                        </div>
-                    </div>
-                    <div>
-                        <label for="budget_code"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Kode Anggaran
-                        </label>
-                        <input type="text" name="budget_code" id="budget_code"
-                            value="{{ old('budget_code', $metadata['budget_code'] ?? '') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
-                            placeholder="{{ __('IT-2026-001') }}">
-                    </div>
-                    <div>
-                        <label for="expected_delivery"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Estimasi Pengiriman
-                        </label>
-                        <input type="date" name="expected_delivery" id="expected_delivery"
-                            value="{{ old('expected_delivery', $metadata['expected_delivery'] ?? '') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
-                    </div>
-                </div>
-            </x-ui.card>
-        </div>
-
-        <!-- Type-Specific Fields: INVOICE -->
-        <div x-show="approvalType === 'invoice'" x-transition>
-            <x-ui.card>
-                <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Detail Invoice / Tagihan</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
-                        <label for="invoice_number"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Nomor Invoice <span class="text-danger-500">*</span>
-                        </label>
-                        <input type="text" name="invoice_number" id="invoice_number"
-                            value="{{ old('invoice_number', $metadata['invoice_number'] ?? '') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
-                            placeholder="{{ __('INV-2026-0001') }}">
-                    </div>
-                    <div>
-                        <label for="invoice_date"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Tanggal Invoice <span class="text-danger-500">*</span>
-                        </label>
-                        <input type="date" name="invoice_date" id="invoice_date"
-                            value="{{ old('invoice_date', $metadata['invoice_date'] ?? '') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
-                    </div>
-                    <div>
-                        <label for="related_po_number"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Nomor PO Terkait
-                        </label>
-                        <input type="text" name="related_po_number" id="related_po_number"
-                            value="{{ old('related_po_number', $metadata['related_po_number'] ?? '') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
-                            placeholder="{{ __('PO-2026-0001') }}">
-                    </div>
-                    <div>
-                        <label for="vendor_name_invoice"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Nama Vendor <span class="text-danger-500">*</span>
-                        </label>
-                        <input type="text" name="vendor_name_invoice" id="vendor_name_invoice"
-                            value="{{ old('vendor_name_invoice', $metadata['vendor_name'] ?? '') }}"
+                        <input type="text" name="vendor_name" id="vendor_name" value="{{ old('vendor_name', $metadata['vendor_name'] ?? '') }}"
                             class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
                             placeholder="PT Supplier Indonesia">
                     </div>
                     <div>
-                        <label for="invoice_amount"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Nilai Tagihan <span class="text-danger-500">*</span>
+                        <label for="po_category" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Kategori Pembelian <span class="text-danger-500">*</span>
                         </label>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">Rp</span>
-                            <input type="text" name="invoice_amount" id="invoice_amount"
-                                value="{{ old('invoice_amount', $metadata['invoice_amount'] ?? '') }}"
-                                class="currency-input block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
-                                inputmode="numeric"
-                                placeholder="0">
+                        <select name="po_category" id="po_category" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
+                            <option value="internal" {{ old('po_category', $document->po_category) === 'internal' ? 'selected' : '' }}>Internal Use</option>
+                            <option value="external" {{ old('po_category', $document->po_category) === 'external' ? 'selected' : '' }}>External / Client</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="item_description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Rincian Barang/Jasa <span class="text-danger-500">*</span>
+                        </label>
+                        <textarea name="item_description" id="item_description" rows="3"
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
+                            placeholder="1. Laptop x 5 unit @ Rp 15.000.000">{{ old('item_description', $metadata['item_description'] ?? '') }}</textarea>
+                    </div>
+                    <div class="md:col-span-2 bg-gray-50/80 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="subtotal" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Subtotal (DPP) <span class="text-danger-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">Rp</span>
+                                    <input type="text" name="subtotal" id="subtotal" value="{{ old('subtotal', $metadata['subtotal'] ?? 0) }}"
+                                        class="currency-input block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
+                                        inputmode="numeric" @currency-change="subtotal = $event.detail.value; calculateTax()">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="tax_amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    PPN 11% <span class="text-xs text-gray-400">- Auto</span>
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">Rp</span>
+                                    <input type="text" :value="formatNumber(taxAmount)" readonly
+                                        class="block w-full pl-10 pr-3 py-2 border border-gray-200/80 dark:border-gray-700/80 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-not-allowed">
+                                    <input type="hidden" name="tax_amount" :value="taxAmount">
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div>
-                        <label for="payment_due_date"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Jatuh Tempo Pembayaran <span class="text-danger-500">*</span>
-                        </label>
-                        <input type="date" name="payment_due_date" id="payment_due_date"
-                            value="{{ old('payment_due_date', $metadata['payment_due_date'] ?? '') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
-                    </div>
-                    <div>
-                        <label for="bank_account"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Rekening Tujuan
-                        </label>
-                        <input type="text" name="bank_account" id="bank_account"
-                            value="{{ old('bank_account', $metadata['bank_account'] ?? '') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
-                            placeholder="{{ __('BCA - 1234567890 a.n. PT Supplier') }}">
-                    </div>
-                    <div>
-                        <label for="tax_invoice"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Nomor Faktur Pajak
-                        </label>
-                        <input type="text" name="tax_invoice" id="tax_invoice"
-                            value="{{ old('tax_invoice', $metadata['tax_invoice'] ?? '') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
-                            placeholder="{{ __('010.000-26.00000001') }}">
+                        <div class="mt-4 flex justify-between items-center text-lg font-bold text-primary-700">
+                            <span>Grand Total (Termasuk PPN)</span>
+                            <span x-text="'Rp ' + formatNumber(grandTotal)"></span>
+                        </div>
                     </div>
                 </div>
             </x-ui.card>
         </div>
 
-        <!-- Type-Specific Fields: LOAN -->
-        <div x-show="approvalType === 'loan'" x-transition>
-            <x-ui.card>
-                <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Detail Pinjaman Karyawan</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
-                        <label for="loan_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Jenis Pinjaman <span class="text-danger-500">*</span>
+        <!-- DYNAMIC FIELDS -->
+        <div x-show="selectedTemplate && selectedTemplate.dynamicFields && selectedTemplate.dynamicFields.length > 0" class="rounded-2xl border border-gray-100 bg-gray-50/60 p-4 dark:border-gray-800 dark:bg-gray-800/40 sm:p-5" x-cloak>
+            <h4 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">{{ __('Informasi Spesifik') }}</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <template x-for="field in (selectedTemplate?.dynamicFields || [])" :key="field.name">
+                    <div :class="['textarea', 'table'].includes(field.type) ? 'md:col-span-2' : ''">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <span x-text="field.label"></span>
+                            <span x-show="field.required == '1' || field.required === true" class="text-danger-500">*</span>
                         </label>
-                        <select name="loan_type" id="loan_type"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
-                            <option value="darurat" {{ old('loan_type', $metadata['loan_type'] ?? '') === 'darurat' ? 'selected' : '' }}>Pinjaman Darurat</option>
-                            <option value="pendidikan" {{ old('loan_type', $metadata['loan_type'] ?? '') === 'pendidikan' ? 'selected' : '' }}>Pinjaman Pendidikan</option>
-                            <option value="perumahan" {{ old('loan_type', $metadata['loan_type'] ?? '') === 'perumahan' ? 'selected' : '' }}>Pinjaman Perumahan</option>
-                            <option value="kendaraan" {{ old('loan_type', $metadata['loan_type'] ?? '') === 'kendaraan' ? 'selected' : '' }}>Pinjaman Kendaraan</option>
-                            <option value="lainnya" {{ old('loan_type', $metadata['loan_type'] ?? '') === 'lainnya' ? 'selected' : '' }}>Lainnya</option>
-                        </select>
+                        
+                        <!-- Text / Number / Date / Time -->
+                        <template x-if="['text', 'number', 'date', 'time'].includes(field.type)">
+                            <input :type="field.type" :name="`metadata[${field.name}]`" x-model="metadata[field.name]" :required="field.required == '1' || field.required === true"
+                                class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20">
+                        </template>
+
+                        <!-- Textarea -->
+                        <template x-if="field.type === 'textarea'">
+                            <textarea :name="`metadata[${field.name}]`" x-model="metadata[field.name]" rows="3" :required="field.required == '1' || field.required === true"
+                                class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20"></textarea>
+                        </template>
+
+                        <!-- Select -->
+                        <template x-if="field.type === 'select'">
+                            <select :name="`metadata[${field.name}]`" x-model="metadata[field.name]" :required="field.required == '1' || field.required === true"
+                                class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20">
+                                <option value="">{{ __('-- Pilih --') }}</option>
+                                <template x-for="opt in (field.options ? (typeof field.options === 'string' ? field.options.split(',') : field.options).map(s=>typeof s==='string'?s.trim():s) : [])">
+                                    <option :value="opt" x-text="opt"></option>
+                                </template>
+                            </select>
+                        </template>
+
+                        <!-- Table -->
+                        <template x-if="field.type === 'table'">
+                            <div class="bg-gray-50/50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden"
+                                 x-data="{
+                                    rows: Array.isArray(metadata[field.name]) && metadata[field.name].length > 0 ? metadata[field.name] : [{}],
+                                    addRow() { this.rows.push({}); },
+                                    removeRow(rIndex) { if(this.rows.length > 1) this.rows.splice(rIndex, 1); },
+                                    getCols(colsStr) { return colsStr ? (typeof colsStr === 'string' ? colsStr.split(',') : colsStr).map(s=>typeof s==='string'?s.trim():s) : []; }
+                                 }">
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-[680px] w-full text-left text-sm">
+                                        <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
+                                            <tr>
+                                                <template x-for="col in getCols(field.columns)">
+                                                    <th class="px-4 py-3" x-text="col"></th>
+                                                </template>
+                                                <th class="px-4 py-3 w-16 text-center">{{ __('Aksi') }}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <template x-for="(row, rIndex) in rows">
+                                                <tr class="border-b dark:border-gray-700">
+                                                    <template x-for="col in getCols(field.columns)">
+                                                        <td class="p-2">
+                                                            <input type="text" :name="`metadata[${field.name}][${rIndex}][${col}]`" x-model="row[col]" :placeholder="col" :required="field.required == '1' || field.required === true"
+                                                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                                        </td>
+                                                    </template>
+                                                    <td class="p-2 text-center">
+                                                        <button type="button" @click="removeRow(rIndex)" class="text-danger-500 hover:text-danger-700" title="{{ __('Hapus Baris') }}">
+                                                            <x-icon name="trash" class="w-4 h-4 mx-auto" />
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="p-3 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                                    <button type="button" @click="addRow" class="text-xs font-semibold text-primary-600 hover:text-primary-700 flex items-center gap-1">
+                                        <x-icon name="plus" class="w-3 h-3" /> {{ __('Tambah Baris') }}
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
                     </div>
-                    <div>
-                        <label for="loan_amount"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Jumlah Pinjaman <span class="text-danger-500">*</span>
-                        </label>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">Rp</span>
-                            <input type="text" name="loan_amount" id="loan_amount"
-                                value="{{ old('loan_amount', $metadata['loan_amount'] ?? '') }}"
-                                class="currency-input block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
-                                inputmode="numeric">
-                        </div>
-                    </div>
-                    <div>
-                        <label for="installment_count"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Jumlah Cicilan (Bulan) <span class="text-danger-500">*</span>
-                        </label>
-                        <select name="installment_count" id="installment_count"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
-                            <option value="3" {{ old('installment_count', $metadata['installment_count'] ?? '') == '3' ? 'selected' : '' }}>3 Bulan</option>
-                            <option value="6" {{ old('installment_count', $metadata['installment_count'] ?? '') == '6' ? 'selected' : '' }}>6 Bulan</option>
-                            <option value="12" {{ old('installment_count', $metadata['installment_count'] ?? '') == '12' ? 'selected' : '' }}>12 Bulan</option>
-                            <option value="24" {{ old('installment_count', $metadata['installment_count'] ?? '') == '24' ? 'selected' : '' }}>24 Bulan</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="repayment_start"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Mulai Potong Gaji <span class="text-danger-500">*</span>
-                        </label>
-                        <input type="month" name="repayment_start" id="repayment_start"
-                            value="{{ old('repayment_start', $metadata['repayment_start'] ?? '') }}"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label for="loan_reason"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Alasan Pinjaman <span class="text-danger-500">*</span>
-                        </label>
-                        <textarea name="loan_reason" id="loan_reason" rows="3"
-                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
-                            placeholder="Jelaskan alasan pengajuan pinjaman...">{{ old('loan_reason', $metadata['loan_reason'] ?? '') }}</textarea>
-                    </div>
-                </div>
-            </x-ui.card>
+                </template>
+            </div>
         </div>
 
         <!-- Existing Attachments -->

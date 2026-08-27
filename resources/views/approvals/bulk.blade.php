@@ -157,7 +157,7 @@
                                 <x-icon name="check-circle" class="w-10 h-10 text-success-600" />
                             </div>
                             <h3 class="text-xl font-semibold text-center text-gray-900 dark:text-white mb-2">
-                                {{ __('Konfirmasi Persetujuan') }}
+                                {{ __('Konfirmasi Approval') }}
                             </h3>
                             <p class="text-center text-gray-600 dark:text-gray-400 mb-2">
                                 {{ __('Anda yakin ingin') }} <strong class="text-success-600">{{ __('MENYETUJUI') }}</strong>

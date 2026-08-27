@@ -243,7 +243,7 @@
                                     <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-success-100 dark:bg-success-900/30">
                                         <x-icon name="check-circle" class="h-8 w-8 text-success-600" />
                                     </div>
-                                    <h3 class="mb-2 text-center text-lg font-semibold text-gray-900 dark:text-white">{{ __('Konfirmasi Persetujuan') }}</h3>
+                                    <h3 class="mb-2 text-center text-lg font-semibold text-gray-900 dark:text-white">{{ __('Konfirmasi Approval') }}</h3>
                                     <p class="mb-5 text-center text-sm text-gray-600 dark:text-gray-400">
                                         {{ __('Anda yakin ingin') }} <strong class="text-success-600">{{ __('MENYETUJUI') }}</strong> {{ __('pengajuan cuti') }} <strong>{{ $leave->user->name }}</strong>?
                                         <br><span class="text-xs">{{ __('Tindakan ini tidak dapat dibatalkan.') }}</span>
