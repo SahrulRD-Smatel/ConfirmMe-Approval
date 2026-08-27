@@ -51,7 +51,7 @@ Strict architectural guidelines prevent hardcoded roles in controllers and route
 
 ## 👨‍💻 Author & Contact
 
-**Sahrul Ramadhani**
+** Sahrul Ramadhani **
 - 📧 Email: sahrul.r.dhani@gmail.com
 - 🐙 GitHub: [@SahrulRD-Smatel](https://github.com/SahrulRD-Smatel)
 
