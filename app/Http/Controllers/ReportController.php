@@ -34,20 +34,19 @@ class ReportController extends Controller
 
         $recentQuery = Document::with('user');
 
-        if (($user->hasRole('manager') && $user->hasRole('hrd')) || $user->hasRole('presiden_direktur')) {
-            // Manager HRD & President Direktur: lihat semua dokumen
-        } elseif ($user->hasRole('finance')) {
-            // Finance: lihat dokumen PO/Invoice saja
-            $recentQuery->whereIn('approval_type', ['po', 'invoice']);
-        } elseif ($user->hasRole('supervisor') || $user->hasRole('manager') || $user->roles->pluck('name')->contains(fn($role) => str_starts_with($role, 'direktur_'))) {
-            // Supervisor, Manager biasa & semua Direktur (direktur_hr, direktur_finance, dll): lihat dokumen departemen sendiri
+        if ($user->hasPermissionTo('view-all-documents')) {
+            // Can see all documents
+        } elseif ($user->hasPermissionTo('view-finance-documents')) {
+            // Finance: see PO/Invoice or own documents
+            $recentQuery->where(function ($q) use ($user) {
+                $q->whereIn('approval_type', ['po', 'invoice'])
+                  ->orWhere('user_id', $user->id);
+            });
+        } elseif ($user->hasPermissionTo('view-department-documents')) {
+            // Manager/Supervisor/Directors: see department documents
             $recentQuery->where('department', $user->department);
-
-        } elseif ($user->hasRole('staff')) {
-            // Staff: lihat dokumen milik sendiri
-            $recentQuery->where('user_id', $user->id);
         } else {
-            // Default fallback untuk role lain (misal: admin, atau role kustom baru)
+            // Default fallback (e.g. staff): see own documents
             $recentQuery->where('user_id', $user->id);
         }
 

@@ -349,7 +349,7 @@ class AttendanceController extends Controller
     public function exportPdf(Request $request)
     {
         $user = auth()->user();
-        if (!$user->hasAnyRole(['admin', 'hrd', 'hrd_coordinator', 'direktur_hr', 'presiden_direktur', 'manager'])) {
+        if (!$user->hasPermissionTo('view-attendance')) {
             abort(403, 'Anda tidak memiliki akses untuk export laporan absensi.');
         }
 
@@ -387,7 +387,7 @@ class AttendanceController extends Controller
     public function exportCsv(Request $request)
     {
         $user = auth()->user();
-        if (!$user->hasAnyRole(['admin', 'hrd', 'hrd_coordinator', 'direktur_hr', 'presiden_direktur', 'manager'])) {
+        if (!$user->hasPermissionTo('view-attendance')) {
             abort(403, 'Anda tidak memiliki akses untuk export laporan absensi.');
         }
 
@@ -461,7 +461,7 @@ class AttendanceController extends Controller
     public function exportXlsx(Request $request)
     {
         $user = auth()->user();
-        if (!$user->hasAnyRole(['admin', 'hrd', 'hrd_coordinator', 'direktur_hr', 'presiden_direktur', 'manager'])) {
+        if (!$user->hasPermissionTo('view-attendance')) {
             abort(403, 'Anda tidak memiliki akses untuk export laporan absensi.');
         }
 
@@ -515,7 +515,7 @@ class AttendanceController extends Controller
     public function importData(Request $request)
     {
         $user = auth()->user();
-        if (!$user->hasAnyRole(['admin', 'hrd'])) {
+        if (!$user->hasPermissionTo('manage-attendance')) {
             abort(403, 'Anda tidak memiliki akses untuk import data absensi.');
         }
 
@@ -758,7 +758,7 @@ class AttendanceController extends Controller
     public function downloadImportTemplate()
     {
         $user = auth()->user();
-        if (!$user->hasAnyRole(['admin', 'hrd'])) {
+        if (!$user->hasPermissionTo('manage-attendance')) {
             abort(403);
         }
 

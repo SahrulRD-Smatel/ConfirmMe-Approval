@@ -44,8 +44,8 @@
 
     <!-- Navigation -->
     <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1" x-init="$nextTick(() => { let active = $el.querySelector('[data-active=true]'); if(active) { active.scrollIntoView({block: 'center'}); } })">
-        {{-- Dashboard - All Roles except Presiden Direktur (has Executive Dashboard) --}}
-        @if(!auth()->user()->hasRole('presiden_direktur'))
+        {{-- Dashboard - Users without Executive Dashboard --}}
+        @if(!auth()->user()->hasPermissionTo('menu-executive-dashboard'))
             <x-sidebar-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" icon="home">
                 {{ __('Dashboard') }}
             </x-sidebar-link>
@@ -85,10 +85,10 @@
                     {{ __('Audit & History') }}
                 </x-sidebar-link>
             </x-sidebar-section>
-        @endif
+        @endcan
 
-        {{-- Dokumen Menu - Based on permissions (Not for Presiden Direktur) --}}
-        @if(!auth()->user()->hasRole('presiden_direktur') && (auth()->user()->hasPermissionTo('create-document') || auth()->user()->hasPermissionTo('view-document')))
+        {{-- Dokumen Menu - Based on permissions --}}
+        @if(auth()->user()->hasPermissionTo('create-document') || auth()->user()->hasPermissionTo('view-document'))
             <x-sidebar-section title="{{ __('Dokumen') }}" :collapsed="$sidebarCollapsed ?? false">
                 @can('create', App\Models\Document::class)
                     <x-sidebar-link :href="route('documents.create')" :active="request()->routeIs('documents.create')"
@@ -133,8 +133,8 @@
 
         {{-- Approval Menu - Dynamic via Permissions --}}
         @if(auth()->user()->hasPermissionTo('approve-document'))
-            {{-- Presiden Direktur uses Executive section instead --}}
-            @if(!auth()->user()->hasRole('presiden_direktur'))
+            {{-- Users with Executive Dashboard use Executive section instead --}}
+            @if(!auth()->user()->hasPermissionTo('menu-executive-dashboard'))
                 <x-sidebar-section title="{{ __('Approval') }}" :collapsed="$sidebarCollapsed ?? false">
                     <x-sidebar-link :href="route('approvals.index')" :active="request()->routeIs('approvals.index')"
                         icon="inbox-arrow-down">

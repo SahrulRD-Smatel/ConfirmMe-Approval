@@ -55,33 +55,32 @@
                     </x-ui.button>
                 @endcan
 
-                {{-- Generate PO Button - Only for Finance, approved PO-type documents without existing PO --}}
-                @if(auth()->user()->hasRole('finance') && $document->status === 'approved' && $document->approval_type === 'po' && !$document->purchaseOrder)
+                {{-- Generate PO Button - Only for users with create-po permission, approved PO-type documents without existing PO --}}
+                @if(auth()->user()->hasPermissionTo('create-po') && $document->status === 'approved' && $document->approval_type === 'po' && !$document->purchaseOrder)
                     <x-ui.button href="{{ route('finance.po.create', ['document_id' => $document->id]) }}" variant="primary"
                         icon="document-plus" size="sm">
                         {{ __('Generate PO') }}
                     </x-ui.button>
                 @endif
 
-                {{-- Generate Invoice Button - Only for Finance, approved Invoice-type documents without existing
-                Invoice --}}
-                @if(auth()->user()->hasRole('finance') && $document->status === 'approved' && $document->approval_type === 'invoice' && !$document->invoice)
+                {{-- Generate Invoice Button - Only for users with create-invoice permission, approved Invoice-type documents without existing Invoice --}}
+                @if(auth()->user()->hasPermissionTo('create-invoice') && $document->status === 'approved' && $document->approval_type === 'invoice' && !$document->invoice)
                     <x-ui.button href="{{ route('finance.invoices.create', ['document_id' => $document->id]) }}"
                         variant="primary" icon="document-plus" size="sm">
                         {{ __('Generate Invoice') }}
                     </x-ui.button>
                 @endif
 
-                {{-- Show link to existing PO - Only for Finance --}}
-                @if(auth()->user()->hasRole('finance') && $document->purchaseOrder)
+                {{-- Show link to existing PO --}}
+                @if(auth()->user()->hasPermissionTo('view-finance-documents') && $document->purchaseOrder)
                     <x-ui.button href="{{ route('finance.po.show', $document->purchaseOrder) }}" variant="secondary"
                         icon="document-text" size="sm">
                         {{ __('Lihat PO') }}
                     </x-ui.button>
                 @endif
 
-                {{-- Show link to existing Invoice - Only for Finance --}}
-                @if(auth()->user()->hasRole('finance') && $document->invoice)
+                {{-- Show link to existing Invoice --}}
+                @if(auth()->user()->hasPermissionTo('view-finance-documents') && $document->invoice)
                     <x-ui.button href="{{ route('finance.invoices.show', $document->invoice) }}" variant="secondary"
                         icon="document-text" size="sm">
                         {{ __('Lihat Invoice') }}

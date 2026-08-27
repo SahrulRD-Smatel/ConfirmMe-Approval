@@ -64,6 +64,7 @@ class RoleController extends Controller
             'delete-document' => ['type' => 'FITUR', 'label' => 'Hapus Dokumen'],
             'view-all-documents' => ['type' => 'FITUR', 'label' => 'Lihat Semua Dokumen Perusahaan'],
             'view-department-documents' => ['type' => 'FITUR', 'label' => 'Lihat Semua Dokumen Departemen'],
+            'view-finance-documents' => ['type' => 'FITUR', 'label' => 'Lihat Semua Dokumen Keuangan'],
             
             'manage-budget' => ['type' => 'MENU', 'label' => 'Manajemen Anggaran'],
             'create-po' => ['type' => 'MENU', 'label' => 'Purchase Orders'],

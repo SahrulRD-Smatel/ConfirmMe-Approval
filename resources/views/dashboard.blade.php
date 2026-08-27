@@ -92,7 +92,7 @@
                             </button>
                         </div>
 
-                        @if(auth()->user()->hasRole('staff'))
+                        @if(auth()->user()->hasPermissionTo('create-document'))
                             <a href="{{ route('documents.create') }}"
                                 class="hidden items-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:bg-primary-700 hover:shadow-lg hover:shadow-primary-500/25 sm:inline-flex">
                                 <x-icon name="plus-circle" class="w-4 h-4" />
@@ -158,7 +158,7 @@
                                 </div>
                             </a>
                             @if(feature_active('module_hris'))
-                            @if(!auth()->user()->hasRole('admin'))
+                            @if(auth()->user()->hasPermissionTo('menu-my-leaves'))
                             <a href="{{ route('leave-requests.create') }}" class="quick-link-card">
                                 <div class="icon-wrap bg-green-100">
                                     <x-icon name="calendar" class="w-5 h-5 text-green-600" />
@@ -216,7 +216,7 @@
                 @if(feature_active('module_hris'))
                 <div class="space-y-4 xl:col-span-3 xl:space-y-5">
                     {{-- HR Banner (Only for HR) --}}
-                    @if(auth()->user()->hasAnyRole(['hrd', 'direktur_hr', 'admin']) || auth()->user()->department === 'Human Resources')
+                    @if(auth()->user()->hasPermissionTo('menu-announcements'))
                         <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-pink-500 to-rose-500 p-5 text-white shadow-soft-lg sm:p-6">
                             <div class="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                 <div>
@@ -283,7 +283,7 @@
                                         </div>
                                     </div>
 
-                                    @if(auth()->user()->hasAnyRole(['hrd', 'direktur_hr', 'admin']) || auth()->user()->department === 'Human Resources')
+                                    @if(auth()->user()->hasPermissionTo('menu-announcements'))
                                         <div class="relative shrink-0" x-data="{ open: false }">
                                             <button @click="open = !open" @click.away="open = false"
                                                 class="rounded-full p-1 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-300">
@@ -585,7 +585,7 @@
 
                     <!-- Pending Approvals (Enhanced) -->
                     <div class="space-y-6">
-                        @if(auth()->user()->hasAnyRole(['supervisor', 'manager', 'hrd', 'hrd_coordinator', 'purchasing', 'direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional', 'finance']))
+                        @if(auth()->user()->hasPermissionTo('approve-document'))
                             <div class="card-elevated rounded-3xl p-5 sm:p-6">
                                 <div class="flex items-center justify-between mb-4">
                                     <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">

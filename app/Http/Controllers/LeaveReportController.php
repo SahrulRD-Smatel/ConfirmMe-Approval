@@ -16,8 +16,8 @@ class LeaveReportController extends Controller
     {
         $user = auth()->user();
 
-        // Only admin, HRD, HRD coordinator, or directors can access
-        if (!$user->hasAnyRole(['admin', 'hrd', 'hrd_coordinator', 'direktur_hr', 'presiden_direktur', 'manager'])) {
+        // Only users with attendance management/viewing permissions can access
+        if (!$user->hasAnyPermission(['manage-attendance', 'view-attendance'])) {
             abort(403, 'Anda tidak memiliki akses ke laporan cuti.');
         }
 
