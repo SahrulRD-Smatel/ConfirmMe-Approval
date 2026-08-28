@@ -489,6 +489,22 @@
                                         {{ $fieldValue ?: '-' }}
                                     </dd>
                                 </div>
+                            @elseif($field['type'] === 'file' && $fieldValue)
+                                <div class="col-span-1 sm:col-span-2">
+                                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{{ $field['label'] }}</dt>
+                                    <dd>
+                                        @if(in_array(strtolower(pathinfo($fieldValue, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png']))
+                                            <a href="{{ Storage::url($fieldValue) }}" target="_blank" class="block max-w-xs overflow-hidden rounded-xl border border-gray-200 shadow-sm hover:opacity-90">
+                                                <img src="{{ Storage::url($fieldValue) }}" alt="{{ $field['label'] }}" class="w-full h-auto" />
+                                            </a>
+                                        @else
+                                            <a href="{{ Storage::url($fieldValue) }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors">
+                                                <x-icon name="arrow-down-tray" class="w-4 h-4" />
+                                                {{ __('Download Lampiran') }}
+                                            </a>
+                                        @endif
+                                    </dd>
+                                </div>
                             @else
                                 <div>
                                     <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ $field['label'] }}</dt>
@@ -526,78 +542,6 @@
                 </x-ui.card>
             @endif
 
-            {{-- Dynamic Fields Display --}}
-            @php
-                $template = $document->template ? \App\Models\DocumentTemplate::where('code', $document->template)->first() : null;
-                $dynamicFields = $template ? ($template->fields['dynamic_fields'] ?? []) : [];
-            @endphp
-
-            @if(!empty($dynamicFields) && is_array($document->metadata))
-                <x-ui.card>
-                    <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Informasi Tambahan') }}</h2>
-                    <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        @foreach($dynamicFields as $field)
-                            @php
-                                $val = $document->metadata[$field['name']] ?? null;
-                            @endphp
-                            
-                            @if($field['type'] === 'table' && is_array($val))
-                                <div class="sm:col-span-2 mt-2">
-                                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">{{ $field['label'] }}</dt>
-                                    <dd>
-                                        <div class="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
-                                            <table class="w-full text-sm text-left">
-                                                <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
-                                                    <tr>
-                                                        @foreach(explode(',', $field['columns']) as $col)
-                                                            <th class="px-4 py-3">{{ trim($col) }}</th>
-                                                        @endforeach
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach($val as $row)
-                                                        <tr class="border-b dark:border-gray-700">
-                                                            @foreach(explode(',', $field['columns']) as $col)
-                                                                <td class="px-4 py-2">{{ $row[trim($col)] ?? '-' }}</td>
-                                                            @endforeach
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </dd>
-                                </div>
-                            @elseif($field['type'] === 'textarea')
-                                <div class="sm:col-span-2">
-                                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ $field['label'] }}</dt>
-                                    <dd class="mt-1 text-sm text-gray-900 dark:text-white whitespace-pre-line">{{ $val ?: '-' }}</dd>
-                                </div>
-                            @elseif($field['type'] === 'file' && $val)
-                                <div class="sm:col-span-2">
-                                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{{ $field['label'] }}</dt>
-                                    <dd>
-                                        @if(in_array(strtolower(pathinfo($val, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png']))
-                                            <a href="{{ Storage::url($val) }}" target="_blank" class="block max-w-xs overflow-hidden rounded-xl border border-gray-200 shadow-sm hover:opacity-90">
-                                                <img src="{{ Storage::url($val) }}" alt="{{ $field['label'] }}" class="w-full h-auto" />
-                                            </a>
-                                        @else
-                                            <a href="{{ Storage::url($val) }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors">
-                                                <x-icon name="arrow-down-tray" class="w-4 h-4" />
-                                                {{ __('Download Lampiran') }}
-                                            </a>
-                                        @endif
-                                    </dd>
-                                </div>
-                            @else
-                                <div>
-                                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ $field['label'] }}</dt>
-                                    <dd class="mt-1 text-sm text-gray-900 dark:text-white font-medium">{{ is_string($val) || is_numeric($val) ? $val : '-' }}</dd>
-                                </div>
-                            @endif
-                        @endforeach
-                    </dl>
-                </x-ui.card>
-            @endif
 
             <!-- Attachments -->
             @if($document->attachments->count() > 0)

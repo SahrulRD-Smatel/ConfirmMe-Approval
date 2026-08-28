@@ -11,9 +11,11 @@
             </div>
 
             <div class="flex items-center gap-2">
-                <x-ui.button href="{{ route('approvals.bulk') }}" variant="secondary" icon="squares-2x2">
-                    {{ __('Bulk Approval') }}
-                </x-ui.button>
+                @can('menu-bulk-approval')
+                    <x-ui.button href="{{ route('approvals.bulk') }}" variant="secondary" icon="squares-2x2">
+                        {{ __('Bulk Approval') }}
+                    </x-ui.button>
+                @endcan
             </div>
         </div>
     </x-slot>
