@@ -87,6 +87,13 @@
                         class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">{{ old('description', $template->description ?? '') }}</textarea>
                 </div>
 
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Syarat & Ketentuan (Opsional)') }}</label>
+                    <textarea name="fields[terms_and_conditions]" rows="4" placeholder="{{ __('Ketikkan syarat dan ketentuan untuk dokumen ini. Setiap baris (enter) akan otomatis dijadikan penomoran list (1, 2, 3) di PDF.') }}"
+                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">{{ old('fields.terms_and_conditions', $fields['terms_and_conditions'] ?? '') }}</textarea>
+                    <p class="mt-1 text-xs text-gray-500">{{ __('Kosongkan jika template ini tidak membutuhkan Syarat & Ketentuan. Gunakan enter untuk memisahkan antar poin (nomor).') }}</p>
+                </div>
+
                 <div>
                     <label class="flex items-center gap-2">
                         <input type="hidden" name="is_active" value="0">

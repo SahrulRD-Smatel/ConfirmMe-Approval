@@ -251,8 +251,24 @@
                     <x-document.approval-block :type="$document->approval_type" :document="$document"
                         :approvals="$document->approvals" />
 
-                    @if(in_array($document->approval_type, ['po', 'invoice', 'loan']))
-                        <x-document.terms-conditions :type="$document->approval_type" />
+                    @php
+                        $templateObj = \App\Models\DocumentTemplate::where('code', $document->template)->first();
+                        $terms = $templateObj ? ($templateObj->fields['terms_and_conditions'] ?? null) : null;
+                    @endphp
+
+                    @if($terms)
+                        <div class="terms-conditions mt-7 text-xs leading-6 text-gray-700 print:mt-4 print:text-black">
+                            <div class="rounded-2xl border border-gray-200 bg-gray-50/80 p-5 shadow-sm print:bg-white">
+                                <h4 class="font-bold mb-2">{{ __('SYARAT & KETENTUAN:') }}</h4>
+                                <ol class="list-decimal list-inside space-y-2">
+                                    @foreach(explode("\n", str_replace("\r", "", trim($terms))) as $item)
+                                        @if(trim($item) !== '')
+                                            <li class="text-justify leading-relaxed">{{ trim($item) }}</li>
+                                        @endif
+                                    @endforeach
+                                </ol>
+                            </div>
+                        </div>
                     @endif
 
                     <x-document.footer />

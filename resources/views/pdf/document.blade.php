@@ -92,15 +92,58 @@
         .info-table th {
             text-align: left;
             width: 150px;
-            padding: 8px;
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
+            padding: 10px;
+            background-color: #f9fafb;
+            color: #4b5563;
+            border: none;
+            border-bottom: 1px solid #e5e7eb;
             font-weight: 600;
         }
 
         .info-table td {
-            padding: 8px;
-            border: 1px solid #e2e8f0;
+            padding: 10px;
+            border: none;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        /* Data Table (Dynamic Fields) */
+        .data-table {
+            width: 100%;
+            margin-bottom: 20px;
+            border-collapse: collapse;
+            table-layout: auto;
+            page-break-inside: auto;
+        }
+
+        .data-table tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+        }
+        
+        .data-table tr:nth-child(even) td {
+            background-color: #f9fafb;
+        }
+
+        .data-table th, .data-table td {
+            padding: 10px 8px;
+            border: none;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 10px;
+            word-wrap: break-word;
+        }
+
+        .data-table thead {
+            display: table-header-group;
+        }
+
+        .data-table th {
+            text-align: left;
+            background-color: #7F1D1D;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 9px;
+            letter-spacing: 0.5px;
         }
 
         /* Content */
@@ -109,12 +152,14 @@
         }
 
         .section-title {
-            font-size: 12px;
+            font-size: 13px;
             font-weight: bold;
             color: #7F1D1D;
-            margin-bottom: 10px;
-            padding-bottom: 5px;
-            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #7F1D1D;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .content-box {
@@ -315,8 +360,154 @@
                 {!! nl2br(e($document->description)) !!}
             </div>
         </div>
+        <!-- Dynamic Fields -->
+        @php
+            $template = \App\Models\DocumentTemplate::where('code', $document->template)->first();
+            $dynamicFields = $template ? ($template->fields['dynamic_fields'] ?? []) : [];
+        @endphp
 
+        @if(count($dynamicFields) > 0 && !empty($document->metadata))
+            <div class="section">
+                <div class="section-title">{{ __("INFORMASI SPESIFIK") }}</div>
+                @foreach($dynamicFields as $field)
+                    @php 
+                        $fieldName = $field['name']; 
+                        $fieldValue = $document->metadata[$fieldName] ?? null; 
+                    @endphp
+                    
+                    @if($field['type'] === 'table')
+                        <div style="page-break-before: always;"></div>
+                        <div class="section-title" style="margin-top: 20px;">{{ strtoupper($field['label']) }}</div>
+                        @if(is_array($fieldValue) && count($fieldValue) > 0)
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        @php $cols = array_map('trim', explode(',', $field['columns'])); @endphp
+                                        @foreach($cols as $col)
+                                            <th>{{ $col }}</th>
+                                        @endforeach
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($fieldValue as $row)
+                                        <tr>
+                                            @foreach($cols as $col)
+                                                <td>{{ $row[$col] ?? '-' }}</td>
+                                            @endforeach
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @else
+                            <div style="font-style: italic; color: #666; margin-bottom: 15px; font-size: 10px;">{{ __("Tidak ada data") }}</div>
+                        @endif
+                    @elseif($field['type'] === 'textarea')
+                        <div style="margin-top: 15px; margin-bottom: 5px; font-size: 11px; font-weight: bold;">{{ $field['label'] }}</div>
+                        <div class="content-box" style="margin-bottom: 15px;">
+                            {!! nl2br(e($fieldValue ?: '-')) !!}
+                        </div>
+                    @elseif($field['type'] === 'file' && $fieldValue)
+                        <div style="margin-top: 15px; margin-bottom: 5px; font-size: 11px; font-weight: bold;">{{ $field['label'] }}</div>
+                        <div style="margin-bottom: 15px;">
+                            @if(in_array(strtolower(pathinfo($fieldValue, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png']))
+                                <img src="{{ storage_path('app/public/' . ltrim(str_replace('public/', '', $fieldValue), '/')) }}" alt="{{ $field['label'] }}" style="max-width: 300px; border: 1px solid #ccc; border-radius: 4px; padding: 3px;" />
+                            @else
+                                <em style="font-size: 10px; color: #555;">{{ __("Terdapat lampiran berkas") }} ({{ pathinfo($fieldValue, PATHINFO_EXTENSION) }}) - {{ __("silakan unduh melalui sistem.") }}</em>
+                            @endif
+                        </div>
+                    @else
+                        <div style="margin-bottom: 8px;">
+                            <span style="display: inline-block; width: 150px; font-weight: bold; color: #555;">{{ $field['label'] }}:</span>
+                            <span>
+                                @if($fieldValue)
+                                    @if($field['type'] === 'date')
+                                        {{ \Carbon\Carbon::parse($fieldValue)->format('d F Y') }}
+                                    @elseif($field['type'] === 'number')
+                                        {{ is_numeric($fieldValue) ? number_format((float)$fieldValue, 0, ',', '.') : $fieldValue }}
+                                    @else
+                                        {{ $fieldValue }}
+                                    @endif
+                                @else
+                                    -
+                                @endif
+                            </span>
+                        </div>
+                    @endif
+                @endforeach
+            </div>
+        @endif
+        @php
+            $terms = $template ? ($template->fields['terms_and_conditions'] ?? null) : null;
+        @endphp
+        @if($terms)
+            <div class="section" style="margin-top: 30px; page-break-inside: avoid;">
+                <div class="section-title">{{ __("SYARAT & KETENTUAN") }}</div>
+                <div style="font-size: 11px; color: #333; line-height: 1.6; text-align: justify; padding: 15px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px;">
+                    <ol style="margin: 0; padding-left: 15px;">
+                        @foreach(explode("\n", str_replace("\r", "", trim($terms))) as $item)
+                            @if(trim($item) !== '')
+                                <li style="margin-bottom: 8px;">{{ trim($item) }}</li>
+                            @endif
+                        @endforeach
+                    </ol>
+                </div>
+            </div>
+        @endif
 
+        <!-- Approval Timeline -->
+        @if(in_array($document->status, ['approved', 'completed', 'paid', 'presiden_review', 'director_review', 'finance_review']))
+            <div class="section" style="margin-top: 30px; page-break-before: always;">
+                <div class="section-title">{{ __("RIWAYAT PERSETUJUAN (DIGITAL SIGNATURE)") }}</div>
+                <table class="approval-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%">Role</th>
+                            <th style="width: 30%">Nama</th>
+                            <th style="width: 20%">Status</th>
+                            <th style="width: 25%">Waktu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Requester (Pengaju) -->
+                        <tr>
+                            <td>Pembuat Pengajuan</td>
+                            <td>{{ $document->user->name }}</td>
+                            <td><span class="status-approved">DIKIRIM</span></td>
+                            <td>
+                                {{ $document->submitted_at ? $document->submitted_at->format('d M Y, H:i') : $document->created_at->format('d M Y, H:i') }}<br>
+                                <span style="font-size: 8px; color: #888;">(Digital Sign)</span>
+                            </td>
+                        </tr>
+                        <!-- Approvers -->
+                        @foreach($document->approvals as $approval)
+                            <tr>
+                                <td>{{ $approval->role_label ?? 'Approver' }}</td>
+                                <td>{{ $approval->approver->name }}</td>
+                                <td>
+                                    @if($approval->status === 'approved')
+                                        <span class="status-approved">DISETUJUI</span>
+                                    @elseif($approval->status === 'rejected')
+                                        <span class="status-rejected">DITOLAK</span>
+                                    @elseif($approval->status === 'pending')
+                                        <span class="status-pending">MENUNGGU</span>
+                                    @else
+                                        <span>{{ strtoupper($approval->status) }}</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($approval->action_at)
+                                        {{ $approval->action_at->format('d M Y, H:i') }}<br>
+                                        <span style="font-size: 8px; color: #888;">(Digital Sign)</span>
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
 
         <!-- Footer with QR Code -->
         <div class="footer">

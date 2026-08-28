@@ -26,69 +26,36 @@
         }
     }
 
-    // Define all possible signature columns based on document type
-    $allColumns = match($type) {
-        'only' => [
-            ['role' => 'requester', 'label' => 'Dibuat', 'title' => $requesterTitle],
-            ['role' => 'supervisor', 'label' => 'Verified', 'title' => 'Supervisor'],
-            ['role' => 'manager', 'label' => 'Approved', 'title' => 'Manager'],
-        ],
-        'po' => [
-            ['role' => 'requester', 'label' => 'Dibuat', 'title' => $requesterTitle],
-            ['role' => 'supervisor', 'label' => 'Verified', 'title' => 'Supervisor'],
-            ['role' => 'manager', 'label' => 'Reviewed', 'title' => 'Manager'],
-            ['role' => 'direktur', 'label' => 'Authorized', 'title' => 'Director'],
-            ['role' => 'finance', 'label' => 'Budget Check', 'title' => 'Finance'],
-            ['role' => 'presiden_direktur', 'label' => 'Final Approval', 'title' => 'President Director'],
-        ],
-        'invoice' => [
-            ['role' => 'requester', 'label' => 'Dibuat', 'title' => $requesterTitle],
-            ['role' => 'supervisor', 'label' => 'Verified', 'title' => 'Supervisor'],
-            ['role' => 'manager', 'label' => 'Reviewed', 'title' => 'Manager'],
-            ['role' => 'finance', 'label' => 'Budget Check', 'title' => 'Finance'],
-            ['role' => 'direktur', 'label' => 'Authorized', 'title' => 'Director'],
-            ['role' => 'presiden_direktur', 'label' => 'Final Approval', 'title' => 'President Director'],
-        ],
-        'loan' => [
-            ['role' => 'requester', 'label' => 'Pemohon', 'title' => $requesterTitle],
-            ['role' => 'hrd', 'label' => 'HRD Check', 'title' => 'HR Manager'],
-            ['role' => 'finance', 'label' => 'Finance Check', 'title' => 'Finance'],
-            ['role' => 'direktur_hr', 'label' => 'Authorized', 'title' => 'Direktur HR'],
-            ['role' => 'presiden_direktur', 'label' => 'Final Approval', 'title' => 'Presiden Direktur'],
-        ],
-        default => [],
-    };
+    $columns = [];
     
-    // Get presiden direktur name
-    $presdir = \App\Models\User::role('presiden_direktur')->first();
-    $presdirName = $presdir?->name ?? 'Presiden Direktur';
+    // Always start with Requester
+    $columns[] = [
+        'is_requester' => true,
+        'label' => 'Dibuat',
+        'title' => $requesterTitle,
+        'approval' => null,
+    ];
 
-    // Helper function to find approval by role
-    $findApprovalByRole = function($role) use ($approvals) {
-        return $approvals->filter(function($a) use ($role) {
-            $approverRole = strtolower($a->approver_role ?? '');
-            $searchRole = strtolower($role);
+    // Add actual workflow steps from the database dynamically
+    if ($approvals) {
+        $totalApprovals = count($approvals);
+        $index = 0;
+        foreach($approvals as $approval) {
+            // Determine label
+            $isLast = ($index === $totalApprovals - 1);
+            $label = $isLast ? (($type === 'loan') ? 'Final Approval' : 'Approved') : 'Reviewed';
             
-            if ($searchRole === 'direktur') {
-                return str_starts_with($approverRole, 'direktur_') || $approverRole === 'direktur';
-            }
-            
-            return $approverRole === $searchRole;
-        })->first();
-    };
+            // Format role name for display
+            $roleName = $approval->role_label ?? 'Approver';
 
-    // Filter columns: only show steps that have actual approval records (or are 'requester')
-    // This ensures skipped workflow steps are not displayed
-    $columns = collect($allColumns)->filter(function($col) use ($findApprovalByRole) {
-        if ($col['role'] === 'requester') return true;
-        return $findApprovalByRole($col['role']) !== null;
-    })->values()->all();
-
-    // Determine the last approval column label dynamically
-    // The last non-requester column should be labeled "Approved" for clarity
-    $lastIndex = count($columns) - 1;
-    if ($lastIndex > 0 && $columns[$lastIndex]['role'] !== 'requester') {
-        $columns[$lastIndex]['label'] = ($type === 'loan') ? 'Final Approval' : 'Approved';
+            $columns[] = [
+                'is_requester' => false,
+                'label' => $label,
+                'title' => $roleName,
+                'approval' => $approval,
+            ];
+            $index++;
+        }
     }
 
     // Check if document is fully approved
@@ -123,9 +90,9 @@
                     @foreach($columns as $col)
                         <td class="border border-gray-200 px-2 py-3 text-center align-middle" style="height: 100px;">
                             @php
-                                $approval = $findApprovalByRole($col['role']);
+                                $isRequester = $col['is_requester'];
+                                $approval = $col['approval'];
                                 $isApproved = $approval && $approval->status === 'approved';
-                                $isRequester = $col['role'] === 'requester';
                             @endphp
                             
                             @if($isRequester)
@@ -141,7 +108,11 @@
                             @elseif($isApproved && $approval->action_at)
                                 {{-- Approved - Show QR Code --}}
                                 <div class="flex flex-col items-center justify-center h-full">
-                                    @if($verificationUrl && ($col['role'] === 'presiden_direktur' ? $isFullyApproved : true))
+                                    @php
+                                        $isLastStep = ($loop->index === count($columns) - 1);
+                                        $showQr = $verificationUrl && ($isLastStep ? $isFullyApproved : true);
+                                    @endphp
+                                    @if($showQr)
                                         <div class="bg-white p-1 rounded border border-gray-200">
                                             {!! QrCode::size(50)->generate($verificationUrl) !!}
                                         </div>
@@ -174,13 +145,14 @@
                     @foreach($columns as $col)
                         <td class="border border-gray-200 px-2 py-2 text-center bg-gray-50/80 print:bg-white">
                             @php
-                                $approval = $findApprovalByRole($col['role']);
+                                $isRequester = $col['is_requester'];
+                                $approval = $col['approval'];
                                 $isApproved = $approval && $approval->status === 'approved';
                             @endphp
                             
-                            @if($col['role'] !== 'requester' && $isApproved)
+                            @if(!$isRequester && $isApproved)
                                 <p class="text-[8px] text-gray-500 italic">Digitally Signed by:</p>
-                            @elseif($col['role'] === 'requester')
+                            @elseif($isRequester)
                                 <p class="text-[8px] text-gray-500 italic">Submitted by:</p>
                             @endif
                         </td>
@@ -192,12 +164,9 @@
                     @foreach($columns as $col)
                         <td class="border border-gray-200 px-2 py-1 text-center">
                             @php
-                                $approval = $findApprovalByRole($col['role']);
-                                $name = match($col['role']) {
-                                    'requester' => $document?->user?->name ?? '(Nama Staff)',
-                                    'presiden_direktur' => $presdirName,
-                                    default => $approval?->approver?->name ?? ('(' . $col['title'] . ')')
-                                };
+                                $isRequester = $col['is_requester'];
+                                $approval = $col['approval'];
+                                $name = $isRequester ? ($document?->user?->name ?? '(Nama Staff)') : ($approval?->approver?->name ?? ('(' . $col['title'] . ')'));
                             @endphp
                             <span class="font-bold text-gray-900 underline">{{ $name }}</span>
                         </td>
@@ -218,8 +187,9 @@
                     @foreach($columns as $col)
                         <td class="border border-gray-200 px-1 py-1 text-center text-gray-500">
                             @php
-                                $approval = $findApprovalByRole($col['role']);
-                                if ($col['role'] === 'requester') {
+                                $isRequester = $col['is_requester'];
+                                $approval = $col['approval'];
+                                if ($isRequester) {
                                     $datetime = $document?->created_at;
                                 } else {
                                     $datetime = $approval?->action_at;
@@ -240,9 +210,10 @@
                     @foreach($columns as $col)
                         <td class="border border-gray-200 px-1 py-1 text-center text-gray-400 text-[8px]">
                             @php
-                                $approval = $findApprovalByRole($col['role']);
+                                $isRequester = $col['is_requester'];
+                                $approval = $col['approval'];
                             @endphp
-                            @if($col['role'] !== 'requester' && $approval?->ip_address)
+                            @if(!$isRequester && $approval?->ip_address)
                                 IP: {{ $approval->ip_address }}
                             @endif
                         </td>

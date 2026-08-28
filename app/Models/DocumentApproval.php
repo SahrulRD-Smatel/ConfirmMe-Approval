@@ -105,7 +105,16 @@ class DocumentApproval extends Model
         // Use config role_labels for proper display names
         $roleLabels = config('workflow.role_labels', []);
 
-        return $roleLabels[$this->approver_role] ?? ucfirst(str_replace('_', ' ', $this->approver_role));
+        if (isset($roleLabels[$this->approver_role])) {
+            return $roleLabels[$this->approver_role];
+        }
+
+        $cleanRole = str_replace('role:', '', $this->approver_role);
+        if (str_starts_with($this->approver_role, 'user:')) {
+            return 'Spesifik User';
+        }
+
+        return ucwords(str_replace('_', ' ', $cleanRole));
     }
 
     /**

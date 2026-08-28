@@ -41,7 +41,7 @@ class TemplateController extends Controller
             'approval_type' => 'required|in:only,po,invoice,loan',
             'is_active' => 'boolean',
             'fields' => 'nullable|array',
-            'fields.*' => 'nullable|string|max:2000',
+            'fields.*' => 'nullable|string|max:10000',
             'workflow' => 'required|array|min:1',
             'workflow.*' => 'required|string',
         ]);
@@ -85,7 +85,7 @@ class TemplateController extends Controller
             'approval_type' => 'required|in:only,po,invoice,loan',
             'is_active' => 'boolean',
             'fields' => 'nullable|array',
-            'fields.*' => 'nullable|string|max:2000',
+            'fields.*' => 'nullable|string|max:10000',
             'workflow' => 'required|array|min:1',
             'workflow.*' => 'required|string',
         ]);
