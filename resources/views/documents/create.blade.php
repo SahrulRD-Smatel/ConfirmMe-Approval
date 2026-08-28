@@ -427,7 +427,7 @@
                                                     <select :name="`documents[${index}][metadata][${field.name}]`" :required="field.required == '1'"
                                                         class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20">
                                                         <option value="">{{ __('-- Pilih --') }}</option>
-                                                        <template x-for="opt in (field.options ? field.options.split(',').map(s=>s.trim()) : [])">
+                                                        <template x-for="opt in (field.options ? field.options.split(/[\n,]+/).map(s=>s.trim()).filter(s=>s) : [])">
                                                             <option :value="opt" x-text="opt"></option>
                                                         </template>
                                                     </select>

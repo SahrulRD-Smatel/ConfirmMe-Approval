@@ -244,10 +244,27 @@
                             <select :name="`metadata[${field.name}]`" x-model="metadata[field.name]" :required="field.required == '1' || field.required === true"
                                 class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20">
                                 <option value="">{{ __('-- Pilih --') }}</option>
-                                <template x-for="opt in (field.options ? (typeof field.options === 'string' ? field.options.split(',') : field.options).map(s=>typeof s==='string'?s.trim():s) : [])">
+                                <template x-for="opt in (field.options ? (typeof field.options === 'string' ? field.options.split(/[\n,]+/) : field.options).map(s=>typeof s==='string'?s.trim():s).filter(s=>s) : [])">
                                     <option :value="opt" x-text="opt"></option>
                                 </template>
                             </select>
+                        </template>
+
+                        <!-- File -->
+                        <template x-if="field.type === 'file'">
+                            <div>
+                                <!-- Show existing file link if present -->
+                                <template x-if="metadata[field.name]">
+                                    <div class="mb-2 text-sm text-gray-600 dark:text-gray-400">
+                                        {{ __('File saat ini:') }} 
+                                        <a :href="`/storage/${metadata[field.name]}`" target="_blank" class="text-primary-600 hover:underline">Lihat Lampiran</a>
+                                    </div>
+                                </template>
+                                <!-- File input for replacement -->
+                                <input type="file" :name="`metadata_files[${field.name}]`" 
+                                    class="block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100">
+                                <p class="mt-1 text-xs text-gray-500">{{ __('Biarkan kosong jika tidak ingin mengubah file.') }}</p>
+                            </div>
                         </template>
 
                         <!-- Table -->

@@ -6,7 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $document->document_number }}</title>
     <style>
-        * {
+        @page {
+            /* Margin atas yang besar (130px) adalah SATU-SATUNYA cara agar semua halaman konsisten di Dompdf */
+            margin: 130px 50px 50px 50px !important;
+        }
+
+        header {
+            position: fixed;
+            top: -100px; /* Header ditarik 100px ke atas dari margin 130px */
+            left: 0;
+            right: 0;
+            height: 80px;
+        }
+        
+        header .company-header {
+            margin-bottom: 0 !important;
+        }
+
+        html, body, div, p, span, table, th, td, h1, h2, h3, h4, h5, h6 {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -20,7 +37,7 @@
         }
 
         .container {
-            padding: 20px 40px;
+            width: 100%;
         }
 
         /* Header */
@@ -149,6 +166,7 @@
         /* Content */
         .section {
             margin-bottom: 20px;
+            page-break-inside: avoid;
         }
 
         .section-title {
@@ -156,6 +174,7 @@
             font-weight: bold;
             color: #7F1D1D;
             margin-bottom: 12px;
+            padding-top: 40px;
             padding-bottom: 6px;
             border-bottom: 2px solid #7F1D1D;
             text-transform: uppercase;
@@ -167,6 +186,7 @@
             padding: 15px;
             border: 1px solid #e2e8f0;
             border-radius: 4px;
+            page-break-inside: avoid;
         }
 
         /* Approval Timeline */
@@ -174,6 +194,7 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
+            page-break-inside: avoid;
         }
 
         .approval-table th {
@@ -273,10 +294,12 @@
 </head>
 
 <body>
-    <div class="container">
-        <!-- Company Letterhead -->
+    <!-- Company Letterhead (Fixed - Repeated on every page) -->
+    <header>
         @include('pdf.partials.company-header', ['accentColor' => '#7F1D1D'])
+    </header>
 
+    <div class="container">
         <!-- Document Number Bar -->
         <div style="display: table; width: 100%; margin-bottom: 15px;">
             <div style="display: table-cell; width: 50%; vertical-align: middle;"></div>
@@ -377,7 +400,7 @@
                     
                     @if($field['type'] === 'table')
                         <div style="page-break-before: always;"></div>
-                        <div class="section-title" style="margin-top: 20px;">{{ strtoupper($field['label']) }}</div>
+                        <div class="section-title">{{ strtoupper($field['label']) }}</div>
                         @if(is_array($fieldValue) && count($fieldValue) > 0)
                             <table class="data-table">
                                 <thead>
@@ -410,7 +433,7 @@
                         <div style="margin-top: 15px; margin-bottom: 5px; font-size: 11px; font-weight: bold;">{{ $field['label'] }}</div>
                         <div style="margin-bottom: 15px;">
                             @if(in_array(strtolower(pathinfo($fieldValue, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png']))
-                                <img src="{{ storage_path('app/public/' . ltrim(str_replace('public/', '', $fieldValue), '/')) }}" alt="{{ $field['label'] }}" style="max-width: 300px; border: 1px solid #ccc; border-radius: 4px; padding: 3px;" />
+                                <img src="{{ storage_path('app/public/' . ltrim(str_replace('public/', '', $fieldValue), '/')) }}" alt="{{ $field['label'] }}" style="max-width: 300px; max-height: 300px; object-fit: contain; border: 1px solid #ccc; border-radius: 4px; padding: 3px;" />
                             @else
                                 <em style="font-size: 10px; color: #555;">{{ __("Terdapat lampiran berkas") }} ({{ pathinfo($fieldValue, PATHINFO_EXTENSION) }}) - {{ __("silakan unduh melalui sistem.") }}</em>
                             @endif
@@ -440,7 +463,7 @@
             $terms = $template ? ($template->fields['terms_and_conditions'] ?? null) : null;
         @endphp
         @if($terms)
-            <div class="section" style="margin-top: 30px; page-break-inside: avoid;">
+            <div class="section" style="page-break-inside: avoid;">
                 <div class="section-title">{{ __("SYARAT & KETENTUAN") }}</div>
                 <div style="font-size: 11px; color: #333; line-height: 1.6; text-align: justify; padding: 15px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px;">
                     <ol style="margin: 0; padding-left: 15px;">
@@ -456,7 +479,7 @@
 
         <!-- Approval Timeline -->
         @if(in_array($document->status, ['approved', 'completed', 'paid', 'presiden_review', 'director_review', 'finance_review']))
-            <div class="section" style="margin-top: 30px; page-break-before: always;">
+            <div class="section" style="page-break-before: always;">
                 <div class="section-title">{{ __("RIWAYAT PERSETUJUAN (DIGITAL SIGNATURE)") }}</div>
                 <table class="approval-table">
                     <thead>
@@ -481,7 +504,7 @@
                         <!-- Approvers -->
                         @foreach($document->approvals as $approval)
                             <tr>
-                                <td>{{ $approval->role_label ?? 'Approver' }}</td>
+                                <td>{{ $approval->approver?->position ?? $approval->role_label ?? 'Approver' }}</td>
                                 <td>{{ $approval->approver->name }}</td>
                                 <td>
                                     @if($approval->status === 'approved')

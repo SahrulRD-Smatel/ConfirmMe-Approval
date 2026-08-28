@@ -360,8 +360,8 @@
                             
                             <!-- Options for Select -->
                             <div x-show="field.type === 'select'" class="md:col-span-2 lg:col-span-4 mt-2">
-                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ __('Opsi Dropdown') }} <span class="text-gray-400 font-normal">({{ __('Pisahkan dengan koma') }})</span></label>
-                                <input type="text" x-model="field.options" :name="`fields[dynamic_fields][${index}][options]`" placeholder="{{ __('Cth: Innova, Avanza, Xpander') }}" class="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ __('Opsi Dropdown') }} <span class="text-gray-400 font-normal">({{ __('Pisahkan dengan koma atau enter') }})</span></label>
+                                <textarea x-model="field.options" :name="`fields[dynamic_fields][${index}][options]`" rows="2" placeholder="{{ __('Cth: Innova, Avanza, Xpander') }}" class="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"></textarea>
                             </div>
                             
                             <!-- Columns for Table -->

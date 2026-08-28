@@ -82,45 +82,47 @@
                             {{ $document->description ?? __('Tidak ada deskripsi') }}</p>
                     </div>
 
-                    <div class="pt-4 border-t border-gray-200/80 dark:border-gray-700/80">
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">{{ __('Nilai Dokumen') }}</p>
-                        @php
-                            $financeApproval = $document->approvals()
-                                ->where('status', 'approved')
-                                ->where('approver_role', 'finance')
-                                ->whereNotNull('approved_amount')
-                                ->first();
-                            $budgetChanged = $financeApproval && (float) $financeApproval->approved_amount !== (float) $document->estimated_budget;
-                        @endphp
+                    @if((float) $document->estimated_budget > 0 || (isset($document->metadata['loan_amount']) && (float) $document->metadata['loan_amount'] > 0))
+                        <div class="pt-4 border-t border-gray-200/80 dark:border-gray-700/80">
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">{{ __('Nilai Dokumen') }}</p>
+                            @php
+                                $financeApproval = $document->approvals()
+                                    ->where('status', 'approved')
+                                    ->where('approver_role', 'finance')
+                                    ->whereNotNull('approved_amount')
+                                    ->first();
+                                $budgetChanged = $financeApproval && (float) $financeApproval->approved_amount !== (float) $document->estimated_budget;
+                            @endphp
 
-                        @if($budgetChanged)
-                            {{-- Show original amount with strikethrough --}}
-                            <p class="text-lg text-gray-400 line-through">
-                                Rp {{ number_format($document->estimated_budget ?? 0, 0, ',', '.') }}
-                            </p>
-                            {{-- Show Finance-approved amount highlighted --}}
-                            <div class="flex items-center gap-2 mt-1">
-                                <p class="text-2xl font-bold text-primary-600 dark:text-primary-400">
-                                    Rp {{ number_format($financeApproval->approved_amount, 0, ',', '.') }}
-                                </p>
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
-                                    {{ __('Diubah oleh Finance') }}
-                                </span>
-                            </div>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                {{ __('Selisih') }}: Rp {{ number_format(abs($document->estimated_budget - $financeApproval->approved_amount), 0, ',', '.') }}
-                                ({{ $financeApproval->approved_amount < $document->estimated_budget ? __('dikurangi') : __('ditambah') }})
-                            </p>
-                        @else
-                            <p class="text-2xl font-bold text-gray-900 dark:text-white">
-                                @if($document->approval_type === 'loan' && isset($document->metadata['loan_amount']))
-                                    Rp {{ number_format($document->metadata['loan_amount'], 0, ',', '.') }}
-                                @else
+                            @if($budgetChanged)
+                                {{-- Show original amount with strikethrough --}}
+                                <p class="text-lg text-gray-400 line-through">
                                     Rp {{ number_format($document->estimated_budget ?? 0, 0, ',', '.') }}
-                                @endif
-                            </p>
-                        @endif
-                    </div>
+                                </p>
+                                {{-- Show Finance-approved amount highlighted --}}
+                                <div class="flex items-center gap-2 mt-1">
+                                    <p class="text-2xl font-bold text-primary-600 dark:text-primary-400">
+                                        Rp {{ number_format($financeApproval->approved_amount, 0, ',', '.') }}
+                                    </p>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                                        {{ __('Diubah oleh Finance') }}
+                                    </span>
+                                </div>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                    {{ __('Selisih') }}: Rp {{ number_format(abs($document->estimated_budget - $financeApproval->approved_amount), 0, ',', '.') }}
+                                    ({{ $financeApproval->approved_amount < $document->estimated_budget ? __('dikurangi') : __('ditambah') }})
+                                </p>
+                            @else
+                                <p class="text-2xl font-bold text-gray-900 dark:text-white">
+                                    @if($document->approval_type === 'loan' && isset($document->metadata['loan_amount']))
+                                        Rp {{ number_format($document->metadata['loan_amount'], 0, ',', '.') }}
+                                    @else
+                                        Rp {{ number_format($document->estimated_budget ?? 0, 0, ',', '.') }}
+                                    @endif
+                                </p>
+                            @endif
+                        </div>
+                    @endif
                 </div>
             </div>
 

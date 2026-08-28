@@ -46,7 +46,7 @@
             $label = $isLast ? (($type === 'loan') ? 'Final Approval' : 'Approved') : 'Reviewed';
             
             // Format role name for display
-            $roleName = $approval->role_label ?? 'Approver';
+            $roleName = $approval->approver?->position ?? $approval->role_label ?? 'Approver';
 
             $columns[] = [
                 'is_requester' => false,

@@ -130,7 +130,7 @@
                                 <!-- Info -->
                                 <div class="flex-1 min-w-0">
                                     <p class="font-medium text-gray-900">{{ $approval->approver->name ?? 'Unknown' }}</p>
-                                    <p class="text-sm text-gray-500">{{ $approval->role_label }}</p>
+                                    <p class="text-sm text-gray-500">{{ $approval->approver?->position ?? $approval->role_label }}</p>
                                 </div>
                                 <!-- Time -->
                                 <div class="text-right text-sm">

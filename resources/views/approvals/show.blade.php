@@ -49,7 +49,7 @@
                             {{ $document->submitted_at?->format('d F Y H:i') ?? $document->created_at->format('d F Y H:i') }}
                         </dd>
                     </div>
-                    @if($document->estimated_budget)
+                    @if((float) $document->estimated_budget > 0)
                         <div class="sm:col-span-2">
                             @php
                                 $financeApproval = $document->approvals()
@@ -144,7 +144,7 @@
                                         <span
                                             class="text-xs text-gray-500">{{ $approval->action_at?->format('d M Y H:i') }}</span>
                                     </div>
-                                    <p class="text-xs text-gray-600 dark:text-gray-400">{{ $approval->role_label }}</p>
+                                    <p class="text-xs text-gray-600 dark:text-gray-400">{{ $approval->approver?->position ?? $approval->role_label }}</p>
                                     @if($approval->comment)
                                         <p class="text-sm text-gray-700 dark:text-gray-300 mt-2 italic">"{{ $approval->comment }}"
                                         </p>
@@ -208,7 +208,7 @@
 
                     <!-- Approve Form -->
                     <div x-show="action === 'approve'" x-transition class="space-y-4">
-                        @if($document->estimated_budget)
+                        @if((float) $document->estimated_budget > 0)
                             <div>
                                 {{-- Any approver can edit the approved amount in the dynamic system --}}
                                 <label for="approved_amount"
@@ -424,7 +424,7 @@
                                 @endif
                             </div>
                             <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $approval->role_label }}</p>
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $approval->approver?->position ?? $approval->role_label }}</p>
                                 <p class="text-xs text-gray-500">
                                     {{ $approval->status === 'pending' && $approval->approver_id === auth()->id() ? __('Menunggu Anda') : $approval->status_label }}
                                 </p>

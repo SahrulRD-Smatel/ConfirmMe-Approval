@@ -211,7 +211,7 @@
                             {{ $document->created_at->format('d F Y H:i') }}
                         </dd>
                     </div>
-                    @if($document->estimated_budget)
+                    @if((float) $document->estimated_budget > 0)
                         <div>
                             <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Estimasi Anggaran') }}</dt>
                             <dd class="mt-1 text-sm text-gray-900 dark:text-white">Rp
@@ -219,13 +219,13 @@
                             </dd>
                         </div>
                     @endif
-                    @if($document->approved_budget)
+                    @if((float) $document->approved_budget > 0)
                         <div>
                             <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Anggaran Disetujui') }}</dt>
                             <dd class="mt-1 text-sm text-success-600 dark:text-success-400 font-semibold">Rp
                                 {{ number_format($document->approved_budget, 0, ',', '.') }}
                             </dd>
-                            @if($document->estimated_budget && (float) $document->approved_budget !== (float) $document->estimated_budget)
+                            @if((float) $document->estimated_budget > 0 && (float) $document->approved_budget !== (float) $document->estimated_budget)
                                 <dd class="text-xs text-yellow-600 dark:text-yellow-400 mt-0.5">
                                     📝 {{ __('Nominal diubah dari') }} Rp {{ number_format($document->estimated_budget, 0, ',', '.') }}
                                 </dd>
@@ -382,7 +382,7 @@
                                 @endif
                             </div>
                             <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $approval->role_label }}</p>
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $approval->approver?->position ?? $approval->role_label }}</p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">{{ $approval->approver->name }}</p>
                                 @if($approval->action_at)
                                     <p class="text-xs text-gray-400 mt-1">{{ $approval->action_at->format('d M Y H:i') }}</p>

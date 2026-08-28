@@ -139,7 +139,7 @@
                                     {{ $approval->approver->name ?? 'Unknown' }}
                                 </p>
                                 <p class="text-xs text-gray-500">
-                                    {{ config('workflow.role_labels')[$approval->role] ?? ucfirst($approval->role) }}
+                                    {{ $approval->approver?->position ?? config('workflow.role_labels')[$approval->role] ?? ucfirst($approval->role) }}
                                 </p>
                                 @if($approval->approved_at)
                                     <p class="text-xs text-gray-400 mt-1">
