@@ -86,6 +86,7 @@ class InvoiceController extends Controller
             ...$validated,
             'tax_amount' => $validated['tax_amount'] ?? 0,
             'total_amount' => $validated['subtotal'] + ($validated['tax_amount'] ?? 0),
+            'status' => 'issued',
             'created_by' => auth()->id(),
         ]);
 
@@ -120,6 +121,7 @@ class InvoiceController extends Controller
             'tax_amount' => $po->tax_amount,
             'total_amount' => $po->total_amount,
             'notes' => 'Invoice dari ' . $po->po_number,
+            'status' => 'issued',
             'created_by' => auth()->id(),
         ]);
 

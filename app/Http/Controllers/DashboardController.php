@@ -12,7 +12,7 @@ class DashboardController extends Controller
         $user = auth()->user();
 
         // Finance role uses integrated finance dashboard
-        if ($user->hasPermissionTo('manage-budget') || $user->hasPermissionTo('view-finance-documents')) {
+        if (($user->hasPermissionTo('manage-budget') || $user->hasPermissionTo('view-finance-documents')) && feature_active('module_finance')) {
             return redirect()->route('finance.dashboard');
         }
 

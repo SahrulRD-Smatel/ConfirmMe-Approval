@@ -16,7 +16,7 @@
         </div>
     </x-slot>
 
-    <form action="{{ route('finance.po.store') }}" method="POST" x-data="poForm()">
+    <form action="{{ route('finance.po.store') }}" method="POST" x-data="poForm(@js($documents->keyBy('id')))">
         @csrf
 
         @if($errors->any())
@@ -42,7 +42,7 @@
                             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             {{ __('Pilih Dokumen') }} <span class="text-red-500">*</span>
                         </label>
-                        <select name="document_id" id="document_id" required
+                        <select name="document_id" id="document_id" required x-model="document_id" @change="loadDocumentData(true)"
                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10">
                             <option value="">-- {{ __('Pilih Dokumen') }} --</option>
                             @foreach($documents as $doc)
@@ -70,7 +70,7 @@
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 {{ __('Nama Vendor') }} <span class="text-red-500">*</span>
                             </label>
-                            <input type="text" name="vendor_name" id="vendor_name" value="{{ old('vendor_name') }}"
+                            <input type="text" name="vendor_name" id="vendor_name" x-model="vendor_name"
                                 required
                                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10">
                         </div>
@@ -80,8 +80,8 @@
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 {{ __('Alamat Vendor') }}
                             </label>
-                            <textarea name="vendor_address" id="vendor_address" rows="2"
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10">{{ old('vendor_address') }}</textarea>
+                            <textarea name="vendor_address" id="vendor_address" rows="2" x-model="vendor_address"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10"></textarea>
                         </div>
 
                         <div>
@@ -89,7 +89,7 @@
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 {{ __('Telepon') }}
                             </label>
-                            <input type="text" name="vendor_phone" id="vendor_phone" value="{{ old('vendor_phone') }}"
+                            <input type="text" name="vendor_phone" id="vendor_phone" x-model="vendor_phone"
                                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10">
                         </div>
 
@@ -98,7 +98,7 @@
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 {{ __('Email') }}
                             </label>
-                            <input type="email" name="vendor_email" id="vendor_email" value="{{ old('vendor_email') }}"
+                            <input type="email" name="vendor_email" id="vendor_email" x-model="vendor_email"
                                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10">
                         </div>
                     </div>
@@ -152,9 +152,13 @@
                                         class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                                 </div>
                                 <div class="col-span-3">
-                                    <input type="number" :name="'items['+index+'][unit_price]'" x-model="item.price"
-                                        @input="calculateTotal()" required min="0" placeholder="{{ __('Harga Satuan') }}"
-                                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                    <div class="relative">
+                                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">Rp</span>
+                                        <input type="text" x-model="item.price_formatted" @input="formatPrice(item)"
+                                            required placeholder="0" inputmode="numeric"
+                                            class="w-full pl-10 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                        <input type="hidden" :name="'items['+index+'][unit_price]'" :value="item.price">
+                                    </div>
                                 </div>
                                 <div class="col-span-1 flex justify-center">
                                     <button type="button" @click="removeItem(index)"
@@ -182,9 +186,13 @@
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 {{ __('Pajak') }} (Rp)
                             </label>
-                            <input type="number" name="tax_amount" id="tax_amount" x-model="tax"
-                                @input="calculateTotal()" value="0" min="0"
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10">
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">Rp</span>
+                                <input type="text" id="tax_amount" x-model="tax_formatted" @input="formatTax()"
+                                    placeholder="0" inputmode="numeric"
+                                    class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10">
+                                <input type="hidden" name="tax_amount" :value="tax">
+                            </div>
                         </div>
 
                         <div>
@@ -192,16 +200,16 @@
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 {{ __('Syarat & Ketentuan') }}
                             </label>
-                            <textarea name="terms_conditions" id="terms_conditions" rows="3"
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10">{{ old('terms_conditions') }}</textarea>
+                            <textarea name="terms_conditions" id="terms_conditions" rows="3" x-model="terms_conditions"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10"></textarea>
                         </div>
 
                         <div>
                             <label for="notes" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 {{ __('Catatan') }}
                             </label>
-                            <textarea name="notes" id="notes" rows="2"
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10">{{ old('notes') }}</textarea>
+                            <textarea name="notes" id="notes" rows="2" x-model="notes"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10"></textarea>
                         </div>
                     </div>
                 </x-ui.card>
@@ -264,15 +272,93 @@
     </form>
 
     <script>
-        function poForm() {
+        function poForm(documents) {
             return {
-                items: [{ name: '', qty: 1, unit: 'pcs', price: 0 }],
-                tax: 0,
+                document_id: @js(old('document_id', $document?->id ?? '')),
+                vendor_name: @js(old('vendor_name')),
+                vendor_address: @js(old('vendor_address')),
+                vendor_phone: @js(old('vendor_phone')),
+                vendor_email: @js(old('vendor_email')),
+                notes: @js(old('notes')),
+                terms_conditions: @js(old('terms_conditions')),
+                
+                items: [{ name: '', qty: 1, unit: 'pcs', price: 0, price_formatted: '0' }],
+                tax: {{ old('tax_amount', 0) }},
+                tax_formatted: '{{ old('tax_amount', 0) }}'.replace(/\B(?=(\d{3})+(?!\d))/g, '.'),
                 subtotal: 0,
                 total: 0,
+                documents: documents || {},
+
+                init() {
+                    @if(old('items'))
+                        this.items = {!! json_encode(old('items')) !!}.map(i => {
+                            let p = parseInt(i.unit_price || 0);
+                            return {
+                                name: i.item_name || '',
+                                qty: parseInt(i.quantity || 1),
+                                unit: i.unit || 'pcs',
+                                price: p,
+                                price_formatted: String(p).replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+                            };
+                        });
+                    @else
+                        if (this.document_id) {
+                            this.loadDocumentData(true);
+                        }
+                    @endif
+                    this.calculateTotal();
+                },
+
+                loadDocumentData(overwrite = true) {
+                    if (!this.document_id || !this.documents[this.document_id]) return;
+                    
+                    let doc = this.documents[this.document_id];
+                    let meta = doc.metadata || {};
+                    
+                    if (overwrite) {
+                        this.vendor_name = meta.vendor_name || '';
+                        this.vendor_address = meta.vendor_address || '';
+                        this.vendor_phone = meta.vendor_phone || '';
+                        this.vendor_email = meta.vendor_email || '';
+                        this.tax = parseInt(meta.tax_amount || 0);
+                        this.tax_formatted = String(this.tax).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                        this.notes = meta.keterangan || '';
+                        
+                        if (meta.items && Array.isArray(meta.items) && meta.items.length > 0) {
+                            this.items = meta.items.map(i => {
+                                let p = parseInt(i['Harga Perk./Item'] || i['Harga Perkiraan'] || i.price || 0);
+                                return {
+                                    name: i['Nama Barang'] || i.item_name || i.name || '',
+                                    qty: parseInt(i['Permintaan (Qty)'] || i.quantity || i.qty || 1),
+                                    unit: i['Unit'] || i.unit || 'pcs',
+                                    price: p,
+                                    price_formatted: String(p).replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+                                };
+                            });
+                        } else {
+                            let p = parseInt(doc.approved_budget || 0);
+                            this.items = [{ name: meta.item_description || '', qty: 1, unit: 'pcs', price: p, price_formatted: String(p).replace(/\B(?=(\d{3})+(?!\d))/g, '.') }];
+                        }
+                    }
+                    this.calculateTotal();
+                },
+
+                formatPrice(item) {
+                    let raw = String(item.price_formatted).replace(/[^\d]/g, '');
+                    item.price = parseInt(raw) || 0;
+                    item.price_formatted = raw ? raw.replace(/\B(?=(\d{3})+(?!\d))/g, '.') : '';
+                    this.calculateTotal();
+                },
+
+                formatTax() {
+                    let raw = String(this.tax_formatted).replace(/[^\d]/g, '');
+                    this.tax = parseInt(raw) || 0;
+                    this.tax_formatted = raw ? raw.replace(/\B(?=(\d{3})+(?!\d))/g, '.') : '';
+                    this.calculateTotal();
+                },
 
                 addItem() {
-                    this.items.push({ name: '', qty: 1, unit: 'pcs', price: 0 });
+                    this.items.push({ name: '', qty: 1, unit: 'pcs', price: 0, price_formatted: '0' });
                 },
 
                 removeItem(index) {
