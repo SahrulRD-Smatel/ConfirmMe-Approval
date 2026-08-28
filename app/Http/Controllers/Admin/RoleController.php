@@ -14,7 +14,7 @@ class RoleController extends Controller
      */
     private function getGroupedPermissions()
     {
-        $permissions = Permission::orderBy('name')->pluck('name');
+        $permissions = Permission::where('name', '!=', 'menu-executive-dashboard')->orderBy('name')->pluck('name');
         
         $groups = [];
         foreach ($permissions as $perm) {
@@ -32,7 +32,7 @@ class RoleController extends Controller
                 $groups[__('HR & Absensi')][] = $data;
             } elseif (str_contains($perm, 'reports')) {
                 $groups[__('Laporan')][] = $data;
-            } elseif (str_contains($perm, 'users') || str_contains($perm, 'roles') || str_contains($perm, 'workflow') || str_contains($perm, 'templates') || str_contains($perm, 'features') || str_contains($perm, 'departments') || str_contains($perm, 'audit-log') || str_contains($perm, 'menu-executive-dashboard')) {
+            } elseif (str_contains($perm, 'users') || str_contains($perm, 'roles') || str_contains($perm, 'workflow') || str_contains($perm, 'templates') || str_contains($perm, 'features') || str_contains($perm, 'departments') || str_contains($perm, 'audit-log')) {
                 $groups[__('Administrasi')][] = $data;
             } else {
                 $groups[__('Lainnya')][] = $data;
@@ -48,7 +48,6 @@ class RoleController extends Controller
             'menu-bulk-approval' => ['type' => 'MENU', 'label' => 'Bulk Approval'],
             'menu-office-locations' => ['type' => 'MENU', 'label' => 'Lokasi Kantor'],
             'menu-announcements' => ['type' => 'MENU', 'label' => 'Pengumuman'],
-            'menu-executive-dashboard' => ['type' => 'MENU', 'label' => 'Executive Dashboard'],
             'menu-my-loans' => ['type' => 'MENU', 'label' => 'Pinjaman Saya'],
             'menu-my-leaves' => ['type' => 'MENU', 'label' => 'Pengajuan Cuti'],
             'menu-archive' => ['type' => 'MENU', 'label' => 'Arsip Dokumen'],

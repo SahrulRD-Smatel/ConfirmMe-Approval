@@ -127,41 +127,6 @@ class ApprovalController extends Controller
         // Clear 2FA session flag after successful approval
         session()->forget("2fa_verified_{$document->id}");
 
-        // Send notifications
-        try {
-            $document->refresh();
-            $requester = $document->user;
-
-            if ($document->status === 'approved') {
-                // Fully approved - notify requester
-                $requester->notify(new DocumentNotification(
-                    'completed',
-                    $document,
-                    "Dokumen \"{$document->title}\" telah disetujui sepenuhnya."
-                ));
-            } else {
-                // Partially approved - notify requester about progress
-                $requester->notify(new DocumentNotification(
-                    'approved',
-                    $document,
-                    "Dokumen \"{$document->title}\" disetujui oleh " . auth()->user()->name . "."
-                ));
-
-                // Notify next approver
-                if ($document->currentApprover) {
-                    $document->currentApprover->notify(new DocumentNotification(
-                        'next_step',
-                        $document,
-                        "Dokumen \"{$document->title}\" menunggu review Anda.",
-                        route('documents.show', $document)
-                    ));
-                }
-            }
-        } catch (\Exception $e) {
-            // Don't fail the approval if notification fails
-            \Log::warning('Failed to send approval notification: ' . $e->getMessage());
-        }
-
         return redirect()->route('approvals.index')
             ->with('success', 'Dokumen berhasil disetujui!');
     }
@@ -199,18 +164,6 @@ class ApprovalController extends Controller
 
         ApprovalLog::log($document, 'rejected', 'Dokumen ditolak oleh ' . auth()->user()->name);
 
-        // Send rejection notification to requester
-        try {
-            $document->refresh();
-            $document->user->notify(new DocumentNotification(
-                'rejected',
-                $document,
-                "Dokumen \"{$document->title}\" ditolak oleh " . auth()->user()->name . ". Alasan: " . $validated['comment']
-            ));
-        } catch (\Exception $e) {
-            \Log::warning('Failed to send rejection notification: ' . $e->getMessage());
-        }
-
         return redirect()->route('approvals.index')
             ->with('success', 'Dokumen telah ditolak.');
     }
@@ -237,19 +190,6 @@ class ApprovalController extends Controller
         );
 
         ApprovalLog::log($document, 'revision_requested', 'Revisi diminta oleh ' . auth()->user()->name . ': ' . $validated['comment']);
-
-        // Send revision notification to requester
-        try {
-            $document->refresh();
-            $document->user->notify(new DocumentNotification(
-                'revision_requested',
-                $document,
-                "Dokumen \"{$document->title}\" perlu direvisi. Catatan: " . $validated['comment'],
-                route('documents.show', $document)
-            ));
-        } catch (\Exception $e) {
-            \Log::warning('Failed to send revision notification: ' . $e->getMessage());
-        }
 
         return redirect()->route('approvals.index')
             ->with('success', 'Permintaan revisi telah dikirim ke pemohon.');
@@ -351,19 +291,6 @@ class ApprovalController extends Controller
                 );
 
                 ApprovalLog::log($document, $action, "Dokumen di-{$action} secara bulk oleh " . $user->name);
-
-                // Send notification to requester
-                try {
-                    $document->refresh();
-                    $notifType = $action === 'approved' ? 'approved' : 'rejected';
-                    $document->user->notify(new DocumentNotification(
-                        $notifType,
-                        $document,
-                        "Dokumen \"{$document->title}\" di-{$action} oleh " . $user->name . "."
-                    ));
-                } catch (\Exception $e) {
-                    \Log::warning('Failed to send bulk notification: ' . $e->getMessage());
-                }
 
                 $results['success']++;
             } catch (\Exception $e) {

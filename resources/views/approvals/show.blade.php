@@ -88,6 +88,10 @@
                 </div>
             </x-ui.card>
 
+            <!-- Type-Specific Details & Dynamic Fields -->
+            <x-document.type-details :document="$document" />
+            <x-document.dynamic-fields :document="$document" />
+
             <!-- Attachments -->
             @if($document->attachments->count() > 0)
                 <x-ui.card>
@@ -393,6 +397,9 @@
                     </div>
                 </div>
             </x-ui.card>
+
+            <!-- Activity Log -->
+            <x-document.activity-log :document="$document" />
 
             <!-- Approval Progress -->
             <x-ui.card>

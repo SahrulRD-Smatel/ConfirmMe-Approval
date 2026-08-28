@@ -8,6 +8,7 @@ use App\Models\EmployeeLoan;
 use App\Models\User;
 use App\Models\WorkflowChain;
 use App\Models\WorkflowSetting;
+use App\Notifications\DocumentNotification;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
@@ -103,6 +104,7 @@ class ApprovalWorkflowService
 
             // Send notification to first approver
             $this->emailNotificationService->sendApprovalNotification($document, 'pending_approval');
+            $firstApproval->approver->notify(new DocumentNotification('next_step', $document, "Dokumen \"{$document->title}\" menunggu review Anda."));
         } else {
             // No approval steps remaining (e.g. manager creates 'approval only' doc)
             // Auto-approve the document
@@ -154,6 +156,13 @@ class ApprovalWorkflowService
             $finalAmount = $approvedAmount !== null ? (float) $approvedAmount : null;
             $currentApproval->approve($comment, $finalAmount);
 
+            // Notify requester about partial approval
+            try {
+                $document->user->notify(new DocumentNotification('approved', $document, "Dokumen \"{$document->title}\" disetujui oleh " . $approver->name . "."));
+            } catch (\Exception $e) {
+                \Log::warning('Failed to send partial approval DB notification: ' . $e->getMessage());
+            }
+
             // Check if amount was changed — needs requester confirmation
             if ($finalAmount !== null && (float)$finalAmount !== (float)$document->estimated_budget) {
                 $this->sendToRequesterConfirmation($document, $approver, $finalAmount);
@@ -200,6 +209,7 @@ class ApprovalWorkflowService
 
         // Send notification to requester
         $this->emailNotificationService->sendApprovalNotification($document, 'amount_changed');
+        $document->user->notify(new DocumentNotification('amount_changed', $document, "Nominal pengajuan \"{$document->title}\" diubah, mohon konfirmasi."));
     }
 
     /**
@@ -274,6 +284,7 @@ class ApprovalWorkflowService
 
         // Send notification to requester
         $this->emailNotificationService->sendApprovalNotification($document, 'revision_requested');
+        $document->user->notify(new DocumentNotification('revision_requested', $document, "Dokumen \"{$document->title}\" perlu direvisi."));
     }
 
     /**
@@ -318,6 +329,7 @@ class ApprovalWorkflowService
 
             // Send notification to next approver (TO) + CC previous approvers
             $this->emailNotificationService->sendApprovalNotification($document, 'pending_approval');
+            $nextApproval->approver->notify(new DocumentNotification('next_step', $document, "Dokumen \"{$document->title}\" menunggu review Anda."));
         } else {
             // All approvals completed
             $this->completeDocument($document);
@@ -383,6 +395,7 @@ class ApprovalWorkflowService
 
         // Send notification to requester that document is approved
         $this->emailNotificationService->sendApprovalNotification($document, 'completed');
+        $document->user->notify(new DocumentNotification('completed', $document, "Dokumen \"{$document->title}\" telah disetujui sepenuhnya."));
     }
 
     /**
@@ -461,6 +474,7 @@ class ApprovalWorkflowService
 
         // Send notification to requester that document is rejected
         $this->emailNotificationService->sendApprovalNotification($document, 'rejected');
+        $document->user->notify(new DocumentNotification('rejected', $document, "Dokumen \"{$document->title}\" ditolak: {$reason}"));
     }
 
     /**

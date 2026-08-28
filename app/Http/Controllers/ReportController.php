@@ -9,48 +9,75 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class ReportController extends Controller
 {
     /**
+     * Helper to get properly scoped document query based on user permissions
+     */
+    private function getScopedQuery($user)
+    {
+        $query = Document::query();
+
+        if ($user->hasPermissionTo('view-all-documents')) {
+            return $query;
+        }
+
+        if ($user->hasPermissionTo('view-finance-documents')) {
+            $query->where(function ($q) use ($user) {
+                $q->whereIn('approval_type', ['po', 'po_internal', 'invoice'])
+                  ->orWhere('user_id', $user->id)
+                  ->orWhereHas('approvals', function ($q2) use ($user) {
+                      $q2->where('approver_id', $user->id);
+                  });
+            });
+            return $query;
+        }
+
+        if ($user->hasPermissionTo('view-department-documents')) {
+            $query->where(function ($q) use ($user) {
+                $q->where('department', $user->department)
+                  ->orWhere('user_id', $user->id)
+                  ->orWhereHas('approvals', function ($q2) use ($user) {
+                      $q2->where('approver_id', $user->id);
+                  });
+            });
+            return $query;
+        }
+
+        // Default fallback (e.g. staff): see own documents or documents they are assigned to approve/have approved
+        $query->where(function ($q) use ($user) {
+            $q->where('user_id', $user->id)
+              ->orWhereHas('approvals', function ($q2) use ($user) {
+                  $q2->where('approver_id', $user->id);
+              });
+        });
+
+        return $query;
+    }
+
+    /**
      * Reports dashboard
      */
     public function index()
     {
         $user = auth()->user();
+        $baseQuery = $this->getScopedQuery($user);
 
         $stats = [
-            'total' => Document::count(),
-            'approved' => Document::where('status', 'approved')->count(),
-            'rejected' => Document::where('status', 'rejected')->count(),
-            'pending' => Document::whereIn('status', ['pending', 'supervisor_review', 'hrd_review', 'director_review', 'finance_review'])->count(),
-            'this_month' => Document::whereMonth('created_at', now()->month)->count(),
+            'total' => (clone $baseQuery)->count(),
+            'approved' => (clone $baseQuery)->where('status', 'approved')->count(),
+            'rejected' => (clone $baseQuery)->where('status', 'rejected')->count(),
+            'pending' => (clone $baseQuery)->whereIn('status', ['pending', 'supervisor_review', 'hrd_review', 'director_review', 'finance_review', 'revision', 'pending_requester_confirmation'])->count(),
+            'this_month' => (clone $baseQuery)->whereMonth('created_at', now()->month)->count(),
             'avg_days' => 3,
         ];
 
-        $byType = Document::selectRaw('approval_type, COUNT(*) as count')
+        $byType = (clone $baseQuery)->selectRaw('approval_type, COUNT(*) as count')
             ->groupBy('approval_type')
             ->pluck('count', 'approval_type');
 
-        $byDepartment = Document::selectRaw('department, COUNT(*) as count')
+        $byDepartment = (clone $baseQuery)->selectRaw('department, COUNT(*) as count')
             ->groupBy('department')
             ->pluck('count', 'department');
 
-        $recentQuery = Document::with('user');
-
-        if ($user->hasPermissionTo('view-all-documents')) {
-            // Can see all documents
-        } elseif ($user->hasPermissionTo('view-finance-documents')) {
-            // Finance: see PO/Invoice or own documents
-            $recentQuery->where(function ($q) use ($user) {
-                $q->whereIn('approval_type', ['po', 'invoice'])
-                  ->orWhere('user_id', $user->id);
-            });
-        } elseif ($user->hasPermissionTo('view-department-documents')) {
-            // Manager/Supervisor/Directors: see department documents
-            $recentQuery->where('department', $user->department);
-        } else {
-            // Default fallback (e.g. staff): see own documents
-            $recentQuery->where('user_id', $user->id);
-        }
-
-        $recentDocuments = $recentQuery->latest()->take(5)->get();
+        $recentDocuments = (clone $baseQuery)->with('user')->latest()->take(5)->get();
 
         return view('reports.index', compact('stats', 'byType', 'byDepartment', 'recentDocuments'));
     }
@@ -60,7 +87,8 @@ class ReportController extends Controller
      */
     public function documents(Request $request)
     {
-        $query = Document::with(['user', 'approvals'])
+        $user = auth()->user();
+        $query = $this->getScopedQuery($user)->with(['user', 'approvals'])
             ->when($request->filled('status'), function ($q) use ($request) {
                 $q->where('status', $request->status);
             })
@@ -137,7 +165,8 @@ class ReportController extends Controller
      */
     public function export(Request $request)
     {
-        $documents = Document::with(['user', 'approvals'])
+        $user = auth()->user();
+        $documents = $this->getScopedQuery($user)->with(['user', 'approvals'])
             ->when($request->filled('status'), function ($q) use ($request) {
                 $q->where('status', $request->status);
             })

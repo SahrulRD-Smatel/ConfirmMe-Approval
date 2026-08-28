@@ -281,7 +281,8 @@ class DocumentController extends Controller
                             if (Storage::disk('public')->put($storagePath, $contents)) {
                                 DocumentAttachment::create([
                                     'document_id' => $document->id,
-                                    'file_name' => $file->getClientOriginalName(),
+                                    'filename' => $filename,
+                                    'original_filename' => $file->getClientOriginalName(),
                                     'file_path' => $storagePath,
                                     'file_type' => $extension,
                                     'file_size' => $file->getSize() ?: filesize($tempPath),
@@ -535,7 +536,8 @@ class DocumentController extends Controller
                     if (Storage::disk('public')->put($storagePath, $contents)) {
                         DocumentAttachment::create([
                             'document_id' => $document->id,
-                            'file_name' => $file->getClientOriginalName(),
+                            'filename' => $filename,
+                            'original_filename' => $file->getClientOriginalName(),
                             'file_path' => $storagePath,
                             'file_type' => $extension,
                             'file_size' => $file->getSize() ?: filesize($tempPath),
@@ -612,18 +614,56 @@ class DocumentController extends Controller
             'submitted_at' => now()
         ]);
 
-        // Send notification to first approver
-        try {
-            $approver = \App\Models\User::find($document->current_approver_id);
-            if ($approver) {
-                $approver->notify(new DocumentNotification($document, 'requires_approval'));
-            }
-        } catch (\Exception $e) {
-            \Log::error('Failed to send notification on submit: ' . $e->getMessage());
-        }
-
         return redirect()->route('documents.show', $document)
             ->with('success', 'Dokumen berhasil disubmit untuk approval.');
+    }
+
+    /**
+     * Handle requester confirmation (Accept) for nominal changes.
+     */
+    public function confirmAmount(Request $request, Document $document)
+    {
+        if ($document->user_id !== auth()->id()) {
+            abort(403, 'Hanya pembuat pengajuan yang dapat melakukan konfirmasi ini.');
+        }
+
+        if ($document->status !== 'pending_requester_confirmation') {
+            return back()->with('error', 'Dokumen tidak dalam status konfirmasi nominal.');
+        }
+
+        try {
+            $this->workflowService->processRequesterConfirmation($document, 'accept');
+            
+            return redirect()->route('documents.show', $document)
+                ->with('success', 'Nominal baru telah disetujui, pengajuan dilanjutkan ke tahap berikutnya.');
+        } catch (\Exception $e) {
+            \Log::error('Error in confirmAmount: ' . $e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan saat memproses konfirmasi.');
+        }
+    }
+
+    /**
+     * Handle requester confirmation (Reject) for nominal changes.
+     */
+    public function rejectAmount(Request $request, Document $document)
+    {
+        if ($document->user_id !== auth()->id()) {
+            abort(403, 'Hanya pembuat pengajuan yang dapat melakukan konfirmasi ini.');
+        }
+
+        if ($document->status !== 'pending_requester_confirmation') {
+            return back()->with('error', 'Dokumen tidak dalam status konfirmasi nominal.');
+        }
+
+        try {
+            $this->workflowService->processRequesterConfirmation($document, 'reject');
+            
+            return redirect()->route('documents.show', $document)
+                ->with('success', 'Pengajuan dibatalkan karena Anda menolak nominal baru.');
+        } catch (\Exception $e) {
+            \Log::error('Error in rejectAmount: ' . $e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan saat memproses konfirmasi.');
+        }
     }
 
     /**
@@ -649,9 +689,29 @@ class DocumentController extends Controller
     }
 
     /**
+     * Download or view a specific attachment.
+     */
+    public function downloadAttachment(\App\Models\DocumentAttachment $attachment)
+    {
+        $this->authorize('view', $attachment->document);
+
+        if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($attachment->file_path)) {
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        // Return as inline response so browser can view it (PDF, Images) instead of forcing download
+        return response()->file(
+            \Illuminate\Support\Facades\Storage::disk('public')->path($attachment->file_path),
+            [
+                'Content-Disposition' => 'inline; filename="' . ($attachment->original_filename ?? $attachment->filename) . '"'
+            ]
+        );
+    }
+
+    /**
      * Remove a specific attachment.
      */
-    public function deleteAttachment(Document $document, DocumentAttachment $attachment)
+    public function deleteAttachment(Document $document, \App\Models\DocumentAttachment $attachment)
     {
         $this->authorize('update', $document);
 
