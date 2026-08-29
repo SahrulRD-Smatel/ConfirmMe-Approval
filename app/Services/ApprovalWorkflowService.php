@@ -97,9 +97,10 @@ class ApprovalWorkflowService
         // Set current approver to first in line
         $firstApproval = $document->approvals()->orderBy('approval_order')->first();
         if ($firstApproval) {
+            $roleKey = str_replace('role:', '', $firstApproval->approver_role);
             $document->update([
                 'current_approver_id' => $firstApproval->approver_id,
-                'status' => $this->statusMapping[$firstApproval->approver_role] ?? 'pending',
+                'status' => $this->statusMapping[$roleKey] ?? 'pending',
             ]);
 
             // Send notification to first approver
@@ -322,9 +323,10 @@ class ApprovalWorkflowService
 
         if ($nextApproval) {
             // Move to next step
+            $roleKey = str_replace('role:', '', $nextApproval->approver_role);
             $document->update([
                 'current_approver_id' => $nextApproval->approver_id,
-                'status' => $this->statusMapping[$nextApproval->approver_role] ?? 'pending',
+                'status' => $this->statusMapping[$roleKey] ?? 'pending',
             ]);
 
             // Send notification to next approver (TO) + CC previous approvers
