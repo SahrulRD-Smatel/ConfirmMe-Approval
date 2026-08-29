@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Laporan Dokumen - {{ now()->format('d M Y') }}</title>
+    <title>{{ __('Laporan Dokumen') }} - {{ now()->format('d M Y') }}</title>
     <style>
         * {
             margin: 0;
@@ -150,52 +150,52 @@
     </div>
 
     <div style="text-align: center; margin: 15px 0;">
-        <h1 style="font-size: 18px; color: #991b1b; text-transform: uppercase;">Laporan Dokumen</h1>
-        <p style="font-size: 10px; color: #4b5563;">Dicetak pada {{ now()->format('d F Y H:i') }}</p>
+        <h1 style="font-size: 18px; color: #991b1b; text-transform: uppercase;">{{ __('Laporan Dokumen') }}</h1>
+        <p style="font-size: 10px; color: #4b5563;">{{ __('Dicetak pada') }} {{ now()->format('d F Y H:i') }}</p>
     </div>
 
     <div class="summary">
-        <h2>Ringkasan</h2>
+        <h2>{{ __('Ringkasan') }}</h2>
         <table style="border: none; margin: 0;">
             <tr>
                 <td style="border: none; width: 25%; text-align: center; background: transparent;">
                     <div style="font-size: 18px; font-weight: bold; color: #991b1b;">{{ $documents->count() }}</div>
-                    <div style="font-size: 9px; color: #4b5563; text-transform: uppercase;">Total Dokumen</div>
+                    <div style="font-size: 9px; color: #4b5563; text-transform: uppercase;">{{ __('Total Dokumen') }}</div>
                 </td>
                 <td style="border: none; width: 25%; text-align: center; background: transparent;">
                     <div style="font-size: 18px; font-weight: bold; color: #166534;">
                         {{ $documents->where('status', 'approved')->count() }}
                     </div>
-                    <div style="font-size: 9px; color: #4b5563; text-transform: uppercase;">Disetujui</div>
+                    <div style="font-size: 9px; color: #4b5563; text-transform: uppercase;">{{ __('Disetujui') }}</div>
                 </td>
                 <td style="border: none; width: 25%; text-align: center; background: transparent;">
                     <div style="font-size: 18px; font-weight: bold; color: #991b1b;">
                         {{ $documents->where('status', 'rejected')->count() }}
                     </div>
-                    <div style="font-size: 9px; color: #4b5563; text-transform: uppercase;">Ditolak</div>
+                    <div style="font-size: 9px; color: #4b5563; text-transform: uppercase;">{{ __('Ditolak') }}</div>
                 </td>
                 <td style="border: none; width: 25%; text-align: center; background: transparent;">
                     <div style="font-size: 18px; font-weight: bold; color: #92400e;">
                         {{ $documents->whereIn('status', ['pending', 'draft'])->count() }}
                     </div>
-                    <div style="font-size: 9px; color: #4b5563; text-transform: uppercase;">Pending</div>
+                    <div style="font-size: 9px; color: #4b5563; text-transform: uppercase;">{{ __('Pending') }}</div>
                 </td>
             </tr>
         </table>
     </div>
 
-    <h3 style="font-size: 12px; margin-bottom: 10px; color: #991b1b; text-transform: uppercase;">Daftar Dokumen</h3>
+    <h3 style="font-size: 12px; margin-bottom: 10px; color: #991b1b; text-transform: uppercase;">{{ __('Daftar Dokumen') }}</h3>
 
     <table>
         <thead>
             <tr>
-                <th style="width: 15%;">No. Dokumen</th>
-                <th style="width: 25%;">Judul</th>
-                <th style="width: 12%;">Pengaju</th>
-                <th style="width: 12%;">Jenis</th>
-                <th style="width: 10%;">Status</th>
-                <th style="width: 13%; text-align: right;">Anggaran</th>
-                <th style="width: 13%; text-align: center;">Tanggal</th>
+                <th style="width: 15%;">{{ __('No. Dokumen') }}</th>
+                <th style="width: 25%;">{{ __('Judul') }}</th>
+                <th style="width: 12%;">{{ __('Pengaju') }}</th>
+                <th style="width: 12%;">{{ __('Jenis') }}</th>
+                <th style="width: 10%;">{{ __('Status') }}</th>
+                <th style="width: 13%; text-align: right;">{{ __('Anggaran') }}</th>
+                <th style="width: 13%; text-align: center;">{{ __('Tanggal') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -221,14 +221,14 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="7" style="text-align: center; padding: 20px;">Tidak ada data</td>
+                    <td colspan="7" style="text-align: center; padding: 20px;">{{ __('Tidak ada data') }}</td>
                 </tr>
             @endforelse
         </tbody>
     </table>
 
     <div class="footer">
-        <p>Dokumen ini digenerate secara otomatis oleh sistem ConfirmMe</p>
+        <p>{{ __('Dokumen ini digenerate secara otomatis oleh sistem ConfirmMe') }}</p>
         <p>Ac {{ date('Y') }} PT. Info Solusindo Data Utama</p>
     </div>
 </body>

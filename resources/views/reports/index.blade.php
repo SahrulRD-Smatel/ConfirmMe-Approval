@@ -60,7 +60,7 @@
                 </div>
             </div>
             <div class="mt-4 text-xs text-green-100">
-                {{ $stats['total'] > 0 ? round(($stats['approved'] / $stats['total']) * 100) : 0 }}% completion rate
+                {{ $stats['total'] > 0 ? round(($stats['approved'] / $stats['total']) * 100) : 0 }}% {{ __('completion rate') }}
             </div>
         </div>
 
@@ -76,7 +76,7 @@
                 </div>
             </div>
             <div class="mt-4 text-xs text-red-100">
-                Action required
+                {{ __('Action required') }}
             </div>
         </div>
 
@@ -84,7 +84,7 @@
             class="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl p-4 text-white shadow-lg transform hover:-translate-y-1 transition duration-300">
             <div class="flex justify-between items-start">
                 <div>
-                    <p class="text-yellow-100 text-xs font-medium uppercase tracking-wider">Pending</p>
+                    <p class="text-yellow-100 text-xs font-medium uppercase tracking-wider">{{ __('Pending') }}</p>
                     <p class="text-3xl font-bold mt-1">{{ number_format($stats['pending']) }}</p>
                 </div>
                 <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm">

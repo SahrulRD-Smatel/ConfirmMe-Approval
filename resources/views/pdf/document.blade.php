@@ -484,18 +484,18 @@
                 <table class="approval-table">
                     <thead>
                         <tr>
-                            <th style="width: 25%">Role</th>
-                            <th style="width: 30%">Nama</th>
-                            <th style="width: 20%">Status</th>
-                            <th style="width: 25%">Waktu</th>
+                            <th style="width: 25%">{{ __('Role') }}</th>
+                            <th style="width: 30%">{{ __('Nama') }}</th>
+                            <th style="width: 20%">{{ __('Status') }}</th>
+                            <th style="width: 25%">{{ __('Waktu') }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         <!-- Requester (Pengaju) -->
                         <tr>
-                            <td>Pembuat Pengajuan</td>
+                            <td>{{ __('Pembuat Pengajuan') }}</td>
                             <td>{{ $document->user->name }}</td>
-                            <td><span class="status-approved">DIKIRIM</span></td>
+                            <td><span class="status-approved">{{ __('DIKIRIM') }}</span></td>
                             <td>
                                 {{ $document->submitted_at ? $document->submitted_at->format('d M Y, H:i') : $document->created_at->format('d M Y, H:i') }}<br>
                                 <span style="font-size: 8px; color: #888;">(Digital Sign)</span>
@@ -508,11 +508,11 @@
                                 <td>{{ $approval->approver->name }}</td>
                                 <td>
                                     @if($approval->status === 'approved')
-                                        <span class="status-approved">DISETUJUI</span>
+                                        <span class="status-approved">{{ __('DISETUJUI') }}</span>
                                     @elseif($approval->status === 'rejected')
-                                        <span class="status-rejected">DITOLAK</span>
+                                        <span class="status-rejected">{{ __('DITOLAK') }}</span>
                                     @elseif($approval->status === 'pending')
-                                        <span class="status-pending">MENUNGGU</span>
+                                        <span class="status-pending">{{ __('MENUNGGU') }}</span>
                                     @else
                                         <span>{{ strtoupper($approval->status) }}</span>
                                     @endif
