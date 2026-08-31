@@ -36,6 +36,20 @@
             },
             removeWorkflow(index) {
                 this.workflows.splice(index, 1);
+            },
+            moveWorkflowUp(index) {
+                if (index > 0) {
+                    const temp = this.workflows[index];
+                    this.workflows.splice(index, 1);
+                    this.workflows.splice(index - 1, 0, temp);
+                }
+            },
+            moveWorkflowDown(index) {
+                if (index < this.workflows.length - 1) {
+                    const temp = this.workflows[index];
+                    this.workflows.splice(index, 1);
+                    this.workflows.splice(index + 1, 0, temp);
+                }
             }
         }"
         @submit="if(workflows.length === 0) { window.showAlert('{{ __('Harap tambahkan minimal 1 approver pada Susunan Approver!') }}', 'warning'); $event.preventDefault(); }">
@@ -289,6 +303,11 @@
         {{-- Dynamic Form Builder --}}
         <x-ui.card class="rounded-2xl border-gray-200/80 p-5 shadow-soft-lg shadow-gray-900/[0.025] dark:border-gray-800/80 sm:p-6" x-data="{
             dynamicFields: {{ Js::from($fields['dynamic_fields'] ?? []) }},
+            init() {
+                this.dynamicFields.forEach(f => {
+                    if (!f.id) f.id = Date.now().toString() + Math.random().toString(36).substr(2, 5);
+                });
+            },
             addField() {
                 this.dynamicFields.push({
                     id: Date.now().toString(),
@@ -302,6 +321,20 @@
             },
             removeField(index) {
                 this.dynamicFields.splice(index, 1);
+            },
+            moveFieldUp(index) {
+                if (index > 0) {
+                    const el = this.dynamicFields[index];
+                    this.dynamicFields.splice(index, 1);
+                    this.dynamicFields.splice(index - 1, 0, el);
+                }
+            },
+            moveFieldDown(index) {
+                if (index < this.dynamicFields.length - 1) {
+                    const el = this.dynamicFields[index];
+                    this.dynamicFields.splice(index, 1);
+                    this.dynamicFields.splice(index + 1, 0, el);
+                }
             }
         }">
             <div class="flex items-center justify-between mb-4">
@@ -323,9 +356,17 @@
             <div class="space-y-4">
                 <template x-for="(field, index) in dynamicFields" :key="field.id || index">
                     <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800 relative group">
-                        <button type="button" @click="removeField(index)" class="absolute top-3 right-3 text-gray-400 hover:text-danger-500 transition-colors tooltip" data-tip="{{ __('Hapus Field') }}">
-                            <x-icon name="trash" class="w-5 h-5" />
-                        </button>
+                        <div class="absolute top-3 right-3 flex items-center gap-1">
+                            <button type="button" @click="moveFieldUp(index)" x-show="index > 0" class="p-1 text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/30 rounded-md transition-colors tooltip" data-tip="{{ __('Geser ke Atas') }}">
+                                <x-icon name="chevron-up" class="w-5 h-5" />
+                            </button>
+                            <button type="button" @click="moveFieldDown(index)" x-show="index < dynamicFields.length - 1" class="p-1 text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/30 rounded-md transition-colors tooltip" data-tip="{{ __('Geser ke Bawah') }}">
+                                <x-icon name="chevron-down" class="w-5 h-5" />
+                            </button>
+                            <button type="button" @click="removeField(index)" class="p-1 text-gray-400 hover:text-danger-500 hover:bg-danger-50 dark:hover:bg-danger-900/30 rounded-md transition-colors tooltip ml-1" data-tip="{{ __('Hapus Field') }}">
+                                <x-icon name="trash" class="w-5 h-5" />
+                            </button>
+                        </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pr-8">
                             <div>
@@ -428,12 +469,20 @@
                             </select>
                         </div>
 
-                        <!-- Remove Button -->
-                        <button type="button" @click="removeWorkflow(index)"
-                            class="p-2 text-gray-400 hover:text-danger-500 hover:bg-danger-50 rounded-xl transition-colors"
-                            title="{{ __('Hapus') }}">
-                            <x-icon name="trash" class="w-5 h-5" />
-                        </button>
+                        <!-- Action Buttons -->
+                        <div class="flex items-center gap-1 shrink-0">
+                            <button type="button" @click="moveWorkflowUp(index)" x-show="index > 0" class="p-2 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition-colors tooltip" data-tip="{{ __('Geser ke Atas') }}">
+                                <x-icon name="chevron-up" class="w-5 h-5" />
+                            </button>
+                            <button type="button" @click="moveWorkflowDown(index)" x-show="index < workflows.length - 1" class="p-2 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition-colors tooltip" data-tip="{{ __('Geser ke Bawah') }}">
+                                <x-icon name="chevron-down" class="w-5 h-5" />
+                            </button>
+                            <button type="button" @click="removeWorkflow(index)"
+                                class="p-2 text-gray-400 hover:text-danger-500 hover:bg-danger-50 rounded-xl transition-colors tooltip ml-1"
+                                data-tip="{{ __('Hapus') }}">
+                                <x-icon name="trash" class="w-5 h-5" />
+                            </button>
+                        </div>
                     </div>
                 </template>
             </div>
