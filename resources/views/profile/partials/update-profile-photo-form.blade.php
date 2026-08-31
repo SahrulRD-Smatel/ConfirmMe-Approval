@@ -14,7 +14,6 @@
 
     <form method="post" action="{{ route('profile.photo.update') }}" class="mt-6" enctype="multipart/form-data">
         @csrf
-        @method('patch')
 
         <div class="flex flex-col items-start gap-5 sm:flex-row sm:items-center">
             <!-- Current Photo Preview -->

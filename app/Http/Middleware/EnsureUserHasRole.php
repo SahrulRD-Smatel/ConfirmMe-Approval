@@ -25,6 +25,10 @@ class EnsureUserHasRole
             $allowedRoutes = [
                 'profile.edit',
                 'profile.update',
+                'profile.photo.update',
+                'profile.photo.destroy',
+                'profile.bank.update',
+                'profile.destroy',
                 'logout',
                 'account.pending',
             ];
