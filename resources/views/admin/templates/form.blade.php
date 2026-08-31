@@ -310,7 +310,7 @@
             },
             addField() {
                 this.dynamicFields.push({
-                    id: Date.now().toString(),
+                    id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
                     name: '',
                     label: '',
                     type: 'text',
@@ -357,10 +357,10 @@
                 <template x-for="(field, index) in dynamicFields" :key="field.id || index">
                     <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800 relative group">
                         <div class="absolute top-3 right-3 flex items-center gap-1">
-                            <button type="button" @click="moveFieldUp(index)" x-show="index > 0" class="p-1 text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/30 rounded-md transition-colors tooltip" data-tip="{{ __('Geser ke Atas') }}">
+                            <button type="button" @click="moveFieldUp(index)" :class="{'invisible pointer-events-none': index === 0}" class="p-1 text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/30 rounded-md transition-colors tooltip" data-tip="{{ __('Geser ke Atas') }}">
                                 <x-icon name="chevron-up" class="w-5 h-5" />
                             </button>
-                            <button type="button" @click="moveFieldDown(index)" x-show="index < dynamicFields.length - 1" class="p-1 text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/30 rounded-md transition-colors tooltip" data-tip="{{ __('Geser ke Bawah') }}">
+                            <button type="button" @click="moveFieldDown(index)" :class="{'invisible pointer-events-none': index === dynamicFields.length - 1}" class="p-1 text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/30 rounded-md transition-colors tooltip" data-tip="{{ __('Geser ke Bawah') }}">
                                 <x-icon name="chevron-down" class="w-5 h-5" />
                             </button>
                             <button type="button" @click="removeField(index)" class="p-1 text-gray-400 hover:text-danger-500 hover:bg-danger-50 dark:hover:bg-danger-900/30 rounded-md transition-colors tooltip ml-1" data-tip="{{ __('Hapus Field') }}">
@@ -471,10 +471,10 @@
 
                         <!-- Action Buttons -->
                         <div class="flex items-center gap-1 shrink-0">
-                            <button type="button" @click="moveWorkflowUp(index)" x-show="index > 0" class="p-2 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition-colors tooltip" data-tip="{{ __('Geser ke Atas') }}">
+                            <button type="button" @click="moveWorkflowUp(index)" :class="{'invisible pointer-events-none': index === 0}" class="p-2 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition-colors tooltip" data-tip="{{ __('Geser ke Atas') }}">
                                 <x-icon name="chevron-up" class="w-5 h-5" />
                             </button>
-                            <button type="button" @click="moveWorkflowDown(index)" x-show="index < workflows.length - 1" class="p-2 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition-colors tooltip" data-tip="{{ __('Geser ke Bawah') }}">
+                            <button type="button" @click="moveWorkflowDown(index)" :class="{'invisible pointer-events-none': index === workflows.length - 1}" class="p-2 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition-colors tooltip" data-tip="{{ __('Geser ke Bawah') }}">
                                 <x-icon name="chevron-down" class="w-5 h-5" />
                             </button>
                             <button type="button" @click="removeWorkflow(index)"
