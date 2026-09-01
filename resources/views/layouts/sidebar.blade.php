@@ -249,7 +249,7 @@
         @endif
 
         {{-- Pengumuman - Dynamic via Permissions --}}
-        @if(feature_active('module_hris') && auth()->user()->hasPermissionTo('menu-announcements'))
+        @if(auth()->user()->hasPermissionTo('menu-announcements'))
             <x-sidebar-section title="HRIS" :collapsed="$sidebarCollapsed ?? false">
                 <x-sidebar-link :href="route('announcements.index')" :active="request()->routeIs('announcements.*')"
                     icon="megaphone">

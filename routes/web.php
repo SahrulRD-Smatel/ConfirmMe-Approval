@@ -96,7 +96,7 @@ Route::middleware(['auth', 'verified', 'active', 'has_role'])->group(function ()
 
 
     // HRIS: Announcements (Authorization handled in Controller)
-    Route::resource('announcements', \App\Http\Controllers\AnnouncementController::class)->middleware('feature:module_hris');
+    Route::resource('announcements', \App\Http\Controllers\AnnouncementController::class);
     Route::resource('documents', DocumentController::class);
     Route::get('/documents/template-data/{code}', [DocumentController::class, 'getTemplate'])->name('documents.template-data');
     Route::post('/documents/{document}/submit', [DocumentController::class, 'submit'])->name('documents.submit');

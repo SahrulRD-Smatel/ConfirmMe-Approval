@@ -213,7 +213,6 @@
                 </div>
 
                 {{-- Center Column: Announcements (Compact Feed) --}}
-                @if(feature_active('module_hris'))
                 <div class="space-y-4 xl:col-span-3 xl:space-y-5">
                     {{-- HR Banner (Only for HR) --}}
                     @if(auth()->user()->hasPermissionTo('menu-announcements'))
@@ -461,7 +460,6 @@
                         </x-modal>
                     </div>
                 </div>
-                @endif
             </div>
 
             {{-- TAB 2: TASKS (ORIGINAL DASHBOARD) --}}
