@@ -392,13 +392,87 @@
         @if(count($dynamicFields) > 0 && !empty($document->metadata))
             <div class="section">
                 <div class="section-title">{{ __("INFORMASI SPESIFIK") }}</div>
+                @php $inTable = false; @endphp
                 @foreach($dynamicFields as $field)
                     @php 
                         $fieldName = $field['name']; 
                         $fieldValue = $document->metadata[$fieldName] ?? null; 
+                        $isTableField = $field['type'] === 'table';
                     @endphp
                     
-                    @if($field['type'] === 'table')
+                    @if(!$isTableField)
+                        @if(!$inTable)
+                            <table class="info-table">
+                            @php $inTable = true; @endphp
+                        @endif
+                        <tr style="page-break-inside: avoid;">
+                            <th style="vertical-align: top; padding-top: 10px;">{{ $field['label'] }}</th>
+                            <td style="vertical-align: top; padding-top: 10px;">
+                                @if($field['type'] === 'textarea')
+                                    {!! nl2br(e($fieldValue ?: '-')) !!}
+                                @elseif($field['type'] === 'file' && $fieldValue)
+                                    @php
+                                        $ext = strtolower(pathinfo($fieldValue, PATHINFO_EXTENSION));
+                                    @endphp
+                                    @if(in_array($ext, ['jpg', 'jpeg', 'png']))
+                                        @php
+                                            $imagePath = storage_path('app/public/' . ltrim(str_replace('public/', '', $fieldValue), '/'));
+                                            $imgSrc = $imagePath;
+                                            
+                                            if (file_exists($imagePath)) {
+                                                $size = @getimagesize($imagePath);
+                                                // Jika gambar potrait (tinggi > lebar), putar jadi landscape agar muat 1 page
+                                                if ($size && $size[1] > $size[0]) {
+                                                    $source = null;
+                                                    if ($ext == 'jpg' || $ext == 'jpeg') {
+                                                        $source = @imagecreatefromjpeg($imagePath);
+                                                    } elseif ($ext == 'png') {
+                                                        $source = @imagecreatefrompng($imagePath);
+                                                    }
+                                                    
+                                                    if ($source) {
+                                                        $rotated = imagerotate($source, 90, 0);
+                                                        ob_start();
+                                                        if ($ext == 'png') {
+                                                            imagepng($rotated);
+                                                        } else {
+                                                            imagejpeg($rotated);
+                                                        }
+                                                        $imageData = ob_get_clean();
+                                                        imagedestroy($source);
+                                                        imagedestroy($rotated);
+                                                        $imgSrc = 'data:image/' . ($ext == 'jpg' ? 'jpeg' : $ext) . ';base64,' . base64_encode($imageData);
+                                                    }
+                                                }
+                                            }
+                                        @endphp
+                                        <div style="background-color: #f8fafc; padding: 5px; border: 1px solid #e2e8f0; border-radius: 4px; display: inline-block;">
+                                            <img src="{{ $imgSrc }}" alt="{{ $field['label'] }}" style="max-width: 250px; height: auto;" />
+                                        </div>
+                                    @else
+                                        <em style="font-size: 10px; color: #555;">{{ __("Terdapat lampiran berkas") }} ({{ pathinfo($fieldValue, PATHINFO_EXTENSION) }}) - {{ __("silakan unduh melalui sistem.") }}</em>
+                                    @endif
+                                @else
+                                    @if($fieldValue)
+                                        @if($field['type'] === 'date')
+                                            {{ \Carbon\Carbon::parse($fieldValue)->format('d F Y') }}
+                                        @elseif($field['type'] === 'number')
+                                            {{ is_numeric($fieldValue) ? number_format((float)$fieldValue, 0, ',', '.') : $fieldValue }}
+                                        @else
+                                            {{ $fieldValue }}
+                                        @endif
+                                    @else
+                                        -
+                                    @endif
+                                @endif
+                            </td>
+                        </tr>
+                    @else
+                        @if($inTable)
+                            </table>
+                            @php $inTable = false; @endphp
+                        @endif
+                        
                         <div style="page-break-before: always;"></div>
                         <div class="section-title">{{ strtoupper($field['label']) }}</div>
                         @if(is_array($fieldValue) && count($fieldValue) > 0)
@@ -424,39 +498,11 @@
                         @else
                             <div style="font-style: italic; color: #666; margin-bottom: 15px; font-size: 10px;">{{ __("Tidak ada data") }}</div>
                         @endif
-                    @elseif($field['type'] === 'textarea')
-                        <div style="margin-top: 15px; margin-bottom: 5px; font-size: 11px; font-weight: bold;">{{ $field['label'] }}</div>
-                        <div class="content-box" style="margin-bottom: 15px;">
-                            {!! nl2br(e($fieldValue ?: '-')) !!}
-                        </div>
-                    @elseif($field['type'] === 'file' && $fieldValue)
-                        <div style="margin-top: 15px; margin-bottom: 5px; font-size: 11px; font-weight: bold;">{{ $field['label'] }}</div>
-                        <div style="margin-bottom: 15px;">
-                            @if(in_array(strtolower(pathinfo($fieldValue, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png']))
-                                <img src="{{ storage_path('app/public/' . ltrim(str_replace('public/', '', $fieldValue), '/')) }}" alt="{{ $field['label'] }}" style="max-width: 300px; max-height: 300px; object-fit: contain; border: 1px solid #ccc; border-radius: 4px; padding: 3px;" />
-                            @else
-                                <em style="font-size: 10px; color: #555;">{{ __("Terdapat lampiran berkas") }} ({{ pathinfo($fieldValue, PATHINFO_EXTENSION) }}) - {{ __("silakan unduh melalui sistem.") }}</em>
-                            @endif
-                        </div>
-                    @else
-                        <div style="margin-bottom: 8px;">
-                            <span style="display: inline-block; width: 150px; font-weight: bold; color: #555;">{{ $field['label'] }}:</span>
-                            <span>
-                                @if($fieldValue)
-                                    @if($field['type'] === 'date')
-                                        {{ \Carbon\Carbon::parse($fieldValue)->format('d F Y') }}
-                                    @elseif($field['type'] === 'number')
-                                        {{ is_numeric($fieldValue) ? number_format((float)$fieldValue, 0, ',', '.') : $fieldValue }}
-                                    @else
-                                        {{ $fieldValue }}
-                                    @endif
-                                @else
-                                    -
-                                @endif
-                            </span>
-                        </div>
                     @endif
                 @endforeach
+                @if($inTable)
+                    </table>
+                @endif
             </div>
         @endif
         @php
