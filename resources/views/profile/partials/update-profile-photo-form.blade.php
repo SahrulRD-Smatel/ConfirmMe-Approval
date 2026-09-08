@@ -100,29 +100,19 @@
     @endif
 </section>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.2.1/compressor.min.js"></script>
 <script>
     function previewImage(input) {
         const preview = document.getElementById('avatar-preview');
         const placeholder = document.getElementById('avatar-placeholder');
         const maxFileSize = 1048576; // 1MB
+        const file = input.files && input.files[0];
 
-        if (input.files && input.files[0]) {
-            if (input.files[0].size > maxFileSize) {
-                showAlert('Ukuran file tidak boleh lebih dari 1MB.', 'error');
-                input.value = ''; // Clear the input
-                
-                // Reset tampilan ke semula
-                if (placeholder) {
-                    preview.classList.add('hidden');
-                    placeholder.classList.remove('hidden');
-                } else {
-                    preview.src = "{{ $user->avatar ? asset('storage/' . $user->avatar) : '' }}";
-                }
-                return;
-            }
+        if (!file) return;
 
+        // Function to update preview
+        const updatePreview = (imageFile) => {
             const reader = new FileReader();
-
             reader.onload = function (e) {
                 preview.src = e.target.result;
                 preview.classList.remove('hidden');
@@ -130,8 +120,91 @@
                     placeholder.classList.add('hidden');
                 }
             }
+            reader.readAsDataURL(imageFile);
+        };
 
-            reader.readAsDataURL(input.files[0]);
+        // Reset tampilan function
+        const resetPreview = () => {
+            input.value = '';
+            if (placeholder) {
+                preview.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+            } else {
+                preview.src = "{{ $user->avatar ? asset('storage/' . $user->avatar) : '' }}";
+            }
+        };
+
+        // Jika ukuran file lebih dari 1MB, lakukan auto-kompresi
+        if (file.size > maxFileSize) {
+            const form = input.closest('form');
+            const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
+            const originalBtnText = submitBtn ? submitBtn.innerHTML : '';
+
+            // Cegah user men-submit form saat foto sedang dikompresi (Mencegah Race Condition)
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = "{{ __('Memproses...') }}";
+                submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+
+            new Compressor(file, {
+                quality: 0.8,
+                maxWidth: 1500, // Pertahankan dimensi agar tetap HD, max 1500px
+                maxHeight: 1500,
+                convertSize: 1048576, // Konversi PNG ke JPEG jika > 1MB agar kompresi maksimal
+                success(result) {
+                    // Kembalikan tombol submit seperti semula
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalBtnText;
+                        submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    }
+
+                    // Update preview dengan foto hasil kompresi
+                    updatePreview(result);
+
+                    // Sesuaikan ekstensi file jika PNG dikonversi ke JPEG oleh Compressor
+                    let fileName = file.name;
+                    if (result.type === 'image/jpeg' && !fileName.toLowerCase().match(/\.jpe?g$/)) {
+                        fileName = fileName.replace(/\.[^/.]+$/, ".jpg");
+                    }
+
+                    // Buat wadah file baru
+                    const dataTransfer = new DataTransfer();
+                    // CompressorJS mereturn Blob, ubah jadi File
+                    const compressedFile = new File([result], fileName, {
+                        type: result.type,
+                        lastModified: Date.now()
+                    });
+                    
+                    // Timpa file asli dengan file hasil kompresi
+                    dataTransfer.items.add(compressedFile);
+                    input.files = dataTransfer.files;
+
+                    // Cek lagi jika hasil kompresi masih di atas 1MB (jarang terjadi)
+                    if (compressedFile.size > maxFileSize) {
+                        showAlert("{{ __('Ukuran file masih terlalu besar walau sudah dikompres otomatis. Mohon gunakan foto lain.') }}", 'error');
+                        resetPreview();
+                    } else {
+                        // Jika berhasil dikompres di bawah 1MB, biarkan user submit
+                    }
+                },
+                error(err) {
+                    // Kembalikan tombol submit seperti semula
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalBtnText;
+                        submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    }
+
+                    console.error('Compression error:', err.message);
+                    showAlert("{{ __('Gagal memproses foto.') }}", 'error');
+                    resetPreview();
+                },
+            });
+        } else {
+            // Jika ukuran sudah di bawah 1MB, tidak perlu dikompres, langsung preview
+            updatePreview(file);
         }
     }
 </script>
