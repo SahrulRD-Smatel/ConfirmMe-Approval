@@ -31,7 +31,7 @@
     // Always start with Requester
     $columns[] = [
         'is_requester' => true,
-        'label' => 'Dibuat',
+        'label' => __('Dibuat'),
         'title' => $requesterTitle,
         'approval' => null,
     ];
@@ -43,7 +43,7 @@
         foreach($approvals as $approval) {
             // Determine label
             $isLast = ($index === $totalApprovals - 1);
-            $label = $isLast ? (($type === 'loan') ? 'Final Approval' : 'Approved') : 'Reviewed';
+            $label = $isLast ? (($type === 'loan') ? __('Final Approval') : __('Approved')) : __('Reviewed');
             
             // Format role name for display
             $roleName = $approval->approver?->position ?? $approval->role_label ?? 'Approver';
@@ -70,7 +70,7 @@
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
         </svg>
-        Digital Approval Block
+        {{ __('Digital Approval Block') }}
     </h3>
     
     <div class="overflow-x-auto rounded-2xl border border-gray-200/80 bg-white p-2 shadow-sm">
@@ -103,7 +103,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                         </svg>
                                     </div>
-                                    <span class="text-[9px] text-green-600 font-medium">Created</span>
+                                    <span class="text-[9px] text-green-600 font-medium">{{ __('Created') }}</span>
                                 </div>
                             @elseif($isApproved && $approval->action_at)
                                 {{-- Approved - Show QR Code --}}
@@ -123,7 +123,7 @@
                                             </svg>
                                         </div>
                                     @endif
-                                    <span class="text-[9px] text-green-600 font-medium mt-1">Signed</span>
+                                    <span class="text-[9px] text-green-600 font-medium mt-1">{{ __('Signed') }}</span>
                                 </div>
                             @else
                                 {{-- Pending --}}
@@ -133,7 +133,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                         </svg>
                                     </div>
-                                    <span class="text-[9px] text-gray-400 font-medium mt-1">Pending</span>
+                                    <span class="text-[9px] text-gray-400 font-medium mt-1">{{ __('Pending') }}</span>
                                 </div>
                             @endif
                         </td>
@@ -151,9 +151,9 @@
                             @endphp
                             
                             @if(!$isRequester && $isApproved)
-                                <p class="text-[8px] text-gray-500 italic">Digitally Signed by:</p>
+                                <p class="text-[8px] text-gray-500 italic">{{ __('Digitally Signed by:') }}</p>
                             @elseif($isRequester)
-                                <p class="text-[8px] text-gray-500 italic">Submitted by:</p>
+                                <p class="text-[8px] text-gray-500 italic">{{ __('Submitted by:') }}</p>
                             @endif
                         </td>
                     @endforeach
@@ -230,8 +230,8 @@
                 {!! QrCode::size(60)->generate($verificationUrl) !!}
             </div>
             <div class="text-xs">
-                <p class="font-semibold text-green-800">✓ Dokumen Sah - Terverifikasi Digital</p>
-                <p class="text-green-600 mt-1">Scan QR Code untuk verifikasi keaslian dokumen.</p>
+                <p class="font-semibold text-green-800">✓ {{ __('Dokumen Sah - Terverifikasi Digital') }}</p>
+                <p class="text-green-600 mt-1">{{ __('Scan QR Code untuk verifikasi keaslian dokumen.') }}</p>
                 <p class="text-green-500 mt-1 text-[10px] break-all">{{ $verificationUrl }}</p>
             </div>
         </div>

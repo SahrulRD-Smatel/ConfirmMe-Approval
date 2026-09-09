@@ -63,6 +63,9 @@ class AuditLogController extends Controller
             ->latest()
             ->get();
 
+        // Force English locale for PDF to avoid CJK font issues in DomPDF
+        app()->setLocale('en');
+
         $pdf = Pdf::loadView('admin.audit-logs.export', compact('logs'));
 
         return $pdf->download('audit-log-' . now()->format('Y-m-d') . '.pdf');

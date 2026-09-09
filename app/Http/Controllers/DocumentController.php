@@ -752,6 +752,9 @@ class DocumentController extends Controller
             $viewName = 'pdf.document';
         }
 
+        // Force English locale for PDF to avoid CJK font issues in DomPDF
+        app()->setLocale('en');
+
         // Render the PDF template
         $pdf = Pdf::loadView($viewName, compact('document', 'qrCode'));
         
