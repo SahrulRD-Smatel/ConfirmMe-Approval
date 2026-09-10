@@ -23,31 +23,28 @@
             padding: 20px 40px;
         }
 
-        /* Document Number Bar */
-        .doc-number {
-            font-size: 14px;
-            font-weight: bold;
-            color: #7F1D1D;
-        }
-
-        .doc-date {
-            font-size: 10px;
-            color: #666;
-        }
-
-        /* Title */
-        .title {
+        /* Sub-Header Banner */
+        .sub-header-banner {
+            background-color: #1e3a5f;
+            color: white;
             text-align: center;
-            margin-bottom: 25px;
+            padding: 8px 15px;
+            margin-bottom: 5px;
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .title h1 {
-            font-size: 16px;
+        .doc-title-banner {
+            text-align: center;
+            padding: 8px 15px;
+            margin-bottom: 20px;
+            font-size: 15px;
+            font-weight: bold;
             text-transform: uppercase;
-            color: #7F1D1D;
-            border-bottom: 2px solid #7F1D1D;
-            display: inline-block;
-            padding-bottom: 5px;
+            letter-spacing: 0.5px;
+            color: #1a1a1a;
         }
 
         /* Info Table */
@@ -63,14 +60,16 @@
             padding: 6px;
             font-weight: bold;
             vertical-align: top;
+            font-size: 11px;
         }
 
         .info-table td {
             padding: 6px;
             vertical-align: top;
+            font-size: 11px;
         }
 
-        /* Data Table (Dynamic Fields) */
+        /* Data Table */
         .data-table {
             width: 100%;
             margin-bottom: 20px;
@@ -120,45 +119,7 @@
             border-radius: 4px;
         }
 
-        /* Footer */
-        .footer {
-            margin-top: 30px;
-            display: table;
-            width: 100%;
-        }
-
-        .footer-left {
-            display: table-cell;
-            width: 70%;
-            vertical-align: bottom;
-        }
-
-        .footer-right {
-            display: table-cell;
-            width: 30%;
-            text-align: center;
-            vertical-align: bottom;
-        }
-
-        .qr-code img {
-            width: 100px;
-            height: 100px;
-        }
-
-        .qr-label {
-            font-size: 8px;
-            color: #666;
-            margin-top: 5px;
-        }
-
-        .verification-note {
-            font-size: 9px;
-            color: #666;
-            padding: 10px;
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-        }
-        
+        /* Totals */
         .totals-table {
             width: 40%;
             float: right;
@@ -191,27 +152,114 @@
         .status-paid { background-color: #d1fae5; color: #065f46; border: 1px solid #34d399; }
         .status-draft { background-color: #fef3c7; color: #92400e; border: 1px solid #fbbf24; }
         .status-cancelled { background-color: #fee2e2; color: #991b1b; border: 1px solid #f87171; }
+
+        /* Signature Block */
+        .signature-section {
+            margin-top: 30px;
+            page-break-inside: avoid;
+        }
+
+        .signature-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .signature-table td {
+            text-align: center;
+            vertical-align: top;
+            padding: 5px 8px;
+        }
+
+        .sig-role-label {
+            font-size: 10px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .sig-qr-box {
+            width: 70px;
+            height: 70px;
+            margin: 8px auto;
+        }
+
+        .sig-qr-box img {
+            width: 70px;
+            height: 70px;
+        }
+
+        .sig-pending-box {
+            width: 70px;
+            height: 70px;
+            margin: 8px auto;
+            border: 1px dashed #ccc;
+            display: table;
+        }
+
+        .sig-pending-box span {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: center;
+            font-size: 8px;
+            color: #aaa;
+        }
+
+        .sig-name {
+            font-size: 10px;
+            font-weight: bold;
+            color: #1a1a1a;
+            border-bottom: 1px solid #333;
+            display: inline-block;
+            padding-bottom: 2px;
+            margin-bottom: 3px;
+        }
+
+        .sig-nip {
+            font-size: 8px;
+            color: #555;
+        }
+
+        .sig-date {
+            font-size: 8px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        /* Verification Footer */
+        .verification-footer {
+            margin-top: 25px;
+            padding: 10px;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            font-size: 9px;
+            color: #666;
+            page-break-inside: avoid;
+        }
+
+        .verification-footer table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .verification-footer td {
+            vertical-align: middle;
+            padding: 0;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
         <!-- Company Letterhead -->
-        @include('pdf.partials.company-header', ['accentColor' => '#7F1D1D'])
+        @include('pdf.partials.company-header', [
+            'accentColor' => '#7F1D1D',
+            'docNumber' => $invoice->invoice_number,
+            'docDate' => \Carbon\Carbon::parse($invoice->invoice_date)->format('d F Y'),
+        ])
 
-        <!-- Document Number Bar -->
-        <div style="display: table; width: 100%; margin-bottom: 15px;">
-            <div style="display: table-cell; width: 50%; vertical-align: middle;"></div>
-            <div style="display: table-cell; width: 50%; text-align: right; vertical-align: middle;">
-                <div class="doc-number">{{ $invoice->invoice_number }}</div>
-                <div class="doc-date">{{ \Carbon\Carbon::parse($invoice->invoice_date)->format('d F Y') }}</div>
-            </div>
-        </div>
-
-        <!-- Title -->
-        <div class="title">
-            <h1>INVOICE</h1>
-        </div>
+        <!-- Sub-Header Banner -->
+        <div class="sub-header-banner">Invoice</div>
+        <div class="doc-title-banner">{{ $invoice->invoice_number }}</div>
 
         <!-- Vendor & Invoice Info -->
         <div style="display: table; width: 100%; margin-bottom: 20px;">
@@ -320,24 +368,96 @@
             </div>
         @endif
 
-        <!-- Footer with QR Code -->
-        <div class="footer" style="page-break-inside: avoid;">
-            <div class="footer-left">
-                <div class="verification-note">
-                    <strong>Catatan Verifikasi:</strong><br>
-                    Dokumen ini diterbitkan secara elektronik oleh sistem ConfirmMe.<br>
-                    Scan QR Code untuk memverifikasi keaslian dokumen ini.<br>
-                    <strong>Hash:</strong> {{ substr($invoice->approval_hash ?? $invoice->document->approval_hash ?? 'N/A', 0, 32) }}...
+        <!-- Signature Block -->
+        @php
+            $document = $invoice->document;
+            $approvals = $document ? $document->approvals : collect();
+            $verificationHash = $invoice->approval_hash ?? $document->approval_hash ?? null;
+            $verificationUrl = $verificationHash ? route('verify.show', $verificationHash) : null;
+        @endphp
+
+        @if($document && in_array($document->status, ['approved', 'completed', 'paid']))
+            <div class="signature-section">
+                <div class="section-title">{{ __("LEMBAR PERSETUJUAN") }}</div>
+                
+                <div style="margin-bottom: 15px;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                            <td style="width: 50%; vertical-align: top; font-size: 11px;">Jakarta,</td>
+                            <td style="width: 50%; text-align: right; vertical-align: top; font-size: 11px;">{{ __("Disetujui") }},</td>
+                        </tr>
+                    </table>
                 </div>
+
+                <table class="signature-table">
+                    <tr>
+                        <td><div class="sig-role-label">{{ __("Pemohon") }}</div></td>
+                        @foreach($approvals as $approval)
+                            <td><div class="sig-role-label">{{ $approval->approver?->position ?? $approval->role_label ?? 'Approver' }}</div></td>
+                        @endforeach
+                    </tr>
+                    <tr>
+                        <td>
+                            @if($verificationUrl)
+                                <div class="sig-qr-box"><img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR"></div>
+                            @else
+                                <div class="sig-pending-box"><span>-</span></div>
+                            @endif
+                        </td>
+                        @foreach($approvals as $approval)
+                            <td>
+                                @if($approval->status === 'approved' && $verificationUrl)
+                                    <div class="sig-qr-box"><img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR"></div>
+                                @else
+                                    <div class="sig-pending-box"><span>Pending</span></div>
+                                @endif
+                            </td>
+                        @endforeach
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class="sig-name">{{ $document->user->name }}</span><br>
+                            <span class="sig-nip">NIP. {{ $document->user->employee_id ?? '-' }}</span>
+                        </td>
+                        @foreach($approvals as $approval)
+                            <td>
+                                @if($approval->approver)
+                                    <span class="sig-name">{{ $approval->approver->name }}</span><br>
+                                    <span class="sig-nip">NIP. {{ $approval->approver->employee_id ?? '-' }}</span>
+                                @else
+                                    <span class="sig-name">-</span>
+                                @endif
+                            </td>
+                        @endforeach
+                    </tr>
+                    <tr>
+                        <td><span class="sig-date">{{ $document->submitted_at ? $document->submitted_at->format('d/m/Y H:i') : $document->created_at->format('d/m/Y H:i') }}</span></td>
+                        @foreach($approvals as $approval)
+                            <td><span class="sig-date">{{ $approval->action_at ? $approval->action_at->format('d/m/Y H:i') : '-' }}</span></td>
+                        @endforeach
+                    </tr>
+                </table>
             </div>
-            <div class="footer-right">
-                <div class="qr-code">
-                    @if(isset($qrCode))
-                        <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code">
-                    @endif
-                    <div class="qr-label">Scan untuk verifikasi</div>
-                </div>
-            </div>
+        @endif
+
+        <!-- Verification Footer -->
+        <div class="verification-footer">
+            <table>
+                <tr>
+                    <td style="width: 75%; padding-right: 15px;">
+                        <strong>Catatan Verifikasi:</strong><br>
+                        Dokumen ini diterbitkan secara elektronik oleh sistem ConfirmMe.
+                        Scan QR Code untuk memverifikasi keaslian dokumen ini.<br>
+                        <strong>Hash:</strong> {{ substr($verificationHash ?? 'N/A', 0, 32) }}...
+                    </td>
+                    <td style="width: 25%; text-align: center;">
+                        @if(isset($qrCode))
+                            <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code" style="width: 60px; height: 60px;">
+                            <div style="font-size: 7px; color: #888; margin-top: 3px;">Scan untuk verifikasi</div>
+                        @endif
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
 </body>

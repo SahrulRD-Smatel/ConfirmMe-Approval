@@ -7,13 +7,12 @@
     <title>{{ $document->document_number }}</title>
     <style>
         @page {
-            /* Margin atas yang besar (130px) adalah SATU-SATUNYA cara agar semua halaman konsisten di Dompdf */
-            margin: 130px 50px 50px 50px !important;
+            margin: 130px 50px 60px 50px !important;
         }
 
         header {
             position: fixed;
-            top: -100px; /* Header ditarik 100px ke atas dari margin 130px */
+            top: -100px;
             left: 0;
             right: 0;
             height: 80px;
@@ -40,63 +39,28 @@
             width: 100%;
         }
 
-        /* Header */
-        .header {
-            display: table;
-            width: 100%;
-            border-bottom: 3px solid #7F1D1D;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-
-        .header-left {
-            display: table-cell;
-            width: 70%;
-            vertical-align: middle;
-        }
-
-        .header-right {
-            display: table-cell;
-            width: 30%;
-            text-align: right;
-            vertical-align: middle;
-        }
-
-        .company-name {
-            font-size: 18px;
-            font-weight: bold;
-            color: #7F1D1D;
-        }
-
-        .company-tagline {
-            font-size: 10px;
-            color: #666;
-        }
-
-        .doc-number {
-            font-size: 14px;
-            font-weight: bold;
-            color: #7F1D1D;
-        }
-
-        .doc-date {
-            font-size: 10px;
-            color: #666;
-        }
-
-        /* Title */
-        .title {
+        /* Sub-Header Banner */
+        .sub-header-banner {
+            background-color: #1e3a5f;
+            color: white;
             text-align: center;
-            margin-bottom: 25px;
+            padding: 8px 15px;
+            margin-bottom: 5px;
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .title h1 {
-            font-size: 16px;
+        .doc-title-banner {
+            text-align: center;
+            padding: 8px 15px;
+            margin-bottom: 20px;
+            font-size: 15px;
+            font-weight: bold;
             text-transform: uppercase;
-            color: #7F1D1D;
-            border-bottom: 2px solid #7F1D1D;
-            display: inline-block;
-            padding-bottom: 5px;
+            letter-spacing: 0.5px;
+            color: #1a1a1a;
         }
 
         /* Info Table */
@@ -109,18 +73,20 @@
         .info-table th {
             text-align: left;
             width: 150px;
-            padding: 10px;
+            padding: 8px 10px;
             background-color: #f9fafb;
             color: #4b5563;
             border: none;
             border-bottom: 1px solid #e5e7eb;
             font-weight: 600;
+            font-size: 11px;
         }
 
         .info-table td {
-            padding: 10px;
+            padding: 8px 10px;
             border: none;
             border-bottom: 1px solid #e5e7eb;
+            font-size: 11px;
         }
 
         /* Data Table (Dynamic Fields) */
@@ -189,32 +155,106 @@
             page-break-inside: avoid;
         }
 
-        /* Approval Timeline */
-        .approval-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
+        /* Signature Block */
+        .signature-section {
+            margin-top: 30px;
             page-break-inside: avoid;
         }
 
-        .approval-table th {
-            background-color: #7F1D1D;
-            color: white;
-            padding: 10px;
-            text-align: left;
-            font-size: 11px;
+        .signature-table {
+            width: 100%;
+            border-collapse: collapse;
         }
 
-        .approval-table td {
-            padding: 10px;
-            border: 1px solid #e2e8f0;
-            font-size: 11px;
+        .signature-table td {
+            text-align: center;
+            vertical-align: top;
+            padding: 5px 8px;
         }
 
-        .approval-table tr:nth-child(even) {
+        .sig-role-label {
+            font-size: 10px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .sig-qr-box {
+            width: 70px;
+            height: 70px;
+            margin: 8px auto;
+            display: block;
+        }
+
+        .sig-qr-box img {
+            width: 70px;
+            height: 70px;
+        }
+
+        .sig-pending-box {
+            width: 70px;
+            height: 70px;
+            margin: 8px auto;
+            border: 1px dashed #ccc;
+            display: table;
+        }
+
+        .sig-pending-box span {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: center;
+            font-size: 8px;
+            color: #aaa;
+        }
+
+        .sig-name {
+            font-size: 10px;
+            font-weight: bold;
+            color: #1a1a1a;
+            border-bottom: 1px solid #333;
+            display: inline-block;
+            padding-bottom: 2px;
+            margin-bottom: 3px;
+        }
+
+        .sig-nip {
+            font-size: 8px;
+            color: #555;
+        }
+
+        .sig-date {
+            font-size: 8px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        /* Verification Footer */
+        .verification-footer {
+            margin-top: 25px;
+            padding: 10px;
             background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            font-size: 9px;
+            color: #666;
+            page-break-inside: avoid;
         }
 
+        .verification-footer table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .verification-footer td {
+            vertical-align: middle;
+            padding: 0;
+        }
+
+        /* Page Break */
+        .page-break {
+            page-break-after: always;
+        }
+
+        /* Status colors */
         .status-approved {
             color: #059669;
             font-weight: bold;
@@ -229,163 +269,101 @@
             color: #D97706;
             font-weight: bold;
         }
-
-        /* Footer */
-        .footer {
-            margin-top: 30px;
-            display: table;
-            width: 100%;
-        }
-
-        .footer-left {
-            display: table-cell;
-            width: 70%;
-            vertical-align: bottom;
-        }
-
-        .footer-right {
-            display: table-cell;
-            width: 30%;
-            text-align: center;
-            vertical-align: bottom;
-        }
-
-        .qr-code {
-            text-align: center;
-        }
-
-        .qr-code img {
-            width: 100px;
-            height: 100px;
-        }
-
-        .qr-label {
-            font-size: 8px;
-            color: #666;
-            margin-top: 5px;
-        }
-
-        .signature-box {
-            border: 1px dashed #ccc;
-            padding: 10px;
-            text-align: center;
-            margin-top: 10px;
-        }
-
-        .signature-label {
-            font-size: 10px;
-            color: #666;
-        }
-
-        .verification-note {
-            font-size: 9px;
-            color: #666;
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-        }
-
-        /* Page Break */
-        .page-break {
-            page-break-after: always;
-        }
     </style>
 </head>
 
 <body>
     <!-- Company Letterhead (Fixed - Repeated on every page) -->
     <header>
-        @include('pdf.partials.company-header', ['accentColor' => '#7F1D1D'])
+        @include('pdf.partials.company-header', [
+            'accentColor' => '#7F1D1D',
+            'docNumber' => $document->document_number,
+            'docDate' => $document->created_at->format('d F Y'),
+        ])
     </header>
 
     <div class="container">
-        <!-- Document Number Bar -->
-        <div style="display: table; width: 100%; margin-bottom: 15px;">
-            <div style="display: table-cell; width: 50%; vertical-align: middle;"></div>
-            <div style="display: table-cell; width: 50%; text-align: right; vertical-align: middle;">
-                <div class="doc-number">{{ $document->document_number }}</div>
-                <div class="doc-date">{{ $document->created_at->format('d F Y') }}</div>
-            </div>
-        </div>
+        <!-- Sub-Header Banner (Category) -->
+        @php
+            $template = \App\Models\DocumentTemplate::where('code', $document->template)->first();
+            $categoryLabel = $document->category ?? $template->name ?? $document->approval_type_label;
+        @endphp
+        <div class="sub-header-banner">{{ $categoryLabel }}</div>
 
-        <!-- Title -->
-        <div class="title">
-            <h1>{{ $document->approval_type_label }}</h1>
-        </div>
+        <!-- Document Title -->
+        <div class="doc-title-banner">{{ $document->title }}</div>
+
+        <!-- Intro paragraph (like the reference PDF) -->
+        @if($document->description)
+            <div style="margin-bottom: 20px; font-size: 11px; line-height: 1.7; text-align: justify;">
+                {!! nl2br(e($document->description)) !!}
+            </div>
+        @endif
 
         <!-- Document Info -->
         <div class="section">
-            <div class="section-title">{{ __("INFORMASI DOKUMEN") }}</div>
+            <div class="section-title" style="padding-top: 0;">{{ __("INFORMASI DOKUMEN") }}</div>
             <table class="info-table">
                 <tr>
                     <th>{{ __("Nomor Dokumen") }}</th>
-                    <td>{{ $document->document_number }}</td>
+                    <td>: {{ $document->document_number }}</td>
                 </tr>
                 <tr>
                     <th>{{ __("Judul") }}</th>
-                    <td>{{ $document->title }}</td>
+                    <td>: {{ $document->title }}</td>
                 </tr>
                 <tr>
                     <th>{{ __("Jenis Approval") }}</th>
-                    <td>{{ $document->approval_type_label }}</td>
+                    <td>: {{ $document->approval_type_label }}</td>
                 </tr>
                 <tr>
                     <th>{{ __("Prioritas") }}</th>
-                    <td>{{ $document->priority_label }}</td>
+                    <td>: {{ $document->priority_label }}</td>
                 </tr>
                 <tr>
                     <th>{{ __("Departemen") }}</th>
-                    <td>{{ $document->department ?? '-' }}</td>
+                    <td>: {{ $document->department ?? '-' }}</td>
                 </tr>
                 <tr>
                     <th>{{ __("Pengaju") }}</th>
-                    <td>{{ $document->user->name }} ({{ $document->user->employee_id ?? $document->user->email }})</td>
+                    <td>: {{ $document->user->name }} ({{ $document->user->employee_id ?? $document->user->email }})</td>
                 </tr>
                 <tr>
                     <th>{{ __("Tanggal Pengajuan") }}</th>
-                    <td>{{ $document->submitted_at ? $document->submitted_at->format('d F Y H:i') : '-' }}</td>
+                    <td>: {{ $document->submitted_at ? $document->submitted_at->format('d F Y H:i') : '-' }}</td>
                 </tr>
                 <tr>
                     <th>{{ __("Status") }}</th>
-                    <td><strong>{{ strtoupper($document->status_label) }}</strong></td>
+                    <td>: <strong>{{ strtoupper($document->status_label) }}</strong></td>
                 </tr>
                 @if($document->approval_type === 'loan' && isset($document->metadata['loan_amount']))
                     <tr>
                         <th>{{ __("Jumlah Pinjaman") }}</th>
-                        <td><strong>Rp {{ number_format($document->metadata['loan_amount'], 0, ',', '.') }}</strong></td>
+                        <td>: <strong>Rp {{ number_format($document->metadata['loan_amount'], 0, ',', '.') }}</strong></td>
                     </tr>
                     @if(isset($document->metadata['installment_count']))
                         <tr>
                             <th>{{ __("Tenor Cicilan") }}</th>
-                            <td>{{ $document->metadata['installment_count'] }} {{ __("bulan") }}</td>
+                            <td>: {{ $document->metadata['installment_count'] }} {{ __("bulan") }}</td>
                         </tr>
                     @endif
                 @elseif($document->estimated_budget)
                     <tr>
                         <th>{{ __("Estimasi Anggaran") }}</th>
-                        <td>Rp {{ number_format($document->estimated_budget, 0, ',', '.') }}</td>
+                        <td>: Rp {{ number_format($document->estimated_budget, 0, ',', '.') }}</td>
                     </tr>
                 @endif
                 @if($document->approved_budget)
                     <tr>
                         <th>{{ __("Anggaran Disetujui") }}</th>
-                        <td><strong>Rp {{ number_format($document->approved_budget, 0, ',', '.') }}</strong></td>
+                        <td>: <strong>Rp {{ number_format($document->approved_budget, 0, ',', '.') }}</strong></td>
                     </tr>
                 @endif
             </table>
         </div>
 
-        <!-- Description -->
-        <div class="section">
-            <div class="section-title">{{ __("DESKRIPSI / KETERANGAN") }}</div>
-            <div class="content-box">
-                {!! nl2br(e($document->description)) !!}
-            </div>
-        </div>
         <!-- Dynamic Fields -->
         @php
-            $template = \App\Models\DocumentTemplate::where('code', $document->template)->first();
             $dynamicFields = $template ? ($template->fields['dynamic_fields'] ?? []) : [];
         @endphp
 
@@ -409,7 +387,7 @@
                             <th style="vertical-align: top; padding-top: 10px;">{{ $field['label'] }}</th>
                             <td style="vertical-align: top; padding-top: 10px;">
                                 @if($field['type'] === 'textarea')
-                                    {!! nl2br(e($fieldValue ?: '-')) !!}
+                                    : {!! nl2br(e($fieldValue ?: '-')) !!}
                                 @elseif($field['type'] === 'file' && $fieldValue)
                                     @php
                                         $ext = strtolower(pathinfo($fieldValue, PATHINFO_EXTENSION));
@@ -421,7 +399,6 @@
                                             
                                             if (file_exists($imagePath)) {
                                                 $size = @getimagesize($imagePath);
-                                                // Jika gambar potrait (tinggi > lebar), putar jadi landscape agar muat 1 page
                                                 if ($size && $size[1] > $size[0]) {
                                                     $source = null;
                                                     if ($ext == 'jpg' || $ext == 'jpeg') {
@@ -450,19 +427,19 @@
                                             <img src="{{ $imgSrc }}" alt="{{ $field['label'] }}" style="max-width: 250px; height: auto;" />
                                         </div>
                                     @else
-                                        <em style="font-size: 10px; color: #555;">{{ __("Terdapat lampiran berkas") }} ({{ pathinfo($fieldValue, PATHINFO_EXTENSION) }}) - {{ __("silakan unduh melalui sistem.") }}</em>
+                                        : <em style="font-size: 10px; color: #555;">{{ __("Terdapat lampiran berkas") }} ({{ pathinfo($fieldValue, PATHINFO_EXTENSION) }}) - {{ __("silakan unduh melalui sistem.") }}</em>
                                     @endif
                                 @else
                                     @if($fieldValue)
                                         @if($field['type'] === 'date')
-                                            {{ \Carbon\Carbon::parse($fieldValue)->format('d F Y') }}
+                                            : {{ \Carbon\Carbon::parse($fieldValue)->format('d F Y') }}
                                         @elseif($field['type'] === 'number')
-                                            {{ is_numeric($fieldValue) ? number_format((float)$fieldValue, 0, ',', '.') : $fieldValue }}
+                                            : {{ is_numeric($fieldValue) ? number_format((float)$fieldValue, 0, ',', '.') : $fieldValue }}
                                         @else
-                                            {{ $fieldValue }}
+                                            : {{ $fieldValue }}
                                         @endif
                                     @else
-                                        -
+                                        : -
                                     @endif
                                 @endif
                             </td>
@@ -505,6 +482,7 @@
                 @endif
             </div>
         @endif
+
         @php
             $terms = $template ? ($template->fields['terms_and_conditions'] ?? null) : null;
         @endphp
@@ -523,86 +501,129 @@
             </div>
         @endif
 
-        <!-- Approval Timeline -->
+        <!-- Signature Block (Horizontal - like reference PDF) -->
         @if(in_array($document->status, ['approved', 'completed', 'paid', 'presiden_review', 'director_review', 'finance_review']))
-            <div class="section" style="page-break-before: always;">
-                <div class="section-title">{{ __("RIWAYAT PERSETUJUAN (DIGITAL SIGNATURE)") }}</div>
-                <table class="approval-table">
-                    <thead>
+            @php
+                $approvals = $document->approvals;
+                $totalSigners = 1 + count($approvals); // requester + approvers
+                $verificationUrl = $document->approval_hash ? route('verify.show', $document->approval_hash) : null;
+            @endphp
+
+            <div class="signature-section" style="page-break-before: always;">
+                <div class="section-title">{{ __("LEMBAR PERSETUJUAN") }}</div>
+                
+                <!-- Location & Approval text -->
+                <div style="margin-bottom: 15px;">
+                    <table style="width: 100%; border-collapse: collapse;">
                         <tr>
-                            <th style="width: 25%">{{ __('Role') }}</th>
-                            <th style="width: 30%">{{ __('Nama') }}</th>
-                            <th style="width: 20%">{{ __('Status') }}</th>
-                            <th style="width: 25%">{{ __('Waktu') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Requester (Pengaju) -->
-                        <tr>
-                            <td>{{ __('Pembuat Pengajuan') }}</td>
-                            <td>{{ $document->user->name }}</td>
-                            <td><span class="status-approved">{{ __('DIKIRIM') }}</span></td>
-                            <td>
-                                {{ $document->submitted_at ? $document->submitted_at->format('d M Y, H:i') : $document->created_at->format('d M Y, H:i') }}<br>
-                                <span style="font-size: 8px; color: #888;">(Digital Sign)</span>
+                            <td style="width: 50%; vertical-align: top; font-size: 11px;">
+                                Jakarta,
+                            </td>
+                            <td style="width: 50%; text-align: right; vertical-align: top; font-size: 11px;">
+                                {{ __("Disetujui") }},
                             </td>
                         </tr>
-                        <!-- Approvers -->
-                        @foreach($document->approvals as $approval)
-                            <tr>
-                                <td>{{ $approval->approver?->position ?? $approval->role_label ?? 'Approver' }}</td>
-                                <td>{{ $approval->approver->name }}</td>
-                                <td>
-                                    @if($approval->status === 'approved')
-                                        <span class="status-approved">{{ __('DISETUJUI') }}</span>
-                                    @elseif($approval->status === 'rejected')
-                                        <span class="status-rejected">{{ __('DITOLAK') }}</span>
-                                    @elseif($approval->status === 'pending')
-                                        <span class="status-pending">{{ __('MENUNGGU') }}</span>
-                                    @else
-                                        <span>{{ strtoupper($approval->status) }}</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    @if($approval->action_at)
-                                        {{ $approval->action_at->format('d M Y, H:i') }}<br>
-                                        <span style="font-size: 8px; color: #888;">(Digital Sign)</span>
-                                    @else
-                                        -
-                                    @endif
-                                </td>
-                            </tr>
+                    </table>
+                </div>
+
+                <!-- Signature Columns -->
+                <table class="signature-table">
+                    {{-- Role labels row --}}
+                    <tr>
+                        <td>
+                            <div class="sig-role-label">{{ __("Pemohon") }}</div>
+                        </td>
+                        @foreach($approvals as $approval)
+                            <td>
+                                <div class="sig-role-label">{{ $approval->approver?->position ?? $approval->role_label ?? 'Approver' }}</div>
+                            </td>
                         @endforeach
-                    </tbody>
+                    </tr>
+
+                    {{-- QR Code / Signature area row --}}
+                    <tr>
+                        {{-- Requester QR --}}
+                        <td>
+                            @if($verificationUrl)
+                                <div class="sig-qr-box">
+                                    <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR">
+                                </div>
+                            @else
+                                <div class="sig-pending-box"><span>-</span></div>
+                            @endif
+                        </td>
+                        {{-- Approvers QR --}}
+                        @foreach($approvals as $approval)
+                            <td>
+                                @if($approval->status === 'approved' && $verificationUrl)
+                                    <div class="sig-qr-box">
+                                        <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR">
+                                    </div>
+                                @else
+                                    <div class="sig-pending-box"><span>Pending</span></div>
+                                @endif
+                            </td>
+                        @endforeach
+                    </tr>
+
+                    {{-- Name row (underlined) --}}
+                    <tr>
+                        <td>
+                            <span class="sig-name">{{ $document->user->name }}</span><br>
+                            <span class="sig-nip">NIP. {{ $document->user->employee_id ?? '-' }}</span>
+                        </td>
+                        @foreach($approvals as $approval)
+                            <td>
+                                @if($approval->approver)
+                                    <span class="sig-name">{{ $approval->approver->name }}</span><br>
+                                    <span class="sig-nip">NIP. {{ $approval->approver->employee_id ?? '-' }}</span>
+                                @else
+                                    <span class="sig-name">-</span>
+                                @endif
+                            </td>
+                        @endforeach
+                    </tr>
+
+                    {{-- Date row --}}
+                    <tr>
+                        <td>
+                            <span class="sig-date">
+                                {{ $document->submitted_at ? $document->submitted_at->format('d/m/Y H:i') : $document->created_at->format('d/m/Y H:i') }}
+                            </span>
+                        </td>
+                        @foreach($approvals as $approval)
+                            <td>
+                                <span class="sig-date">
+                                    {{ $approval->action_at ? $approval->action_at->format('d/m/Y H:i') : '-' }}
+                                </span>
+                            </td>
+                        @endforeach
+                    </tr>
                 </table>
             </div>
         @endif
 
-        <!-- Footer with QR Code -->
-        <div class="footer">
-            <div class="footer-left">
-                <div class="verification-note">
-                    <strong>{{ __("Catatan Verifikasi") }}:</strong><br>
-                    {{ __("Dokumen ini diterbitkan secara elektronik oleh sistem ConfirmMe.") }}
-                    {{ __("Scan QR Code untuk memverifikasi keaslian dokumen ini.") }}<br>
-                    <strong>Hash:</strong> {{ substr($document->approval_hash ?? 'N/A', 0, 32) }}...
-                </div>
-            </div>
-            <div class="footer-right">
-                <div class="qr-code">
-                    @if(isset($qrCode))
-                        @if(isset($qrFormat) && $qrFormat === 'svg')
-                            <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code">
-                        @else
-                            <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code">
+        <!-- Verification Footer -->
+        <div class="verification-footer">
+            <table>
+                <tr>
+                    <td style="width: 75%; padding-right: 15px;">
+                        <strong>{{ __("Catatan Verifikasi") }}:</strong><br>
+                        {{ __("Dokumen ini diterbitkan secara elektronik oleh sistem ConfirmMe.") }}
+                        {{ __("Scan QR Code untuk memverifikasi keaslian dokumen ini.") }}<br>
+                        <strong>Hash:</strong> {{ substr($document->approval_hash ?? 'N/A', 0, 32) }}...
+                    </td>
+                    <td style="width: 25%; text-align: center;">
+                        @if(isset($qrCode))
+                            <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code" style="width: 60px; height: 60px;">
+                            <div style="font-size: 7px; color: #888; margin-top: 3px;">{{ __("Scan untuk verifikasi") }}</div>
                         @endif
-                    @endif
-                    <div class="qr-label">{{ __("Scan untuk verifikasi") }}</div>
-                </div>
-            </div>
+                    </td>
+                </tr>
+            </table>
         </div>
 
-        <div style="margin-top: 30px; text-align: center; font-size: 10px; color: #999;">
+        <div style="margin-top: 20px; text-align: center; font-size: 9px; color: #999;">
             {{ __("Dicetak pada") }}: {{ now()->format('d F Y H:i:s') }} | ConfirmMe - PT. Info Solusindo Data Utama
         </div>
     </div>
