@@ -7,6 +7,7 @@ use App\Models\Invoice;
 use App\Models\Document;
 use App\Models\Budget;
 use App\Models\PurchaseOrder;
+use App\Traits\PdfPageCounter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -14,6 +15,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class InvoiceController extends Controller
 {
+    use PdfPageCounter;
     /**
      * Display a listing of invoices.
      */
@@ -347,11 +349,9 @@ class InvoiceController extends Controller
         // Force English locale for PDF to avoid CJK font issues in DomPDF
         app()->setLocale('en');
 
-        $pdf = Pdf::loadView('pdf.invoice', [
+        return $this->renderPdfWithPageCounter('pdf.invoice', [
             'invoice' => $invoice,
             'qrCode' => $qrCode,
-        ]);
-
-        return $pdf->stream($invoice->invoice_number . '.pdf');
+        ], $invoice->invoice_number . '.pdf');
     }
 }

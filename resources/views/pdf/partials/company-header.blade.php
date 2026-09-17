@@ -53,7 +53,7 @@
                     <tr>
                         <td class="meta-label">Halaman</td>
                         <td class="meta-sep">:</td>
-                        <td class="meta-value page-counter"></td>
+                        <td class="meta-value" id="halaman-cell">&nbsp;</td>
                     </tr>
                 </table>
             </td>
@@ -133,12 +133,5 @@
         margin-top: 5px;
         padding-bottom: 0;
     }
-
-    /**
-     * Dynamic page counter using DomPDF's built-in CSS counter.
-     * Renders "01 dari 03" style pagination automatically.
-     */
-    .page-counter::after {
-        content: counter(page, decimal-leading-zero) " dari " counter(pages, decimal-leading-zero);
-    }
 </style>
+

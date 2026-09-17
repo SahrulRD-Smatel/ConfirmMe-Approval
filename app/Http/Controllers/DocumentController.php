@@ -8,6 +8,7 @@ use App\Models\DocumentTemplate;
 use App\Models\ApprovalLog;
 use App\Notifications\DocumentNotification;
 use App\Services\ApprovalWorkflowService;
+use App\Traits\PdfPageCounter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 
 class DocumentController extends Controller
 {
+    use PdfPageCounter;
     protected $workflowService;
 
     public function __construct(ApprovalWorkflowService $workflowService)
@@ -755,16 +757,10 @@ class DocumentController extends Controller
         // Force English locale for PDF to avoid CJK font issues in DomPDF
         app()->setLocale('en');
 
-        // Render the PDF template
-        $pdf = Pdf::loadView($viewName, compact('document', 'qrCode'));
-        
-        // Set paper size to A4
-        $pdf->setPaper('A4', 'portrait');
-        
-        // Set filename
+        // Render with dynamic page counter in header
         $filename = 'DOC-' . $document->document_number . '.pdf';
 
-        return $pdf->stream($filename);
+        return $this->renderPdfWithPageCounter($viewName, compact('document', 'qrCode'), $filename);
     }
     
     /**

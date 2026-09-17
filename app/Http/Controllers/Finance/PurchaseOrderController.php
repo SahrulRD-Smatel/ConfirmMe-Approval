@@ -7,12 +7,14 @@ use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
 use App\Models\Document;
 use App\Models\Budget;
+use App\Traits\PdfPageCounter;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class PurchaseOrderController extends Controller
 {
+    use PdfPageCounter;
     /**
      * Display a listing of purchase orders.
      */
@@ -304,11 +306,9 @@ class PurchaseOrderController extends Controller
         // Force English locale for PDF to avoid CJK font issues in DomPDF
         app()->setLocale('en');
 
-        $pdf = Pdf::loadView('pdf.purchase-order', [
+        return $this->renderPdfWithPageCounter('pdf.purchase-order', [
             'po' => $po,
             'qrCode' => $qrCode,
-        ]);
-
-        return $pdf->stream($po->po_number . '.pdf');
+        ], $po->po_number . '.pdf');
     }
 }
