@@ -6,6 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $po->po_number }}</title>
     <style>
+        @page {
+            margin: 130px 50px 60px 50px !important;
+        }
+
+        header {
+            position: fixed;
+            top: -100px;
+            left: 0;
+            right: 0;
+            height: 80px;
+        }
+
+        header .company-header {
+            margin-bottom: 0 !important;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -20,7 +36,7 @@
         }
 
         .container {
-            padding: 20px 40px;
+            width: 100%;
         }
 
         /* Sub-Header Banner */
@@ -237,13 +253,16 @@
 </head>
 
 <body>
-    <div class="container">
-        <!-- Company Letterhead -->
+    <!-- Company Letterhead (Fixed - Repeated on every page) -->
+    <header>
         @include('pdf.partials.company-header', [
             'accentColor' => '#7F1D1D',
             'docNumber' => $po->po_number,
             'docDate' => \Carbon\Carbon::parse($po->order_date)->format('d F Y'),
         ])
+    </header>
+
+    <div class="container">
 
         <!-- Sub-Header Banner -->
         <div class="sub-header-banner">Purchase Order</div>

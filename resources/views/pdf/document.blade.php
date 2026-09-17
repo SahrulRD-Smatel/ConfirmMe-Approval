@@ -140,7 +140,7 @@
             font-weight: bold;
             color: #7F1D1D;
             margin-bottom: 12px;
-            padding-top: 40px;
+            padding-top: 15px;
             padding-bottom: 6px;
             border-bottom: 2px solid #7F1D1D;
             text-transform: uppercase;
@@ -299,68 +299,6 @@
                 {!! nl2br(e($document->description)) !!}
             </div>
         @endif
-
-        <!-- Document Info -->
-        <div class="section">
-            <div class="section-title" style="padding-top: 0;">{{ __("INFORMASI DOKUMEN") }}</div>
-            <table class="info-table">
-                <tr>
-                    <th>{{ __("Nomor Dokumen") }}</th>
-                    <td>: {{ $document->document_number }}</td>
-                </tr>
-                <tr>
-                    <th>{{ __("Judul") }}</th>
-                    <td>: {{ $document->title }}</td>
-                </tr>
-                <tr>
-                    <th>{{ __("Jenis Approval") }}</th>
-                    <td>: {{ $document->approval_type_label }}</td>
-                </tr>
-                <tr>
-                    <th>{{ __("Prioritas") }}</th>
-                    <td>: {{ $document->priority_label }}</td>
-                </tr>
-                <tr>
-                    <th>{{ __("Departemen") }}</th>
-                    <td>: {{ $document->department ?? '-' }}</td>
-                </tr>
-                <tr>
-                    <th>{{ __("Pengaju") }}</th>
-                    <td>: {{ $document->user->name }} ({{ $document->user->employee_id ?? $document->user->email }})</td>
-                </tr>
-                <tr>
-                    <th>{{ __("Tanggal Pengajuan") }}</th>
-                    <td>: {{ $document->submitted_at ? $document->submitted_at->format('d F Y H:i') : '-' }}</td>
-                </tr>
-                <tr>
-                    <th>{{ __("Status") }}</th>
-                    <td>: <strong>{{ strtoupper($document->status_label) }}</strong></td>
-                </tr>
-                @if($document->approval_type === 'loan' && isset($document->metadata['loan_amount']))
-                    <tr>
-                        <th>{{ __("Jumlah Pinjaman") }}</th>
-                        <td>: <strong>Rp {{ number_format($document->metadata['loan_amount'], 0, ',', '.') }}</strong></td>
-                    </tr>
-                    @if(isset($document->metadata['installment_count']))
-                        <tr>
-                            <th>{{ __("Tenor Cicilan") }}</th>
-                            <td>: {{ $document->metadata['installment_count'] }} {{ __("bulan") }}</td>
-                        </tr>
-                    @endif
-                @elseif($document->estimated_budget)
-                    <tr>
-                        <th>{{ __("Estimasi Anggaran") }}</th>
-                        <td>: Rp {{ number_format($document->estimated_budget, 0, ',', '.') }}</td>
-                    </tr>
-                @endif
-                @if($document->approved_budget)
-                    <tr>
-                        <th>{{ __("Anggaran Disetujui") }}</th>
-                        <td>: <strong>Rp {{ number_format($document->approved_budget, 0, ',', '.') }}</strong></td>
-                    </tr>
-                @endif
-            </table>
-        </div>
 
         <!-- Dynamic Fields -->
         @php

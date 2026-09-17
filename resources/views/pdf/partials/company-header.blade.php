@@ -10,7 +10,6 @@
     - $docNumber (document number)
     - $docDate (document date string)
     - $docRevision (revision number, default: '01')
-    - $docPage (page info, default: auto)
 --}}
 @php
     $headerAccent = $accentColor ?? '#7F1D1D';
@@ -54,7 +53,7 @@
                     <tr>
                         <td class="meta-label">Halaman</td>
                         <td class="meta-sep">:</td>
-                        <td class="meta-value">01 dari 01</td>
+                        <td class="meta-value page-counter"></td>
                     </tr>
                 </table>
             </td>
@@ -74,13 +73,13 @@
     }
 
     .header-logo-cell {
-        width: 80px;
+        width: 100px;
         vertical-align: middle;
-        padding-right: 5px;
+        padding-right: 8px;
     }
 
     .header-logo {
-        height: 70px;
+        height: 75px;
         width: auto;
     }
 
@@ -97,28 +96,28 @@
     }
 
     .header-meta-cell {
-        width: 210px;
+        width: 220px;
         vertical-align: middle;
     }
 
     .header-meta-table {
         width: 100%;
         border-collapse: collapse;
-        border: 1px solid #333;
+        border: 1px solid #666;
     }
 
     .header-meta-table td {
-        padding: 2px 5px;
-        font-size: 8px;
-        border: 1px solid #333;
-        line-height: 1.3;
+        padding: 2px 6px;
+        font-size: 9px;
+        border: 1px solid #666;
+        line-height: 1.4;
     }
 
     .meta-label {
         font-weight: bold;
         color: #333;
         white-space: nowrap;
-        width: 85px;
+        width: 90px;
     }
 
     .meta-sep {
@@ -131,7 +130,15 @@
     }
 
     .header-line {
-        margin-top: 8px;
+        margin-top: 5px;
         padding-bottom: 0;
+    }
+
+    /**
+     * Dynamic page counter using DomPDF's built-in CSS counter.
+     * Renders "01 dari 03" style pagination automatically.
+     */
+    .page-counter::after {
+        content: counter(page, decimal-leading-zero) " dari " counter(pages, decimal-leading-zero);
     }
 </style>
