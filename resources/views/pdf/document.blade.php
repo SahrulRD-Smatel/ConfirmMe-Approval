@@ -7,15 +7,15 @@
     <title>{{ $document->document_number }}</title>
     <style>
         @page {
-            margin: 130px 50px 60px 50px !important;
+            margin: 150px 50px 60px 50px !important;
         }
 
         header {
             position: fixed;
-            top: -100px;
+            top: -120px;
             left: 0;
             right: 0;
-            height: 80px;
+            height: 110px;
         }
         
         header .company-header {
@@ -211,10 +211,14 @@
             font-size: 10px;
             font-weight: bold;
             color: #1a1a1a;
-            border-bottom: 1px solid #333;
-            display: inline-block;
-            padding-bottom: 2px;
-            margin-bottom: 3px;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .sig-line {
+            border-top: 1px solid #333;
+            width: 75px;
+            margin: 0 auto 3px auto;
         }
 
         .sig-nip {
@@ -286,12 +290,10 @@
         <!-- Sub-Header Banner (Category) -->
         @php
             $template = \App\Models\DocumentTemplate::where('code', $document->template)->first();
-            $categoryLabel = $document->category ?? $template->name ?? $document->approval_type_label;
         @endphp
-        <div class="sub-header-banner">{{ $categoryLabel }}</div>
-
-        <!-- Document Title -->
-        <div class="doc-title-banner">{{ $document->title }}</div>
+        
+        <!-- Document Title (In Blue Banner) -->
+        <div class="sub-header-banner">{{ $document->title }}</div>
 
         <!-- Intro paragraph (like the reference PDF) -->
         @if($document->description)
@@ -507,16 +509,19 @@
                     {{-- Name row (underlined) --}}
                     <tr>
                         <td>
-                            <span class="sig-name">{{ $document->user->name }}</span><br>
-                            <span class="sig-nip">NIP. {{ $document->user->employee_id ?? '-' }}</span>
+                            <div class="sig-name">{{ $document->user->name }}</div>
+                            <div class="sig-line"></div>
+                            <div class="sig-nip">NIP. {{ $document->user->employee_id ?? '-' }}</div>
                         </td>
                         @foreach($approvals as $approval)
                             <td>
                                 @if($approval->approver)
-                                    <span class="sig-name">{{ $approval->approver->name }}</span><br>
-                                    <span class="sig-nip">NIP. {{ $approval->approver->employee_id ?? '-' }}</span>
+                                    <div class="sig-name">{{ $approval->approver->name }}</div>
+                                    <div class="sig-line"></div>
+                                    <div class="sig-nip">NIP. {{ $approval->approver->employee_id ?? '-' }}</div>
                                 @else
-                                    <span class="sig-name">-</span>
+                                    <div class="sig-name">-</div>
+                                    <div class="sig-line"></div>
                                 @endif
                             </td>
                         @endforeach
@@ -553,8 +558,8 @@
                     </td>
                     <td style="width: 25%; text-align: center;">
                         @if(isset($qrCode))
-                            <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code" style="width: 60px; height: 60px;">
-                            <div style="font-size: 7px; color: #888; margin-top: 3px;">{{ __("Scan untuk verifikasi") }}</div>
+                            <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code" style="width: 85px; height: 85px;">
+                            <div style="font-size: 8px; color: #888; margin-top: 4px;">{{ __("Scan untuk verifikasi") }}</div>
                         @endif
                     </td>
                 </tr>

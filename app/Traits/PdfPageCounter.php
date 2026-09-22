@@ -44,7 +44,7 @@ trait PdfPageCounter
         // Header top: margin-top 130px≈97.5pt, offset -100px≈-75pt → 22.5pt
         // Row height ≈ 14pt. Halaman = 4th row → y ≈ 22.5 + 0.75 + 42 + 7 ≈ 72pt
         // ------------------------------------------------------------------
-        $x = 473;
+        $x = 448;
         $y = 72;
         $size = 6.75;
         $color = [0.2, 0.2, 0.2]; // #333

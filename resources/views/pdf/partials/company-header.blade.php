@@ -73,13 +73,13 @@
     }
 
     .header-logo-cell {
-        width: 100px;
+        width: 130px;
         vertical-align: middle;
         padding-right: 8px;
     }
 
     .header-logo {
-        height: 75px;
+        height: 100px;
         width: auto;
     }
 
@@ -96,8 +96,8 @@
     }
 
     .header-meta-cell {
-        width: 220px;
-        vertical-align: middle;
+        width: 280px;
+        vertical-align: top;
     }
 
     .header-meta-table {
