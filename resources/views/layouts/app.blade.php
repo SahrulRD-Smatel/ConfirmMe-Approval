@@ -24,10 +24,9 @@
             left: 0;
             width: 0;
             height: 3px;
-            background: linear-gradient(90deg, #dc2626, #f97316, #dc2626);
+            background: #b91c1c;
             z-index: 9999;
             transition: width 0.3s ease;
-            box-shadow: 0 0 8px rgba(220, 38, 38, 0.5);
         }
         .page-loader.loading {
             width: 85%;
@@ -50,35 +49,7 @@
 <body class="h-full font-sans antialiased bg-gray-50 text-gray-800 dark:bg-gray-950 dark:text-gray-100"
     x-data="{ sidebarOpen: false, sidebarCollapsed: false }">
 
-    {{-- Animated Floating Bubbles Background --}}
-    <div class="bubbles-container" aria-hidden="true">
-        <div class="bubble bubble--maroon"
-            style="width: 80px; height: 80px; left: 5%; animation-duration: 22s; animation-delay: 0s;"></div>
-        <div class="bubble bubble--rose"
-            style="width: 120px; height: 120px; left: 15%; animation-duration: 28s; animation-delay: 2s;"></div>
-        <div class="bubble bubble--gray"
-            style="width: 60px; height: 60px; left: 25%; animation-duration: 18s; animation-delay: 4s;"></div>
-        <div class="bubble bubble--maroon"
-            style="width: 150px; height: 150px; left: 35%; animation-duration: 32s; animation-delay: 1s;"></div>
-        <div class="bubble bubble--rose"
-            style="width: 40px; height: 40px; left: 45%; animation-duration: 20s; animation-delay: 6s;"></div>
-        <div class="bubble bubble--gray"
-            style="width: 100px; height: 100px; left: 55%; animation-duration: 25s; animation-delay: 3s;"></div>
-        <div class="bubble bubble--maroon"
-            style="width: 70px; height: 70px; left: 65%; animation-duration: 19s; animation-delay: 5s;"></div>
-        <div class="bubble bubble--rose"
-            style="width: 200px; height: 200px; left: 75%; animation-duration: 35s; animation-delay: 0.5s;"></div>
-        <div class="bubble bubble--gray"
-            style="width: 50px; height: 50px; left: 85%; animation-duration: 16s; animation-delay: 7s;"></div>
-        <div class="bubble bubble--maroon"
-            style="width: 90px; height: 90px; left: 10%; animation-duration: 24s; animation-delay: 8s;"></div>
-        <div class="bubble bubble--rose"
-            style="width: 65px; height: 65px; left: 50%; animation-duration: 21s; animation-delay: 10s;"></div>
-        <div class="bubble bubble--gray"
-            style="width: 110px; height: 110px; left: 90%; animation-duration: 30s; animation-delay: 3.5s;"></div>
-    </div>
-
-    <div class="min-h-screen flex relative z-10 bg-gray-50/80 dark:bg-gray-950/80">
+    <div class="min-h-screen flex relative bg-gray-50 dark:bg-gray-950">
         <!-- Mobile sidebar backdrop -->
         <div x-show="sidebarOpen" x-transition:enter="transition-opacity ease-linear duration-300"
             x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
@@ -97,7 +68,7 @@
 
             <!-- Page Header -->
             @isset($header)
-                <header class="border-b border-gray-200/80 bg-white/90 backdrop-blur-xl dark:border-gray-800/80 dark:bg-gray-900/90">
+                <header class="border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
                     <div class="mx-auto max-w-[1600px] px-4 py-4 sm:px-6 sm:py-5 xl:px-10">
                         {{ $header }}
                     </div>
@@ -110,7 +81,7 @@
                     <div class="mx-auto w-full max-w-[1600px] px-4 sm:px-6 xl:px-10">
                         <!-- Flash Messages -->
                         @if (session('success'))
-                            <div class="mb-5 rounded-2xl border border-success-200/80 bg-success-50/90 p-4 shadow-sm shadow-success-900/5 animate-fade-in dark:border-success-800/60 dark:bg-success-900/20">
+                            <div class="mb-5 rounded-2xl border border-success-200/80 bg-success-50 p-4 shadow-sm animate-fade-in dark:border-success-800/60 dark:bg-success-900/20">
                                 <div class="flex items-center">
                                     <svg class="h-5 w-5 text-success-400" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd"
@@ -125,7 +96,7 @@
                         @endif
 
                         @if (session('error'))
-                            <div class="mb-5 rounded-2xl border border-danger-200/80 bg-danger-50/90 p-4 shadow-sm shadow-danger-900/5 animate-fade-in dark:border-danger-800/60 dark:bg-danger-900/20">
+                            <div class="mb-5 rounded-2xl border border-danger-200/80 bg-danger-50 p-4 shadow-sm animate-fade-in dark:border-danger-800/60 dark:bg-danger-900/20">
                                 <div class="flex items-center">
                                     <svg class="h-5 w-5 text-danger-400" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd"
@@ -145,7 +116,7 @@
             </main>
 
             <!-- Footer -->
-            <footer class="border-t border-gray-200/80 bg-white/60 py-5 backdrop-blur-sm dark:border-gray-800/80 dark:bg-gray-900/60">
+            <footer class="border-t border-gray-200 bg-white py-5 dark:border-gray-800 dark:bg-gray-900">
                 <div class="mx-auto w-full max-w-[1600px] px-4 sm:px-6 xl:px-10">
                     <p class="text-center text-sm text-gray-500 dark:text-gray-400">
                         &copy; {{ date('Y') }} PT. Info Solusindo Data Utama. ConfirmMe v1.0
