@@ -130,7 +130,7 @@
                                                     <tr>
                                                         <td
                                                             style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; background-color: #fefce8;">
-                                                            <span style="font-size: 13px; color: #854d0e; font-weight: 600;">✏️
+                                                            <span style="font-size: 13px; color: #854d0e; font-weight: 600;">
                                                                 {{ __('Total Disetujui (Finance)') }}:</span>
                                                             <span
                                                                 style="font-size: 15px; font-weight: 700; color: #1E40AF; float: right;">Rp
@@ -180,7 +180,7 @@
                                                     <tr>
                                                         <td style="width: 24px; vertical-align: top;">
                                                             <span
-                                                                style="display: inline-block; width: 20px; height: 20px; background-color: #22c55e; color: white; font-size: 11px; text-align: center; line-height: 20px; border-radius: 50%;">✓</span>
+                                                                style="display: inline-block; width: 20px; height: 20px; background-color: #22c55e; color: white; font-size: 11px; text-align: center; line-height: 20px; border-radius: 50%;">&#10003;</span>
                                                         </td>
                                                         <td style="vertical-align: middle;">
                                                             <span

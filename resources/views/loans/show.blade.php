@@ -54,15 +54,16 @@
                         <span class="font-medium">{{ number_format($loan->getProgressPercentage(), 1) }}%</span>
                     </div>
                     <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4">
-                        <div class="bg-gradient-to-r from-green-400 to-green-600 h-4 rounded-full transition-all duration-300"
+                        <div class="bg-green-600 h-4 rounded-full transition-all duration-300"
                             style="width: {{ $loan->getProgressPercentage() }}%"></div>
                     </div>
                 </div>
 
                 @if($loan->disbursement_date)
                     <div class="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
-                        <p class="text-sm text-green-800 dark:text-green-300">
-                            <span class="font-medium">✓ Pinjaman dicairkan</span> pada
+                        <p class="text-sm text-green-800 dark:text-green-300 flex items-center gap-1.5 flex-wrap">
+                            <x-icon name="check-circle" class="w-4 h-4 shrink-0 text-green-600" />
+                            <span class="font-medium">{{ __('Pinjaman dicairkan') }}</span> pada
                             {{ $loan->disbursement_date->format('d F Y') }}
                             @if($loan->disbursedBy)
                                 oleh {{ $loan->disbursedBy->name }}
@@ -71,9 +72,9 @@
                     </div>
                 @elseif($loan->status === 'pending_disbursement')
                     <div class="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl">
-                        <p class="text-sm text-yellow-800 dark:text-yellow-300">
-                            <span class="font-medium">⏳ Menunggu pencairan</span> - Tim Finance akan memproses pinjaman
-                            Anda.
+                        <p class="text-sm text-yellow-800 dark:text-yellow-300 flex items-center gap-1.5 flex-wrap">
+                            <x-icon name="clock" class="w-4 h-4 shrink-0 text-yellow-600" />
+                            <span class="font-medium">{{ __('Menunggu pencairan') }}</span> - {{ __('Tim Finance akan memproses pinjaman Anda.') }}
                         </p>
                     </div>
                 @endif

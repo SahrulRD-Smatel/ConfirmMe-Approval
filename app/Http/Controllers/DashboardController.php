@@ -65,9 +65,9 @@ class DashboardController extends Controller
         // Base stats query based on role
         $documentsQuery = Document::query();
 
-        if ($user->hasPermissionTo('view-all-documents')) {
+        if ($user->can('view-all-documents')) {
             // View all
-        } elseif ($user->hasPermissionTo('view-department-documents')) {
+        } elseif ($user->can('view-department-documents')) {
             $documentsQuery->where('department', $user->department);
         } else {
             $documentsQuery->where('user_id', $user->id);
@@ -75,7 +75,7 @@ class DashboardController extends Controller
 
         // Calculate statistics
         // Anyone who can approve documents is an approver
-        $isApprover = $user->hasPermissionTo('approve-document');
+        $isApprover = $user->can('approve-document');
 
         $stats = [
             'total_documents' => $documentsQuery->count(),

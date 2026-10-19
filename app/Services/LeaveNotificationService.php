@@ -152,12 +152,28 @@ class LeaveNotificationService
      */
     protected function findHRManager(): ?User
     {
-        return User::permission('manage-attendance')
-            ->where('department', 'Human Resources')
-            ->where('is_active', true)
-            ->first()
-            ?? User::permission('manage-attendance')
+        try {
+            if (\Spatie\Permission\Models\Permission::where('name', 'manage-attendance')->exists()) {
+                $user = User::permission('manage-attendance')
+                    ->where('department', 'Human Resources')
+                    ->where('is_active', true)
+                    ->first()
+                    ?? User::permission('manage-attendance')
+                        ->where('is_active', true)
+                        ->first();
+                if ($user) {
+                    return $user;
+                }
+            }
+        } catch (\Throwable $e) {}
+
+        try {
+            return User::role(['hrd', 'manager'])
+                ->where('department', 'Human Resources')
                 ->where('is_active', true)
                 ->first();
+        } catch (\Throwable $e) {
+            return null;
+        }
     }
 }

@@ -56,7 +56,7 @@
                 @endcan
 
                 {{-- Generate PO Button - Only for users with create-po permission, approved PO-type documents without existing PO --}}
-                @if(auth()->user()->hasPermissionTo('create-po') && $document->status === 'approved' && $document->approval_type === 'po' && !$document->purchaseOrder)
+                @if(auth()->user()->can('create-po') && $document->status === 'approved' && $document->approval_type === 'po' && !$document->purchaseOrder)
                     <x-ui.button href="{{ route('finance.po.create', ['document_id' => $document->id]) }}" variant="primary"
                         icon="document-plus" size="sm">
                         {{ __('Generate PO') }}
@@ -64,7 +64,7 @@
                 @endif
 
                 {{-- Generate Invoice Button - Only for users with create-invoice permission, approved Invoice-type documents without existing Invoice --}}
-                @if(auth()->user()->hasPermissionTo('create-invoice') && $document->status === 'approved' && $document->approval_type === 'invoice' && !$document->invoice)
+                @if(auth()->user()->can('create-invoice') && $document->status === 'approved' && $document->approval_type === 'invoice' && !$document->invoice)
                     <x-ui.button href="{{ route('finance.invoices.create', ['document_id' => $document->id]) }}"
                         variant="primary" icon="document-plus" size="sm">
                         {{ __('Generate Invoice') }}
@@ -72,7 +72,7 @@
                 @endif
 
                 {{-- Show link to existing PO --}}
-                @if(auth()->user()->hasPermissionTo('view-finance-documents') && $document->purchaseOrder)
+                @if(auth()->user()->can('view-finance-documents') && $document->purchaseOrder)
                     <x-ui.button href="{{ route('finance.po.show', $document->purchaseOrder) }}" variant="secondary"
                         icon="document-text" size="sm">
                         {{ __('Lihat PO') }}
@@ -80,7 +80,7 @@
                 @endif
 
                 {{-- Show link to existing Invoice --}}
-                @if(auth()->user()->hasPermissionTo('view-finance-documents') && $document->invoice)
+                @if(auth()->user()->can('view-finance-documents') && $document->invoice)
                     <x-ui.button href="{{ route('finance.invoices.show', $document->invoice) }}" variant="secondary"
                         icon="document-text" size="sm">
                         {{ __('Lihat Invoice') }}
@@ -226,8 +226,9 @@
                                 {{ number_format($document->approved_budget, 0, ',', '.') }}
                             </dd>
                             @if((float) $document->estimated_budget > 0 && (float) $document->approved_budget !== (float) $document->estimated_budget)
-                                <dd class="text-xs text-yellow-600 dark:text-yellow-400 mt-0.5">
-                                    📝 {{ __('Nominal diubah dari') }} Rp {{ number_format($document->estimated_budget, 0, ',', '.') }}
+                                <dd class="text-xs text-yellow-600 dark:text-yellow-400 mt-0.5 flex items-center gap-1">
+                                    <x-icon name="pencil-square" class="w-3.5 h-3.5 shrink-0" />
+                                    <span>{{ __('Nominal diubah dari') }} Rp {{ number_format($document->estimated_budget, 0, ',', '.') }}</span>
                                 </dd>
                             @endif
                         </div>

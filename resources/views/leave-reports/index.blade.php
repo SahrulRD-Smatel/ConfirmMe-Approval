@@ -4,7 +4,6 @@
     <div class="space-y-7">
         {{-- Header --}}
         <div class="card-elevated relative overflow-hidden rounded-3xl p-6">
-            <div class="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-amber-50/60 to-transparent rounded-full -mr-16 -mt-16 pointer-events-none"></div>
             <div class="relative z-10 flex flex-col gap-4">
                 {{-- Title Row --}}
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">

@@ -206,7 +206,7 @@ class LeaveRequest extends Model
         return match ($step) {
             1 => 'pending_supervisor',
             2 => 'pending_manager',
-            3 => 'pending_hrd',
+            3 => 'pending_hr',
             4 => 'pending_hr_final',
             default => 'approved',
         };

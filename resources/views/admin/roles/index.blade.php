@@ -12,39 +12,45 @@
     </x-slot>
 
     <div class="space-y-5">
-        <!-- <section class="rounded-[1.75rem] border border-gray-200/80 bg-white/90 p-5 shadow-soft-lg shadow-gray-900/[0.025] dark:border-gray-800/80 dark:bg-gray-900/90 sm:p-6">
-            <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-                <div class="flex items-start gap-3">
-                    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary-50 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400">
-                        <x-icon name="shield-check" class="h-5 w-5" />
-                    </div>
-                    <div>
-                        <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400">Role directory</p>
-                        <h2 class="mt-1 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Access profiles</h2>
-                        <p class="mt-1 max-w-2xl text-xs leading-5 text-gray-500 dark:text-gray-400">Buka hanya role yang ingin ditinjau. Daftar permission di dalam setiap grup memiliki scroll internal agar halaman tetap ringkas.</p>
-                    </div>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800 shadow-xs">
+            <div class="flex items-start gap-3">
+                <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                    <x-icon name="shield-check" class="h-5 w-5" />
                 </div>
-                <div class="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.12em] text-gray-500 dark:text-gray-400">
-                    <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1.5 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400"><span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>Aktif</span>
-                    <span class="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1.5 text-gray-500 dark:bg-gray-800 dark:text-gray-400"><span class="h-1.5 w-1.5 rounded-full bg-gray-400"></span>Tidak aktif</span>
-                    <span class="inline-flex items-center gap-1.5 rounded-full bg-primary-50 px-2.5 py-1.5 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400"><span class="h-1.5 w-1.5 rounded-full bg-primary-500"></span>Sistem</span>
+                <div>
+                    <h2 class="text-sm font-semibold text-gray-900 dark:text-white">{{ __('Panduan Hak Akses (Permissions)') }}</h2>
+                    <p class="mt-0.5 text-xs text-gray-600 dark:text-gray-300">
+                        {{ __('Halaman ini mengontrol visibilitas menu dan tombol aksi di aplikasi. Untuk mengatur tingkatan jabatan / hierarki auto-skip persetujuan dokumen, silakan atur di') }}
+                        <a href="{{ route('admin.workflow.index') }}" class="font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-400 underline">{{ __('Konfigurasi Workflow') }} &rarr;</a>
+                    </p>
                 </div>
             </div>
-        </section> -->
+            <a href="{{ route('admin.workflow.index') }}" class="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 shadow-xs dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200">
+                <x-icon name="cog-6-tooth" class="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                {{ __('Atur Hierarki') }}
+            </a>
+        </div>
 
         @foreach($roles as $role)
         @php
             $rolePerms = $role->permissions->pluck('name')->toArray();
             $isProtected = in_array($role->name, ['admin','staff','supervisor','hrd','direktur','finance','purchasing','direktur_operasional','hrd_coordinator','manager','direktur_hr','direktur_finance','direktur_it','direktur_sales','presiden_direktur']);
             
-            // Generate icon based on role name
+            // Standard flat icon & neutral styling
             $icon = 'users';
-            $bgColor = 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300';
-            if($role->name === 'admin') { $icon = 'shield-check'; $bgColor = 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400'; }
-            elseif(str_starts_with($role->name, 'direktur') || $role->name === 'presiden_direktur') { $icon = 'building-office-2'; $bgColor = 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'; }
-            elseif($role->name === 'hrd' || $role->name === 'hrd_coordinator') { $icon = 'user-group'; $bgColor = 'bg-pink-100 text-pink-600 dark:bg-pink-900/30 dark:text-pink-400'; }
-            elseif($role->name === 'finance' || $role->name === 'purchasing') { $icon = 'banknotes'; $bgColor = 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400'; }
-            elseif($role->name === 'manager' || $role->name === 'supervisor') { $icon = 'star'; $bgColor = 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400'; }
+            $bgColor = 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 border border-gray-200 dark:border-gray-700';
+            if($role->name === 'admin') {
+                $icon = 'shield-check';
+                $bgColor = 'bg-primary-50 text-primary-700 dark:bg-primary-950/30 dark:text-primary-400 border border-primary-200 dark:border-primary-800';
+            } elseif(str_starts_with($role->name, 'direktur') || $role->name === 'presiden_direktur') {
+                $icon = 'building-office-2';
+            } elseif($role->name === 'hrd' || $role->name === 'hrd_coordinator') {
+                $icon = 'user-group';
+            } elseif($role->name === 'finance' || $role->name === 'purchasing') {
+                $icon = 'banknotes';
+            } elseif($role->name === 'manager' || $role->name === 'supervisor') {
+                $icon = 'briefcase';
+            }
         @endphp
 
         <section x-data="{ open: false }"

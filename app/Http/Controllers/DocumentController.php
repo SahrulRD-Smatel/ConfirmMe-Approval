@@ -762,6 +762,18 @@ class DocumentController extends Controller
 
         return $this->renderPdfWithPageCounter($viewName, compact('document', 'qrCode'), $filename);
     }
+
+    /**
+     * Download PDF for the document as attachment.
+     */
+    public function download(Document $document)
+    {
+        $response = $this->print($document);
+        $filename = 'DOC-' . $document->document_number . '.pdf';
+        $response->headers->set('Content-Disposition', 'attachment; filename="' . $filename . '"');
+
+        return $response;
+    }
     
     /**
      * Add a comment to the document

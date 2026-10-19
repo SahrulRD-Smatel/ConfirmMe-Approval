@@ -72,9 +72,15 @@
                                 @if($location->address)
                                     <p class="text-sm text-gray-500 mt-0.5">{{ $location->address }}</p>
                                 @endif
-                                <div class="flex items-center gap-4 mt-2 text-xs text-gray-400">
-                                    <span>📍 {{ $location->latitude }}, {{ $location->longitude }}</span>
-                                    <span>📏 Radius: {{ $location->radius_meters }}m</span>
+                                <div class="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                                    <span class="flex items-center gap-1">
+                                        <x-icon name="map-pin" class="w-3.5 h-3.5 shrink-0" />
+                                        {{ $location->latitude }}, {{ $location->longitude }}
+                                    </span>
+                                    <span class="flex items-center gap-1">
+                                        <x-icon name="arrows-pointing-out" class="w-3.5 h-3.5 shrink-0" />
+                                        Radius: {{ $location->radius_meters }}m
+                                    </span>
                                 </div>
                             </div>
                             <span class="text-xs font-medium px-2 py-1 rounded-full {{ $location->is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">

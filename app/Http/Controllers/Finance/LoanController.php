@@ -154,7 +154,7 @@ class LoanController extends Controller
         $request->validate([
             'amount' => 'required|numeric|min:1000',
             'payment_date' => 'required|date',
-            'payment_method' => 'required|in:salary_deduction,transfer,cash',
+            'payment_method' => 'required|in:salary_deduction,payroll_deduction,transfer,cash',
             'proof_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
             'notes' => 'nullable|string|max:500',
         ], [
@@ -174,13 +174,15 @@ class LoanController extends Controller
             $proofPath = $request->file('proof_file')->store('repayment-proofs', 'public');
         }
 
+        $paymentMethod = $request->payment_method === 'payroll_deduction' ? 'salary_deduction' : $request->payment_method;
+
         // Record the repayment
         $loan->recordRepayment(
             (float) $request->amount,
             auth()->id(),
             [
                 'payment_date' => $request->payment_date,
-                'payment_method' => $request->payment_method,
+                'payment_method' => $paymentMethod,
                 'proof_file' => $proofPath,
                 'notes' => $request->notes,
             ]

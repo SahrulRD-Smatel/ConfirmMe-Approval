@@ -28,7 +28,7 @@
         <div class="grid grid-cols-1 items-stretch gap-4 md:grid-cols-2 xl:grid-cols-3">
             @forelse($templates as $template)
                 <x-ui.card class="group relative flex h-full flex-col overflow-hidden rounded-2xl border-gray-200/80 p-0 shadow-soft transition duration-200 hover:-translate-y-0.5 hover:shadow-soft-lg dark:border-gray-800/80">
-                    <div class="h-1 bg-gradient-to-r from-primary-500 via-primary-400 to-primary-200 dark:from-primary-700 dark:via-primary-600 dark:to-primary-900"></div>
+                    <div class="h-1 bg-primary-600 dark:bg-primary-700"></div>
                     <div class="flex flex-1 flex-col p-5">
                         <div class="flex items-start justify-between gap-3">
                             <div class="flex min-w-0 items-start gap-3">

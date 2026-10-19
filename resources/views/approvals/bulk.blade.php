@@ -63,8 +63,8 @@
                             <label class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">{{ __('Aksi:') }}</label>
                             <select name="action" x-model="action"
                                 class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-primary-500/20 text-sm min-w-[120px]">
-                                <option value="approve">✓ {{ __('Setujui') }}</option>
-                                <option value="reject">✗ {{ __('Tolak') }}</option>
+                                <option value="approve">{{ __('Setujui') }}</option>
+                                <option value="reject">{{ __('Tolak') }}</option>
                             </select>
                         </div>
 
@@ -73,8 +73,10 @@
 
                         <button type="button" @click="submitForm()" x-bind:disabled="selectedIds.length === 0"
                             :class="action === 'approve' ? 'bg-success-600 hover:bg-success-700' : 'bg-danger-600 hover:bg-danger-700'"
-                            class="px-4 py-2 text-white font-medium rounded-xl whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed">
-                            <span x-text="action === 'approve' ? '✓ ' + '{{ __('Setujui Terpilih') }}' : '✗ ' + '{{ __('Tolak Terpilih') }}'"></span>
+                            class="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-white font-medium rounded-xl whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed">
+                            <x-icon x-show="action === 'approve'" name="check" class="w-4 h-4" />
+                            <x-icon x-show="action === 'reject'" name="x-mark" class="w-4 h-4" />
+                            <span x-text="action === 'approve' ? '{{ __('Setujui Terpilih') }}' : '{{ __('Tolak Terpilih') }}'"></span>
                         </button>
                     </div>
                 </div>

@@ -81,3 +81,23 @@ Ensure the application texts in blade/php files are wrapped in the Laravel trans
 ### Verification
 - Check the output logs of both Python scripts to ensure they completed without critical errors.
 - Do NOT modify special protected terms like "Dashboard", "Finance", "Role", "Approval", and "HR" unless explicitly requested by the user, as the `translate_id.py` script automatically respects these exceptions.
+
+## 6. Standar UI/UX Profesional: Flat Default Material (LARANGAN KERAS DESAIN AI / EMOJI / GRADIENT)
+
+Aplikasi ConfirmMe adalah sistem enterprise internal untuk persetujuan dokumen perusahaan. Semua tampilan UI wajib terlihat **profesional, bersih, flat, dan user-friendly**:
+
+1. **DILARANG KERAS MENGGUNAKAN EMOJI / EMOTICON:**
+   - Jangan pernah meletakkan unicode emoji (seperti 🛡️, ⚡, 🔍, 🚀, ✨, 📌, dll) di tombol, badge, judul card, atau teks antarmuka Blade.
+   - Gunakan selalu icon SVG bawaan proyek (`<x-icon name="..." />` dari Heroicons) atau cukup tipografi yang rapi dan lugas.
+
+2. **DILARANG MENGGUNAKAN WARNA GRADIENT & WARNA-WARNI ACAK (NO "AI DESIGN"):**
+   - Hindari `bg-gradient-...` dan kombinasi warna-warni acak (seperti ungu, pink, amber, emerald, biru) pada badge atau list item yang membuat aplikasi terlihat seperti "template AI murahan".
+   - Pertahankan konsistensi palet warna default sistem:
+     - **Aksen Utama:** Maroon / Primary (`primary-600`, `primary-700`, `bg-primary-50` untuk hover/active).
+     - **Netral Flat:** `gray-50`, `gray-100`, `gray-200`, `gray-700`, `gray-800`, `gray-900`.
+     - **Borders:** `border-gray-200` (light) dan `border-gray-700` (dark).
+     - **Kartu & Permukaan:** `bg-white dark:bg-gray-800` flat material.
+
+3. **GUNAKAN KOMPONEN BAWAAN (DEFAULT TEMPLATE):**
+   - Gunakan komponen standar proyek: `<x-ui.card>`, `<x-ui.button>`, `<x-ui.badge>`, `<x-ui.modal>`, `<x-icon>`.
+   - Jaga estetika tetap minimalis, fungsional, dan ramah pengguna (UX user-friendly) tanpa dekorasi berlebihan.

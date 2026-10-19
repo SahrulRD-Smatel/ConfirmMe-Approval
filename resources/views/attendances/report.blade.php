@@ -4,7 +4,6 @@
     <div class="space-y-7">
         {{-- Header --}}
         <div class="card-elevated p-6 relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-amber-50/60 to-transparent rounded-full -mr-16 -mt-16 pointer-events-none"></div>
             <div class="relative z-10 flex flex-col gap-4">
                 {{-- Title Row --}}
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -91,7 +90,7 @@
         @if(session('import_summary'))
             @php $summary = session('import_summary'); @endphp
             <div class="card-elevated overflow-hidden border border-green-200">
-                <div class="bg-gradient-to-r from-green-600 to-emerald-600 px-6 py-4">
+                <div class="bg-green-600 px-6 py-4">
                     <div class="flex items-center gap-2 text-white">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />

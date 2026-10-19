@@ -103,7 +103,7 @@
     @else
         <x-ui.card class="text-center py-12">
             <x-icon name="check-circle" class="w-16 h-16 text-success-500 mx-auto mb-4" />
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">{{ __('Semua Beres! 🎉') }}</h3>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">{{ __('Semua Beres!') }}</h3>
             <p class="text-gray-500 dark:text-gray-400">{{ __('Tidak ada dokumen yang menunggu approval dari Anda.') }}</p>
         </x-ui.card>
     @endif

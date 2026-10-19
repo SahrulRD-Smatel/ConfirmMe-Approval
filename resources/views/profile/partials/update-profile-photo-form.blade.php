@@ -25,7 +25,7 @@
                             src="{{ asset('storage/' . $user->avatar) }}" alt="{{ $user->name }}">
                     @else
                         <div id="avatar-placeholder"
-                            class="h-24 w-24 rounded-full border-4 border-gray-200 dark:border-gray-700 shadow-lg bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center">
+                            class="h-24 w-24 rounded-full border-4 border-gray-200 dark:border-gray-700 shadow-sm bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                             <span class="text-3xl font-bold text-gray-500 dark:text-gray-400">
                                 {{ strtoupper(substr($user->name, 0, 1)) }}
                             </span>

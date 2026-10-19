@@ -627,7 +627,7 @@
 
                 <!-- Welcome Text -->
                 <div class="welcome-text">
-                    <h1>{{ __('Selamat Datang!') }} 👋</h1>
+                    <h1>{{ __('Selamat Datang!') }}</h1>
                     <p>{{ __('Silakan masuk untuk melanjutkan ke dashboard Anda') }}</p>
                 </div>
 

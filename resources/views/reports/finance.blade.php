@@ -52,80 +52,80 @@
         </h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {{-- Total Budget --}}
-            <div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl p-5 text-white shadow-lg transform hover:-translate-y-1 transition duration-300">
+            <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-indigo-100 text-xs font-medium uppercase tracking-wider">{{ __('Total Anggaran') }}</p>
-                        <p class="text-2xl font-bold mt-1">
+                        <p class="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Total Anggaran') }}</p>
+                        <p class="text-2xl font-bold mt-1 text-gray-900 dark:text-white">
                             {{ smartMoney($budgetSummary['total']) }}
                         </p>
                     </div>
-                    <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
-                        <x-icon name="banknotes" class="w-6 h-6 text-white" />
+                    <div class="p-2.5 bg-primary-50 dark:bg-primary-950/50 rounded-xl text-primary-600 dark:text-primary-400">
+                        <x-icon name="banknotes" class="w-6 h-6" />
                     </div>
                 </div>
-                <p class="mt-3 text-xs text-indigo-100">Rp {{ number_format($budgetSummary['total'], 0, ',', '.') }}</p>
+                <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">Rp {{ number_format($budgetSummary['total'], 0, ',', '.') }}</p>
             </div>
 
             {{-- Budget Terpakai --}}
-            <div class="bg-gradient-to-br from-orange-500 to-red-500 rounded-xl p-5 text-white shadow-lg transform hover:-translate-y-1 transition duration-300">
+            <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-orange-100 text-xs font-medium uppercase tracking-wider">{{ __('Terpakai (Actual)') }}</p>
-                        <p class="text-2xl font-bold mt-1">
+                        <p class="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Terpakai (Actual)') }}</p>
+                        <p class="text-2xl font-bold mt-1 text-gray-900 dark:text-white">
                             {{ smartMoney($budgetSummary['used']) }}
                         </p>
                     </div>
-                    <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
-                        <x-icon name="arrow-trending-up" class="w-6 h-6 text-white" />
+                    <div class="p-2.5 bg-amber-50 dark:bg-amber-950/50 rounded-xl text-amber-600 dark:text-amber-400">
+                        <x-icon name="arrow-trending-up" class="w-6 h-6" />
                     </div>
                 </div>
                 @php
                     $usagePct = $budgetSummary['total'] > 0 ? round(($budgetSummary['used'] / $budgetSummary['total']) * 100, 1) : 0;
                 @endphp
                 <div class="mt-3">
-                    <div class="flex justify-between text-xs text-orange-100 mb-1">
+                    <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
                         <span>{{ $usagePct }}% {{ __('terpakai') }}</span>
                     </div>
-                    <div class="w-full bg-white/20 rounded-full h-1.5">
-                        <div class="bg-white h-1.5 rounded-full transition-all duration-1000" style="width: {{ min($usagePct, 100) }}%"></div>
+                    <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5">
+                        <div class="bg-amber-500 h-1.5 rounded-full transition-all duration-1000" style="width: {{ min($usagePct, 100) }}%"></div>
                     </div>
                 </div>
             </div>
 
             {{-- Budget Terikat (Committed) --}}
-            <div class="bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl p-5 text-white shadow-lg transform hover:-translate-y-1 transition duration-300">
+            <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-blue-100 text-xs font-medium uppercase tracking-wider">{{ __('Committed (PO)') }}</p>
-                        <p class="text-2xl font-bold mt-1">
+                        <p class="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Committed (PO)') }}</p>
+                        <p class="text-2xl font-bold mt-1 text-gray-900 dark:text-white">
                             {{ smartMoney($budgetSummary['committed']) }}
                         </p>
                     </div>
-                    <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
-                        <x-icon name="lock-closed" class="w-6 h-6 text-white" />
+                    <div class="p-2.5 bg-blue-50 dark:bg-blue-950/50 rounded-xl text-blue-600 dark:text-blue-400">
+                        <x-icon name="lock-closed" class="w-6 h-6" />
                     </div>
                 </div>
                 @php
                     $commitPct = $budgetSummary['total'] > 0 ? round(($budgetSummary['committed'] / $budgetSummary['total']) * 100, 1) : 0;
                 @endphp
-                <p class="mt-3 text-xs text-blue-100">{{ $commitPct }}% {{ __('dari total anggaran') }}</p>
+                <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">{{ $commitPct }}% {{ __('dari total anggaran') }}</p>
             </div>
 
             {{-- Sisa Budget --}}
-            <div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl p-5 text-white shadow-lg transform hover:-translate-y-1 transition duration-300">
+            <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-green-100 text-xs font-medium uppercase tracking-wider">{{ __('Sisa Anggaran') }}</p>
-                        <p class="text-2xl font-bold mt-1">
+                        <p class="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Sisa Anggaran') }}</p>
+                        <p class="text-2xl font-bold mt-1 text-gray-900 dark:text-white">
                             {{ smartMoney($budgetSummary['remaining']) }}
                         </p>
                     </div>
-                    <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
-                        <x-icon name="currency-dollar" class="w-6 h-6 text-white" />
+                    <div class="p-2.5 bg-green-50 dark:bg-green-950/50 rounded-xl text-green-600 dark:text-green-400">
+                        <x-icon name="currency-dollar" class="w-6 h-6" />
                     </div>
                 </div>
-                <p class="mt-3 text-xs text-green-100">{{ __('Available for use') }}</p>
+                <p class="mt-3 text-xs text-green-600 dark:text-green-400 font-medium">{{ __('Tersedia untuk digunakan') }}</p>
             </div>
         </div>
     </section>

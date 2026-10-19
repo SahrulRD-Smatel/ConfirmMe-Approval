@@ -12,7 +12,7 @@
         <div class="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]">
             {{-- Profile Photo Card --}}
             <x-ui.card class="overflow-hidden !p-0">
-                <div class="border-b border-gray-200/80 bg-gradient-to-br from-primary-50 via-white to-white px-6 py-6 dark:border-gray-800/80 dark:from-primary-900/20 dark:via-gray-900 dark:to-gray-900">
+                <div class="border-b border-gray-200/80 bg-gray-50/70 px-6 py-6 dark:border-gray-800/80 dark:bg-gray-800/50">
                     <div class="flex items-center gap-3">
                         <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-600 text-white shadow-soft">
                             <x-icon name="camera" class="h-5 w-5" />

@@ -31,47 +31,34 @@
 
                 if (hours >= 5 && hours < 12) {
                     this.greeting = '{{ __('Selamat Pagi') }}';
-                    this.greetingIcon = '☀️';
-                    this.subtitle = '{{ __('Semoga harimu menyenangkan! 🌟') }}';
+                    this.subtitle = '{{ __('Semoga harimu menyenangkan!') }}';
                 } else if (hours >= 12 && hours < 15) {
                     this.greeting = '{{ __('Selamat Siang') }}';
-                    this.greetingIcon = '🌤️';
-                    this.subtitle = '{{ __('Tetap semangat ya! 💪') }}';
+                    this.subtitle = '{{ __('Tetap fokus dan produktif.') }}';
                 } else if (hours >= 15 && hours < 18) {
                     this.greeting = '{{ __('Selamat Sore') }}';
-                    this.greetingIcon = '🌅';
-                    this.subtitle = '{{ __('Sedikit lagi, kamu pasti bisa! ✨') }}';
+                    this.subtitle = '{{ __('Selesaikan pekerjaan hari ini dengan baik.') }}';
                 } else {
                     this.greeting = '{{ __('Selamat Malam') }}';
-                    this.greetingIcon = '🌙';
-                    this.subtitle = '{{ __('Istirahat yang cukup ya! 💤') }}';
+                    this.subtitle = '{{ __('Waktunya beristirahat.') }}';
                 }
             }
         }" class="space-y-8">
-            {{-- Clean White Header (Good Morning Style) --}}
-            <div class="relative mb-8 -mt-4 overflow-hidden rounded-3xl border border-gray-200/80 bg-white/95 p-6 shadow-soft-lg ring-1 ring-black/5 backdrop-blur-sm sm:mx-0 sm:p-8">
-                {{-- Subtle decorative background --}}
-                <div
-                    class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-primary-50/60 to-transparent rounded-full -mr-20 -mt-20 pointer-events-none">
-                </div>
-                <div
-                    class="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-tr from-blue-50/40 to-transparent rounded-full -ml-16 -mb-16 pointer-events-none">
-                </div>
-
-                <div class="relative z-10 flex flex-col gap-7 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+            {{-- Clean Flat Header --}}
+            <div class="relative mb-8 -mt-4 overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-xs sm:mx-0 sm:p-8">
+                <div class="flex flex-col gap-7 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
                     {{-- Left: Greeting + Clock --}}
                     <div>
                         <div class="flex items-center gap-2 mb-1">
-                            <span class="text-2xl" x-text="greetingIcon">☀️</span>
-                            <h1 class="text-xl sm:text-2xl font-bold text-gray-800 font-display">
+                            <h1 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white font-display">
                                 <span x-text="greeting">{{ __('Selamat Pagi') }}</span>, {{ auth()->user()->name }}!
                             </h1>
                         </div>
-                        <p class="text-sm text-gray-400 ml-9" x-text="subtitle">{{ __('Semoga harimu menyenangkan! 🌟') }}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400" x-text="subtitle">{{ __('Semoga harimu menyenangkan!') }}</p>
 
                         {{-- Big Clock --}}
-                        <div class="mt-4 ml-9">
-                            <span class="text-4xl sm:text-5xl font-bold text-gray-900 font-display tracking-tight"
+                        <div class="mt-4">
+                            <span class="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white font-display tracking-tight"
                                 x-text="currentTime">07.53 am</span>
                         </div>
                     </div>
@@ -92,13 +79,13 @@
                             </button>
                         </div>
 
-                        @if(auth()->user()->hasPermissionTo('create-document'))
+                        @can('create-document')
                             <a href="{{ route('documents.create') }}"
                                 class="hidden items-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:bg-primary-700 hover:shadow-lg hover:shadow-primary-500/25 sm:inline-flex">
                                 <x-icon name="plus-circle" class="w-4 h-4" />
                                 {{ __('Buat Pengajuan') }}
                             </a>
-                        @endif
+                        @endcan
                     </div>
                 </div>
             </div>
@@ -110,32 +97,32 @@
                 <div class="space-y-5 stagger-enter">
                     {{-- Profile Card (Enhanced) --}}
                     <div class="card-elevated group relative overflow-hidden rounded-3xl hover-lift shimmer-hover">
-                        {{-- Decorative top gradient --}}
-                        <div class="relative h-24 bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900">
-                            <div class="absolute inset-0 dot-pattern opacity-20"></div>
+                        {{-- Decorative top bar --}}
+                        <div class="relative h-20 bg-primary-700">
+                            <div class="absolute inset-0 dot-pattern opacity-10"></div>
                         </div>
 
-                        <div class="relative z-10 -mt-12 px-6 pb-7 text-center">
-                            {{-- Avatar with gradient ring --}}
-                            <div class="avatar-ring inline-block mx-auto mb-4 shadow-lg">
+                        <div class="relative z-10 -mt-10 px-6 pb-7 text-center">
+                            {{-- Avatar --}}
+                            <div class="inline-block mx-auto mb-4 rounded-full p-1 bg-white dark:bg-gray-800 shadow">
                                 <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}"
-                                    class="w-20 h-20 object-cover">
+                                    class="w-20 h-20 rounded-full object-cover">
                             </div>
 
-                            <h3 class="text-lg font-bold text-gray-900">{{ auth()->user()->name }}</h3>
+                            <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ auth()->user()->name }}</h3>
                             <p class="text-sm text-gray-500 mb-1">{{ auth()->user()->position ?? __('Karyawan') }}</p>
 
                             {{-- Stats mini cards --}}
                             <div class="mt-4 grid grid-cols-2 gap-3">
-                                <div class="stat-mini bg-gradient-to-br from-primary-50 to-primary-100 rounded-xl">
+                                <div class="stat-mini bg-primary-50 dark:bg-primary-950/40 border border-primary-200 dark:border-primary-800 rounded-xl p-3">
                                     <span
-                                        class="block text-2xl font-bold text-primary-700">{{ auth()->user()->annual_leave_balance }}</span>
-                                    <span class="text-[11px] font-medium text-primary-600/70">{{ __('Sisa Cuti') }}</span>
+                                        class="block text-2xl font-bold text-primary-700 dark:text-primary-400">{{ auth()->user()->annual_leave_balance }}</span>
+                                    <span class="text-[11px] font-medium text-primary-600/70 dark:text-primary-400/70">{{ __('Sisa Cuti') }}</span>
                                 </div>
-                                <div class="stat-mini bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl">
+                                <div class="stat-mini bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3">
                                     <span
-                                        class="block text-2xl font-bold text-amber-700">{{ auth()->user()->sick_leave_used }}</span>
-                                    <span class="text-[11px] font-medium text-amber-600/70">{{ __('Sakit (Hari)') }}</span>
+                                        class="block text-2xl font-bold text-gray-700 dark:text-gray-300">{{ auth()->user()->sick_leave_used }}</span>
+                                    <span class="text-[11px] font-medium text-gray-500">{{ __('Sakit (Hari)') }}</span>
                                 </div>
                             </div>
                         </div>
@@ -158,7 +145,7 @@
                                 </div>
                             </a>
                             @if(feature_active('module_hris'))
-                            @if(auth()->user()->hasPermissionTo('menu-my-leaves'))
+                            @can('menu-my-leaves')
                             <a href="{{ route('leave-requests.create') }}" class="quick-link-card">
                                 <div class="icon-wrap bg-green-100">
                                     <x-icon name="calendar" class="w-5 h-5 text-green-600" />
@@ -168,7 +155,7 @@
                                     <p class="text-[11px] text-gray-400">{{ __('Ajukan permohonan') }}</p>
                                 </div>
                             </a>
-                            @endif
+                            @endcan
                             @endif
                         </div>
                     </div>
@@ -202,9 +189,9 @@
                                 <div class="text-center py-6">
                                     <div
                                         class="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-2">
-                                        <x-icon name="check-circle" class="w-6 h-6 text-green-400" />
+                                        <x-icon name="check-circle" class="w-6 h-6 text-green-500" />
                                     </div>
-                                    <p class="text-sm text-gray-400">{{ __('Semua hadir 🎉') }}</p>
+                                    <p class="text-sm text-gray-500">{{ __('Semua hadir') }}</p>
                                 </div>
                             @endforelse
                         </div>
@@ -215,22 +202,22 @@
                 {{-- Center Column: Announcements (Compact Feed) --}}
                 <div class="space-y-4 xl:col-span-3 xl:space-y-5">
                     {{-- HR Banner (Only for HR) --}}
-                    @if(auth()->user()->hasPermissionTo('menu-announcements'))
-                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-pink-500 to-rose-500 p-5 text-white shadow-soft-lg sm:p-6">
+                    @can('menu-announcements')
+                        <div class="relative overflow-hidden rounded-2xl border border-primary-200 dark:border-primary-900 bg-primary-50 dark:bg-primary-950/40 p-5 shadow-sm sm:p-6">
                             <div class="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                 <div>
-                                    <h2 class="text-lg font-bold">{{ __('Halo Tim HR') }}, {{ auth()->user()->name }}!</h2>
-                                    <p class="mt-1 text-sm text-pink-100">{{ __('Kelola pengumuman dan informasi perusahaan di sini.') }}</p>
+                                    <h2 class="text-lg font-bold text-primary-900 dark:text-primary-100">{{ __('Halo Tim HR') }}, {{ auth()->user()->name }}!</h2>
+                                    <p class="mt-1 text-sm text-primary-700 dark:text-primary-300">{{ __('Kelola pengumuman dan informasi perusahaan di sini.') }}</p>
                                 </div>
-                                <x-ui.button href="{{ route('announcements.index') }}" variant="secondary" size="sm">
+                                <x-ui.button href="{{ route('announcements.index') }}" variant="primary" size="sm">
                                     {{ __('Kelola Pengumuman') }}
                                 </x-ui.button>
                             </div>
-                            <div class="pointer-events-none absolute bottom-0 right-0 translate-x-10 translate-y-10 opacity-10">
-                                <x-icon name="megaphone" class="h-32 w-32" />
+                            <div class="pointer-events-none absolute bottom-0 right-0 translate-x-8 translate-y-8 opacity-10 text-primary-800">
+                                <x-icon name="megaphone" class="h-28 w-28" />
                             </div>
                         </div>
-                    @endif
+                    @endcan
 
                     {{-- Compact announcement stream --}}
                     <div class="mx-auto max-w-3xl space-y-3">
@@ -242,7 +229,7 @@
                                 <h3 class="text-base font-bold text-gray-900 dark:text-white">{{ __('Feed Terbaru') }}</h3>
                                 <p class="text-[11px] text-gray-400">{{ __('Pengumuman terbaru dan lampiran terkait') }}</p>
                             </div>
-                            <div class="h-px flex-1 bg-gradient-to-r from-gray-200 to-transparent"></div>
+                            <div class="h-px flex-1 bg-gray-200 dark:bg-gray-700"></div>
                         </div>
 
                         @forelse($announcements as $announcement)
@@ -282,7 +269,7 @@
                                         </div>
                                     </div>
 
-                                    @if(auth()->user()->hasPermissionTo('menu-announcements'))
+                                    @can('menu-announcements')
                                         <div class="relative shrink-0" x-data="{ open: false }">
                                             <button @click="open = !open" @click.away="open = false"
                                                 class="rounded-full p-1 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-300">
@@ -297,7 +284,7 @@
                                                     class="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700">{{ __('Hapus') }}</button>
                                             </div>
                                         </div>
-                                    @endif
+                                    @endcan
                                 </div>
 
                                 {{-- Media uses contain + natural dimensions to avoid crop/upscaling blur --}}
@@ -583,7 +570,7 @@
 
                     <!-- Pending Approvals (Enhanced) -->
                     <div class="space-y-6">
-                        @if(auth()->user()->hasPermissionTo('approve-document'))
+                        @can('approve-document')
                             <div class="card-elevated rounded-3xl p-5 sm:p-6">
                                 <div class="flex items-center justify-between mb-4">
                                     <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
@@ -621,7 +608,7 @@
                                                 class="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-2">
                                                 <x-icon name="check-circle" class="w-6 h-6 text-green-400" />
                                             </div>
-                                            <p class="text-sm text-gray-500">{{ __('Tidak ada dokumen yang menunggu 👍') }}</p>
+                                            <p class="text-sm text-gray-500">{{ __('Tidak ada dokumen yang menunggu') }}</p>
                                         </div>
                                     @endforelse
                                 </div>
@@ -636,7 +623,7 @@
                                     </div>
                                 @endif
                             </div>
-                        @endif
+                        @endcan
                     </div>
                 </div>
             </div>

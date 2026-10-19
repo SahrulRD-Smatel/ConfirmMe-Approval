@@ -30,68 +30,63 @@
 
     <!-- Statistics Cards -->
     <div class="mb-7 grid grid-cols-2 gap-4 md:grid-cols-4">
-        <div
-            class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl p-4 text-white shadow-lg transform hover:-translate-y-1 transition duration-300">
+        <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
             <div class="flex justify-between items-start">
                 <div>
-                    <p class="text-indigo-100 text-xs font-medium uppercase tracking-wider">{{ __('Total Dokumen') }}</p>
-                    <p class="text-3xl font-bold mt-1">{{ number_format($stats['total']) }}</p>
+                    <p class="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Total Dokumen') }}</p>
+                    <p class="text-3xl font-bold mt-1 text-gray-900 dark:text-white">{{ number_format($stats['total']) }}</p>
                 </div>
-                <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
-                    <x-icon name="document-text" class="w-6 h-6 text-white" />
+                <div class="p-2.5 bg-primary-50 dark:bg-primary-950/50 rounded-xl text-primary-600 dark:text-primary-400">
+                    <x-icon name="document-text" class="w-6 h-6" />
                 </div>
             </div>
-            <div class="mt-4 text-xs text-indigo-100 flex items-center gap-1">
-                <span
-                    class="bg-white/20 px-1.5 py-0.5 rounded text-white font-semibold">+{{ $stats['this_month'] }}</span>
+            <div class="mt-4 text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
+                <span class="bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 px-1.5 py-0.5 rounded font-semibold">+{{ $stats['this_month'] }}</span>
                 <span>{{ __('bulan ini') }}</span>
             </div>
         </div>
 
-        <div
-            class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl p-4 text-white shadow-lg transform hover:-translate-y-1 transition duration-300">
+        <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
             <div class="flex justify-between items-start">
                 <div>
-                    <p class="text-green-100 text-xs font-medium uppercase tracking-wider">{{ __('Disetujui') }}</p>
-                    <p class="text-3xl font-bold mt-1">{{ number_format($stats['approved']) }}</p>
+                    <p class="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Disetujui') }}</p>
+                    <p class="text-3xl font-bold mt-1 text-gray-900 dark:text-white">{{ number_format($stats['approved']) }}</p>
                 </div>
-                <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
-                    <x-icon name="check-circle" class="w-6 h-6 text-white" />
+                <div class="p-2.5 bg-green-50 dark:bg-green-950/50 rounded-xl text-green-600 dark:text-green-400">
+                    <x-icon name="check-circle" class="w-6 h-6" />
                 </div>
             </div>
-            <div class="mt-4 text-xs text-green-100">
-                {{ $stats['total'] > 0 ? round(($stats['approved'] / $stats['total']) * 100) : 0 }}% {{ __('completion rate') }}
+            <div class="mt-4 text-xs text-gray-500 dark:text-gray-400">
+                <span class="font-medium text-green-600 dark:text-green-400">{{ $stats['total'] > 0 ? round(($stats['approved'] / $stats['total']) * 100) : 0 }}%</span> {{ __('completion rate') }}
             </div>
         </div>
 
-        <div
-            class="bg-gradient-to-br from-red-500 to-pink-600 rounded-xl p-4 text-white shadow-lg transform hover:-translate-y-1 transition duration-300">
+        <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
             <div class="flex justify-between items-start">
                 <div>
-                    <p class="text-red-100 text-xs font-medium uppercase tracking-wider">{{ __('Ditolak') }}</p>
-                    <p class="text-3xl font-bold mt-1">{{ number_format($stats['rejected']) }}</p>
+                    <p class="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Ditolak') }}</p>
+                    <p class="text-3xl font-bold mt-1 text-gray-900 dark:text-white">{{ number_format($stats['rejected']) }}</p>
                 </div>
-                <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
-                    <x-icon name="x-circle" class="w-6 h-6 text-white" />
+                <div class="p-2.5 bg-red-50 dark:bg-red-950/50 rounded-xl text-red-600 dark:text-red-400">
+                    <x-icon name="x-circle" class="w-6 h-6" />
                 </div>
             </div>
-            <div class="mt-4 text-xs text-red-100">
+            <div class="mt-4 text-xs text-gray-500 dark:text-gray-400">
                 {{ __('Action required') }}
             </div>
         </div>
 
-        <div
-            class="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl p-4 text-white shadow-lg transform hover:-translate-y-1 transition duration-300">
+        <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
             <div class="flex justify-between items-start">
                 <div>
-                    <p class="text-yellow-100 text-xs font-medium uppercase tracking-wider">{{ __('Pending') }}</p>
-                    <p class="text-3xl font-bold mt-1">{{ number_format($stats['pending']) }}</p>
+                    <p class="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Pending') }}</p>
+                    <p class="text-3xl font-bold mt-1 text-gray-900 dark:text-white">{{ number_format($stats['pending']) }}</p>
                 </div>
-                <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
-                    <x-icon name="clock" class="w-6 h-6 text-white" />
+                <div class="p-2.5 bg-amber-50 dark:bg-amber-950/50 rounded-xl text-amber-600 dark:text-amber-400">
+                    <x-icon name="clock" class="w-6 h-6" />
                 </div>
             </div>
-            <div class="mt-4 text-xs text-yellow-100">
+            <div class="mt-4 text-xs text-gray-500 dark:text-gray-400">
                 {{ __('Avg Process') }}: {{ $stats['avg_days'] ?? '~' }} {{ __('hari') }}
             </div>
         </div>

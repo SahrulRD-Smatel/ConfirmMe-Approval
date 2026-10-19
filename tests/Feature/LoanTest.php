@@ -8,6 +8,7 @@ use App\Models\Document;
 use App\Models\LoanRepayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 use Tests\TestCase;
 use Spatie\Permission\PermissionRegistrar;
 
@@ -22,9 +23,11 @@ class LoanTest extends TestCase
         // Clear permission cache to avoid "table not found" or caching issues in tests
         $this->app->make(PermissionRegistrar::class)->forgetCachedPermissions();
 
-        // Create necessary roles
+        // Create necessary roles and permissions
         Role::firstOrCreate(['name' => 'staff']);
-        Role::firstOrCreate(['name' => 'finance']);
+        $financeRole = Role::firstOrCreate(['name' => 'finance']);
+        $manageBudget = Permission::firstOrCreate(['name' => 'manage-budget']);
+        $financeRole->givePermissionTo($manageBudget);
     }
 
     protected function createDocument(User $user)

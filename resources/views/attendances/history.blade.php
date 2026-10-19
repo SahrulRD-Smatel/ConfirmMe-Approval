@@ -4,7 +4,6 @@
     <div class="space-y-7">
         {{-- Header --}}
         <x-ui.card class="relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-primary-50/60 to-transparent rounded-full -mr-16 -mt-16 pointer-events-none"></div>
             <div class="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                     <h1 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Riwayat Absensi') }}</h1>

@@ -150,8 +150,9 @@
                                         </p>
                                     @endif
                                     @if($approval->approved_amount)
-                                        <p class="text-sm text-primary-600 dark:text-primary-400 mt-1 font-medium">
-                                            💰 {{ __('Nominal disetujui') }}: Rp {{ number_format($approval->approved_amount, 0, ',', '.') }}
+                                        <p class="text-sm text-primary-600 dark:text-primary-400 mt-1 font-medium flex items-center gap-1.5">
+                                            <x-icon name="banknotes" class="w-4 h-4 shrink-0" />
+                                            <span>{{ __('Nominal disetujui') }}: Rp {{ number_format($approval->approved_amount, 0, ',', '.') }}</span>
                                         </p>
                                     @endif
                                 </div>

@@ -9,7 +9,7 @@
         <div class="relative z-10 w-full max-w-5xl">
             <div class="overflow-hidden rounded-[2rem] border border-gray-200/80 bg-white shadow-soft-lg dark:border-gray-800/80 dark:bg-gray-900 lg:grid lg:grid-cols-[0.86fr_1.14fr]">
                 {{-- Context Panel --}}
-                <aside class="relative overflow-hidden bg-gradient-to-br from-primary-700 via-primary-800 to-primary-950 p-6 text-white sm:p-8 lg:p-10">
+                <aside class="relative overflow-hidden bg-primary-900 p-6 text-white sm:p-8 lg:p-10">
                     <div class="absolute -right-16 -top-16 h-48 w-48 rounded-full border border-white/10"></div>
                     <div class="absolute -bottom-20 -left-14 h-56 w-56 rounded-full border border-white/5"></div>
 

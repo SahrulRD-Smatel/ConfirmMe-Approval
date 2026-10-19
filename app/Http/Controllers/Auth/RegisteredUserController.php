@@ -63,7 +63,11 @@ class RegisteredUserController extends Controller
      */
     private function notifyAdmins(User $newUser): void
     {
-        $admins = User::role('admin')->where('is_active', true)->get();
+        try {
+            $admins = User::role('admin')->where('is_active', true)->get();
+        } catch (\Throwable $e) {
+            $admins = collect();
+        }
 
         foreach ($admins as $admin) {
             // In-app notification (database) — no locale needed

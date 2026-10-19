@@ -45,7 +45,7 @@
     <!-- Navigation -->
     <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1" x-init="$nextTick(() => { let active = $el.querySelector('[data-active=true]'); if(active) { active.scrollIntoView({block: 'center'}); } })">
         {{-- Dashboard - Users without Executive Dashboard --}}
-        @if(!auth()->user()->hasPermissionTo('menu-executive-dashboard'))
+        @if(!auth()->user()->can('menu-executive-dashboard'))
             <x-sidebar-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" icon="home">
                 {{ __('Dashboard') }}
             </x-sidebar-link>
@@ -88,7 +88,7 @@
         @endcan
 
         {{-- Dokumen Menu - Based on permissions --}}
-        @if(auth()->user()->hasPermissionTo('create-document') || auth()->user()->hasPermissionTo('view-document'))
+        @if(auth()->user()->can('create-document') || auth()->user()->can('view-document'))
             <x-sidebar-section title="{{ __('Dokumen') }}" :collapsed="$sidebarCollapsed ?? false">
                 @can('create', App\Models\Document::class)
                     <x-sidebar-link :href="route('documents.create')" :active="request()->routeIs('documents.create')"
@@ -96,19 +96,19 @@
                         {{ __('Buat Pengajuan') }}
                     </x-sidebar-link>
                 @endcan
-                @if(auth()->user()->hasPermissionTo('view-document'))
+                @if(auth()->user()->can('view-document'))
                     <x-sidebar-link :href="route('documents.index')" :active="request()->routeIs('documents.index')"
                         icon="document-text">
                         {{ __('Daftar Pengajuan') }}
                     </x-sidebar-link>
                 @endif
-                @if(feature_active('module_loan') && auth()->user()->hasPermissionTo('menu-my-loans'))
+                @if(feature_active('module_loan') && auth()->user()->can('menu-my-loans'))
                     <x-sidebar-link :href="route('my-loans.index')" :active="request()->routeIs('my-loans.*')"
                         icon="hand-raised">
                         {{ __('Pinjaman Saya') }}
                     </x-sidebar-link>
                 @endif
-                @if(feature_active('module_hris') && auth()->user()->hasPermissionTo('menu-my-leaves'))
+                @if(feature_active('module_hris') && auth()->user()->can('menu-my-leaves'))
                     <x-sidebar-link :href="route('leave-requests.index')" :active="request()->routeIs('leave-requests.*')"
                         icon="calendar">
                         {{ __('Pengajuan Cuti') }}
@@ -132,9 +132,9 @@
         @endif
 
         {{-- Approval Menu - Dynamic via Permissions --}}
-        @if(auth()->user()->hasPermissionTo('approve-document'))
+        @if(auth()->user()->can('approve-document'))
             {{-- Users with Executive Dashboard use Executive section instead --}}
-            @if(!auth()->user()->hasPermissionTo('menu-executive-dashboard'))
+            @if(!auth()->user()->can('menu-executive-dashboard'))
                 <x-sidebar-section title="{{ __('Approval') }}" :collapsed="$sidebarCollapsed ?? false">
                     <x-sidebar-link :href="route('approvals.index')" :active="request()->routeIs('approvals.index')"
                         icon="inbox-arrow-down">
@@ -174,7 +174,7 @@
 
 
         <!-- Finance Menu - Dynamic via Permissions -->
-        @if(feature_active('module_finance') && auth()->user()->hasAnyPermission(['manage-budget', 'create-po', 'create-invoice', 'print-po', 'print-invoice', 'manage-purchasing']))
+        @if(feature_active('module_finance') && auth()->user()->canAny(['manage-budget', 'create-po', 'create-invoice', 'print-po', 'print-invoice', 'manage-purchasing']))
             <x-sidebar-section title="{{ __('Keuangan') }}" :collapsed="$sidebarCollapsed ?? false">
 
                 <x-sidebar-link :href="route('finance.budgets.index')" :active="request()->routeIs('finance.budgets.*')"
@@ -220,7 +220,7 @@
         @endcan
 
         {{-- Reports - Dynamic via Permissions --}}
-        @if(auth()->user()->hasPermissionTo('view-reports'))
+        @if(auth()->user()->can('view-reports'))
             <x-sidebar-section title="{{ __('Laporan') }}" :collapsed="$sidebarCollapsed ?? false">
                 <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*')" icon="chart-bar">
                     {{ __('Laporan') }}
@@ -229,7 +229,7 @@
         @endif
 
         {{-- Attendance & Leave Admin - Dynamic via Permissions --}}
-        @if(feature_active('module_hris') && auth()->user()->hasAnyPermission(['manage-attendance', 'view-attendance']))
+        @if(feature_active('module_hris') && auth()->user()->canAny(['manage-attendance', 'view-attendance']))
             <x-sidebar-section title="{{ __('Kelola Karyawan') }}" :collapsed="$sidebarCollapsed ?? false">
                 <x-sidebar-link :href="route('attendance-admin.report')" :active="request()->routeIs('attendance-admin.report')"
                     icon="chart-bar-square">
@@ -249,7 +249,7 @@
         @endif
 
         {{-- Pengumuman - Dynamic via Permissions --}}
-        @if(auth()->user()->hasPermissionTo('menu-announcements'))
+        @if(auth()->user()->can('menu-announcements'))
             <x-sidebar-section title="HRIS" :collapsed="$sidebarCollapsed ?? false">
                 <x-sidebar-link :href="route('announcements.index')" :active="request()->routeIs('announcements.*')"
                     icon="megaphone">

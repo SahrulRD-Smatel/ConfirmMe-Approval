@@ -28,81 +28,81 @@
         </div>
     </x-slot>
 
-    {{-- SECTION 1: Top Metrics (Pastel Cards) --}}
+    {{-- SECTION 1: Top Metrics (Flat Material Cards) --}}
     <div class="mb-8 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
         {{-- Total Users --}}
-        <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-5 relative overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+        <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-xs transition hover:border-gray-300 dark:hover:border-gray-600">
             <div class="flex justify-between items-start mb-4">
                 <div>
-                    <p class="text-white/80 text-xs font-bold uppercase tracking-wider mb-1">{{ __('Total Pengguna') }}</p>
-                    <h3 class="text-3xl font-bold text-white mb-1">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">{{ __('Total Pengguna') }}</p>
+                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-1">
                         {{ number_format($adminStats['total_users']) }}
                     </h3>
                 </div>
-                <div class="p-2.5 bg-white/20 rounded-xl shrink-0">
-                    <x-icon name="users" class="w-5 h-5 text-white" />
+                <div class="p-2.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shrink-0">
+                    <x-icon name="users" class="w-5 h-5" />
                 </div>
             </div>
-            <div>
-                <span class="inline-flex items-center px-2 py-1 rounded bg-white/20 text-white text-[10px] font-medium">
+            <div class="flex items-center gap-1.5">
+                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-semibold bg-primary-50 text-primary-700 dark:bg-primary-950/40 dark:text-primary-300">
                     {{ $adminStats['users_growth'] >= 0 ? '+' : '' }}{{ $adminStats['users_growth'] }}
                 </span>
-                <span class="text-white/80 text-xs ml-1">{{ __('bulan ini') }}</span>
+                <span class="text-xs text-gray-500 dark:text-gray-400">{{ __('bulan ini') }}</span>
             </div>
         </div>
 
         {{-- Departments --}}
-        <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-5 relative overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+        <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-xs transition hover:border-gray-300 dark:hover:border-gray-600">
             <div class="flex justify-between items-start mb-4">
                 <div>
-                    <p class="text-white/80 text-xs font-bold uppercase tracking-wider mb-1">{{ __('Departemen Aktif') }}</p>
-                    <h3 class="text-3xl font-bold text-white mb-1">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">{{ __('Departemen Aktif') }}</p>
+                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-1">
                         {{ $adminStats['total_departments'] }}
                     </h3>
                 </div>
-                <div class="p-2.5 bg-white/20 rounded-xl shrink-0">
-                    <x-icon name="building-office-2" class="w-5 h-5 text-white" />
+                <div class="p-2.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shrink-0">
+                    <x-icon name="building-office-2" class="w-5 h-5" />
                 </div>
             </div>
             <div>
-                <span class="text-white/80 text-xs">{{ __('Total unit terdaftar di sistem') }}</span>
+                <span class="text-xs text-gray-500 dark:text-gray-400">{{ __('Total unit terdaftar di sistem') }}</span>
             </div>
         </div>
 
         {{-- System Features --}}
-        <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-5 relative overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+        <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-xs transition hover:border-gray-300 dark:hover:border-gray-600">
             <div class="flex justify-between items-start mb-4">
                 <div>
-                    <p class="text-white/80 text-xs font-bold uppercase tracking-wider mb-1">{{ __('Fitur Sistem Aktif') }}</p>
-                    <h3 class="text-3xl font-bold text-white mb-1">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">{{ __('Fitur Sistem Aktif') }}</p>
+                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-1">
                         {{ $adminStats['active_features'] }}/{{ $adminStats['total_features'] }}
                     </h3>
                 </div>
-                <div class="p-2.5 bg-white/20 rounded-xl shrink-0">
-                    <x-icon name="cpu-chip" class="w-5 h-5 text-white" />
+                <div class="p-2.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shrink-0">
+                    <x-icon name="cpu-chip" class="w-5 h-5" />
                 </div>
             </div>
             <div>
-                <span class="text-white/80 text-xs">{{ __('Modul sistem yang menyala') }}</span>
+                <span class="text-xs text-gray-500 dark:text-gray-400">{{ __('Modul sistem yang menyala') }}</span>
             </div>
         </div>
 
         {{-- System Health / Uptime --}}
-        <div class="bg-gradient-to-br from-orange-400 to-orange-500 rounded-2xl p-5 relative overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+        <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-xs transition hover:border-gray-300 dark:hover:border-gray-600">
             <div class="flex justify-between items-start mb-4">
                 <div>
-                    <p class="text-white/80 text-xs font-bold uppercase tracking-wider mb-1">{{ __('Status Sistem') }}</p>
-                    <h3 class="text-3xl font-bold text-white mb-1">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">{{ __('Status Sistem') }}</p>
+                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-1">
                         {{ __('Normal') }}
                     </h3>
                 </div>
-                <div class="p-2.5 bg-white/20 rounded-xl shrink-0">
-                    <x-icon name="shield-check" class="w-5 h-5 text-white" />
+                <div class="p-2.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shrink-0">
+                    <x-icon name="shield-check" class="w-5 h-5" />
                 </div>
             </div>
             <div>
-                <span class="inline-flex items-center text-white/90 text-xs font-medium">
-                    <span class="w-2 h-2 rounded-full bg-green-300 animate-pulse mr-1.5"></span>
+                <span class="inline-flex items-center text-xs text-gray-500 dark:text-gray-400 font-medium">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 mr-1.5"></span>
                     {{ __('Semua layanan operasional') }}
                 </span>
             </div>

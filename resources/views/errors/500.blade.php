@@ -231,7 +231,7 @@
             </div>
 
             {{-- Glitch Error Code --}}
-            <h1 class="glitch text-7xl sm:text-8xl font-black bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent mb-3">
+            <h1 class="glitch text-7xl sm:text-8xl font-black text-red-600 mb-3">
                 500
             </h1>
             <h2 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">Kesalahan Server!</h2>

@@ -37,86 +37,86 @@
         <h2 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">{{ __('Financial Health (Tahun') }} {{ date('Y') }})</h2>
         <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
             {{-- Total Budget --}}
-            <div class="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl p-5 relative overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                 <div class="flex justify-between items-start mb-4">
                     <div>
-                        <p class="text-white/80 text-xs font-bold uppercase tracking-wider mb-1">{{ __('Total Budget') }}</p>
-                        <h3 class="text-3xl font-bold text-white mb-1 truncate" title="Rp {{ number_format($budgetKPIs['total'], 0, ',', '.') }}">
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">{{ __('Total Budget') }}</p>
+                        <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-1 truncate" title="Rp {{ number_format($budgetKPIs['total'], 0, ',', '.') }}">
                             Rp {{ number_format($budgetKPIs['total'] / 1000000000, 1, ',', '.') }} M
                         </h3>
                     </div>
-                    <div class="p-2.5 bg-white/20 rounded-xl shrink-0">
-                        <x-icon name="banknotes" class="w-5 h-5 text-white" />
+                    <div class="p-2.5 bg-primary-50 dark:bg-primary-950/50 rounded-xl text-primary-600 dark:text-primary-400 shrink-0">
+                        <x-icon name="banknotes" class="w-5 h-5" />
                     </div>
                 </div>
                 <div>
-                    <span class="text-white/80 text-xs">Rp {{ number_format($budgetKPIs['total'], 0, ',', '.') }}</span>
+                    <span class="text-xs text-gray-500 dark:text-gray-400">Rp {{ number_format($budgetKPIs['total'], 0, ',', '.') }}</span>
                 </div>
             </div>
 
             {{-- Committed --}}
-            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-5 relative overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                 <div class="flex justify-between items-start mb-4">
                     <div>
-                        <p class="text-white/80 text-xs font-bold uppercase tracking-wider mb-1">{{ __('Committed (PO)') }}</p>
-                        <h3 class="text-3xl font-bold text-white mb-1 truncate">
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">{{ __('Committed (PO)') }}</p>
+                        <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-1 truncate">
                             Rp {{ number_format($budgetKPIs['committed'] / 1000000, 0, ',', '.') }} Jt
                         </h3>
                     </div>
-                    <div class="p-2.5 bg-white/20 rounded-xl shrink-0">
-                        <x-icon name="document-duplicate" class="w-5 h-5 text-white" />
+                    <div class="p-2.5 bg-blue-50 dark:bg-blue-950/50 rounded-xl text-blue-600 dark:text-blue-400 shrink-0">
+                        <x-icon name="document-duplicate" class="w-5 h-5" />
                     </div>
                 </div>
                 <div class="mt-2">
-                    <div class="flex justify-between items-center mb-1 text-white">
-                        <span class="text-white/80 text-[10px]">{{ __('Progress') }}</span>
-                        <span class="text-white font-bold text-[10px]">{{ $budgetKPIs['committed_percentage'] }}%</span>
+                    <div class="flex justify-between items-center mb-1 text-gray-500 dark:text-gray-400">
+                        <span class="text-[10px]">{{ __('Progress') }}</span>
+                        <span class="font-bold text-[10px] text-gray-900 dark:text-white">{{ $budgetKPIs['committed_percentage'] }}%</span>
                     </div>
-                    <div class="w-full bg-black/20 rounded-full h-1.5 overflow-hidden">
-                        <div class="bg-white h-1.5 rounded-full" style="width: {{ $budgetKPIs['committed_percentage'] }}%"></div>
+                    <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                        <div class="bg-blue-600 h-1.5 rounded-full" style="width: {{ $budgetKPIs['committed_percentage'] }}%"></div>
                     </div>
                 </div>
             </div>
 
             {{-- Used --}}
-            <div class="bg-gradient-to-br from-red-500 to-rose-600 rounded-2xl p-5 relative overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                 <div class="flex justify-between items-start mb-4">
                     <div>
-                        <p class="text-white/80 text-xs font-bold uppercase tracking-wider mb-1">{{ __('Terpakai (Actual)') }}</p>
-                        <h3 class="text-3xl font-bold text-white mb-1 truncate">
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">{{ __('Terpakai (Actual)') }}</p>
+                        <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-1 truncate">
                             {{ $budgetKPIs['used'] == 0 ? 'Rp 0' : 'Rp ' . number_format($budgetKPIs['used'] / 1000000, 0, ',', '.') . ' Jt' }}
                         </h3>
                     </div>
-                    <div class="p-2.5 bg-white/20 rounded-xl shrink-0">
-                        <x-icon name="arrow-trending-up" class="w-5 h-5 text-white" />
+                    <div class="p-2.5 bg-amber-50 dark:bg-amber-950/50 rounded-xl text-amber-600 dark:text-amber-400 shrink-0">
+                        <x-icon name="arrow-trending-up" class="w-5 h-5" />
                     </div>
                 </div>
                 <div class="mt-2">
-                    <div class="flex justify-between items-center mb-1 text-white">
-                        <span class="text-white/80 text-[10px]">{{ __('Usage') }}</span>
-                        <span class="text-white font-bold text-[10px]">{{ $budgetKPIs['usage_percentage'] }}%</span>
+                    <div class="flex justify-between items-center mb-1 text-gray-500 dark:text-gray-400">
+                        <span class="text-[10px]">{{ __('Usage') }}</span>
+                        <span class="font-bold text-[10px] text-gray-900 dark:text-white">{{ $budgetKPIs['usage_percentage'] }}%</span>
                     </div>
-                    <div class="w-full bg-black/20 rounded-full h-1.5 overflow-hidden">
-                        <div class="bg-white h-1.5 rounded-full" style="width: {{ $budgetKPIs['usage_percentage'] }}%"></div>
+                    <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                        <div class="bg-amber-500 h-1.5 rounded-full" style="width: {{ $budgetKPIs['usage_percentage'] }}%"></div>
                     </div>
                 </div>
             </div>
 
             {{-- Remaining --}}
-            <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-5 relative overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                 <div class="flex justify-between items-start mb-4">
                     <div>
-                        <p class="text-white/80 text-xs font-bold uppercase tracking-wider mb-1">{{ __('Sisa Budget') }}</p>
-                        <h3 class="text-3xl font-bold text-white mb-1 truncate" title="Rp {{ number_format($budgetKPIs['remaining'], 0, ',', '.') }}">
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">{{ __('Sisa Budget') }}</p>
+                        <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-1 truncate" title="Rp {{ number_format($budgetKPIs['remaining'], 0, ',', '.') }}">
                             {{ $budgetKPIs['remaining'] == 0 ? 'Rp 0' : 'Rp ' . number_format($budgetKPIs['remaining'] / 1000000000, 1, ',', '.') . ' M' }}
                         </h3>
                     </div>
-                    <div class="p-2.5 bg-white/20 rounded-xl shrink-0">
-                        <x-icon name="currency-dollar" class="w-5 h-5 text-white" />
+                    <div class="p-2.5 bg-green-50 dark:bg-green-950/50 rounded-xl text-green-600 dark:text-green-400 shrink-0">
+                        <x-icon name="currency-dollar" class="w-5 h-5" />
                     </div>
                 </div>
                 <div>
-                    <span class="text-white/80 text-xs">{{ __('Available for use') }}</span>
+                    <span class="text-xs text-green-600 dark:text-green-400 font-medium">{{ __('Tersedia untuk digunakan') }}</span>
                 </div>
             </div>
         </div>

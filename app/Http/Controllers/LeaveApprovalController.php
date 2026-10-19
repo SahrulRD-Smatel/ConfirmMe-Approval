@@ -54,23 +54,28 @@ class LeaveApprovalController extends Controller
         $requester = $leaveRequest->user;
 
         // Global fallback: Admin or users with view-all-documents can approve
-        if ($user->hasPermissionTo('view-all-documents')) {
+        if ($user->can('view-all-documents')) {
+            return true;
+        }
+
+        // Presiden Direktur can approve Director leave directly
+        if ($user->hasRole('presiden_direktur')) {
             return true;
         }
 
         // Step 1 & 2: Same department approval
         if (in_array($leaveRequest->status, ['pending', 'pending_supervisor', 'pending_manager'])) {
-            if ($user->hasPermissionTo('approve-document') && $user->department === $requester->department) {
+            if (($user->can('approve-document') || $user->hasAnyRole(['supervisor', 'manager'])) && $user->department === $requester->department) {
                 return true;
             }
         }
 
         // Step 3 & 4: HR Department approval
         if (in_array($leaveRequest->status, ['pending_hrd', 'pending_hr', 'pending_hr_final'])) {
-            if ($user->hasPermissionTo('manage-attendance')) {
+            if ($user->can('manage-attendance')) {
                 return true;
             }
-            if ($user->hasPermissionTo('approve-document') && $this->isHRDepartment($user->department)) {
+            if (($user->can('approve-document') || $user->hasAnyRole(['hrd', 'manager'])) && $this->isHRDepartment($user->department)) {
                 return true;
             }
         }
@@ -81,6 +86,33 @@ class LeaveApprovalController extends Controller
 
 
     /**
+     * Safely query users by permission without throwing if permission doesn't exist.
+     */
+    private function getUsersByPermissionSafe(string $permission)
+    {
+        try {
+            if (\Spatie\Permission\Models\Permission::where('name', $permission)->exists()) {
+                return User::permission($permission);
+            }
+        } catch (\Throwable $e) {}
+        return null;
+    }
+
+    /**
+     * Safely query users by role without throwing if role doesn't exist.
+     */
+    private function getUsersByRoleSafe(string|array $roles)
+    {
+        try {
+            $roleList = (array) $roles;
+            if (\Spatie\Permission\Models\Role::whereIn('name', $roleList)->exists()) {
+                return User::role($roleList);
+            }
+        } catch (\Throwable $e) {}
+        return null;
+    }
+
+    /**
      * Find the approver for a given step.
      */
     private function findApproverForStep(LeaveRequest $leaveRequest, int $step): ?User
@@ -88,42 +120,30 @@ class LeaveApprovalController extends Controller
         $requester = $leaveRequest->user;
         $requesterId = $requester->id;
 
-        return match ($step) {
-            // Step 1: Supervisor/Manager in same department (has approve-document)
-            1 => User::permission('approve-document')
-                ->where('department', $requester->department)
-                ->where('is_active', true)
-                ->where('id', '!=', $requesterId)
-                ->orderBy('id', 'asc')
-                ->first(),
+        try {
+            return match ($step) {
+                // Step 1: Supervisor/Manager in same department (has approve-document or role)
+                1 => ($this->getUsersByPermissionSafe('approve-document')?->where('department', $requester->department)->where('is_active', true)->where('id', '!=', $requesterId)->orderBy('id', 'asc')->first()
+                    ?? $this->getUsersByRoleSafe(['supervisor', 'manager'])?->where('department', $requester->department)->where('is_active', true)->where('id', '!=', $requesterId)->orderBy('id', 'asc')->first()),
 
-            // Step 2: Manager/Director in same department (has view-department-documents)
-            2 => User::permission('view-department-documents')
-                ->where('department', $requester->department)
-                ->where('is_active', true)
-                ->where('id', '!=', $requesterId)
-                ->orderBy('id', 'asc')
-                ->first(),
+                // Step 2: Manager/Director in same department
+                2 => ($this->getUsersByPermissionSafe('view-department-documents')?->where('department', $requester->department)->where('is_active', true)->where('id', '!=', $requesterId)->orderBy('id', 'asc')->first()
+                    ?? $this->getUsersByRoleSafe(['manager', 'direktur', 'direktur_it', 'direktur_sales', 'direktur_finance', 'direktur_hr', 'direktur_operasional'])?->where('department', $requester->department)->where('is_active', true)->where('id', '!=', $requesterId)->orderBy('id', 'asc')->first()),
 
-            // Step 3: HR Coordinator (has manage-attendance)
-            3 => User::permission('manage-attendance')
-                ->where('is_active', true)
-                ->where('id', '!=', $requesterId)
-                ->first(),
+                // Step 3: HR Coordinator
+                3 => ($this->getUsersByPermissionSafe('manage-attendance')?->where('is_active', true)->where('id', '!=', $requesterId)->first()
+                    ?? $this->getUsersByRoleSafe(['hrd_coordinator', 'hrd', 'manager'])?->where('department', 'Human Resources')->where('is_active', true)->where('id', '!=', $requesterId)->first()),
 
-            // Step 4: HR Manager / Admin
-            4 => User::permission('manage-attendance')
-                ->where('department', 'Human Resources')
-                ->where('is_active', true)
-                ->where('id', '!=', $requesterId)
-                ->first()
-                ?? User::permission('view-all-documents')
-                    ->where('is_active', true)
-                    ->where('id', '!=', $requesterId)
-                    ->first(),
+                // Step 4: HR Manager / Admin
+                4 => ($this->getUsersByPermissionSafe('manage-attendance')?->where('department', 'Human Resources')->where('is_active', true)->where('id', '!=', $requesterId)->first()
+                    ?? $this->getUsersByRoleSafe(['manager', 'hrd'])?->where('department', 'Human Resources')->where('is_active', true)->where('id', '!=', $requesterId)->first()
+                    ?? $this->getUsersByPermissionSafe('view-all-documents')?->where('is_active', true)->where('id', '!=', $requesterId)->first()),
 
-            default => null,
-        };
+                default => null,
+            };
+        } catch (\Throwable $e) {
+            return null;
+        }
     }
 
     /**
@@ -210,7 +230,7 @@ class LeaveApprovalController extends Controller
         }
 
         // HR Department viewers
-        if ($user->hasPermissionTo('manage-attendance')) {
+        if ($user->can('manage-attendance')) {
             if ($user->department === 'Human Resources') {
                 $query->whereIn('status', ['pending_hr', 'pending_hr_final', 'pending_hrd']);
             } else {
@@ -220,14 +240,14 @@ class LeaveApprovalController extends Controller
         }
 
         // Department-level viewers
-        if ($user->hasPermissionTo('view-department-documents')) {
+        if ($user->can('view-department-documents')) {
             $query->whereIn('status', ['pending', 'pending_supervisor', 'pending_manager'])
                 ->whereHas('user', fn($u) => $u->where('department', $user->department));
             return;
         }
 
         // Team-level viewers (Supervisor)
-        if ($user->hasPermissionTo('approve-document')) {
+        if ($user->can('approve-document')) {
             $query->whereIn('status', ['pending', 'pending_supervisor'])
                 ->whereHas('user', fn($u) => $u->where('department', $user->department));
             return;
@@ -249,6 +269,11 @@ class LeaveApprovalController extends Controller
             abort(403, 'Anda tidak berhak menyetujui pengajuan cuti ini.');
         }
 
+        // Presiden Direktur has ultimate executive authority — directly finalize approval (skips HR tiers)
+        if ($user->hasRole('presiden_direktur')) {
+            return $this->finalizeApproval($leaveRequest, $user);
+        }
+
         $currentStep = $leaveRequest->current_step ?? 1;
         
         // After Step 1 (Atasan/Supervisor), it should go straight to Step 3 (HRD), skipping Manager
@@ -262,13 +287,12 @@ class LeaveApprovalController extends Controller
         // Find next approver
         $nextApprover = $this->findApproverForStep($leaveRequest, $nextStep);
 
-        // Auto-skip steps if there is no approver OR if the next approver is the exact same user who just approved
-        while (($nextApprover === null || $nextApprover->id === $user->id) && $nextStep <= 4) {
-            if ($nextStep === 4) {
-                $nextStep++;
+        // Auto-skip steps ONLY if the next approver is the exact same user who just approved
+        while ($nextApprover !== null && $nextApprover->id === $user->id && $nextStep <= 4) {
+            $nextStep++;
+            if ($nextStep > 4) {
                 break;
             }
-            $nextStep++;
             $nextApprover = $this->findApproverForStep($leaveRequest, $nextStep);
         }
 

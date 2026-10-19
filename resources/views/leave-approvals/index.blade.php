@@ -299,7 +299,7 @@
             <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-success-50 dark:bg-success-900/20">
                 <x-icon name="check-circle" class="h-8 w-8 text-success-500" />
             </div>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Semua Beres! 🎉') }}</h3>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Semua Beres!') }}</h3>
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Tidak ada pengajuan cuti yang menunggu persetujuan Anda.') }}</p>
         </x-ui.card>
     @endif

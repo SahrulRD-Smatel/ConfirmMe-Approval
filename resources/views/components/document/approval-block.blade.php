@@ -230,7 +230,10 @@
                 {!! QrCode::size(60)->generate($verificationUrl) !!}
             </div>
             <div class="text-xs">
-                <p class="font-semibold text-green-800">✓ {{ __('Dokumen Sah - Terverifikasi Digital') }}</p>
+                <p class="font-semibold text-green-800 flex items-center gap-1.5">
+                    <x-icon name="check-badge" class="w-4 h-4 text-green-700 shrink-0" />
+                    <span>{{ __('Dokumen Sah - Terverifikasi Digital') }}</span>
+                </p>
                 <p class="text-green-600 mt-1">{{ __('Scan QR Code untuk verifikasi keaslian dokumen.') }}</p>
                 <p class="text-green-500 mt-1 text-[10px] break-all">{{ $verificationUrl }}</p>
             </div>

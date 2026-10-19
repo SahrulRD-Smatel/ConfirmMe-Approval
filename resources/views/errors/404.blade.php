@@ -186,7 +186,7 @@
             </div>
 
             {{-- Error Code --}}
-            <h1 class="text-7xl sm:text-8xl font-black bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent mb-3">
+            <h1 class="text-7xl sm:text-8xl font-black text-primary-600 mb-3">
                 404
             </h1>
             <h2 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">Halaman Tidak Ditemukan</h2>

@@ -67,9 +67,9 @@
 
         {{-- Decorative background --}}
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
-            <div class="absolute top-20 left-10 floating-x text-red-200 dark:text-red-900/30 text-6xl font-black select-none">✕</div>
-            <div class="absolute top-40 right-20 floating-x text-red-200 dark:text-red-900/30 text-4xl font-black select-none">✕</div>
-            <div class="absolute bottom-32 left-1/4 floating-x text-red-200 dark:text-red-900/30 text-5xl font-black select-none">✕</div>
+            <div class="absolute top-20 left-10 floating-x text-red-200 dark:text-red-900/30 text-6xl font-black select-none">&times;</div>
+            <div class="absolute top-40 right-20 floating-x text-red-200 dark:text-red-900/30 text-4xl font-black select-none">&times;</div>
+            <div class="absolute bottom-32 left-1/4 floating-x text-red-200 dark:text-red-900/30 text-5xl font-black select-none">&times;</div>
             <div class="absolute -top-20 -right-20 w-64 h-64 bg-red-200/30 dark:bg-red-900/10 rounded-full blur-3xl"></div>
             <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-orange-200/30 dark:bg-orange-900/10 rounded-full blur-3xl"></div>
         </div>
@@ -152,7 +152,7 @@
             </div>
 
             {{-- Error Code --}}
-            <h1 class="text-7xl sm:text-8xl font-black bg-gradient-to-r from-red-600 to-orange-500 bg-clip-text text-transparent mb-3">
+            <h1 class="text-7xl sm:text-8xl font-black text-red-600 mb-3">
                 403
             </h1>
             <h2 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">Akses Ditolak!</h2>

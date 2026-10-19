@@ -186,8 +186,6 @@
                             <div @click="selectTemplate(tpl)"
                                  class="group relative flex min-h-[172px] cursor-pointer flex-col overflow-hidden rounded-2xl border border-gray-200/80 bg-white/90 p-4 shadow-soft backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-soft-lg dark:border-gray-700/70 dark:bg-gray-900/90">
                                  
-                                <div class="absolute right-0 top-0 w-24 h-24 bg-gradient-to-br from-white/0 to-current opacity-5 rounded-bl-[100px]" :class="`text-${tpl.color}-500`"></div>
-                                
                                 <div class="relative z-10 flex min-h-[64px] items-start gap-3">
                                     <div class="w-12 h-12 rounded-xl flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-300"
                                          :class="`bg-${tpl.color}-100 dark:bg-${tpl.color}-900/30 text-${tpl.color}-600 dark:text-${tpl.color}-400`">

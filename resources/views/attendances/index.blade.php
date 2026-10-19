@@ -80,8 +80,6 @@
 
         {{-- Header --}}
         <x-ui.card class="relative mb-7 overflow-hidden rounded-3xl">
-            <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-primary-50/60 to-transparent rounded-full -mr-20 -mt-20 pointer-events-none"></div>
-
             <div class="relative z-10">
                 <div class="flex items-center gap-3 mb-2">
                     <div class="w-10 h-10 rounded-xl bg-primary-100 flex items-center justify-center">
@@ -180,8 +178,9 @@
 
                     {{-- Camera / Selfie --}}
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            📸 {{ __('Foto Selfie') }} <span class="text-red-500">*</span>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-1.5">
+                            <x-icon name="camera" class="w-4 h-4 text-gray-500" />
+                            <span>{{ __('Foto Selfie') }}</span> <span class="text-red-500">*</span>
                         </label>
 
                         <input type="file" name="photo" x-ref="photoInput" accept="image/*" class="hidden">
@@ -259,7 +258,7 @@
                 <div class="w-16 h-16 rounded-full bg-success-100 dark:bg-success-900/30 flex items-center justify-center mx-auto mb-4">
                     <x-icon name="check-badge" class="w-8 h-8 text-success-600 dark:text-success-400" />
                 </div>
-                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">{{ __('Absensi Hari Ini Selesai!') }} ✨</h3>
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">{{ __('Absensi Hari Ini Selesai!') }}</h3>
                 <p class="text-sm text-gray-500">{{ __('Check-in') }}: {{ $todayCheckIn->created_at->format('H:i') }} → {{ __('Check-out') }}: {{ $todayCheckOut->created_at->format('H:i') }}</p>
                 <p class="text-sm text-gray-500 mt-1">{{ __('Durasi kerja') }}: <strong>{{ $workDuration }}</strong></p>
             </x-ui.card>
