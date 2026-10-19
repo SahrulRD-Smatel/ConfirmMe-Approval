@@ -37,11 +37,9 @@ body {
         @apply bg-white/80 backdrop-blur-lg border border-white/40;
     }
 
-    /* Gradient Maroon Header Banner */
+    /* Solid Maroon Header Banner (no gradient) */
     .dashboard-banner {
-        background: linear-gradient(135deg, #82181a 0%, #a52a2a 40%, #c93030 70%, #82181a 100%);
-        background-size: 200% 200%;
-        animation: gradient-shift 8s ease infinite;
+        background: #82181a;
         position: relative;
         overflow: hidden;
     }
@@ -54,25 +52,12 @@ body {
         pointer-events: none;
     }
 
-    .dashboard-banner::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        right: 0;
-        height: 30px;
-        background: linear-gradient(to top, white 0%, transparent 100%);
-        pointer-events: none;
-    }
-
     /* Profile Avatar Ring */
     .avatar-ring {
         position: relative;
         padding: 4px;
         border-radius: 9999px;
-        background: linear-gradient(135deg, #c93030, #e74c4c, #f17e7e, #c93030);
-        background-size: 300% 300%;
-        animation: gradient-shift 4s ease infinite;
+        background: #c93030;
     }
 
     .avatar-ring img {
@@ -137,17 +122,6 @@ body {
         overflow: hidden;
     }
 
-    .stat-mini::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -50%;
-        width: 100%;
-        height: 100%;
-        background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
-        pointer-events: none;
-    }
-
     /* Timeline Dot */
     .timeline-item {
         @apply relative pl-6;
@@ -173,26 +147,10 @@ body {
         box-shadow: 0 2px 8px rgba(130, 24, 26, 0.15);
     }
 
-    /* Shimmer Effect on Hover */
+    /* Subtle hover (shimmer removed — flat design) */
     .shimmer-hover {
         position: relative;
         overflow: hidden;
-    }
-
-    .shimmer-hover::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 50%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-        transition: left 0.5s ease;
-        pointer-events: none;
-    }
-
-    .shimmer-hover:hover::after {
-        left: 100%;
     }
 
     /* Staggered Entry Animation */
@@ -242,10 +200,7 @@ body {
 
 @layer utilities {
     .text-gradient-maroon {
-        background: linear-gradient(135deg, #82181a, #c93030);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+        color: #c93030;
     }
 }
 
@@ -257,76 +212,6 @@ body {
 .sidebar-modern {
     border-top-right-radius: 1rem;
     border-bottom-right-radius: 1rem;
-}
-
-/* ============================================
-   Animated Floating Bubbles
-   ============================================ */
-.bubbles-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
-}
-
-.bubble {
-    position: absolute;
-    border-radius: 50%;
-    opacity: 0;
-    animation: bubble-float linear infinite;
-}
-
-/* Bubble color variants — soft maroon/rose tones */
-.bubble--maroon {
-    background: radial-gradient(circle at 30% 30%, rgba(201, 48, 48, 0.08), rgba(130, 24, 26, 0.03));
-    box-shadow: inset 0 0 20px rgba(201, 48, 48, 0.04);
-}
-
-.bubble--rose {
-    background: radial-gradient(circle at 30% 30%, rgba(244, 114, 182, 0.06), rgba(236, 72, 153, 0.02));
-    box-shadow: inset 0 0 20px rgba(244, 114, 182, 0.03);
-}
-
-.bubble--gray {
-    background: radial-gradient(circle at 30% 30%, rgba(148, 163, 184, 0.06), rgba(100, 116, 139, 0.02));
-    box-shadow: inset 0 0 20px rgba(148, 163, 184, 0.03);
-}
-
-/* Keyframes */
-@keyframes bubble-float {
-    0% {
-        transform: translateY(100vh) scale(0);
-        opacity: 0;
-    }
-
-    10% {
-        opacity: 1;
-    }
-
-    90% {
-        opacity: 1;
-    }
-
-    100% {
-        transform: translateY(-10vh) scale(1);
-        opacity: 0;
-    }
-}
-
-@keyframes gradient-shift {
-
-    0%,
-    100% {
-        background-position: 0% 50%;
-    }
-
-    50% {
-        background-position: 100% 50%;
-    }
 }
 
 @keyframes stagger-fade-in {
@@ -353,12 +238,43 @@ body {
     }
 }
 
-@keyframes shimmer {
-    0% {
-        transform: translateX(-100%);
-    }
 
-    100% {
-        transform: translateX(100%);
+/* ============================================
+   Clean entrance animations (lightweight)
+   transform/opacity only — GPU friendly
+   ============================================ */
+.anim-fade-up {
+    opacity: 0;
+    animation: fade-up 0.55s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.anim-fade-in {
+    opacity: 0;
+    animation: fade-in 0.45s ease-out forwards;
+}
+
+@keyframes fade-up {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .anim-fade-up,
+    .anim-fade-in {
+        animation: none;
+        opacity: 1;
+    }
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
     }
 }
