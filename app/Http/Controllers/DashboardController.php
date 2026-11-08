@@ -12,7 +12,7 @@ class DashboardController extends Controller
         $user = auth()->user();
 
         // Finance role uses integrated finance dashboard
-        if (($user->hasPermissionTo('manage-budget') || $user->hasPermissionTo('view-finance-documents')) && feature_active('module_finance')) {
+        if (($user->can('manage-budget') || $user->can('view-finance-documents')) && feature_active('module_finance')) {
             return redirect()->route('finance.dashboard');
         }
 
@@ -94,6 +94,9 @@ class DashboardController extends Controller
                 ->whereYear('rejected_at', now()->year)
                 ->count(),
             'is_approver' => $isApprover,
+            'my_documents' => Document::where('user_id', $user->id)->count(),
+            'my_approved' => Document::where('user_id', $user->id)->where('status', 'approved')->count(),
+            'my_pending' => Document::where('user_id', $user->id)->whereIn('status', ['pending', 'in_review', 'partially_approved'])->count(),
         ];
 
         // Recent documents
@@ -117,11 +120,14 @@ class DashboardController extends Controller
         $announcements = \App\Models\Announcement::active()->latest()->take(5)->get();
 
         // [HRIS Feature] Who's Off Today
-        $whosOff = \App\Models\LeaveRequest::with('user')
-            ->where('status', 'approved')
-            ->whereDate('start_date', '<=', now())
-            ->whereDate('end_date', '>=', now())
-            ->get();
+        $whosOff = collect();
+        if (feature_active('module_hris')) {
+            $whosOff = \App\Models\LeaveRequest::with('user')
+                ->where('status', 'approved')
+                ->whereDate('start_date', '<=', now())
+                ->whereDate('end_date', '>=', now())
+                ->get();
+        }
 
         return view('dashboard', compact('stats', 'recentDocuments', 'pendingApprovals', 'announcements', 'whosOff'));
     }

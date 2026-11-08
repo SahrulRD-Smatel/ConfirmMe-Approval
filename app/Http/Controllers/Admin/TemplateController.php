@@ -56,6 +56,11 @@ class TemplateController extends Controller
                 return !empty($df['name']) || !empty($df['label']);
             }));
         }
+        if (isset($fields['notify_roles']) && is_array($fields['notify_roles'])) {
+            $fields['notify_roles'] = array_values(array_filter($fields['notify_roles'], fn($r) => !empty($r)));
+        } else {
+            $fields['notify_roles'] = [];
+        }
 
         DocumentTemplate::create([
             'name' => $validated['name'],
@@ -107,6 +112,11 @@ class TemplateController extends Controller
             $fields['dynamic_fields'] = array_values(array_filter($fields['dynamic_fields'], function ($df) {
                 return !empty($df['name']) || !empty($df['label']);
             }));
+        }
+        if (isset($fields['notify_roles']) && is_array($fields['notify_roles'])) {
+            $fields['notify_roles'] = array_values(array_filter($fields['notify_roles'], fn($r) => !empty($r)));
+        } else {
+            $fields['notify_roles'] = [];
         }
 
         // Check if workflow changed or became inactive

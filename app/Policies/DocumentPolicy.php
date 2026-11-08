@@ -72,6 +72,11 @@ class DocumentPolicy
             return true;
         }
 
+        // Pihak Mengetahui (Tembusan / Observers) listed in template
+        if ($document->getNotifyUsers()->contains('id', $user->id)) {
+            return true;
+        }
+
         Log::warning('DocumentPolicy::view denied - no matching rule', [
             'user_id' => $user->id,
             'user_name' => $user->name,

@@ -398,6 +398,22 @@ class ApprovalWorkflowService
         // Send notification to requester that document is approved
         $this->emailNotificationService->sendApprovalNotification($document, 'completed');
         $document->user->notify(new DocumentNotification('completed', $document, "Dokumen \"{$document->title}\" telah disetujui sepenuhnya."));
+
+        // Send in-app notification to Pihak Mengetahui (Tembusan / Observers)
+        try {
+            $notifyUsers = $document->getNotifyUsers();
+            foreach ($notifyUsers as $notifyUser) {
+                if ($notifyUser->id !== $document->user_id) {
+                    $notifyUser->notify(new DocumentNotification(
+                        'completed',
+                        $document,
+                        "Dokumen \"{$document->title}\" telah disetujui sepenuhnya (Mengetahui)."
+                    ));
+                }
+            }
+        } catch (\Throwable $e) {
+            \Log::warning('Failed to send in-app notifications to notify_roles: ' . $e->getMessage());
+        }
     }
 
     /**

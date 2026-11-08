@@ -30,17 +30,17 @@
                 this.currentTime = String(h12).padStart(2, '0') + '.' + mins + ' ' + ampm;
 
                 if (hours >= 5 && hours < 12) {
-                    this.greeting = '{{ __('Selamat Pagi') }}';
-                    this.subtitle = '{{ __('Semoga harimu menyenangkan!') }}';
+                    this.greeting = {{ \Illuminate\Support\Js::from(__('Selamat Pagi')) }};
+                    this.subtitle = {{ \Illuminate\Support\Js::from(__('Semoga harimu menyenangkan!')) }};
                 } else if (hours >= 12 && hours < 15) {
-                    this.greeting = '{{ __('Selamat Siang') }}';
-                    this.subtitle = '{{ __('Tetap fokus dan produktif.') }}';
+                    this.greeting = {{ \Illuminate\Support\Js::from(__('Selamat Siang')) }};
+                    this.subtitle = {{ \Illuminate\Support\Js::from(__('Tetap fokus dan produktif.')) }};
                 } else if (hours >= 15 && hours < 18) {
-                    this.greeting = '{{ __('Selamat Sore') }}';
-                    this.subtitle = '{{ __('Selesaikan pekerjaan hari ini dengan baik.') }}';
+                    this.greeting = {{ \Illuminate\Support\Js::from(__('Selamat Sore')) }};
+                    this.subtitle = {{ \Illuminate\Support\Js::from(__('Selesaikan pekerjaan hari ini dengan baik.')) }};
                 } else {
-                    this.greeting = '{{ __('Selamat Malam') }}';
-                    this.subtitle = '{{ __('Waktunya beristirahat.') }}';
+                    this.greeting = {{ \Illuminate\Support\Js::from(__('Selamat Malam')) }};
+                    this.subtitle = {{ \Illuminate\Support\Js::from(__('Waktunya beristirahat.')) }};
                 }
             }
         }" class="space-y-8">
@@ -96,66 +96,158 @@
                 {{-- Left Column: Profile & Quick Links --}}
                 <div class="space-y-5 stagger-enter">
                     {{-- Profile Card (Enhanced) --}}
-                    <div class="card-elevated group relative overflow-hidden rounded-3xl hover-lift shimmer-hover">
+                    <div class="card-elevated group relative overflow-hidden rounded-3xl hover-lift shimmer-hover dark:bg-gray-800 dark:border-gray-700">
                         {{-- Decorative top bar --}}
                         <div class="relative h-20 bg-primary-700">
                             <div class="absolute inset-0 dot-pattern opacity-10"></div>
                         </div>
 
-                        <div class="relative z-10 -mt-10 px-6 pb-7 text-center">
+                        <div class="relative z-10 -mt-10 px-4 sm:px-6 pb-6 sm:pb-7 text-center">
                             {{-- Avatar --}}
                             <div class="inline-block mx-auto mb-4 rounded-full p-1 bg-white dark:bg-gray-800 shadow">
                                 <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}"
-                                    class="w-20 h-20 rounded-full object-cover">
+                                    class="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover">
                             </div>
 
-                            <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ auth()->user()->name }}</h3>
-                            <p class="text-sm text-gray-500 mb-1">{{ auth()->user()->position ?? __('Karyawan') }}</p>
+                            <h3 class="text-base sm:text-lg font-bold text-gray-900 dark:text-white truncate">{{ auth()->user()->name }}</h3>
+                            <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-1 truncate">{{ auth()->user()->position ?? __('Karyawan') }}</p>
 
-                            {{-- Stats mini cards --}}
-                            <div class="mt-4 grid grid-cols-2 gap-3">
-                                <div class="stat-mini bg-primary-50 dark:bg-primary-950/40 border border-primary-200 dark:border-primary-800 rounded-xl p-3">
-                                    <span
-                                        class="block text-2xl font-bold text-primary-700 dark:text-primary-400">{{ auth()->user()->annual_leave_balance }}</span>
-                                    <span class="text-[11px] font-medium text-primary-600/70 dark:text-primary-400/70">{{ __('Sisa Cuti') }}</span>
-                                </div>
-                                <div class="stat-mini bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3">
-                                    <span
-                                        class="block text-2xl font-bold text-gray-700 dark:text-gray-300">{{ auth()->user()->sick_leave_used }}</span>
-                                    <span class="text-[11px] font-medium text-gray-500">{{ __('Sakit (Hari)') }}</span>
-                                </div>
+                            {{-- Stats mini cards (Dynamic based on HRIS module toggle) --}}
+                            <div class="mt-4 grid grid-cols-2 gap-2.5 sm:gap-3">
+                                @if(feature_active('module_hris'))
+                                    <div class="stat-mini bg-primary-50 dark:bg-primary-950/40 border border-primary-200 dark:border-primary-800 rounded-xl p-2.5 sm:p-3">
+                                        <span
+                                            class="block text-xl sm:text-2xl font-bold text-primary-700 dark:text-primary-400">{{ auth()->user()->annual_leave_balance }}</span>
+                                        <span class="text-[10px] sm:text-[11px] font-medium text-primary-600/70 dark:text-primary-400/70 block truncate">{{ __('Sisa Cuti') }}</span>
+                                    </div>
+                                    <div class="stat-mini bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-2.5 sm:p-3">
+                                        <span
+                                            class="block text-xl sm:text-2xl font-bold text-gray-700 dark:text-gray-300">{{ auth()->user()->sick_leave_used }}</span>
+                                        <span class="text-[10px] sm:text-[11px] font-medium text-gray-500 dark:text-gray-400 block truncate">{{ __('Sakit (Hari)') }}</span>
+                                    </div>
+                                @else
+                                    <a href="{{ route('documents.index') }}" class="stat-mini bg-primary-50 dark:bg-primary-950/40 border border-primary-200 dark:border-primary-800 rounded-xl p-2.5 sm:p-3 block transition-colors hover:bg-primary-100/70">
+                                        <span
+                                            class="block text-xl sm:text-2xl font-bold text-primary-700 dark:text-primary-400">{{ $stats['my_documents'] ?? 0 }}</span>
+                                        <span class="text-[10px] sm:text-[11px] font-medium text-primary-600/70 dark:text-primary-400/70 block truncate">{{ __('Pengajuan Saya') }}</span>
+                                    </a>
+                                    @if($stats['is_approver'] ?? false)
+                                        <a href="{{ route('approvals.index') }}" class="stat-mini bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-2.5 sm:p-3 block transition-colors hover:bg-gray-100 dark:hover:bg-gray-700/60">
+                                            <span
+                                                class="block text-xl sm:text-2xl font-bold text-gray-700 dark:text-gray-300">{{ $stats['pending_review'] ?? 0 }}</span>
+                                            <span class="text-[10px] sm:text-[11px] font-medium text-gray-500 dark:text-gray-400 block truncate">{{ __('Menunggu Review') }}</span>
+                                        </a>
+                                    @else
+                                        <a href="{{ route('documents.index', ['status' => 'approved']) }}" class="stat-mini bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-2.5 sm:p-3 block transition-colors hover:bg-gray-100 dark:hover:bg-gray-700/60">
+                                            <span
+                                                class="block text-xl sm:text-2xl font-bold text-gray-700 dark:text-gray-300">{{ $stats['my_approved'] ?? 0 }}</span>
+                                            <span class="text-[10px] sm:text-[11px] font-medium text-gray-500 dark:text-gray-400 block truncate">{{ __('Disetujui') }}</span>
+                                        </a>
+                                    @endif
+                                @endif
                             </div>
                         </div>
                     </div>
 
-                    {{-- Quick Links (Enhanced) --}}
-                    <div class="card-elevated rounded-3xl p-5">
-                        <h3 class="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
+                    {{-- Quick Links (Dynamic based on active modules and permissions) --}}
+                    <div class="card-elevated rounded-3xl p-5 dark:bg-gray-800 dark:border-gray-700">
+                        <h3 class="text-sm font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
                             <span class="w-1.5 h-1.5 rounded-full bg-primary-500"></span>
                             {{ __('Quick Links') }}
                         </h3>
-                        <div class="space-y-1">
-                            <a href="{{ route('profile.edit') }}" class="quick-link-card">
-                                <div class="icon-wrap bg-blue-100">
-                                    <x-icon name="user" class="w-5 h-5 text-blue-600" />
+                        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-1.5">
+                            {{-- Edit Profile (Always available) --}}
+                            <a href="{{ route('profile.edit') }}" class="quick-link-card group dark:hover:bg-gray-700/50">
+                                <div class="icon-wrap bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 group-hover:bg-primary-50 group-hover:text-primary-700 dark:group-hover:bg-primary-950/60 dark:group-hover:text-primary-400">
+                                    <x-icon name="user" class="w-5 h-5" />
                                 </div>
-                                <div>
-                                    <span class="text-sm font-medium text-gray-700">{{ __('Edit Profil') }}</span>
-                                    <p class="text-[11px] text-gray-400">{{ __('Perbarui data diri') }}</p>
+                                <div class="min-w-0 flex-1">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200 block truncate">{{ __('Edit Profil') }}</span>
+                                    <p class="text-[11px] text-gray-400 dark:text-gray-400 truncate">{{ __('Perbarui data diri') }}</p>
                                 </div>
                             </a>
-                            @if(feature_active('module_hris'))
-                            @can('menu-my-leaves')
-                            <a href="{{ route('leave-requests.create') }}" class="quick-link-card">
-                                <div class="icon-wrap bg-green-100">
-                                    <x-icon name="calendar" class="w-5 h-5 text-green-600" />
+
+                            {{-- Buat Pengajuan (If user can create documents) --}}
+                            @can('create-document')
+                            <a href="{{ route('documents.create') }}" class="quick-link-card group dark:hover:bg-gray-700/50">
+                                <div class="icon-wrap bg-primary-50 text-primary-600 dark:bg-primary-950/60 dark:text-primary-400 group-hover:bg-primary-100 group-hover:text-primary-700">
+                                    <x-icon name="plus-circle" class="w-5 h-5" />
                                 </div>
-                                <div>
-                                    <span class="text-sm font-medium text-gray-700">{{ __('Request Cuti') }}</span>
-                                    <p class="text-[11px] text-gray-400">{{ __('Ajukan permohonan') }}</p>
+                                <div class="min-w-0 flex-1">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200 block truncate">{{ __('Buat Pengajuan') }}</span>
+                                    <p class="text-[11px] text-gray-400 dark:text-gray-400 truncate">{{ __('Ajukan permohonan') }}</p>
                                 </div>
                             </a>
                             @endcan
+
+                            {{-- Antrean Approval (If user is an approver) --}}
+                            @can('approve-document')
+                            <a href="{{ route('approvals.index') }}" class="quick-link-card group dark:hover:bg-gray-700/50">
+                                <div class="icon-wrap bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 group-hover:bg-primary-50 group-hover:text-primary-700 dark:group-hover:bg-primary-950/60 dark:group-hover:text-primary-400">
+                                    <x-icon name="check-circle" class="w-5 h-5" />
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-center justify-between gap-1">
+                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-200 truncate">{{ __('Approval Queue') }}</span>
+                                        @if(($stats['pending_review'] ?? 0) > 0)
+                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-primary-600 text-white shrink-0">
+                                                {{ $stats['pending_review'] }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <p class="text-[11px] text-gray-400 dark:text-gray-400 truncate">{{ __('Menunggu Review') }}</p>
+                                </div>
+                            </a>
+                            @endcan
+
+                            {{-- Daftar Dokumen (Universal document list) --}}
+                            <a href="{{ route('documents.index') }}" class="quick-link-card group dark:hover:bg-gray-700/50">
+                                <div class="icon-wrap bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 group-hover:bg-primary-50 group-hover:text-primary-700 dark:group-hover:bg-primary-950/60 dark:group-hover:text-primary-400">
+                                    <x-icon name="document-text" class="w-5 h-5" />
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200 block truncate">{{ __('Daftar Dokumen') }}</span>
+                                    <p class="text-[11px] text-gray-400 dark:text-gray-400 truncate">{{ __('Riwayat status berkas') }}</p>
+                                </div>
+                            </a>
+
+                            {{-- Modul Keuangan (If Finance module active & user permitted) --}}
+                            @if(feature_active('module_finance') && auth()->user()->canAny(['manage-budget', 'view-finance-documents', 'create-po', 'create-invoice', 'manage-purchasing']))
+                            <a href="{{ route('finance.dashboard') }}" class="quick-link-card group dark:hover:bg-gray-700/50">
+                                <div class="icon-wrap bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 group-hover:bg-primary-50 group-hover:text-primary-700 dark:group-hover:bg-primary-950/60 dark:group-hover:text-primary-400">
+                                    <x-icon name="banknotes" class="w-5 h-5" />
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200 block truncate">{{ __('Modul Keuangan') }}</span>
+                                    <p class="text-[11px] text-gray-400 dark:text-gray-400 truncate">{{ __('Anggaran, PO & Invoice') }}</p>
+                                </div>
+                            </a>
+                            @endif
+
+                            {{-- Request Cuti (If HRIS active & user permitted) --}}
+                            @if(feature_active('module_hris') && auth()->user()->can('menu-my-leaves'))
+                            <a href="{{ route('leave-requests.create') }}" class="quick-link-card group dark:hover:bg-gray-700/50">
+                                <div class="icon-wrap bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 group-hover:bg-primary-50 group-hover:text-primary-700 dark:group-hover:bg-primary-950/60 dark:group-hover:text-primary-400">
+                                    <x-icon name="calendar" class="w-5 h-5" />
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200 block truncate">{{ __('Request Cuti') }}</span>
+                                    <p class="text-[11px] text-gray-400 dark:text-gray-400 truncate">{{ __('Ajukan permohonan') }}</p>
+                                </div>
+                            </a>
+                            @endif
+
+                            {{-- Pinjaman Karyawan (If loan active & user permitted) --}}
+                            @if(feature_active('module_loan') && auth()->user()->can('menu-my-loans'))
+                            <a href="{{ route('my-loans.index') }}" class="quick-link-card group dark:hover:bg-gray-700/50">
+                                <div class="icon-wrap bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 group-hover:bg-primary-50 group-hover:text-primary-700 dark:group-hover:bg-primary-950/60 dark:group-hover:text-primary-400">
+                                    <x-icon name="credit-card" class="w-5 h-5" />
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200 block truncate">{{ __('Pinjaman Karyawan') }}</span>
+                                    <p class="text-[11px] text-gray-400 dark:text-gray-400 truncate">{{ __('Riwayat pinjaman & cicilan') }}</p>
+                                </div>
+                            </a>
                             @endif
                         </div>
                     </div>
@@ -206,7 +298,7 @@
                         <div class="relative overflow-hidden rounded-2xl border border-primary-200 dark:border-primary-900 bg-primary-50 dark:bg-primary-950/40 p-5 shadow-sm sm:p-6">
                             <div class="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                 <div>
-                                    <h2 class="text-lg font-bold text-primary-900 dark:text-primary-100">{{ __('Halo Tim HR') }}, {{ auth()->user()->name }}!</h2>
+                                    <h2 class="text-lg font-bold text-primary-900 dark:text-primary-100">{{ feature_active('module_hris') ? __('Halo Tim HR') : __('Halo Tim Manajemen') }}, {{ auth()->user()->name }}!</h2>
                                     <p class="mt-1 text-sm text-primary-700 dark:text-primary-300">{{ __('Kelola pengumuman dan informasi perusahaan di sini.') }}</p>
                                 </div>
                                 <x-ui.button href="{{ route('announcements.index') }}" variant="primary" size="sm">

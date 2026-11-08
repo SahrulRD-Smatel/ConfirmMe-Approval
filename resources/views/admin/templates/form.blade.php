@@ -581,6 +581,83 @@
             </div>
         </x-ui.card>
 
+        {{-- Pihak Mengetahui / Tembusan (CC / Observers) --}}
+        @php
+            $notifyRoles = old('fields.notify_roles', $fields['notify_roles'] ?? []);
+            if (!is_array($notifyRoles)) {
+                $notifyRoles = [];
+            }
+        @endphp
+        <x-ui.card class="rounded-2xl border-gray-200/80 p-5 shadow-soft-lg shadow-gray-900/[0.025] dark:border-gray-800/80 sm:p-6"
+            x-data="{
+                notifiers: {{ Js::from(array_values($notifyRoles)) }},
+                addNotifier() {
+                    this.notifiers.push('');
+                },
+                removeNotifier(index) {
+                    this.notifiers.splice(index, 1);
+                }
+            }">
+            <div class="flex items-center justify-between mb-2">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                    <x-icon name="bell" class="w-5 h-5 text-amber-500" />
+                    {{ __('Pihak Mengetahui / Tembusan (Opsional)') }}
+                </h2>
+                <button type="button" @click="addNotifier"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 text-amber-700 hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-300 rounded-xl text-sm font-medium transition-colors">
+                    <x-icon name="plus" class="w-4 h-4" /> {{ __('Tambah Pihak Mengetahui') }}
+                </button>
+            </div>
+            
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                {{ __('Pihak yang menerima notifikasi & email saat dokumen selesai disetujui (Approved), serta memiliki hak untuk melihat dokumen. Pihak ini tidak perlu menandatangani approval.') }}
+            </p>
+
+            <div class="space-y-3" x-show="notifiers.length > 0">
+                <template x-for="(role, index) in notifiers" :key="index">
+                    <div class="flex items-center gap-3 p-3 bg-gray-50/80 dark:bg-gray-800 border border-gray-200/80 dark:border-gray-700/80 rounded-xl relative group">
+                        <div class="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center shrink-0">
+                            <x-icon name="eye" class="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                        </div>
+
+                        <div class="flex-1">
+                            <select x-model="notifiers[index]" name="fields[notify_roles][]" required
+                                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                <option value="" disabled>-- {{ __('Pilih Role / User') }} --</option>
+                                <optgroup label="{{ __('Berdasarkan Role/Jabatan') }}">
+                                    @foreach($roles as $roleData)
+                                        <option value="role:{{ $roleData->name }}">{{ role_label($roleData->name) }}</option>
+                                    @endforeach
+                                </optgroup>
+                                <optgroup label="{{ __('Berdasarkan Spesifik User') }}">
+                                    @foreach($users as $u)
+                                        @php
+                                            $position = $u->position ?? 'Tanpa Posisi';
+                                            $dept = $u->department ?? 'No Dept';
+                                        @endphp
+                                        <option value="user:{{ $u->id }}">{{ $u->name }} ({{ $position }} - {{ $dept }})</option>
+                                    @endforeach
+                                </optgroup>
+                            </select>
+                        </div>
+
+                        <button type="button" @click="removeNotifier(index)"
+                            class="p-2 text-gray-400 hover:text-danger-500 hover:bg-danger-50 dark:hover:bg-danger-900/30 rounded-xl transition-colors tooltip"
+                            data-tip="{{ __('Hapus') }}">
+                            <x-icon name="trash" class="w-5 h-5" />
+                        </button>
+                    </div>
+                </template>
+            </div>
+
+            <div x-show="notifiers.length === 0" class="text-center py-6 border-2 border-dashed border-gray-200/80 dark:border-gray-700/80 rounded-xl">
+                <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Belum ada pihak mengetahui yang ditambahkan. Hanya pemohon dan para approver yang akan menerima notifikasi selesai.') }}</p>
+                <button type="button" @click="addNotifier" class="mt-2 text-amber-600 dark:text-amber-400 hover:text-amber-700 text-sm font-medium">
+                    + {{ __('Tambah Pihak Mengetahui') }}
+                </button>
+            </div>
+        </x-ui.card>
+
 
             </div>
 
@@ -602,6 +679,10 @@
                         <div class="flex items-start gap-3 rounded-xl px-3 py-3">
                             <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-[10px] font-bold text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300">03</span>
                             <div><p class="text-xs font-semibold text-gray-800 dark:text-gray-200">{{ __('Workflow') }}</p><p class="mt-0.5 text-[10px] leading-4 text-gray-500">{{ __('Field khusus dan approver chain') }}</p></div>
+                        </div>
+                        <div class="flex items-start gap-3 rounded-xl px-3 py-3">
+                            <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-[10px] font-bold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">04</span>
+                            <div><p class="text-xs font-semibold text-gray-800 dark:text-gray-200">{{ __('Tembusan') }}</p><p class="mt-0.5 text-[10px] leading-4 text-gray-500">{{ __('Pihak mengetahui selesai') }}</p></div>
                         </div>
                     </div>
                 </div>
