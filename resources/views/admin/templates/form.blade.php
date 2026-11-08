@@ -22,8 +22,11 @@
     <form action="{{ isset($template) ? route('admin.templates.update', $template) : route('admin.templates.store') }}"
         method="POST" class="mx-auto max-w-7xl space-y-6" x-data="{
             approvalType: '{{ old('approval_type', $template->approval_type ?? 'only') }}',
-            workflows: {{ Js::from(old('workflow', isset($template) ? (array) $template->workflow : [])) }},
+            workflows: {{ Js::from(old('workflow', isset($template) ? array_values((array) ($template->workflow ?? [])) : [])) }},
             init() {
+                if (!Array.isArray(this.workflows)) {
+                    this.workflows = Object.values(this.workflows || {});
+                }
                 this.workflows = this.workflows.map(w => {
                     if (w && !w.startsWith('role:') && !w.startsWith('user:')) {
                         return 'role:' + w;
@@ -55,6 +58,22 @@
         @submit="if(workflows.length === 0) { window.showAlert('{{ __('Harap tambahkan minimal 1 approver pada Susunan Approver!') }}', 'warning'); $event.preventDefault(); }">
         @csrf
         @if(isset($template)) @method('PUT') @endif
+
+        @if ($errors->any())
+            <div class="rounded-2xl border border-danger-200 bg-danger-50 p-4 dark:border-danger-800/80 dark:bg-danger-900/20">
+                <div class="flex items-start gap-3">
+                    <x-icon name="exclamation-triangle" class="h-5 w-5 shrink-0 text-danger-500 mt-0.5" />
+                    <div>
+                        <h3 class="text-sm font-bold text-danger-800 dark:text-danger-200">{{ __('Gagal menyimpan template:') }}</h3>
+                        <ul class="mt-1.5 list-inside list-disc text-sm text-danger-700 dark:text-danger-300 space-y-1">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        @endif
 
 
         <div class="grid grid-cols-1 items-start gap-5 xl:grid-cols-[minmax(0,1fr)_18rem]">
@@ -516,7 +535,7 @@
 
                         <!-- Role Select -->
                         <div class="flex-1">
-                            <select x-model="workflows[index]" :name="`workflow[${index + 1}]`" required
+                            <select x-model="workflows[index]" name="workflow[]" required
                                 class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
                                 <option value="" disabled>-- {{ __('Pilih Approver') }} --</option>
                                 <optgroup label="{{ __('Berdasarkan Role/Jabatan') }}">

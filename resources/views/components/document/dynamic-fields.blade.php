@@ -1,4 +1,4 @@
-﻿@props(['document'])
+@props(['document'])
             {{-- Dynamic Fields Details --}}
             @php
                 $template = \App\Models\DocumentTemplate::where('code', $document->template)->first();
@@ -31,7 +31,15 @@
                                                         @foreach($fieldValue as $row)
                                                             <tr>
                                                                 @foreach($cols as $col)
-                                                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $row[$col] ?? '-' }}</td>
+                                                                    @php
+                                                                        $cellVal = $row[$col] ?? '-';
+                                                                        if (is_numeric($cellVal) && preg_match('/harga|biaya|nominal|tarif|price|rp/i', $col)) {
+                                                                            $cellVal = 'Rp ' . number_format((float)$cellVal, 0, ',', '.');
+                                                                        } elseif (is_numeric($cellVal) && preg_match('/qty|jumlah|kuantitas/i', $col)) {
+                                                                            $cellVal = number_format((float)$cellVal, 0, ',', '.');
+                                                                        }
+                                                                    @endphp
+                                                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $cellVal }}</td>
                                                                 @endforeach
                                                             </tr>
                                                         @endforeach

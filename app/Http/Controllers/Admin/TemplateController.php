@@ -41,13 +41,21 @@ class TemplateController extends Controller
             'approval_type' => 'required|in:only,po,invoice,loan',
             'is_active' => 'boolean',
             'fields' => 'nullable|array',
-            'fields.*' => 'nullable|string|max:10000',
             'workflow' => 'required|array|min:1',
             'workflow.*' => 'required|string',
         ]);
 
-        // Clean empty fields
-        $fields = collect($validated['fields'] ?? [])->filter(fn($v) => $v !== null && $v !== '')->toArray();
+        $workflow = array_values(array_filter($validated['workflow'] ?? [], fn($w) => !empty($w)));
+        if (empty($workflow)) {
+            return back()->withErrors(['workflow' => __('Harap tentukan minimal satu approver pada susunan workflow.')])->withInput();
+        }
+
+        $fields = $request->input('fields', []);
+        if (isset($fields['dynamic_fields']) && is_array($fields['dynamic_fields'])) {
+            $fields['dynamic_fields'] = array_values(array_filter($fields['dynamic_fields'], function ($df) {
+                return !empty($df['name']) || !empty($df['label']);
+            }));
+        }
 
         DocumentTemplate::create([
             'name' => $validated['name'],
@@ -55,13 +63,13 @@ class TemplateController extends Controller
             'description' => $validated['description'],
             'approval_type' => $validated['approval_type'],
             'fields' => $fields,
-            'workflow' => $validated['workflow'],
+            'workflow' => $workflow,
             'is_active' => $validated['is_active'] ?? true,
             'created_by' => auth()->id(),
         ]);
 
         return redirect()->route('admin.templates.index')
-            ->with('success', 'Template berhasil dibuat!');
+            ->with('success', __('Template berhasil dibuat!'));
     }
 
     public function show(DocumentTemplate $template)
@@ -85,16 +93,25 @@ class TemplateController extends Controller
             'approval_type' => 'required|in:only,po,invoice,loan',
             'is_active' => 'boolean',
             'fields' => 'nullable|array',
-            'fields.*' => 'nullable|string|max:10000',
             'workflow' => 'required|array|min:1',
             'workflow.*' => 'required|string',
         ]);
 
-        // Clean empty fields
-        $fields = collect($validated['fields'] ?? [])->filter(fn($v) => $v !== null && $v !== '')->toArray();
+        $workflow = array_values(array_filter($validated['workflow'] ?? [], fn($w) => !empty($w)));
+        if (empty($workflow)) {
+            return back()->withErrors(['workflow' => __('Harap tentukan minimal satu approver pada susunan workflow.')])->withInput();
+        }
+
+        $fields = $request->input('fields', []);
+        if (isset($fields['dynamic_fields']) && is_array($fields['dynamic_fields'])) {
+            $fields['dynamic_fields'] = array_values(array_filter($fields['dynamic_fields'], function ($df) {
+                return !empty($df['name']) || !empty($df['label']);
+            }));
+        }
 
         // Check if workflow changed or became inactive
-        $workflowChanged = $template->workflow !== $validated['workflow'];
+        $oldWorkflow = array_values((array) ($template->workflow ?? []));
+        $workflowChanged = $oldWorkflow !== $workflow;
         $becameInactive = $template->is_active && !($validated['is_active'] ?? true);
 
         $template->update([
@@ -103,7 +120,7 @@ class TemplateController extends Controller
             'description' => $validated['description'],
             'approval_type' => $validated['approval_type'],
             'fields' => $fields,
-            'workflow' => $validated['workflow'],
+            'workflow' => $workflow,
             'is_active' => $validated['is_active'] ?? true,
         ]);
 
@@ -113,7 +130,26 @@ class TemplateController extends Controller
         }
 
         return redirect()->route('admin.templates.index')
-            ->with('success', 'Template berhasil diperbarui!');
+            ->with('success', __('Template berhasil diperbarui!'));
+    }
+
+    public function duplicate(DocumentTemplate $template)
+    {
+        $newTemplate = $template->replicate();
+        $newTemplate->name = $template->name . ' (Salinan)';
+        
+        $baseCode = $template->code . '_COPY';
+        $code = $baseCode;
+        $counter = 1;
+        while (DocumentTemplate::where('code', $code)->exists()) {
+            $code = $baseCode . '_' . $counter++;
+        }
+        $newTemplate->code = $code;
+        $newTemplate->created_by = auth()->id();
+        $newTemplate->save();
+
+        return redirect()->route('admin.templates.edit', $newTemplate)
+            ->with('success', __('Template berhasil diduplikasi! Silakan sesuaikan konfigurasinya.'));
     }
 
     public function destroy(DocumentTemplate $template)
