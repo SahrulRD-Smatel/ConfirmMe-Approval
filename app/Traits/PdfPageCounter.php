@@ -37,9 +37,9 @@ trait PdfPageCounter
 
         // Page number coordinates
         if ($orientation === 'landscape') {
-            // A4 landscape = 841.89pt wide x 595.28pt high
-            $x = 730;
-            $y = 20;
+            // A4 landscape = 841.89pt wide x 595.28pt high (margin: 20mm top, 22mm right = content ends at 779.5pt)
+            $x = 735;
+            $y = 30;
             $size = 7;
             $color = [0.3, 0.3, 0.3];
         } else {

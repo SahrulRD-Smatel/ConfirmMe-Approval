@@ -14,7 +14,7 @@
             {{-- LANDSCAPE STYLES (DAFTAR PENGADAAN / PEMBELIAN BARANG) --}}
             @page {
                 size: A4 landscape;
-                margin: 10mm 12mm 10mm 12mm;
+                margin: 20mm 22mm 18mm 22mm;
             }
 
             html, body {
@@ -30,7 +30,7 @@
             table { border-collapse: collapse; }
             .w-full { width: 100%; }
 
-            .header-table { width: 100%; border-collapse: collapse; margin-bottom: 6px; }
+            .header-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
             .header-table td { vertical-align: top; padding: 0; }
 
             .doc-title-main { font-size: 13px; font-weight: bold; text-align: center; letter-spacing: 0.5px; margin-bottom: 2px; text-transform: uppercase; }
@@ -42,7 +42,7 @@
             .meta-colon { width: 10px; text-align: center; }
             .meta-value-line { border-bottom: 1px solid #777; padding-bottom: 1px; font-weight: 500; }
 
-            .data-table { width: 100%; border: 1px solid #000; border-collapse: collapse; margin-top: 6px; font-size: 8.5px; }
+            .data-table { width: 100%; border: 1px solid #000; border-collapse: collapse; margin-top: 4px; font-size: 8.5px; }
             .data-table thead { display: table-header-group; }
             .data-table tr { page-break-inside: avoid; page-break-after: auto; }
             .data-table th { border: 1px solid #000; padding: 4px 3px; text-align: center; font-weight: bold; background-color: #fff; vertical-align: middle; }
@@ -52,7 +52,7 @@
             .total-row td { font-weight: bold; }
             .bg-yellow { background-color: #F7CE3E !important; }
 
-            .sig-container { width: 100%; border-collapse: collapse; margin-top: 10px; page-break-inside: avoid; }
+            .sig-container { width: 100%; border-collapse: collapse; margin-top: 12px; page-break-inside: avoid; }
             .sig-box-cell { width: 25%; padding: 0 4px; vertical-align: top; }
             .sig-card { width: 100%; border: 1px solid #000; border-collapse: collapse; }
             .sig-card-header { border-bottom: 1px solid #000; text-align: center; font-weight: bold; font-size: 9.5px; padding: 3px; background-color: #fff; height: 18px; }
@@ -63,7 +63,7 @@
             .text-right { text-align: right; }
             .text-left { text-align: left; }
 
-            .verification-footer { margin-top: 10px; padding: 6px 10px; background-color: #f9fafb; border: 1px solid #e5e7eb; font-size: 8px; color: #555; page-break-inside: avoid; }
+            .verification-footer { margin-top: 12px; padding: 6px 10px; background-color: #f9fafb; border: 1px solid #e5e7eb; font-size: 8px; color: #555; page-break-inside: avoid; }
             .verification-footer table { width: 100%; border-collapse: collapse; }
             .verification-footer td { vertical-align: middle; padding: 0; }
         @else
