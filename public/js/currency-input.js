@@ -13,6 +13,16 @@
  */
 document.addEventListener('DOMContentLoaded', function () {
     initCurrencyInputs();
+
+    // Auto-initialize dynamically added inputs (Alpine repeaters, modals, etc.)
+    if (window.MutationObserver) {
+        let timeout;
+        const observer = new MutationObserver(function () {
+            clearTimeout(timeout);
+            timeout = setTimeout(initCurrencyInputs, 50);
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
 });
 
 function initCurrencyInputs() {

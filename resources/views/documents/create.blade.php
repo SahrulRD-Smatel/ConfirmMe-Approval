@@ -26,7 +26,7 @@
         forms: [
             @if(old('documents'))
                 @foreach(old('documents') as $index => $oldDoc)
-                    { id: {{ $index }}, title: '{{ addslashes($oldDoc['title'] ?? '') }}', description: '{{ addslashes($oldDoc['description'] ?? '') }}', subtotal: {{ $oldDoc['subtotal'] ?? 0 }}, taxAmount: {{ $oldDoc['taxAmount'] ?? 0 }} }{{ !$loop->last ? ',' : '' }}
+                    { id: {{ $index }}, title: '{{ addslashes($oldDoc['title'] ?? '') }}', description: '{{ addslashes($oldDoc['description'] ?? '') }}', subtotal: {{ (float)($oldDoc['subtotal'] ?? 0) }}, taxAmount: {{ (float)($oldDoc['tax_amount'] ?? $oldDoc['taxAmount'] ?? 0) }} }{{ !$loop->last ? ',' : '' }}
                 @endforeach
             @else
                 { id: Date.now(), title: '', description: '', subtotal: 0, taxAmount: 0 }
@@ -339,44 +339,77 @@
                                 <div x-show="approvalType === 'po'" class="rounded-2xl border border-gray-100 bg-gray-50/60 p-4 dark:border-gray-800 dark:bg-gray-800/40 sm:p-5"
                                      x-data="{
                                         subtotal: form.subtotal || 0,
+                                        subtotal_formatted: '',
                                         taxAmount: form.taxAmount || 0,
                                         grandTotal: 0,
-                                        init() { this.calc(); },
+                                        init() {
+                                            if (this.subtotal > 0) {
+                                                this.subtotal_formatted = this.fmt(this.subtotal);
+                                            }
+                                            this.calc();
+                                        },
+                                        formatSubtotal() {
+                                            let raw = String(this.subtotal_formatted || '').replace(/[^\d]/g, '');
+                                            this.subtotal = parseInt(raw) || 0;
+                                            this.subtotal_formatted = raw ? this.fmt(this.subtotal) : '';
+                                            form.subtotal = this.subtotal;
+                                            this.calc();
+                                        },
                                         calc() {
                                             this.taxAmount = Math.round(this.subtotal * 0.11);
+                                            form.taxAmount = this.taxAmount;
                                             this.grandTotal = parseInt(this.subtotal || 0) + parseInt(this.taxAmount || 0);
                                         },
-                                        fmt(n) { return new Intl.NumberFormat('id-ID').format(n); }
+                                        fmt(n) {
+                                            if (!n && n !== 0) return '0';
+                                            return new Intl.NumberFormat('id-ID').format(n);
+                                        }
                                      }">
                                     <h4 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">{{ __('Detail Purchase Order') }}</h4>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Nama Vendor') }} <span class="text-danger-500">*</span></label>
-                                            <input type="text" :name="`documents[${index}][vendor_name]`" class="block w-full px-4 py-3 border border-gray-300 rounded-xl bg-white focus:ring-4 focus:ring-primary-500/20">
+                                            <input type="text" :name="`documents[${index}][vendor_name]`" class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20">
                                         </div>
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Kategori Pembelian') }} <span class="text-danger-500">*</span></label>
-                                            <select :name="`documents[${index}][po_category]`" class="block w-full px-4 py-3 border border-gray-300 rounded-xl bg-white focus:ring-4 focus:ring-primary-500/20">
+                                            <select :name="`documents[${index}][po_category]`" class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20">
                                                 <option value="internal">{{ __('Internal Use') }}</option>
                                                 <option value="external">{{ __('External / Client') }}</option>
                                             </select>
                                         </div>
                                         <div class="md:col-span-2">
                                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Rincian Barang/Jasa') }} <span class="text-danger-500">*</span></label>
-                                            <textarea :name="`documents[${index}][item_description]`" rows="2" class="block w-full px-4 py-3 border border-gray-300 rounded-xl bg-white focus:ring-4 focus:ring-primary-500/20"></textarea>
+                                            <textarea :name="`documents[${index}][item_description]`" rows="2" class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20"></textarea>
                                         </div>
                                         <div class="md:col-span-2 bg-gray-50/80 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
                                             <div class="grid grid-cols-2 gap-4">
                                                 <div>
-                                                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Subtotal (DPP)') }} <span class="text-danger-500">*</span></label>
-                                                    <input type="number" :name="`documents[${index}][subtotal]`" x-model="subtotal" @input="calc" min="0" class="block w-full px-4 py-3 border border-gray-300 rounded-xl bg-white">
+                                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Subtotal (DPP)') }} <span class="text-danger-500">*</span></label>
+                                                    <div class="relative">
+                                                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-500 font-medium text-sm">Rp</span>
+                                                        <input type="text"
+                                                               x-model="subtotal_formatted"
+                                                               @input="formatSubtotal()"
+                                                               inputmode="numeric"
+                                                               placeholder="0"
+                                                               class="block w-full pl-11 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20 font-medium text-sm">
+                                                        <input type="hidden" :name="`documents[${index}][subtotal]`" :value="subtotal">
+                                                    </div>
                                                 </div>
                                                 <div>
-                                                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('PPN 11%') }}</label>
-                                                    <input type="number" :name="`documents[${index}][tax_amount]`" x-model="taxAmount" @input="grandTotal = parseInt(subtotal||0) + parseInt(taxAmount||0)" class="block w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-100" readonly>
+                                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('PPN 11%') }}</label>
+                                                    <div class="relative">
+                                                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-500 font-medium text-sm">Rp</span>
+                                                        <input type="text"
+                                                               :value="fmt(taxAmount)"
+                                                               readonly
+                                                               class="block w-full pl-11 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-not-allowed font-medium text-sm">
+                                                        <input type="hidden" :name="`documents[${index}][tax_amount]`" :value="taxAmount">
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="mt-4 flex justify-between items-center text-lg font-bold text-primary-700">
+                                            <div class="mt-4 flex justify-between items-center text-lg font-bold text-primary-700 dark:text-primary-400">
                                                 <span>{{ __('Grand Total') }}</span>
                                                 <span x-text="'Rp ' + fmt(grandTotal)">Rp 0</span>
                                             </div>
@@ -408,8 +441,25 @@
                                                     <span x-show="field.required == '1'" class="text-danger-500">*</span>
                                                 </label>
                                                 
-                                                <!-- Text / Number / Date / Time -->
-                                                <template x-if="['text', 'number', 'date', 'time'].includes(field.type)">
+                                                <!-- Number -->
+                                                <template x-if="field.type === 'number'">
+                                                    <div class="relative" x-data="{
+                                                        numVal: '',
+                                                        rawVal: '',
+                                                        formatNum(e) {
+                                                            let raw = e.target.value.replace(/[^\d]/g, '');
+                                                            this.rawVal = raw;
+                                                            this.numVal = raw ? new Intl.NumberFormat('id-ID').format(raw) : '';
+                                                        }
+                                                    }">
+                                                        <input type="text" x-model="numVal" @input="formatNum($event)" inputmode="numeric" :placeholder="field.label" :required="field.required == '1'"
+                                                            class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20 font-medium text-sm">
+                                                        <input type="hidden" :name="`documents[${index}][metadata][${field.name}]`" :value="rawVal">
+                                                    </div>
+                                                </template>
+
+                                                <!-- Text / Date / Time -->
+                                                <template x-if="['text', 'date', 'time'].includes(field.type)">
                                                     <input :type="field.type" :name="`documents[${index}][metadata][${field.name}]`" :required="field.required == '1'"
                                                         class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20">
                                                 </template>
@@ -462,6 +512,10 @@
                                                                             <template x-for="col in getCols(field.columns)">
                                                                                 <td class="p-2">
                                                                                     <input type="text" :name="`documents[${index}][metadata][${field.name}][${rIndex}][${col}]`" :placeholder="col" :required="field.required == '1'"
+                                                                                        @input="if (/harga|biaya|nominal|tarif|price|rp/i.test(col)) {
+                                                                                            let raw = $event.target.value.replace(/[^\d]/g, '');
+                                                                                            $event.target.value = raw ? new Intl.NumberFormat('id-ID').format(raw) : '';
+                                                                                        }"
                                                                                         class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                                                                 </td>
                                                                             </template>

@@ -22,8 +22,11 @@
     <form action="{{ isset($template) ? route('admin.templates.update', $template) : route('admin.templates.store') }}"
         method="POST" class="mx-auto max-w-7xl space-y-6" x-data="{
             approvalType: '{{ old('approval_type', $template->approval_type ?? 'only') }}',
-            workflows: {{ Js::from(old('workflow', isset($template) ? (array) $template->workflow : [])) }},
+            workflows: {{ Js::from(old('workflow', isset($template) ? array_values((array) ($template->workflow ?? [])) : [])) }},
             init() {
+                if (!Array.isArray(this.workflows)) {
+                    this.workflows = Object.values(this.workflows || {});
+                }
                 this.workflows = this.workflows.map(w => {
                     if (w && !w.startsWith('role:') && !w.startsWith('user:')) {
                         return 'role:' + w;
@@ -55,6 +58,22 @@
         @submit="if(workflows.length === 0) { window.showAlert('{{ __('Harap tambahkan minimal 1 approver pada Susunan Approver!') }}', 'warning'); $event.preventDefault(); }">
         @csrf
         @if(isset($template)) @method('PUT') @endif
+
+        @if ($errors->any())
+            <div class="rounded-2xl border border-danger-200 bg-danger-50 p-4 dark:border-danger-800/80 dark:bg-danger-900/20">
+                <div class="flex items-start gap-3">
+                    <x-icon name="exclamation-triangle" class="h-5 w-5 shrink-0 text-danger-500 mt-0.5" />
+                    <div>
+                        <h3 class="text-sm font-bold text-danger-800 dark:text-danger-200">{{ __('Gagal menyimpan template:') }}</h3>
+                        <ul class="mt-1.5 list-inside list-disc text-sm text-danger-700 dark:text-danger-300 space-y-1">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        @endif
 
 
         <div class="grid grid-cols-1 items-start gap-5 xl:grid-cols-[minmax(0,1fr)_18rem]">
@@ -337,88 +356,155 @@
                 }
             }
         }">
-            <div class="flex items-center justify-between mb-4">
+            <div class="flex flex-wrap items-start justify-between gap-3 mb-2">
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                    <x-icon name="queue-list" class="w-5 h-5 text-pink-500" />
-                    {{ __('Dynamic Form Builder') }}
+                    <x-icon name="queue-list" class="w-5 h-5 text-primary-600" />
+                    {{ __('Isian Tambahan pada Form Pengajuan') }}
                 </h2>
                 <button type="button" @click="addField"
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-pink-50 text-pink-600 hover:bg-pink-100 rounded-xl text-sm font-medium transition-colors">
+                    class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-primary-600 text-white hover:bg-primary-700 rounded-xl text-sm font-semibold transition-colors">
                     <x-icon name="plus" class="w-4 h-4" /> {{ __('Tambah Field') }}
                 </button>
             </div>
-            
-            <p class="text-sm text-gray-500 mb-4">
-                {{ __('Tambahkan input khusus yang akan diisi oleh user saat menggunakan template ini.') }}<br>
+
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                {{ __('Tambahkan input khusus yang akan diisi oleh user saat menggunakan template ini.') }}
                 {{ __('Field ini akan otomatis muncul pada form pengajuan dokumen.') }}
             </p>
 
+            <ol class="mb-5 grid gap-2 sm:grid-cols-3">
+                <li class="flex items-start gap-2.5 rounded-xl bg-gray-50 dark:bg-gray-800/60 px-3 py-2.5">
+                    <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary-600 text-[11px] font-bold text-white">1</span>
+                    <span class="text-xs leading-relaxed text-gray-600 dark:text-gray-300">{{ __('Klik Tambah Field untuk membuat isian baru.') }}</span>
+                </li>
+                <li class="flex items-start gap-2.5 rounded-xl bg-gray-50 dark:bg-gray-800/60 px-3 py-2.5">
+                    <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary-600 text-[11px] font-bold text-white">2</span>
+                    <span class="text-xs leading-relaxed text-gray-600 dark:text-gray-300">{{ __('Tulis label yang dilihat pengaju, kode field, lalu pilih tipe isiannya.') }}</span>
+                </li>
+                <li class="flex items-start gap-2.5 rounded-xl bg-gray-50 dark:bg-gray-800/60 px-3 py-2.5">
+                    <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary-600 text-[11px] font-bold text-white">3</span>
+                    <span class="text-xs leading-relaxed text-gray-600 dark:text-gray-300">{{ __('Atur urutan dengan panah naik/turun — urutan di sini sama dengan urutan tampil di form pengajuan.') }}</span>
+                </li>
+            </ol>
+
             <div class="space-y-4">
                 <template x-for="(field, index) in dynamicFields" :key="field.id || index">
-                    <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800 relative group">
-                        <div class="absolute top-3 right-3 flex items-center gap-1">
-                            <button type="button" @click="moveFieldUp(index)" :class="{'invisible pointer-events-none': index === 0}" class="p-1 text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/30 rounded-md transition-colors tooltip" data-tip="{{ __('Geser ke Atas') }}">
-                                <x-icon name="chevron-up" class="w-5 h-5" />
-                            </button>
-                            <button type="button" @click="moveFieldDown(index)" :class="{'invisible pointer-events-none': index === dynamicFields.length - 1}" class="p-1 text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/30 rounded-md transition-colors tooltip" data-tip="{{ __('Geser ke Bawah') }}">
-                                <x-icon name="chevron-down" class="w-5 h-5" />
-                            </button>
-                            <button type="button" @click="removeField(index)" class="p-1 text-gray-400 hover:text-danger-500 hover:bg-danger-50 dark:hover:bg-danger-900/30 rounded-md transition-colors tooltip ml-1" data-tip="{{ __('Hapus Field') }}">
-                                <x-icon name="trash" class="w-5 h-5" />
-                            </button>
+                    <div class="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                        <div class="flex items-center justify-between gap-2 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 px-4 py-2.5">
+                            <div class="flex min-w-0 items-center gap-2.5">
+                                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary-600 text-xs font-bold text-white" x-text="index + 1"></span>
+                                <span class="truncate text-sm font-semibold text-gray-800 dark:text-gray-100" x-text="field.label || '{{ __('Field Baru') }}'"></span>
+                                <span x-show="field.required" class="hidden shrink-0 rounded-md bg-primary-50 px-1.5 py-0.5 text-[11px] font-semibold text-primary-700 dark:bg-primary-900/30 dark:text-primary-300 sm:inline">{{ __('Wajib') }}</span>
+                            </div>
+                            <div class="flex shrink-0 items-center gap-1">
+                                <button type="button" @click="moveFieldUp(index)" :class="{'invisible pointer-events-none': index === 0}" class="p-1.5 text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/30 rounded-md transition-colors tooltip" data-tip="{{ __('Geser ke Atas') }}">
+                                    <x-icon name="chevron-up" class="w-5 h-5" />
+                                </button>
+                                <button type="button" @click="moveFieldDown(index)" :class="{'invisible pointer-events-none': index === dynamicFields.length - 1}" class="p-1.5 text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/30 rounded-md transition-colors tooltip" data-tip="{{ __('Geser ke Bawah') }}">
+                                    <x-icon name="chevron-down" class="w-5 h-5" />
+                                </button>
+                                <button type="button" @click="removeField(index)" class="ml-1 inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-xs font-medium text-danger-500 hover:bg-danger-50 dark:hover:bg-danger-900/30 transition-colors tooltip" data-tip="{{ __('Hapus Field') }}">
+                                    <x-icon name="trash" class="w-4 h-4" /> <span class="hidden sm:inline">{{ __('Hapus') }}</span>
+                                </button>
+                            </div>
                         </div>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pr-8">
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ __('Label Input') }} <span class="text-danger-500">*</span></label>
-                                <input type="text" x-model="field.label" :name="`fields[dynamic_fields][${index}][label]`" required placeholder="{{ __('Cth: Nama Pengemudi') }}" class="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+
+                        <div class="space-y-4 p-4">
+                            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ __('Label Input') }} <span class="text-danger-500">*</span></label>
+                                    <input type="text" x-model="field.label" :name="`fields[dynamic_fields][${index}][label]`" required placeholder="{{ __('Cth: Nama Pengemudi') }}" class="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                                    <p class="text-xs text-gray-400 mt-1">{{ __('Nama isian yang dilihat pengaju saat mengisi form.') }}</p>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ __('Field Name (Internal)') }} <span class="text-danger-500">*</span></label>
+                                    <input type="text" x-model="field.name" :name="`fields[dynamic_fields][${index}][name]`" required placeholder="cth: nama_pengemudi" class="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                                    <p class="text-xs text-gray-400 mt-1">{{ __('Kode unik field ini, dipakai untuk menyisipkan isian ke isi surat. Tanpa spasi, gunakan huruf kecil dan underscore.') }}</p>
+                                </div>
                             </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ __('Field Name (Internal)') }} <span class="text-danger-500">*</span></label>
-                                <input type="text" x-model="field.name" :name="`fields[dynamic_fields][${index}][name]`" required placeholder="cth: nama_pengemudi" class="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
-                                <p class="text-[10px] text-gray-500 mt-1">{{ __('Tanpa spasi, gunakan huruf kecil dan underscore') }}</p>
+
+                            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ __('Tipe Input') }} <span class="text-danger-500">*</span></label>
+                                    <select x-model="field.type" :name="`fields[dynamic_fields][${index}][type]`" required class="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                                        <option value="text">{{ __('Teks Pendek') }}</option>
+                                        <option value="textarea">{{ __('Teks Panjang') }}</option>
+                                        <option value="number">{{ __('Angka') }}</option>
+                                        <option value="date">{{ __('Tanggal') }}</option>
+                                        <option value="time">{{ __('Jam') }}</option>
+                                        <option value="select">{{ __('Dropdown (Pilihan)') }}</option>
+                                        <option value="file">{{ __('Upload File/Foto') }}</option>
+                                        <option value="table">{{ __('Tabel Dinamis') }}</option>
+                                    </select>
+                                    <p class="text-xs text-gray-400 mt-1">{{ __('Menentukan cara pengaju mengisi field ini.') }}</p>
+                                </div>
+                                <div>
+                                    <span class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ __('Wajib Diisi (Required)') }}</span>
+                                    <label class="flex cursor-pointer items-start gap-2.5 rounded-lg border border-gray-300 px-3 py-2 dark:border-gray-600">
+                                        <input type="hidden" :name="`fields[dynamic_fields][${index}][required]`" value="0">
+                                        <input type="checkbox" x-model="field.required" :name="`fields[dynamic_fields][${index}][required]`" value="1" class="mt-0.5 rounded border-gray-300 text-primary-600 focus:ring-primary-500 w-4 h-4">
+                                        <span class="text-xs leading-relaxed text-gray-500 dark:text-gray-400">{{ __('Aktifkan jika pengaju tidak boleh mengirim pengajuan sebelum field ini diisi.') }}</span>
+                                    </label>
+                                </div>
                             </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ __('Tipe Input') }} <span class="text-danger-500">*</span></label>
-                                <select x-model="field.type" :name="`fields[dynamic_fields][${index}][type]`" required class="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
-                                    <option value="text">{{ __('Teks Pendek') }}</option>
-                                    <option value="textarea">{{ __('Teks Panjang') }}</option>
-                                    <option value="number">{{ __('Angka') }}</option>
-                                    <option value="date">{{ __('Tanggal') }}</option>
-                                    <option value="time">{{ __('Jam') }}</option>
-                                    <option value="select">{{ __('Dropdown (Pilihan)') }}</option>
-                                    <option value="file">{{ __('Upload File/Foto') }}</option>
-                                    <option value="table">{{ __('Tabel Dinamis') }}</option>
-                                </select>
-                            </div>
-                            <div class="flex items-center mt-5">
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="hidden" :name="`fields[dynamic_fields][${index}][required]`" value="0">
-                                    <input type="checkbox" x-model="field.required" :name="`fields[dynamic_fields][${index}][required]`" value="1" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500 w-4 h-4">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Wajib Diisi (Required)') }}</span>
-                                </label>
-                            </div>
-                            
+
                             <!-- Options for Select -->
-                            <div x-show="field.type === 'select'" class="md:col-span-2 lg:col-span-4 mt-2">
+                            <div x-show="field.type === 'select'" class="rounded-lg border border-primary-100 bg-primary-50/50 p-3 dark:border-primary-900/40 dark:bg-primary-900/10">
                                 <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ __('Opsi Dropdown') }} <span class="text-gray-400 font-normal">({{ __('Pisahkan dengan koma atau enter') }})</span></label>
                                 <textarea x-model="field.options" :name="`fields[dynamic_fields][${index}][options]`" rows="2" placeholder="{{ __('Cth: Innova, Avanza, Xpander') }}" class="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"></textarea>
+                                <p class="text-xs text-gray-400 mt-1">{{ __('Pengaju memilih satu dari opsi yang Anda tulis di sini.') }}</p>
                             </div>
-                            
+
                             <!-- Columns for Table -->
-                            <div x-show="field.type === 'table'" class="md:col-span-2 lg:col-span-4 mt-2">
+                            <div x-show="field.type === 'table'" class="rounded-lg border border-primary-100 bg-primary-50/50 p-3 dark:border-primary-900/40 dark:bg-primary-900/10">
                                 <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ __('Kolom Tabel') }} <span class="text-gray-400 font-normal">({{ __('Pisahkan dengan koma') }})</span></label>
                                 <input type="text" x-model="field.columns" :name="`fields[dynamic_fields][${index}][columns]`" placeholder="{{ __('Cth: Nama Barang, Jumlah, Harga') }}" class="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                                <p class="text-xs text-gray-400 mt-1">{{ __('Pengaju akan mengisi baris-baris tabel dengan kolom ini, misalnya daftar barang.') }}</p>
+                            </div>
+
+                            <div class="rounded-lg border border-dashed border-gray-200 bg-gray-50/70 px-3 py-3 dark:border-gray-700 dark:bg-gray-900/40">
+                                <p class="mb-2 text-[11px] font-semibold uppercase tracking-wider text-gray-400">{{ __('Pratinjau — tampilan untuk pengaju') }}</p>
+                                <p class="mb-1 text-xs font-medium text-gray-600 dark:text-gray-300">
+                                    <span x-text="field.label || '{{ __('Label Input') }}'"></span> <span x-show="field.required" class="text-danger-500">*</span>
+                                </p>
+                                <div x-show="field.type === 'text' || field.type === 'number' || field.type === 'date' || field.type === 'time'" class="flex h-9 items-center rounded-lg border border-gray-200 bg-white px-3 text-xs text-gray-400 dark:border-gray-600 dark:bg-gray-700">
+                                    <span x-show="field.type === 'text'">{{ __('Kotak teks satu baris') }}</span>
+                                    <span x-show="field.type === 'number'">{{ __('Kotak khusus angka') }}</span>
+                                    <span x-show="field.type === 'date'">{{ __('Pemilih tanggal') }}</span>
+                                    <span x-show="field.type === 'time'">{{ __('Pemilih jam') }}</span>
+                                </div>
+                                <div x-show="field.type === 'textarea'" class="flex h-16 items-start rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-400 dark:border-gray-600 dark:bg-gray-700">{{ __('Kotak teks panjang (beberapa baris)') }}</div>
+                                <div x-show="field.type === 'select'" class="flex h-9 items-center justify-between rounded-lg border border-gray-200 bg-white px-3 text-xs text-gray-400 dark:border-gray-600 dark:bg-gray-700">
+                                    <span class="truncate" x-text="field.options ? field.options.split(',')[0].trim() : '{{ __('Pilih salah satu opsi') }}'"></span>
+                                    <x-icon name="chevron-down" class="w-4 h-4 shrink-0" />
+                                </div>
+                                <div x-show="field.type === 'file'" class="flex h-9 items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 text-xs text-gray-400 dark:border-gray-600 dark:bg-gray-700">
+                                    <x-icon name="arrow-up-tray" class="w-4 h-4" /> {{ __('Tombol unggah file/foto') }}
+                                </div>
+                                <div x-show="field.type === 'table'" class="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-400 dark:border-gray-600 dark:bg-gray-700">
+                                    <span x-text="field.columns ? field.columns.split(',').map(c => c.trim()).join('  ·  ') : '{{ __('Kolom tabel mengikuti isian Kolom Tabel di atas') }}'"></span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </template>
-                
-                <div x-show="dynamicFields.length === 0" class="text-center py-6 border-2 border-dashed border-gray-200/80 dark:border-gray-700/80 rounded-xl">
-                    <p class="text-sm text-gray-500 mb-2">{{ __('Belum ada input khusus (dynamic field) untuk template ini.') }}</p>
+
+                <div x-show="dynamicFields.length === 0" class="rounded-xl border-2 border-dashed border-gray-200/80 px-4 py-8 text-center dark:border-gray-700/80">
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{{ __('Belum ada input khusus (dynamic field) untuk template ini.') }}</p>
+                    <p class="text-xs text-gray-400 mb-4">{{ __('Tanpa isian tambahan, pengaju hanya mengisi data umum pengajuan.') }}</p>
+                    <button type="button" @click="addField"
+                        class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-primary-600 text-white hover:bg-primary-700 rounded-xl text-sm font-semibold transition-colors">
+                        <x-icon name="plus" class="w-4 h-4" /> {{ __('Tambah Field') }}
+                    </button>
                 </div>
+
+                <button type="button" @click="addField" x-show="dynamicFields.length > 0"
+                    class="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-gray-200 py-3 text-sm font-medium text-gray-500 transition-colors hover:border-primary-300 hover:text-primary-600 dark:border-gray-700 dark:text-gray-400 dark:hover:border-primary-700">
+                    <x-icon name="plus" class="w-4 h-4" /> {{ __('Tambah Field Lagi') }}
+                </button>
             </div>
         </x-ui.card>
+
 
         {{-- Workflow / Approver Chain --}}
         <x-ui.card class="rounded-2xl border-gray-200/80 p-5 shadow-soft-lg shadow-gray-900/[0.025] dark:border-gray-800/80 sm:p-6">
@@ -449,7 +535,7 @@
 
                         <!-- Role Select -->
                         <div class="flex-1">
-                            <select x-model="workflows[index]" :name="`workflow[${index + 1}]`" required
+                            <select x-model="workflows[index]" name="workflow[]" required
                                 class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
                                 <option value="" disabled>-- {{ __('Pilih Approver') }} --</option>
                                 <optgroup label="{{ __('Berdasarkan Role/Jabatan') }}">
@@ -495,6 +581,83 @@
             </div>
         </x-ui.card>
 
+        {{-- Pihak Mengetahui / Tembusan (CC / Observers) --}}
+        @php
+            $notifyRoles = old('fields.notify_roles', $fields['notify_roles'] ?? []);
+            if (!is_array($notifyRoles)) {
+                $notifyRoles = [];
+            }
+        @endphp
+        <x-ui.card class="rounded-2xl border-gray-200/80 p-5 shadow-soft-lg shadow-gray-900/[0.025] dark:border-gray-800/80 sm:p-6"
+            x-data="{
+                notifiers: {{ Js::from(array_values($notifyRoles)) }},
+                addNotifier() {
+                    this.notifiers.push('');
+                },
+                removeNotifier(index) {
+                    this.notifiers.splice(index, 1);
+                }
+            }">
+            <div class="flex items-center justify-between mb-2">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                    <x-icon name="bell" class="w-5 h-5 text-amber-500" />
+                    {{ __('Pihak Mengetahui / Tembusan (Opsional)') }}
+                </h2>
+                <button type="button" @click="addNotifier"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 text-amber-700 hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-300 rounded-xl text-sm font-medium transition-colors">
+                    <x-icon name="plus" class="w-4 h-4" /> {{ __('Tambah Pihak Mengetahui') }}
+                </button>
+            </div>
+            
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                {{ __('Pihak yang menerima notifikasi & email saat dokumen selesai disetujui (Approved), serta memiliki hak untuk melihat dokumen. Pihak ini tidak perlu menandatangani approval.') }}
+            </p>
+
+            <div class="space-y-3" x-show="notifiers.length > 0">
+                <template x-for="(role, index) in notifiers" :key="index">
+                    <div class="flex items-center gap-3 p-3 bg-gray-50/80 dark:bg-gray-800 border border-gray-200/80 dark:border-gray-700/80 rounded-xl relative group">
+                        <div class="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center shrink-0">
+                            <x-icon name="eye" class="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                        </div>
+
+                        <div class="flex-1">
+                            <select x-model="notifiers[index]" name="fields[notify_roles][]" required
+                                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                <option value="" disabled>-- {{ __('Pilih Role / User') }} --</option>
+                                <optgroup label="{{ __('Berdasarkan Role/Jabatan') }}">
+                                    @foreach($roles as $roleData)
+                                        <option value="role:{{ $roleData->name }}">{{ role_label($roleData->name) }}</option>
+                                    @endforeach
+                                </optgroup>
+                                <optgroup label="{{ __('Berdasarkan Spesifik User') }}">
+                                    @foreach($users as $u)
+                                        @php
+                                            $position = $u->position ?? 'Tanpa Posisi';
+                                            $dept = $u->department ?? 'No Dept';
+                                        @endphp
+                                        <option value="user:{{ $u->id }}">{{ $u->name }} ({{ $position }} - {{ $dept }})</option>
+                                    @endforeach
+                                </optgroup>
+                            </select>
+                        </div>
+
+                        <button type="button" @click="removeNotifier(index)"
+                            class="p-2 text-gray-400 hover:text-danger-500 hover:bg-danger-50 dark:hover:bg-danger-900/30 rounded-xl transition-colors tooltip"
+                            data-tip="{{ __('Hapus') }}">
+                            <x-icon name="trash" class="w-5 h-5" />
+                        </button>
+                    </div>
+                </template>
+            </div>
+
+            <div x-show="notifiers.length === 0" class="text-center py-6 border-2 border-dashed border-gray-200/80 dark:border-gray-700/80 rounded-xl">
+                <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Belum ada pihak mengetahui yang ditambahkan. Hanya pemohon dan para approver yang akan menerima notifikasi selesai.') }}</p>
+                <button type="button" @click="addNotifier" class="mt-2 text-amber-600 dark:text-amber-400 hover:text-amber-700 text-sm font-medium">
+                    + {{ __('Tambah Pihak Mengetahui') }}
+                </button>
+            </div>
+        </x-ui.card>
+
 
             </div>
 
@@ -516,6 +679,10 @@
                         <div class="flex items-start gap-3 rounded-xl px-3 py-3">
                             <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-[10px] font-bold text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300">03</span>
                             <div><p class="text-xs font-semibold text-gray-800 dark:text-gray-200">{{ __('Workflow') }}</p><p class="mt-0.5 text-[10px] leading-4 text-gray-500">{{ __('Field khusus dan approver chain') }}</p></div>
+                        </div>
+                        <div class="flex items-start gap-3 rounded-xl px-3 py-3">
+                            <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-[10px] font-bold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">04</span>
+                            <div><p class="text-xs font-semibold text-gray-800 dark:text-gray-200">{{ __('Tembusan') }}</p><p class="mt-0.5 text-[10px] leading-4 text-gray-500">{{ __('Pihak mengetahui selesai') }}</p></div>
                         </div>
                     </div>
                 </div>

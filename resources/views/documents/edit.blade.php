@@ -227,8 +227,24 @@
                             <span x-show="field.required == '1' || field.required === true" class="text-danger-500">*</span>
                         </label>
                         
-                        <!-- Text / Number / Date / Time -->
-                        <template x-if="['text', 'number', 'date', 'time'].includes(field.type)">
+                        <!-- Number -->
+                        <template x-if="field.type === 'number'">
+                            <div class="relative" x-data="{
+                                valFormatted: metadata[field.name] ? new Intl.NumberFormat('id-ID').format(String(metadata[field.name]).replace(/[^\d]/g, '')) : '',
+                                formatNum(e) {
+                                    let raw = e.target.value.replace(/[^\d]/g, '');
+                                    metadata[field.name] = raw;
+                                    this.valFormatted = raw ? new Intl.NumberFormat('id-ID').format(raw) : '';
+                                }
+                            }">
+                                <input type="text" x-model="valFormatted" @input="formatNum($event)" inputmode="numeric" :placeholder="field.label" :required="field.required == '1' || field.required === true"
+                                    class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20 font-medium text-sm">
+                                <input type="hidden" :name="`metadata[${field.name}]`" :value="metadata[field.name]">
+                            </div>
+                        </template>
+
+                        <!-- Text / Date / Time -->
+                        <template x-if="['text', 'date', 'time'].includes(field.type)">
                             <input :type="field.type" :name="`metadata[${field.name}]`" x-model="metadata[field.name]" :required="field.required == '1' || field.required === true"
                                 class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20">
                         </template>
@@ -271,7 +287,16 @@
                         <template x-if="field.type === 'table'">
                             <div class="bg-gray-50/50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden"
                                  x-data="{
-                                    rows: Array.isArray(metadata[field.name]) && metadata[field.name].length > 0 ? metadata[field.name] : [{}],
+                                    rows: Array.isArray(metadata[field.name]) && metadata[field.name].length > 0 ? metadata[field.name].map(r => {
+                                        let newR = {...r};
+                                        Object.keys(newR).forEach(k => {
+                                            if (/harga|biaya|nominal|tarif|price|rp/i.test(k) && newR[k] && !isNaN(String(newR[k]).replace(/[^\d]/g, ''))) {
+                                                let raw = String(newR[k]).replace(/[^\d]/g, '');
+                                                if (raw) newR[k] = new Intl.NumberFormat('id-ID').format(raw);
+                                            }
+                                        });
+                                        return newR;
+                                    }) : [{}],
                                     addRow() { this.rows.push({}); },
                                     removeRow(rIndex) { if(this.rows.length > 1) this.rows.splice(rIndex, 1); },
                                     getCols(colsStr) { return colsStr ? (typeof colsStr === 'string' ? colsStr.split(',') : colsStr).map(s=>typeof s==='string'?s.trim():s) : []; }
@@ -292,6 +317,10 @@
                                                     <template x-for="col in getCols(field.columns)">
                                                         <td class="p-2">
                                                             <input type="text" :name="`metadata[${field.name}][${rIndex}][${col}]`" x-model="row[col]" :placeholder="col" :required="field.required == '1' || field.required === true"
+                                                                @input="if (/harga|biaya|nominal|tarif|price|rp/i.test(col)) {
+                                                                    let raw = $event.target.value.replace(/[^\d]/g, '');
+                                                                    row[col] = raw ? new Intl.NumberFormat('id-ID').format(raw) : '';
+                                                                }"
                                                                 class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                                         </td>
                                                     </template>

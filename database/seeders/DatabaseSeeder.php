@@ -577,12 +577,13 @@ class DatabaseSeeder extends Seeder
                 'code' => 'VEHICLE_LOAN',
                 'description' => 'Template untuk permohonan peminjaman mobil operasional',
                 'approval_type' => 'only',
-                'workflow' => ['role:manager', 'role:ga', 'role:manager_hrga', 'role:direktur_operasional', 'role:direktur_finance', 'role:ga'],
+                'workflow' => ['role:manager', 'role:ga', 'role:manager_hrga', 'role:direktur_operasional', 'role:direktur_finance'],
                 'fields' => [
                     'title' => 'Permohonan Peminjaman Mobil Operasional',
                     'description' => 'Permohonan untuk peminjaman mobil operasional perusahaan sesuai SOP.',
                     'priority' => 'normal',
                     'document_category' => 'peminjaman_aset',
+                    'notify_roles' => ['role:ga'],
                     'dynamic_fields' => [
                         ['name' => 'nama_peminjam', 'label' => 'Nama Peminjam', 'type' => 'text', 'required' => true],
                         ['name' => 'nip', 'label' => 'NIP', 'type' => 'text', 'required' => true],
@@ -605,12 +606,13 @@ class DatabaseSeeder extends Seeder
                 'code' => 'SURAT_IJIN_GUDANG',
                 'description' => 'Formulir untuk ijin keluar masuk barang dari gudang.',
                 'approval_type' => 'only',
-                'workflow' => ['role:manager', 'role:ga', 'role:admin_operasional', 'role:direktur_operasional', 'role:admin_operasional'],
+                'workflow' => ['role:manager', 'role:ga', 'role:admin_operasional', 'role:direktur_operasional'],
                 'fields' => [
                     'title' => 'Surat Ijin Keluar/Masuk Barang Gudang',
                     'description' => 'Mohon ijin keluar/masuk barang.',
                     'priority' => 'normal',
                     'document_category' => 'lainnya',
+                    'notify_roles' => ['role:ga', 'role:admin_operasional'],
                     'dynamic_fields' => [
                         ['name' => 'perusahaan', 'label' => 'Perusahaan', 'type' => 'text', 'required' => true],
                         ['name' => 'dokumen_po_do', 'label' => 'Dokumen P.O / D.O', 'type' => 'select', 'options' => 'Ada, Tidak', 'required' => true],
@@ -628,11 +630,12 @@ class DatabaseSeeder extends Seeder
                 'code' => 'PEMBELIAN_BARANG',
                 'description' => 'Formulir untuk permintaan pembelian ATK, P3K, atau Pantry.',
                 'approval_type' => 'po',
-                'workflow' => ['role:ga', 'role:manager_hrga', 'role:direktur_hr', 'role:direktur_operasional', 'role:direktur_finance', 'role:ga'],
+                'workflow' => ['role:ga', 'role:manager_hrga', 'role:direktur_hr', 'role:direktur_operasional', 'role:direktur_finance'],
                 'fields' => [
                     'title' => 'Permintaan Pembelian Barang',
                     'description' => 'Pengajuan pembelian barang kebutuhan kantor.',
                     'priority' => 'normal',
+                    'notify_roles' => ['role:ga'],
                     'dynamic_fields' => [
                         ['name' => 'kategori_pembelian', 'label' => 'Kategori Pembelian', 'type' => 'select', 'options' => 'ALAT TULIS KANTOR, KEBUTUHAN P3K, KEBUTUHAN PANTRY, LAINNYA', 'required' => true],
                         ['name' => 'keterangan', 'label' => 'Keterangan/Projek', 'type' => 'text', 'required' => true],
@@ -652,6 +655,7 @@ class DatabaseSeeder extends Seeder
                     'description' => 'Formulir untuk pembuatan atau penonaktifan email karyawan.',
                     'priority' => 'normal',
                     'document_category' => 'lainnya',
+                    'notify_roles' => ['role:it_internal'],
                     'dynamic_fields' => [
                         ['name' => 'jenis_request', 'label' => 'Jenis Request', 'type' => 'select', 'options' => 'Buat Baru, Nonaktifkan Email', 'required' => true],
                         ['name' => 'nama_karyawan', 'label' => 'Nama Karyawan', 'type' => 'text', 'required' => true],
@@ -665,12 +669,13 @@ class DatabaseSeeder extends Seeder
                 'code' => 'IT_HARDWARE',
                 'description' => 'Permintaan hardware baru, service, atau laporan kehilangan.',
                 'approval_type' => 'only',
-                'workflow' => ['role:manager', 'role:it_internal', 'role:manager_hrga', 'role:direktur_finance', 'role:it_internal'],
+                'workflow' => ['role:manager', 'role:it_internal', 'role:manager_hrga', 'role:direktur_finance'],
                 'fields' => [
                     'title' => 'Permintaan Hardware IT',
                     'description' => 'Formulir untuk pengadaan, service, atau kehilangan hardware.',
                     'priority' => 'normal',
                     'document_category' => 'lainnya',
+                    'notify_roles' => ['role:it_internal'],
                     'dynamic_fields' => [
                         ['name' => 'jenis_request', 'label' => 'Jenis Request', 'type' => 'select', 'options' => 'Permintaan Baru, Service, Kehilangan', 'required' => true],
                         ['name' => 'nama_hardware', 'label' => 'Nama Hardware', 'type' => 'text', 'required' => true],

@@ -326,7 +326,7 @@
                         
                         if (meta.items && Array.isArray(meta.items) && meta.items.length > 0) {
                             this.items = meta.items.map(i => {
-                                let p = parseInt(i['Harga Perk./Item'] || i['Harga Perkiraan'] || i.price || 0);
+                                let p = parseInt(String(i['Harga Perk./Item'] || i['Harga Perkiraan'] || i.price || 0).replace(/[^\d]/g, '')) || 0;
                                 return {
                                     name: i['Nama Barang'] || i.item_name || i.name || '',
                                     qty: parseInt(i['Permintaan (Qty)'] || i.quantity || i.qty || 1),

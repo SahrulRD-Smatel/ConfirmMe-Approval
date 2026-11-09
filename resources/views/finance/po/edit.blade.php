@@ -128,9 +128,13 @@
                                         class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                                 </div>
                                 <div class="col-span-3">
-                                    <input type="number" :name="'items['+index+'][unit_price]'" x-model="item.price"
-                                        @input="calculateTotal()" required min="0" placeholder="{{ __('Harga Satuan') }}"
-                                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                    <div class="relative">
+                                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">Rp</span>
+                                        <input type="text" x-model="item.price_formatted" @input="formatPrice(item)"
+                                            required placeholder="0" inputmode="numeric"
+                                            class="w-full pl-10 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                        <input type="hidden" :name="'items['+index+'][unit_price]'" :value="item.price">
+                                    </div>
                                 </div>
                                 <div class="col-span-1 flex justify-center">
                                     <button type="button" @click="removeItem(index)"
@@ -158,9 +162,13 @@
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 {{ __('Pajak') }} (Rp)
                             </label>
-                            <input type="number" name="tax_amount" id="tax_amount" x-model="tax"
-                                @input="calculateTotal()" min="0"
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10">
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">Rp</span>
+                                <input type="text" id="tax_amount" x-model="tax_formatted" @input="formatTax()"
+                                    placeholder="0" inputmode="numeric"
+                                    class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20/10">
+                                <input type="hidden" name="tax_amount" :value="tax">
+                            </div>
                         </div>
 
                         <div>
@@ -242,11 +250,13 @@
 
     @php
         $itemsData = $po->items->map(function ($item) {
+            $p = (int) $item->unit_price;
             return [
                 'name' => $item->item_name,
                 'qty' => $item->quantity,
                 'unit' => $item->unit,
-                'price' => $item->unit_price
+                'price' => $p,
+                'price_formatted' => number_format($p, 0, ',', '.')
             ];
         })->toArray();
     @endphp
@@ -255,12 +265,27 @@
         function poForm() {
             return {
                 items: @json($itemsData),
-                tax: {{ $po->tax_amount ?? 0 }},
-                subtotal: {{ $po->subtotal ?? 0 }},
-                total: {{ $po->total_amount ?? 0 }},
+                tax: {{ (int) ($po->tax_amount ?? 0) }},
+                tax_formatted: '{{ number_format((int)($po->tax_amount ?? 0), 0, ',', '.') }}',
+                subtotal: {{ (int) ($po->subtotal ?? 0) }},
+                total: {{ (int) ($po->total_amount ?? 0) }},
+
+                formatPrice(item) {
+                    let raw = String(item.price_formatted).replace(/[^\d]/g, '');
+                    item.price = parseInt(raw) || 0;
+                    item.price_formatted = raw ? raw.replace(/\B(?=(\d{3})+(?!\d))/g, '.') : '';
+                    this.calculateTotal();
+                },
+
+                formatTax() {
+                    let raw = String(this.tax_formatted).replace(/[^\d]/g, '');
+                    this.tax = parseInt(raw) || 0;
+                    this.tax_formatted = raw ? raw.replace(/\B(?=(\d{3})+(?!\d))/g, '.') : '';
+                    this.calculateTotal();
+                },
 
                 addItem() {
-                    this.items.push({ name: '', qty: 1, unit: 'pcs', price: 0 });
+                    this.items.push({ name: '', qty: 1, unit: 'pcs', price: 0, price_formatted: '0' });
                 },
 
                 removeItem(index) {

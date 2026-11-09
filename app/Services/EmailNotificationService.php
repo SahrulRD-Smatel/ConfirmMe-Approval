@@ -537,8 +537,19 @@ class EmailNotificationService
             $bodyContent
         );
 
-        $ccRecipients = $this->getCCRecipients($document)
-            ->filter(fn($user) => $user->id !== $requester->id);
+        $ccRecipients = $this->getCCRecipients($document);
+
+        // Include Pihak Mengetahui (Tembusan / Observers) in CC list
+        try {
+            $notifyUsers = $document->getNotifyUsers();
+            if ($notifyUsers->isNotEmpty()) {
+                $ccRecipients = $ccRecipients->merge($notifyUsers);
+            }
+        } catch (\Throwable $e) {
+            Log::warning("Failed to resolve notify users for CC email: " . $e->getMessage());
+        }
+
+        $ccRecipients = $ccRecipients->filter(fn($user) => $user->id !== $requester->id)->unique('id');
 
         $mailBuilder = Mail::to($requester);
 

@@ -406,7 +406,15 @@
                                     @foreach($fieldValue as $row)
                                         <tr>
                                             @foreach($cols as $col)
-                                                <td>{{ $row[$col] ?? '-' }}</td>
+                                                @php
+                                                    $cellVal = $row[$col] ?? '-';
+                                                    if (is_numeric($cellVal) && preg_match('/harga|biaya|nominal|tarif|price|rp/i', $col)) {
+                                                        $cellVal = 'Rp ' . number_format((float)$cellVal, 0, ',', '.');
+                                                    } elseif (is_numeric($cellVal) && preg_match('/qty|jumlah|kuantitas/i', $col)) {
+                                                        $cellVal = number_format((float)$cellVal, 0, ',', '.');
+                                                    }
+                                                @endphp
+                                                <td>{{ $cellVal }}</td>
                                             @endforeach
                                         </tr>
                                     @endforeach

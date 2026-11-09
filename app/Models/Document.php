@@ -154,6 +154,66 @@ class Document extends Model
     }
 
     /**
+     * Get the document template associated with this document
+     */
+    public function documentTemplate(): BelongsTo
+    {
+        return $this->belongsTo(DocumentTemplate::class, 'template', 'code');
+    }
+
+    /**
+     * Get users who should be notified as "Pihak Mengetahui" (Tembusan / Observers)
+     *
+     * @return \Illuminate\Support\Collection<int, User>
+     */
+    public function getNotifyUsers(): \Illuminate\Support\Collection
+    {
+        $template = $this->documentTemplate ?? DocumentTemplate::where('code', $this->template)->first();
+        if (!$template) {
+            return collect();
+        }
+
+        $notifyRoles = $template->getNotifyRoles();
+        if (empty($notifyRoles)) {
+            return collect();
+        }
+
+        $users = collect();
+        foreach ($notifyRoles as $entry) {
+            if (empty($entry)) {
+                continue;
+            }
+
+            if (str_starts_with($entry, 'user:')) {
+                $uid = (int) substr($entry, 5);
+                $u = User::where('id', $uid)->where('is_active', true)->first();
+                if ($u) {
+                    $users->push($u);
+                }
+            } else {
+                $roleName = str_starts_with($entry, 'role:') ? substr($entry, 5) : $entry;
+
+                // Priority: active users in same department, fallback to all active users with role
+                $deptUsers = User::role($roleName)
+                    ->where('department', $this->department)
+                    ->where('is_active', true)
+                    ->get();
+
+                if ($deptUsers->isNotEmpty()) {
+                    $users = $users->merge($deptUsers);
+                } else {
+                    $allRoleUsers = User::role($roleName)
+                        ->where('is_active', true)
+                        ->get();
+                    $users = $users->merge($allRoleUsers);
+                }
+            }
+        }
+
+        return $users->unique('id');
+    }
+
+    /**
      * Get all approval steps
      */
     public function approvals(): HasMany

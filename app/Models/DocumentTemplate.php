@@ -53,6 +53,16 @@ class DocumentTemplate extends Model
     }
 
     /**
+     * Get roles or users that should be notified upon completion (Mengetahui / Tembusan)
+     *
+     * @return array
+     */
+    public function getNotifyRoles(): array
+    {
+        return $this->fields['notify_roles'] ?? [];
+    }
+
+    /**
      * Get approval type label
      */
     public function getApprovalTypeLabelAttribute(): string
