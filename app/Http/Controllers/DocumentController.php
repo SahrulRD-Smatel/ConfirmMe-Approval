@@ -746,7 +746,10 @@ class DocumentController extends Controller
         $qrCode = base64_encode(QrCode::format('svg')->size(100)->generate($verificationUrl));
 
         // Determine the view name based on template code
-        $templateCode = strtolower($document->template->code ?? 'document');
+        $rawCode = is_string($document->template) 
+            ? $document->template 
+            : ($document->template->code ?? $document->documentTemplate->code ?? 'document');
+        $templateCode = strtolower(str_replace('-', '_', (string)$rawCode));
         $viewName = 'pdf.' . $templateCode;
 
         // Fallback to generic document view if specific view doesn't exist
@@ -754,13 +757,15 @@ class DocumentController extends Controller
             $viewName = 'pdf.document';
         }
 
+        $orientation = ($templateCode === 'pembelian_barang') ? 'landscape' : 'portrait';
+
         // Force English locale for PDF to avoid CJK font issues in DomPDF
         app()->setLocale('en');
 
         // Render with dynamic page counter in header
         $filename = 'DOC-' . $document->document_number . '.pdf';
 
-        return $this->renderPdfWithPageCounter($viewName, compact('document', 'qrCode'), $filename);
+        return $this->renderPdfWithPageCounter($viewName, compact('document', 'qrCode', 'orientation'), $filename, $orientation);
     }
 
     /**
