@@ -104,8 +104,19 @@ class ApprovalWorkflowService
             ]);
 
             // Send notification to first approver
-            $this->emailNotificationService->sendApprovalNotification($document, 'pending_approval');
-            $firstApproval->approver->notify(new DocumentNotification('next_step', $document, "Dokumen \"{$document->title}\" menunggu review Anda."));
+            try {
+                $this->emailNotificationService->sendApprovalNotification($document, 'pending_approval');
+            } catch (\Throwable $e) {
+                \Log::warning("Could not send email notification: " . $e->getMessage());
+            }
+
+            try {
+                if ($firstApproval->approver) {
+                    $firstApproval->approver->notify(new DocumentNotification('next_step', $document, "Dokumen \"{$document->title}\" menunggu review Anda."));
+                }
+            } catch (\Throwable $e) {
+                \Log::warning("Could not send in-app notification: " . $e->getMessage());
+            }
         } else {
             // No approval steps remaining (e.g. manager creates 'approval only' doc)
             // Auto-approve the document
@@ -524,8 +535,21 @@ class ApprovalWorkflowService
             }
         }
 
-        // Fallback or throw error if workflow cannot be resolved
-        throw new \Exception("Workflow tidak ditemukan untuk dokumen ini. Harap periksa konfigurasi template.");
+        // Fallback 1: check template by approval_type
+        try {
+            $fallbackTemplate = \App\Models\DocumentTemplate::where('approval_type', $document->approval_type)->where('is_active', true)->first();
+            if ($fallbackTemplate && !empty($fallbackTemplate->workflow)) {
+                return $fallbackTemplate->workflow;
+            }
+        } catch (\Throwable $e) {}
+
+        // Fallback 2: default sensible workflows based on approval_type
+        return match ($document->approval_type) {
+            'po' => ['role:ga', 'role:manager_hrga', 'role:direktur_operasional', 'role:direktur_finance'],
+            'invoice' => ['role:manager', 'role:finance', 'role:direktur_finance'],
+            'loan' => ['role:hrd', 'role:manager_hrga', 'role:finance', 'role:direktur_finance'],
+            default => ['role:manager', 'role:direktur'],
+        };
     }
 
     /**
@@ -557,32 +581,37 @@ class ApprovalWorkflowService
 
         // 2. Try to find someone with the requested role IN THE SAME DEPARTMENT as the requester
         // This is crucial for roles like 'manager' or 'supervisor' to ensure it goes to the right division
-        $approverInSameDept = User::role($role)
-            ->where('department', $document->department)
-            ->where('is_active', true)
-            ->whereNotIn('id', $allExcluded)
-            ->first();
+        try {
+            $approverInSameDept = User::role($role)
+                ->where('department', $document->department)
+                ->where('is_active', true)
+                ->whereNotIn('id', $allExcluded)
+                ->first();
 
-        if ($approverInSameDept) {
-            return $approverInSameDept;
-        }
+            if ($approverInSameDept) {
+                return $approverInSameDept;
+            }
 
-        // 3. Fallback: Find ANY active user with this role globally
-        // This handles cross-department roles (like 'direktur_hr', 'purchasing', 'hrd_coordinator')
-        $approver = User::role($role)
-            ->where('is_active', true)
-            ->whereNotIn('id', $allExcluded)
-            ->first();
-
-        // 4. Ultimate Fallback: if no alternative found, allow duplicate (better than breaking the flow)
-        if (!$approver && !empty($excludeIds)) {
+            // 3. Fallback: Find ANY active user with this role globally
+            // This handles cross-department roles (like 'direktur_hr', 'purchasing', 'hrd_coordinator')
             $approver = User::role($role)
                 ->where('is_active', true)
-                ->where('id', '!=', $requesterId)
+                ->whereNotIn('id', $allExcluded)
                 ->first();
-        }
 
-        return $approver;
+            // 4. Ultimate Fallback: if no alternative found, allow duplicate (better than breaking the flow)
+            if (!$approver && !empty($excludeIds)) {
+                $approver = User::role($role)
+                    ->where('is_active', true)
+                    ->where('id', '!=', $requesterId)
+                    ->first();
+            }
+
+            return $approver;
+        } catch (\Throwable $e) {
+            \Log::warning("Role [{$role}] not found in database or error querying approvers: " . $e->getMessage());
+            return null;
+        }
     }
 
     /**

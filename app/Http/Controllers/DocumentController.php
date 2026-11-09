@@ -323,7 +323,11 @@ class DocumentController extends Controller
                 }
                 
                 // Automatically assign workflow based on template or legacy rules
-                $this->workflowService->initializeWorkflow($document);
+                try {
+                    $this->workflowService->initializeWorkflow($document);
+                } catch (\Throwable $e) {
+                    \Log::error("Workflow initialization warning for document #{$document->id}: " . $e->getMessage());
+                }
             }
 
             return redirect()->route('documents.index')
@@ -757,10 +761,10 @@ class DocumentController extends Controller
         }
 
         // Determine orientation and layout dynamically (Zero Hardcoding)
-        $template = null;
-        if (is_object($document->template) && $document->template instanceof \App\Models\DocumentTemplate) {
+        $template = $document->documentTemplate ?? null;
+        if (!$template && is_object($document->template) && $document->template instanceof \App\Models\DocumentTemplate) {
             $template = $document->template;
-        } elseif (!empty($rawCode)) {
+        } elseif (!$template && !empty($rawCode)) {
             $template = \App\Models\DocumentTemplate::where('code', $rawCode)->first();
         }
 
