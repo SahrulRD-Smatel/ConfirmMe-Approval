@@ -320,22 +320,40 @@
 
 <body>
     @php
-        // 1. Resolve Document Template
-        $template = null;
-        if ($document->relationLoaded('documentTemplate')) {
-            $template = $document->documentTemplate;
-        } elseif (is_object($document->template) && $document->template instanceof \App\Models\DocumentTemplate) {
+        // 1. Resolve Document Template safely
+        $template = $document->documentTemplate ?? null;
+        if (!$template && is_object($document->template) && $document->template instanceof \App\Models\DocumentTemplate) {
             $template = $document->template;
-        } else {
+        }
+        if (!$template && !empty($document->template)) {
             try {
                 $template = \App\Models\DocumentTemplate::where('code', (string)$document->template)->first();
-            } catch (\Throwable $e) {
-                $template = null;
-            }
+            } catch (\Throwable $e) {}
         }
 
         $dynamicFields = $template ? ($template->fields['dynamic_fields'] ?? []) : [];
         $metadata = $document->metadata ?? [];
+
+        // Universal Fallback: If template dynamic_fields is empty but metadata exists, derive fields automatically
+        if (empty($dynamicFields) && !empty($metadata)) {
+            foreach ($metadata as $mKey => $mVal) {
+                if (is_array($mVal) && !empty($mVal) && isset($mVal[0]) && is_array($mVal[0])) {
+                    $dynamicFields[] = [
+                        'name' => $mKey,
+                        'label' => ucwords(str_replace('_', ' ', $mKey)),
+                        'type' => 'table',
+                        'columns' => implode(', ', array_keys($mVal[0])),
+                    ];
+                } elseif (!is_array($mVal)) {
+                    $dynamicFields[] = [
+                        'name' => $mKey,
+                        'label' => ucwords(str_replace('_', ' ', $mKey)),
+                        'type' => 'text',
+                    ];
+                }
+            }
+        }
+
         $approvals = $document->approvals ?? collect();
         $pemohon = $document->user;
         $docDate = $document->submitted_at ?? ($document->created_at ?? now());
@@ -572,6 +590,25 @@
                                 </td>
                             </tr>
                         @endif
+
+                        @php
+                            $renderedKeys = ['kategori_pembelian', 'kategori', 'keterangan', 'lokasi_permintaan', 'lokasi', 'perkiraan_tgl_penerimaan', 'expected_delivery', 'delivery_date', 'jenis_pembelian'];
+                            $extraFields = array_filter($dynamicFields, function($f) use ($renderedKeys) {
+                                return ($f['type'] ?? '') !== 'table' && !in_array($f['name'] ?? '', $renderedKeys);
+                            });
+                        @endphp
+                        @foreach($extraFields as $ef)
+                            @php
+                                $efVal = $metadata[$ef['name']] ?? null;
+                                if ($efVal === null || $efVal === '') continue;
+                                if (is_array($efVal)) $efVal = implode(', ', array_filter($efVal, 'is_scalar'));
+                            @endphp
+                            <tr>
+                                <td class="meta-label">{{ $ef['label'] }}</td>
+                                <td class="meta-colon">:</td>
+                                <td class="meta-value-line">{{ $efVal }}</td>
+                            </tr>
+                        @endforeach
                     </table>
                 </td>
             </tr>
@@ -646,7 +683,7 @@
                     @endphp
                     @foreach($rows as $rIdx => $row)
                         @php
-                            if (!is_array($row)) continue;
+                            $row = (array)$row;
 
                             $currentCat = $categoryCol ? ($row[$categoryCol] ?? null) : null;
                             if ($currentCat && $currentCat !== $lastCategory) {
@@ -662,7 +699,14 @@
                                 $rowPrice = $parseMoney($row[$priceCol]);
                             }
                             if ($qtyCol && isset($row[$qtyCol])) {
-                                $rowQty = $parseQty($row[$qtyCol]);
+                                $rawQ = trim((string)$row[$qtyCol]);
+                                if ($rawQ === '0' || $rawQ === 0) {
+                                    $rowQty = 0;
+                                } elseif ($rawQ === '' || $rawQ === '-') {
+                                    $rowQty = 1;
+                                } else {
+                                    $rowQty = $parseQty($rawQ);
+                                }
                             }
                             if ($totalCol && isset($row[$totalCol])) {
                                 $rowTotal = $parseMoney($row[$totalCol]);
@@ -676,6 +720,9 @@
                             @foreach($columns as $col)
                                 @php
                                     $val = $row[$col] ?? '-';
+                                    if (is_array($val)) {
+                                        $val = implode(', ', array_filter($val, 'is_scalar'));
+                                    }
                                     $isPrice = ($col === $priceCol);
                                     $isTotal = ($col === $totalCol);
                                     $isQty = ($col === $qtyCol);
@@ -720,79 +767,155 @@
                     @endforeach
 
                     @if($hasPriceCalculation)
-                        <tr class="total-row">
-                            <td colspan="{{ $totalColCount - 2 }}" style="border: none;"></td>
-                            <td class="bg-yellow text-center" style="font-weight: bold; border: 1px solid #000; width: 35px;">Rp</td>
-                            <td class="bg-yellow text-right" style="font-weight: bold; border: 1px solid #000; padding: 3px 6px;">
-                                {{ number_format($grandTotal, 0, ',', '.') }}
-                            </td>
-                        </tr>
+                        @php
+                            $hasSeparatePriceAndTotal = ($priceCol !== null && ($showCalculatedTotalCol || $totalCol !== null));
+                        @endphp
+                        @if($hasSeparatePriceAndTotal)
+                            <tr class="total-row">
+                                <td colspan="{{ max(1, $totalColCount - 2) }}" style="border: none;"></td>
+                                <td class="bg-yellow text-center" style="font-weight: bold; border: 1px solid #000; width: 35px;">Rp</td>
+                                <td class="bg-yellow text-right" style="font-weight: bold; border: 1px solid #000; padding: 3px 6px;">
+                                    {{ number_format($grandTotal, 0, ',', '.') }}
+                                </td>
+                            </tr>
+                        @else
+                            <tr class="total-row">
+                                <td colspan="{{ max(1, $totalColCount - 1) }}" style="border: none;"></td>
+                                <td class="bg-yellow text-right" style="font-weight: bold; border: 1px solid #000; padding: 3px 6px;">
+                                    <table style="width: 100%; border-collapse: collapse; border: none;">
+                                        <tr>
+                                            <td style="border: none; padding: 0; text-align: left; width: 18px; font-weight: bold; background: transparent;">Rp</td>
+                                            <td style="border: none; padding: 0; text-align: right; font-weight: bold; background: transparent;">{{ number_format($grandTotal, 0, ',', '.') }}</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        @endif
                     @endif
                 </tbody>
             </table>
         @endforeach
 
-        {{-- 4 Signature Boxes --}}
-        <table class="sig-container">
-            <tr>
-                <td class="sig-box-cell">
-                    <table class="sig-card">
-                        <tr><td class="sig-card-header">Pemohon</td></tr>
-                        <tr>
-                            <td class="sig-card-body">
-                                @if($verificationUrl)
-                                    <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 44px; height: 44px; display: inline-block;" />
-                                @endif
-                            </td>
-                        </tr>
-                        <tr><td class="sig-card-footer">{{ $pemohon->name ?? '-' }}</td></tr>
-                    </table>
-                </td>
-                <td class="sig-box-cell">
-                    <table class="sig-card">
-                        <tr><td class="sig-card-header">Disetujui</td></tr>
-                        <tr>
-                            <td class="sig-card-body">
-                                @if($disetujuiApproval && $disetujuiApproval->status === 'approved' && $verificationUrl)
-                                    <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 44px; height: 44px; display: inline-block;" />
-                                @else
-                                    <span style="color: #aaa; font-size: 8px;">Pending</span>
-                                @endif
-                            </td>
-                        </tr>
-                        <tr><td class="sig-card-footer">{{ $disetujuiApproval?->approver?->name ?? '-' }}</td></tr>
-                    </table>
-                </td>
-                <td class="sig-box-cell">
-                    <table class="sig-card">
-                        <tr><td class="sig-card-header">Mengetahui</td></tr>
-                        <tr>
-                            <td class="sig-card-body">
-                                @if($mengetahuiUser && $document->status === 'completed' && $verificationUrl)
-                                    <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 44px; height: 44px; display: inline-block;" />
-                                @endif
-                            </td>
-                        </tr>
-                        <tr><td class="sig-card-footer">{{ $mengetahuiUser->name ?? '-' }}</td></tr>
-                    </table>
-                </td>
-                <td class="sig-box-cell">
-                    <table class="sig-card">
-                        <tr><td class="sig-card-header">Bagian Keuangan</td></tr>
-                        <tr>
-                            <td class="sig-card-body">
-                                @if($financeApproval && $financeApproval->status === 'approved' && $verificationUrl)
-                                    <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 44px; height: 44px; display: inline-block;" />
-                                @else
-                                    <span style="color: #aaa; font-size: 8px;">Pending</span>
-                                @endif
-                            </td>
-                        </tr>
-                        <tr><td class="sig-card-footer">{{ $financeUser->name ?? '-' }}</td></tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
+        {{-- Adaptive Landscape Signatures --}}
+        @php
+            $isPurchasingWorkflow = (
+                str_contains(strtolower($template->code ?? $document->title), 'pembelian') ||
+                str_contains(strtolower($template->code ?? $document->title), 'pengadaan') ||
+                !empty($metadata['kategori_pembelian']) ||
+                $document->purchaseOrder ||
+                $financeApproval !== null
+            );
+        @endphp
+
+        @if($isPurchasingWorkflow)
+            {{-- Standard 4-box layout for Purchasing / PO --}}
+            <table class="sig-container">
+                <tr>
+                    <td class="sig-box-cell" style="width: 25%;">
+                        <table class="sig-card">
+                            <tr><td class="sig-card-header">Pemohon</td></tr>
+                            <tr>
+                                <td class="sig-card-body">
+                                    @if($verificationUrl)
+                                        <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 44px; height: 44px; display: inline-block;" />
+                                    @endif
+                                </td>
+                            </tr>
+                            <tr><td class="sig-card-footer">{{ $pemohon->name ?? '-' }}</td></tr>
+                        </table>
+                    </td>
+                    <td class="sig-box-cell" style="width: 25%;">
+                        <table class="sig-card">
+                            <tr><td class="sig-card-header">Disetujui</td></tr>
+                            <tr>
+                                <td class="sig-card-body">
+                                    @if($disetujuiApproval && $disetujuiApproval->status === 'approved' && $verificationUrl)
+                                        <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 44px; height: 44px; display: inline-block;" />
+                                    @else
+                                        <span style="color: #aaa; font-size: 8px;">Pending</span>
+                                    @endif
+                                </td>
+                            </tr>
+                            <tr><td class="sig-card-footer">{{ $disetujuiApproval?->approver?->name ?? '-' }}</td></tr>
+                        </table>
+                    </td>
+                    <td class="sig-box-cell" style="width: 25%;">
+                        <table class="sig-card">
+                            <tr><td class="sig-card-header">Mengetahui</td></tr>
+                            <tr>
+                                <td class="sig-card-body">
+                                    @if($mengetahuiUser && $document->status === 'completed' && $verificationUrl)
+                                        <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 44px; height: 44px; display: inline-block;" />
+                                    @endif
+                                </td>
+                            </tr>
+                            <tr><td class="sig-card-footer">{{ $mengetahuiUser->name ?? '-' }}</td></tr>
+                        </table>
+                    </td>
+                    <td class="sig-box-cell" style="width: 25%;">
+                        <table class="sig-card">
+                            <tr><td class="sig-card-header">Bagian Keuangan</td></tr>
+                            <tr>
+                                <td class="sig-card-body">
+                                    @if($financeApproval && $financeApproval->status === 'approved' && $verificationUrl)
+                                        <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 44px; height: 44px; display: inline-block;" />
+                                    @else
+                                        <span style="color: #aaa; font-size: 8px;">Pending</span>
+                                    @endif
+                                </td>
+                            </tr>
+                            <tr><td class="sig-card-footer">{{ $financeUser->name ?? '-' }}</td></tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        @else
+            {{-- Dynamic cards for each approver for general landscape documents --}}
+            @php
+                $cardCount = 1 + max(1, count($approvals));
+                $cardWidth = round(100 / $cardCount, 2);
+            @endphp
+            <table class="sig-container">
+                <tr>
+                    <td class="sig-box-cell" style="width: {{ $cardWidth }}%;">
+                        <table class="sig-card">
+                            <tr><td class="sig-card-header">Pemohon</td></tr>
+                            <tr>
+                                <td class="sig-card-body">
+                                    @if($verificationUrl)
+                                        <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 44px; height: 44px; display: inline-block;" />
+                                    @endif
+                                </td>
+                            </tr>
+                            <tr><td class="sig-card-footer">{{ $pemohon->name ?? '-' }}</td></tr>
+                        </table>
+                    </td>
+                    @foreach($approvals as $approval)
+                        <td class="sig-box-cell" style="width: {{ $cardWidth }}%;">
+                            <table class="sig-card">
+                                <tr>
+                                    <td class="sig-card-header">
+                                        {{ $approval->approver?->position ?? ($approval->role_label ?? 'Approver') }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="sig-card-body">
+                                        @if($approval->status === 'approved' && $verificationUrl)
+                                            <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 44px; height: 44px; display: inline-block;" />
+                                        @else
+                                            <span style="color: #aaa; font-size: 8px;">{{ ucfirst($approval->status ?? 'pending') }}</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="sig-card-footer">{{ $approval->approver?->name ?? '-' }}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    @endforeach
+                </tr>
+            </table>
+        @endif
 
         <div class="verification-footer">
             <strong>Catatan Verifikasi:</strong> Dokumen ini diterbitkan secara elektronik oleh ConfirmMe - PT Info Solusindo Data Utama. Scan QR Code untuk memverifikasi keabsahan dokumen. Hash: {{ substr($document->approval_hash ?? 'N/A', 0, 32) }}...
@@ -891,6 +1014,9 @@
                                             if (!file_exists($imgPath)) {
                                                 $imgPath = public_path('storage/' . $relPath);
                                             }
+                                            if (!file_exists($imgPath)) {
+                                                $imgPath = storage_path('app/' . $relPath);
+                                            }
                                             $imgDataUri = null;
                                             if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif']) && file_exists($imgPath)) {
                                                 $mime = ($ext === 'png') ? 'image/png' : 'image/jpeg';
@@ -907,6 +1033,9 @@
                                     @else
                                         @php
                                             $displayVal = $fVal ?: '-';
+                                            if (is_array($displayVal)) {
+                                                $displayVal = implode(', ', array_filter($displayVal, 'is_scalar'));
+                                            }
                                             if ($fVal && $fType === 'date' && strtotime($fVal)) {
                                                 $displayVal = \Carbon\Carbon::parse($fVal)->format('d/m/Y');
                                             } elseif ($fVal && $fType === 'number' && is_numeric($fVal)) {
@@ -965,6 +1094,9 @@
                                                     }
                                                     if ($cellVal === '-' && isset($row[$col])) {
                                                         $cellVal = $row[$col];
+                                                    }
+                                                    if (is_array($cellVal)) {
+                                                        $cellVal = implode(', ', array_filter($cellVal, 'is_scalar'));
                                                     }
                                                 @endphp
                                                 <td>{{ $cellVal }}</td>
