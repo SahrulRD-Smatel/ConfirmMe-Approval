@@ -14,12 +14,10 @@
             {{-- LANDSCAPE STYLES (DAFTAR PENGADAAN / PEMBELIAN BARANG) --}}
             @page {
                 size: A4 landscape;
-                margin: 20mm 22mm 18mm 22mm;
+                margin: 20mm 22mm 18mm 22mm !important;
             }
 
-            html, body {
-                margin: 0;
-                padding: 0;
+            body {
                 font-family: 'DejaVu Sans', Arial, Helvetica, sans-serif;
                 font-size: 8.5px;
                 color: #000;
