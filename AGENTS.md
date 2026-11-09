@@ -39,3 +39,38 @@ Sistem persetujuan dokumen bersifat dinamis berbasis *Template* dan tabel databa
 
 - Setiap teks antarmuka Blade wajib dibungkus dengan helper translasi: `__('Teks Anda')`.
 - Jalankan `php sync_lang.php` dan skrip AI translator yang tersedia jika menambahkan teks baru ke dalam sistem.
+
+---
+
+## 4. Standar PDF Engine Dinamis (Zero Hardcoded Blade Views)
+
+Sistem ConfirmMe menggunakan mesin PDF dinamis terpusat pada file `resources/views/pdf/document.blade.php`:
+
+### Larangan Keras:
+- **DILARANG MEMBUAT FILE BLADE BARU PER TEMPLATE (misal: `pdf/pembelian_barang.blade.php`):**
+  - Membuat file Blade baru setiap kali ada template baru adalah pelanggaran terhadap prinsip *Dynamic Form Builder*. Jika Admin membuat template baru di web, dokumen PDF-nya pasti tidak cocok (*miss*).
+  - Seluruh dokumen persetujuan wajib dirender melalui satu pintu mesin universal: `resources/views/pdf/document.blade.php`.
+
+### Arsitektur Dual-Preset PDF Engine:
+Sistem memiliki 2 preset layout visual terpadu di dalam `pdf.document`:
+1. **Formulir Kerja Resmi Perusahaan (Portrait / A4 Tegak):**
+   - **Standar untuk 90% dokumen kantor:** Peminjaman Kendaraan (`VEHICLE_LOAN`), Izin Gudang (`SURAT_IJIN_GUDANG`), Surat Tugas, Form Cuti, Permintaan Akun IT, dll.
+   - **Komponen Wajib:**
+     - Header fixed kotak resmi **Formulir Kerja** (`@include('pdf.partials.company-header')`).
+     - Margin atas `@page` minimal `140px` (kop surat fixed `105px`) agar saat dokumen tumpah ke halaman 2, konten memiliki ruang bernapas aman di bawah kop surat (tidak menabrak tepi atas).
+     - Sub-header banner kategori & judul dokumen resmi.
+     - Isian formulir (`info-table`) bersih tanpa kotak tebal/merah.
+     - Tabel dinamis (seperti *Data Penumpang dalam Mobil*) mengalir langsung di bawah isian form tanpa pemotongan halaman paksa (`page-break-before: always`).
+     - Lampiran foto/berkas (seperti *Foto SIM A*) disematkan berbingkai rapi dan proporsional.
+     - Disclaimer / syarat & ketentuan.
+     - Tanda tangan digital ber-QR Code dengan verifikasi resmi.
+2. **Daftar Pengadaan / Pembelian Barang (Landscape / A4 Mendatar):**
+   - **Khusus untuk dokumen belanja tabular:** Permintaan Pembelian Barang (ATK, P3K, Pantry, Aset).
+   - **Komponen Wajib:** Kertas mendatar (Landscape), tabel belanja 7–8 kolom dengan sub-kategori emas `#F7CE3E`, kalkulasi Grand Total otomatis berlatar kuning emas, dan kop pembelian Info Data.
+
+### Pemilihan Layout di Form Builder:
+- Admin dapat menentukan tipe layout di menu *Admin -> Buat/Edit Template* melalui dropdown `fields[pdf_layout]`:
+  - `auto` (Otomatis: Landscape jika tabel belanja $\ge 4$ kolom, Portrait jika formulir biasa).
+  - `formulir_kerja` (Formulir Kerja Resmi - Portrait).
+  - `tabel_pengadaan` (Daftar Pengadaan / Pembelian - Landscape).
+- Di controller ([DocumentController.php](file:///f:/Dhani/JOB/ConfirmMe-Approval/app/Http/Controllers/DocumentController.php)), rute print selalu mengarah ke `pdf.document` (kecuali invoice & purchase-order yang merupakan dokumen finansial khusus).

@@ -115,14 +115,14 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Orientasi PDF') }}</label>
-                    <select name="fields[pdf_orientation]"
-                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
-                        <option value="auto" {{ ($fields['pdf_orientation'] ?? 'auto') === 'auto' ? 'selected' : '' }}>{{ __('Otomatis (Landscape jika tabel >= 4 kolom)') }}</option>
-                        <option value="portrait" {{ ($fields['pdf_orientation'] ?? '') === 'portrait' ? 'selected' : '' }}>{{ __('Portrait (Tegak)') }}</option>
-                        <option value="landscape" {{ ($fields['pdf_orientation'] ?? '') === 'landscape' ? 'selected' : '' }}>{{ __('Landscape (Mendatar / Lebar)') }}</option>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Tipe Layout PDF') }}</label>
+                    <select name="fields[pdf_layout]"
+                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20">
+                        <option value="auto" {{ ($fields['pdf_layout'] ?? 'auto') === 'auto' ? 'selected' : '' }}>{{ __('Otomatis (Sesuai jenis isian form)') }}</option>
+                        <option value="formulir_kerja" {{ ($fields['pdf_layout'] ?? '') === 'formulir_kerja' ? 'selected' : '' }}>{{ __('Formulir Kerja Resmi (Portrait - Peminjaman, Izin, Tugas, dll.)') }}</option>
+                        <option value="tabel_pengadaan" {{ ($fields['pdf_layout'] ?? '') === 'tabel_pengadaan' ? 'selected' : '' }}>{{ __('Daftar Pengadaan / Pembelian (Landscape - Tabel Barang & Harga)') }}</option>
                     </select>
-                    <p class="mt-1 text-xs text-gray-400">{{ __('Tata letak kertas saat dokumen dicetak/diunduh sebagai PDF') }}</p>
+                    <p class="mt-1 text-xs text-gray-400">{{ __('Format tata letak cetak dokumen PDF yang dihasilkan.') }}</p>
                 </div>
 
                 <div class="md:col-span-2">

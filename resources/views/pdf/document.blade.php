@@ -6,379 +6,371 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $document->document_number }} - {{ $document->title }}</title>
     <style>
-        @page {
-            size: A4 {{ $orientation ?? 'portrait' }};
-            margin: 14mm 14mm 16mm 14mm;
-        }
+        @php
+            $isLandscape = ($orientation ?? 'portrait') === 'landscape';
+        @endphp
 
-        html, body {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'DejaVu Sans', Arial, Helvetica, sans-serif;
-            font-size: {{ ($orientation ?? 'portrait') === 'landscape' ? '8.5px' : '9px' }};
-            line-height: 1.35;
-            color: #111;
-            background: #fff;
-        }
+        @if($isLandscape)
+            {{-- LANDSCAPE STYLES (DAFTAR PENGADAAN / PEMBELIAN BARANG) --}}
+            @page {
+                size: A4 landscape;
+                margin: 10mm 12mm 10mm 12mm;
+            }
 
-        table {
-            border-collapse: collapse;
-        }
+            html, body {
+                margin: 0;
+                padding: 0;
+                font-family: 'DejaVu Sans', Arial, Helvetica, sans-serif;
+                font-size: 8.5px;
+                color: #000;
+                line-height: 1.25;
+                background: #fff;
+            }
 
-        .w-full {
-            width: 100%;
-        }
+            table { border-collapse: collapse; }
+            .w-full { width: 100%; }
 
-        /* Header / Kop Surat Info Data */
-        .header-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 12px;
-        }
+            .header-table { width: 100%; border-collapse: collapse; margin-bottom: 6px; }
+            .header-table td { vertical-align: top; padding: 0; }
 
-        .header-table td {
-            vertical-align: top;
-            padding: 0;
-        }
+            .doc-title-main { font-size: 13px; font-weight: bold; text-align: center; letter-spacing: 0.5px; margin-bottom: 2px; text-transform: uppercase; }
+            .doc-title-sub { font-size: 11px; font-weight: bold; text-align: center; font-style: italic; }
 
-        .doc-title-main {
-            font-size: {{ ($orientation ?? 'portrait') === 'landscape' ? '13px' : '13.5px' }};
-            font-weight: bold;
-            text-align: center;
-            letter-spacing: 0.5px;
-            margin-bottom: 2px;
-            text-transform: uppercase;
-        }
+            .meta-table { width: 100%; border-collapse: collapse; font-size: 8.5px; }
+            .meta-table td { padding: 1.5px 0; vertical-align: middle; }
+            .meta-label { width: 95px; color: #000; }
+            .meta-colon { width: 10px; text-align: center; }
+            .meta-value-line { border-bottom: 1px solid #777; padding-bottom: 1px; font-weight: 500; }
 
-        .doc-title-sub {
-            font-size: {{ ($orientation ?? 'portrait') === 'landscape' ? '10.5px' : '11px' }};
-            font-weight: bold;
-            text-align: center;
-            font-style: italic;
-        }
+            .data-table { width: 100%; border: 1px solid #000; border-collapse: collapse; margin-top: 6px; font-size: 8.5px; }
+            .data-table thead { display: table-header-group; }
+            .data-table tr { page-break-inside: avoid; page-break-after: auto; }
+            .data-table th { border: 1px solid #000; padding: 4px 3px; text-align: center; font-weight: bold; background-color: #fff; vertical-align: middle; }
+            .data-table td { border: 1px solid #000; padding: 3px 4px; vertical-align: middle; }
 
-        /* Metadata Tables */
-        .meta-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: {{ ($orientation ?? 'portrait') === 'landscape' ? '8.5px' : '9px' }};
-        }
+            .category-row td { background-color: #F7CE3E !important; font-weight: bold; padding: 3px 6px; border: 1px solid #000; }
+            .total-row td { font-weight: bold; }
+            .bg-yellow { background-color: #F7CE3E !important; }
 
-        .meta-table td {
-            padding: 2px 0;
-            vertical-align: middle;
-        }
+            .sig-container { width: 100%; border-collapse: collapse; margin-top: 10px; page-break-inside: avoid; }
+            .sig-box-cell { width: 25%; padding: 0 4px; vertical-align: top; }
+            .sig-card { width: 100%; border: 1px solid #000; border-collapse: collapse; }
+            .sig-card-header { border-bottom: 1px solid #000; text-align: center; font-weight: bold; font-size: 9.5px; padding: 3px; background-color: #fff; height: 18px; }
+            .sig-card-body { text-align: center; vertical-align: middle; height: 50px; padding: 2px; position: relative; }
+            .sig-card-footer { border-top: 1px solid #000; text-align: center; font-weight: bold; font-size: 9px; padding: 3px 2px; background-color: #fff; height: 20px; }
 
-        .meta-label {
-            width: {{ ($orientation ?? 'portrait') === 'landscape' ? '110px' : '120px' }};
-            color: #222;
-        }
+            .text-center { text-align: center; }
+            .text-right { text-align: right; }
+            .text-left { text-align: left; }
 
-        .meta-colon {
-            width: 10px;
-            text-align: center;
-        }
+            .verification-footer { margin-top: 10px; padding: 6px 10px; background-color: #f9fafb; border: 1px solid #e5e7eb; font-size: 8px; color: #555; page-break-inside: avoid; }
+            .verification-footer table { width: 100%; border-collapse: collapse; }
+            .verification-footer td { vertical-align: middle; padding: 0; }
+        @else
+            {{-- PORTRAIT STYLES (STANDAR RESMI FORMULIR KERJA - GAMBAR 1) --}}
+            @page {
+                margin: 140px 45px 55px 45px !important;
+            }
 
-        .meta-value-line {
-            border-bottom: 1px solid #777;
-            padding-bottom: 1px;
-            font-weight: 500;
-        }
+            header {
+                position: fixed;
+                top: -115px;
+                left: 0;
+                right: 0;
+                height: 105px;
+            }
+            
+            header .company-header {
+                margin-bottom: 0 !important;
+            }
 
-        /* Section Titles */
-        .section-header {
-            font-size: 9.5px;
-            font-weight: bold;
-            color: #1f2937;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-top: 10px;
-            margin-bottom: 5px;
-            padding-bottom: 2px;
-            border-bottom: 1.5px solid #e5e7eb;
-        }
+            html, body, div, p, span, table, th, td, h1, h2, h3, h4, h5, h6 {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
 
-        /* Dynamic Non-Table Fields Card */
-        .info-card {
-            width: 100%;
-            border: 1px solid #e5e7eb;
-            background-color: #fafafa;
-            border-radius: 4px;
-            margin-top: 8px;
-            margin-bottom: 10px;
-            padding: 6px 10px;
-            page-break-inside: avoid;
-        }
+            body {
+                font-family: 'DejaVu Sans', sans-serif;
+                font-size: 11px;
+                line-height: 1.5;
+                color: #333;
+                background: #fff;
+            }
 
-        /* Data Tables (Dynamic Table Fields) */
-        .data-table-container {
-            margin-top: 10px;
-            margin-bottom: 12px;
-            page-break-inside: auto;
-        }
+            .container {
+                width: 100%;
+            }
 
-        .data-table {
-            width: 100%;
-            border: 1px solid #000;
-            border-collapse: collapse;
-            font-size: {{ ($orientation ?? 'portrait') === 'landscape' ? '8.5px' : '9px' }};
-            page-break-inside: auto;
-        }
+            /* Sub-Header Banner (Category matching Image 1) */
+            .sub-header-banner {
+                background-color: #1e3a5f;
+                color: white;
+                text-align: center;
+                padding: 6px 15px;
+                margin-bottom: 8px;
+                font-size: 11.5px;
+                font-weight: bold;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
 
-        .data-table thead {
-            display: table-header-group;
-        }
+            .doc-title-banner {
+                text-align: center;
+                padding: 4px 15px;
+                margin-bottom: 14px;
+                font-size: 13px;
+                font-weight: bold;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                color: #1a1a1a;
+            }
 
-        .data-table tr {
-            page-break-inside: avoid;
-            page-break-after: auto;
-        }
+            /* Info Table (Dynamic Form Fields matching Image 1) */
+            .info-table {
+                width: 100%;
+                margin-bottom: 12px;
+                border-collapse: collapse;
+            }
 
-        .data-table th {
-            border: 1px solid #000;
-            padding: 4px 3px;
-            text-align: center;
-            font-weight: bold;
-            background-color: #f3f4f6;
-            vertical-align: middle;
-        }
+            .info-table th {
+                text-align: left;
+                width: 150px;
+                padding: 2.5px 0;
+                color: #333;
+                font-weight: normal;
+                font-size: 11px;
+                vertical-align: top;
+                border: none;
+            }
 
-        .data-table td {
-            border: 1px solid #000;
-            padding: 3.5px 5px;
-            vertical-align: middle;
-        }
+            .info-table td {
+                padding: 2.5px 0;
+                font-size: 11px;
+                color: #111;
+                vertical-align: top;
+                border: none;
+            }
 
-        .category-row td {
-            background-color: #F7CE3E !important;
-            font-weight: bold;
-            padding: 3px 6px;
-            border: 1px solid #000;
-        }
+            /* Data Table (Dynamic Table Fields e.g. Data Penumpang) */
+            .data-table-container {
+                margin-top: 10px;
+                margin-bottom: 14px;
+                page-break-inside: auto;
+            }
 
-        .total-row td {
-            font-weight: bold;
-        }
+            .data-table {
+                width: 100%;
+                margin-top: 6px;
+                margin-bottom: 10px;
+                border-collapse: collapse;
+                table-layout: auto;
+                page-break-inside: auto;
+            }
 
-        .bg-yellow {
-            background-color: #F7CE3E !important;
-        }
+            .data-table thead {
+                display: table-header-group;
+            }
 
-        /* Dynamic File / Image Attachments */
-        .attachment-section {
-            margin-top: 14px;
-            margin-bottom: 12px;
-            page-break-inside: avoid;
-        }
+            .data-table tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
 
-        .attachment-card {
-            border: 1px solid #d1d5db;
-            background-color: #f9fafb;
-            padding: 6px;
-            border-radius: 6px;
-            text-align: center;
-            display: inline-block;
-            margin: 4px;
-        }
+            .data-table th {
+                text-align: left;
+                background-color: #f3f4f6;
+                color: #1f2937;
+                font-weight: bold;
+                text-transform: uppercase;
+                font-size: 9px;
+                letter-spacing: 0.5px;
+                padding: 6px 8px;
+                border: 1px solid #d1d5db;
+            }
 
-        .attachment-card-title {
-            font-size: 8.5px;
-            font-weight: bold;
-            color: #374151;
-            margin-bottom: 4px;
-            text-transform: uppercase;
-        }
+            .data-table td {
+                padding: 5px 8px;
+                border: 1px solid #e5e7eb;
+                font-size: 10px;
+                color: #222;
+            }
 
-        .attachment-card img {
-            max-width: {{ ($orientation ?? 'portrait') === 'landscape' ? '280px' : '220px' }};
-            max-height: 160px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            display: block;
-            margin: 0 auto;
-        }
+            .data-table tr:nth-child(even) td {
+                background-color: #f9fafb;
+            }
 
-        .attachment-list-box {
-            border: 1px solid #e5e7eb;
-            background-color: #f9fafb;
-            padding: 8px 12px;
-            border-radius: 4px;
-            margin-top: 10px;
-            margin-bottom: 12px;
-            page-break-inside: avoid;
-        }
+            .section-title {
+                font-size: 11px;
+                font-weight: bold;
+                color: #7F1D1D;
+                margin-top: 10px;
+                margin-bottom: 6px;
+                padding-bottom: 3px;
+                border-bottom: 1.5px solid #7F1D1D;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
 
-        /* Digital Approval Block (Exact Match with Image 1) */
-        .approval-block-wrapper {
-            margin-top: 16px;
-            margin-bottom: 10px;
-            page-break-inside: avoid;
-        }
+            .attachment-box {
+                margin-top: 8px;
+                margin-bottom: 10px;
+                page-break-inside: avoid;
+            }
 
-        .approval-table {
-            width: 100%;
-            border-collapse: collapse;
-            border: 1px solid #e5e7eb;
-            background: #fff;
-        }
+            .attachment-img {
+                max-width: 220px;
+                max-height: 140px;
+                border: 1px solid #d1d5db;
+                border-radius: 4px;
+                display: block;
+                margin-top: 4px;
+            }
 
-        .approval-table th, .approval-table td {
-            border: 1px solid #e5e7eb;
-        }
+            .signature-section {
+                margin-top: 20px;
+                page-break-inside: avoid;
+            }
 
-        .badge-created {
-            background-color: #d1fae5;
-            color: #065f46;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 8px;
-            font-weight: bold;
-        }
+            .signature-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
 
-        .badge-reviewed {
-            background-color: #f3f4f6;
-            color: #374151;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 8px;
-            font-weight: bold;
-        }
+            .signature-table td {
+                text-align: center;
+                vertical-align: top;
+                padding: 4px 6px;
+            }
 
-        .badge-approved {
-            background-color: #dcfce7;
-            color: #15803d;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 8px;
-            font-weight: bold;
-        }
+            .sig-role-label {
+                font-size: 10px;
+                font-weight: bold;
+                color: #333;
+                margin-bottom: 6px;
+            }
 
-        .badge-pending {
-            background-color: #fef3c7;
-            color: #92400e;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 8px;
-            font-weight: bold;
-        }
+            .sig-qr-box {
+                width: 60px;
+                height: 60px;
+                margin: 4px auto;
+                display: block;
+            }
 
-        .created-circle {
-            width: 24px;
-            height: 24px;
-            background: #d1fae5;
-            color: #059669;
-            border-radius: 50%;
-            display: inline-block;
-            line-height: 24px;
-            font-size: 14px;
-            font-weight: bold;
-            margin-top: 4px;
-        }
+            .sig-qr-box img {
+                width: 60px;
+                height: 60px;
+            }
 
-        .signed-label {
-            font-size: 7.5px;
-            color: #059669;
-            font-weight: bold;
-            margin-top: 2px;
-        }
+            .sig-pending-box {
+                width: 60px;
+                height: 60px;
+                margin: 4px auto;
+                border: 1px dashed #ccc;
+                display: table;
+            }
 
-        /* Verified Banner (Green Box) */
-        .verified-banner {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 8px;
-            background-color: #ecfdf5;
-            border: 1px solid #a7f3d0;
-            border-radius: 6px;
-            page-break-inside: avoid;
-        }
+            .sig-pending-box span {
+                display: table-cell;
+                vertical-align: middle;
+                text-align: center;
+                font-size: 8px;
+                color: #aaa;
+            }
 
-        .verified-banner td {
-            border: none;
-        }
+            .sig-name {
+                font-size: 10px;
+                font-weight: bold;
+                color: #1a1a1a;
+                display: block;
+                margin-bottom: 2px;
+            }
 
-        /* Utility */
-        .text-center { text-align: center; }
-        .text-right { text-align: right; }
-        .text-left { text-align: left; }
+            .sig-nip {
+                font-size: 8px;
+                color: #555;
+            }
+
+            .sig-date {
+                font-size: 8px;
+                color: #6b7280;
+                margin-top: 2px;
+            }
+
+            .verification-footer {
+                margin-top: 18px;
+                padding: 8px 10px;
+                background-color: #f8fafc;
+                border: 1px solid #e2e8f0;
+                font-size: 8px;
+                color: #555;
+                page-break-inside: avoid;
+            }
+
+            .verification-footer table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .verification-footer td {
+                vertical-align: middle;
+                padding: 0;
+            }
+        @endif
     </style>
 </head>
 
 <body>
     @php
-        $metadata = $document->metadata ?? [];
-        
         // 1. Resolve Document Template
-        $templateModel = null;
+        $template = null;
         if ($document->relationLoaded('documentTemplate')) {
-            $templateModel = $document->documentTemplate;
+            $template = $document->documentTemplate;
         } elseif (is_object($document->template) && $document->template instanceof \App\Models\DocumentTemplate) {
-            $templateModel = $document->template;
+            $template = $document->template;
         } else {
             try {
-                $templateModel = \App\Models\DocumentTemplate::where('code', (string)$document->template)->first();
+                $template = \App\Models\DocumentTemplate::where('code', (string)$document->template)->first();
             } catch (\Throwable $e) {
-                $templateModel = null;
-            }
-        }
-        $dynamicFields = $templateModel ? ($templateModel->fields['dynamic_fields'] ?? []) : [];
-
-        // 2. Resolve Titles
-        $mainTitle = $templateModel ? $templateModel->name : ($document->title ?: 'DOKUMEN PENGAJUAN');
-        $subTitle = null;
-        if (!empty($metadata['kategori_pembelian'])) {
-            $subTitle = $metadata['kategori_pembelian'];
-        } elseif ($templateModel && strtolower(trim($document->title)) !== strtolower(trim($templateModel->name))) {
-            $subTitle = $document->title;
-        }
-        if ($subTitle) {
-            $subTitle = ucwords(strtolower(trim($subTitle)));
-        }
-
-        // 3. Resolve Logo Info Data (Base64)
-        $logoPath = public_path('images/logo-infodata.jpg');
-        if (!file_exists($logoPath)) {
-            $logoPath = public_path('images/logo.png');
-        }
-        $logoDataUri = file_exists($logoPath)
-            ? 'data:image/' . pathinfo($logoPath, PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($logoPath))
-            : null;
-
-        // 4. Resolve Dynamic Tables (Data Penumpang, Items, Jadwal, dll.)
-        $tableList = [];
-        $registeredTableKeys = [];
-
-        foreach ($dynamicFields as $df) {
-            if (($df['type'] ?? '') === 'table') {
-                $fName = $df['name'];
-                $registeredTableKeys[] = $fName;
-                $tableList[$fName] = [
-                    'label' => $df['label'] ?? ucwords(str_replace('_', ' ', $fName)),
-                    'columns' => !empty($df['columns']) ? array_filter(array_map('trim', explode(',', $df['columns']))) : [],
-                    'rows' => $metadata[$fName] ?? []
-                ];
+                $template = null;
             }
         }
 
-        // Also check if metadata has tabular data not defined in dynamicFields (e.g. 'items', 'data_penumpang')
-        foreach ($metadata as $mKey => $mVal) {
-            if (is_array($mVal) && !empty($mVal) && is_array(reset($mVal)) && !in_array($mKey, $registeredTableKeys)) {
-                $firstRow = reset($mVal);
-                $tableList[$mKey] = [
-                    'label' => ucwords(str_replace(['_', '-'], ' ', $mKey)),
-                    'columns' => array_keys($firstRow),
-                    'rows' => $mVal
-                ];
-            }
-        }
+        $dynamicFields = $template ? ($template->fields['dynamic_fields'] ?? []) : [];
+        $metadata = $document->metadata ?? [];
+        $approvals = $document->approvals ?? collect();
+        $pemohon = $document->user;
+        $docDate = $document->submitted_at ?? ($document->created_at ?? now());
+        $verificationUrl = $document->approval_hash ? route('verify.show', $document->approval_hash) : null;
+    @endphp
 
-        // Fallback for PO items
-        if (empty($tableList['items']) && $document->purchaseOrder && $document->purchaseOrder->items) {
-            $tableList['items'] = [
-                'label' => 'Rincian Barang / Jasa',
-                'columns' => ['Nama Barang', 'Keterangan', 'Max Perbulan', 'Saat ini', 'Permintaan', 'Harga Perk./Item', 'Jml harga perkiraan'],
-                'rows' => $document->purchaseOrder->items->map(function($poItem) {
+    @if($isLandscape)
+        {{-- ========================================================================= --}}
+        {{-- PRESET B: DAFTAR PENGADAAN / PEMBELIAN BARANG (LANDSCAPE)                 --}}
+        {{-- ========================================================================= --}}
+        @php
+            $kategori = $metadata['kategori_pembelian'] ?? null;
+            if (!$kategori) {
+                if (stripos($document->title, 'P3K') !== false) {
+                    $kategori = 'Kebutuhan P3K';
+                } elseif (stripos($document->title, 'Pantry') !== false) {
+                    $kategori = 'Kebutuhan Pantry';
+                } elseif (stripos($document->title, 'ATK') !== false || stripos($document->title, 'Alat Tulis') !== false) {
+                    $kategori = 'Alat Tulis Kantor';
+                } else {
+                    $kategori = $document->title;
+                }
+            }
+            $subTitle = ucwords(strtolower(trim($kategori)));
+
+            $logoPath = public_path('images/logo-infodata.jpg');
+            $logoDataUri = file_exists($logoPath)
+                ? 'data:image/jpeg;base64,' . base64_encode(file_get_contents($logoPath))
+                : null;
+
+            $rawItems = $metadata['items'] ?? [];
+            if (empty($rawItems) && $document->purchaseOrder && $document->purchaseOrder->items) {
+                $rawItems = $document->purchaseOrder->items->map(function($poItem) {
                     return [
                         'Nama Barang' => $poItem->item_name,
                         'Keterangan' => $poItem->description,
@@ -388,598 +380,575 @@
                         'Harga Perk./Item' => $poItem->unit_price,
                         'Jml harga perkiraan' => $poItem->total_price,
                     ];
-                })->toArray()
-            ];
-        }
+                })->toArray();
+            }
 
-        // 5. Resolve Dynamic Files / Lampiran SIM
-        $imageAttachments = [];
-        $fileAttachments = [];
-        $fileFieldNames = [];
-
-        foreach ($dynamicFields as $df) {
-            if (($df['type'] ?? '') === 'file') {
-                $fileFieldNames[] = $df['name'];
-                $val = $metadata[$df['name']] ?? null;
-                if ($val && is_string($val)) {
-                    $ext = strtolower(pathinfo($val, PATHINFO_EXTENSION));
-                    $label = $df['label'] ?? ucwords(str_replace('_', ' ', $df['name']));
-                    
-                    $relPath = ltrim(str_replace('public/', '', $val), '/');
-                    $localPath = storage_path('app/public/' . $relPath);
-                    if (!file_exists($localPath)) {
-                        $localPath = public_path('storage/' . $relPath);
-                    }
-
-                    if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif']) && file_exists($localPath)) {
-                        $mime = ($ext === 'png') ? 'image/png' : 'image/jpeg';
-                        $dataUri = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($localPath));
-                        $imageAttachments[] = [
-                            'label' => $label,
-                            'uri' => $dataUri,
-                            'filename' => basename($val)
-                        ];
-                    } else {
-                        $fileAttachments[] = [
-                            'label' => $label,
-                            'filename' => basename($val),
-                            'ext' => $ext
-                        ];
-                    }
+            $hasExpDate = false;
+            foreach ($rawItems as $it) {
+                if (!empty($it['Exp Date']) || !empty($it['exp_date']) || !empty($it['Kadaluarsa'])) {
+                    $hasExpDate = true;
+                    break;
                 }
             }
-        }
 
-        // Also check general attachments
-        if ($document->relationLoaded('attachments') || $document->attachments) {
-            foreach ($document->attachments as $att) {
-                $ext = strtolower(pathinfo($att->filename, PATHINFO_EXTENSION));
-                $localPath = storage_path('app/public/' . ltrim($att->file_path, '/'));
-                if (!file_exists($localPath)) {
-                    $localPath = public_path('storage/' . ltrim($att->file_path, '/'));
-                }
+            // 4 Approver boxes
+            $disetujuiApproval = $approvals->first(function($app) {
+                $r = strtolower($app->approver_role ?? '');
+                return !str_contains($r, 'finance') && !str_contains($r, 'keuangan') && !str_contains($r, 'ga');
+            }) ?? $approvals->first();
 
-                if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif']) && file_exists($localPath)) {
-                    $mime = ($ext === 'png') ? 'image/png' : 'image/jpeg';
-                    $dataUri = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($localPath));
-                    $imageAttachments[] = [
-                        'label' => $att->original_filename ?? $att->filename,
-                        'uri' => $dataUri,
-                        'filename' => $att->filename
-                    ];
-                } else {
-                    $fileAttachments[] = [
-                        'label' => 'Lampiran Dokumen',
-                        'filename' => $att->original_filename ?? $att->filename,
-                        'ext' => $ext
-                    ];
-                }
-            }
-        }
-
-        // 6. Non-table, non-file dynamic fields
-        $customNonTableFields = [];
-        foreach ($dynamicFields as $df) {
-            if (!in_array($df['type'] ?? '', ['table', 'file']) && !in_array($df['name'], ['keterangan', 'lokasi_permintaan', 'lokasi', 'perkiraan_tgl_penerimaan', 'tanggal_dibutuhkan', 'kategori_pembelian'])) {
-                $customNonTableFields[] = $df;
-            }
-        }
-
-        // 7. Resolve Approvals & Digital Approval Block (Image 1)
-        $approvals = $document->approvals ?? collect();
-        $requester = $document->user;
-        $requesterTitle = $requester?->position ?? 'Staff';
-
-        $approvalCols = [];
-        // Step 1: Requester (Created)
-        $approvalCols[] = [
-            'is_requester' => true,
-            'badge' => 'Created',
-            'badge_class' => 'badge-created',
-            'sub_label' => 'Submitted by:',
-            'name' => $requester->name ?? 'Staff',
-            'title' => $requesterTitle,
-            'date' => $document->submitted_at ?? $document->created_at,
-            'ip' => $document->metadata['submitted_ip'] ?? null,
-            'status' => 'approved',
-        ];
-
-        // Steps 2..N: Approvers
-        $totalApps = count($approvals);
-        $aIdx = 0;
-        foreach ($approvals as $app) {
-            $aIdx++;
-            $isLastStep = ($aIdx === $totalApps);
-            $badge = $isLastStep ? 'Approved' : 'Reviewed';
-            if ($app->status === 'rejected') {
-                $badge = 'Rejected';
-            } elseif ($app->status !== 'approved') {
-                $badge = 'Pending';
+            $notifyUsers = collect();
+            try { $notifyUsers = $document->getNotifyUsers(); } catch (\Throwable $e) {}
+            $mengetahuiUser = $notifyUsers->first();
+            if (!$mengetahuiUser && $approvals->count() >= 2) {
+                $mengetahuiApproval = $approvals->first(function($app) {
+                    return str_contains(strtolower($app->approver_role ?? ''), 'ga') || str_contains(strtolower($app->approver_role ?? ''), 'hrga');
+                });
+                $mengetahuiUser = $mengetahuiApproval?->approver;
             }
 
-            $approvalCols[] = [
-                'is_requester' => false,
-                'badge' => $badge,
-                'badge_class' => ($app->status === 'approved') ? ($isLastStep ? 'badge-approved' : 'badge-reviewed') : 'badge-pending',
-                'sub_label' => ($app->status === 'approved') ? 'Digitally Signed by:' : 'Awaiting:',
-                'name' => $app->approver?->name ?? ($app->role_label ?? 'Approver'),
-                'title' => $app->approver?->position ?? ($app->role_label ?? 'Approver'),
-                'date' => $app->action_at,
-                'ip' => $app->ip_address,
-                'status' => $app->status,
-            ];
-        }
+            $financeApproval = $approvals->first(function($app) {
+                $r = strtolower($app->approver_role ?? '');
+                return str_contains($r, 'finance') || str_contains($r, 'keuangan');
+            });
+            $financeUser = $financeApproval?->approver;
+        @endphp
 
-        $numCols = count($approvalCols);
-        $colWidth = round(100 / max($numCols, 1), 2);
+        {{-- Kop Pembelian --}}
+        <table class="header-table">
+            <tr>
+                <td style="width: 37%;">
+                    @if($logoDataUri)
+                        <img src="{{ $logoDataUri }}" style="height: 48px; width: auto; margin-bottom: 5px; display: block;" />
+                    @endif
+                    <table class="meta-table">
+                        <tr>
+                            <td class="meta-label">No Permintaan</td>
+                            <td class="meta-colon">:</td>
+                            <td class="meta-value-line">{{ $document->document_number }}</td>
+                        </tr>
+                        <tr>
+                            <td class="meta-label">Tanggal</td>
+                            <td class="meta-colon">:</td>
+                            <td class="meta-value-line">{{ $document->created_at ? $document->created_at->format('d F Y') : now()->format('d F Y') }}</td>
+                        </tr>
+                        <tr>
+                            <td class="meta-label">Dept/Divisi</td>
+                            <td class="meta-colon">:</td>
+                            <td class="meta-value-line">{{ $document->department ?? ($document->user->department ?? 'GA/HRGA') }}</td>
+                        </tr>
+                        <tr>
+                            <td class="meta-label">Keterangan/Projek</td>
+                            <td class="meta-colon">:</td>
+                            <td class="meta-value-line">{{ $metadata['keterangan'] ?? ($document->description ?? $document->title) }}</td>
+                        </tr>
+                    </table>
+                </td>
 
-        $verificationUrl = $document->approval_hash ? route('verify.show', $document->approval_hash) : null;
-        $isLandscape = ($orientation ?? 'portrait') === 'landscape';
-    @endphp
-
-    {{-- KOP HEADER RESMI INFO DATA --}}
-    <table class="header-table">
-        <tr>
-            {{-- Kiri: Logo & Metadata Dokumen --}}
-            <td style="width: {{ $isLandscape ? '37%' : '44%' }};">
-                @if($logoDataUri)
-                    <img src="{{ $logoDataUri }}" style="height: {{ $isLandscape ? '44px' : '40px' }}; width: auto; margin-bottom: 5px; display: block;" alt="Info Data" />
-                @endif
-                <table class="meta-table">
-                    <tr>
-                        <td class="meta-label">{{ __('No Permintaan') }}</td>
-                        <td class="meta-colon">:</td>
-                        <td class="meta-value-line">{{ $document->document_number }}</td>
-                    </tr>
-                    <tr>
-                        <td class="meta-label">{{ __('Tanggal') }}</td>
-                        <td class="meta-colon">:</td>
-                        <td class="meta-value-line">{{ $document->created_at ? $document->created_at->format('d F Y') : now()->format('d F Y') }}</td>
-                    </tr>
-                    <tr>
-                        <td class="meta-label">{{ __('Dept/Divisi') }}</td>
-                        <td class="meta-colon">:</td>
-                        <td class="meta-value-line">{{ $document->department ?? ($document->user->department ?? '-') }}</td>
-                    </tr>
-                    <tr>
-                        <td class="meta-label">{{ __('Keterangan/Projek') }}</td>
-                        <td class="meta-colon">:</td>
-                        <td class="meta-value-line">{{ $metadata['keterangan'] ?? ($document->description ?? $document->title) }}</td>
-                    </tr>
-                </table>
-            </td>
-
-            {{-- Tengah: Judul Dokumen --}}
-            <td style="width: {{ $isLandscape ? '26%' : '20%' }}; text-align: center; padding-top: {{ $isLandscape ? '8px' : '4px' }};">
-                <div class="doc-title-main">{{ $mainTitle }}</div>
-                @if($subTitle)
+                <td style="width: 26%; text-align: center; padding-top: 10px;">
+                    <div class="doc-title-main">PERMINTAAN PEMBELIAN BARANG</div>
                     <div class="doc-title-sub">"{{ $subTitle }}"</div>
-                @endif
-            </td>
+                </td>
 
-            {{-- Kanan: Lokasi & Jenis Pembelian / Metadata Tambahan --}}
-            <td style="width: {{ $isLandscape ? '37%' : '36%' }}; padding-left: 15px;">
-                <table class="meta-table" style="margin-top: {{ $isLandscape ? '18px' : '12px' }};">
+                <td style="width: 37%; padding-left: 20px;">
+                    <table class="meta-table" style="margin-top: 25px;">
+                        <tr>
+                            <td class="meta-label" style="width: 140px;">Lokasi Permintaan</td>
+                            <td class="meta-colon">:</td>
+                            <td class="meta-value-line">{{ $metadata['lokasi_permintaan'] ?? 'GMH' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="meta-label">Perkiraan Tgl Penerimaan</td>
+                            <td class="meta-colon">:</td>
+                            <td class="meta-value-line">
+                                @php $tglTerima = $metadata['perkiraan_tgl_penerimaan'] ?? null; @endphp
+                                {{ $tglTerima ? (is_string($tglTerima) && strtotime($tglTerima) ? \Carbon\Carbon::parse($tglTerima)->format('d F Y') : $tglTerima) : ($document->created_at ? $document->created_at->format('d F Y') : now()->format('d F Y')) }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="meta-label" style="vertical-align: top;">Jenis Pembelian</td>
+                            <td class="meta-colon" style="vertical-align: top;">:</td>
+                            <td style="vertical-align: top; padding: 0;">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <tr>
+                                        <td style="padding: 1px 0; width: 85px;">Investasi</td>
+                                        <td style="padding: 1px 0; width: 8px;">:</td>
+                                        <td style="padding: 1px 0;">Non Proyek/Proyek *)</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 1px 0;">Non Investasi</td>
+                                        <td style="padding: 1px 0;">:</td>
+                                        <td style="padding: 1px 0;">Non Proyek/Proyek *)</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+        {{-- Data Table Belanja --}}
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th rowspan="2" style="width: {{ $hasExpDate ? '20%' : '26%' }};">Nama Barang</th>
+                    <th rowspan="2" style="width: {{ $hasExpDate ? '17%' : '21%' }};">Keterangan</th>
+                    @if($hasExpDate)
+                        <th rowspan="2" style="width: 9%;">Exp Date</th>
+                    @endif
+                    <th colspan="3" style="width: 25%;">STOCK</th>
+                    <th rowspan="2" style="width: 14%;">Harga Perk./Item</th>
+                    <th rowspan="2" style="width: 14%;">Jml harga perkiraan</th>
+                </tr>
+                <tr>
+                    <th style="width: 9%;">Max Perbulan</th>
+                    <th style="width: 8%;">Saat ini</th>
+                    <th style="width: 8%;">Permintaan</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                    $grandTotal = 0;
+                    $currentCat = null;
+                @endphp
+                @foreach($rawItems as $item)
+                    @php
+                        $nama = $item['Nama Barang'] ?? ($item['nama_barang'] ?? ($item['item_name'] ?? '-'));
+                        $ket = $item['Keterangan'] ?? ($item['keterangan'] ?? ($item['description'] ?? '-'));
+                        $exp = $item['Exp Date'] ?? ($item['exp_date'] ?? ($item['Kadaluarsa'] ?? '-'));
+                        $max = $item['Max Perbulan'] ?? ($item['max_perbulan'] ?? '-');
+                        $saatIni = $item['Saat ini'] ?? ($item['saat_ini'] ?? ($item['Stock Saat Ini'] ?? '0'));
+                        $permintaan = $item['Permintaan'] ?? ($item['permintaan'] ?? ($item['quantity'] ?? '0'));
+                        
+                        $hargaRaw = $item['Harga Perk./Item'] ?? ($item['harga'] ?? ($item['unit_price'] ?? 0));
+                        $harga = (float) preg_replace('/[^\d.]/', '', str_replace(',', '.', (string)$hargaRaw));
+                        
+                        $totalRaw = $item['Jml harga perkiraan'] ?? ($item['total'] ?? ($item['total_price'] ?? ($harga * (float)$permintaan)));
+                        $total = (float) preg_replace('/[^\d.]/', '', str_replace(',', '.', (string)$totalRaw));
+                        $grandTotal += $total;
+
+                        $namaLower = strtolower(trim($nama));
+                        if ($currentCat === null) {
+                            if (str_contains($namaLower, 'tolak angin') || str_contains($namaLower, 'sangobion') || str_contains($namaLower, 'obat')) {
+                                $currentCat = 'Obat-obatan';
+                                echo '<tr class="category-row"><td colspan="' . ($hasExpDate ? 8 : 7) . '">' . $currentCat . '</td></tr>';
+                            } elseif (str_contains($namaLower, 'double tape') || str_contains($namaLower, 'lakban')) {
+                                $currentCat = 'Lemari ATK No.1';
+                                echo '<tr class="category-row"><td colspan="' . ($hasExpDate ? 8 : 7) . '">' . $currentCat . '</td></tr>';
+                            }
+                        } elseif ($currentCat === 'Lemari ATK No.1' && (str_contains($namaLower, 'paper bag finnace') || str_contains($namaLower, 'kertas a4'))) {
+                            $currentCat = 'Lemari ATK No.2';
+                            echo '<tr class="category-row"><td colspan="' . ($hasExpDate ? 8 : 7) . '">' . $currentCat . '</td></tr>';
+                        }
+                    @endphp
                     <tr>
-                        <td class="meta-label" style="width: 130px;">{{ __('Lokasi Permintaan') }}</td>
-                        <td class="meta-colon">:</td>
-                        <td class="meta-value-line">{{ $metadata['lokasi_permintaan'] ?? ($metadata['lokasi'] ?? 'GMH') }}</td>
-                    </tr>
-                    <tr>
-                        <td class="meta-label">{{ __('Perkiraan Tgl Penerimaan') }}</td>
-                        <td class="meta-colon">:</td>
-                        <td class="meta-value-line">
-                            @php
-                                $tglPenerimaan = $metadata['perkiraan_tgl_penerimaan'] ?? ($metadata['tanggal_dibutuhkan'] ?? null);
-                            @endphp
-                            {{ $tglPenerimaan ? (is_string($tglPenerimaan) && strtotime($tglPenerimaan) ? \Carbon\Carbon::parse($tglPenerimaan)->format('d F Y') : $tglPenerimaan) : ($document->created_at ? $document->created_at->format('d F Y') : now()->format('d F Y')) }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="meta-label" style="vertical-align: top;">{{ __('Jenis Pembelian') }}</td>
-                        <td class="meta-colon" style="vertical-align: top;">:</td>
-                        <td style="vertical-align: top; padding: 0;">
-                            <table style="width: 100%; border-collapse: collapse; font-size: inherit;">
+                        <td class="text-left">{{ $nama }}</td>
+                        <td class="text-left">{{ $ket }}</td>
+                        @if($hasExpDate)
+                            <td class="text-center">{{ $exp }}</td>
+                        @endif
+                        <td class="text-center">{{ $max }}</td>
+                        <td class="text-center">{{ $saatIni }}</td>
+                        <td class="text-center">{{ $permintaan }}</td>
+                        <td class="text-right">
+                            <table style="width: 100%; border-collapse: collapse; border: none;">
                                 <tr>
-                                    <td style="padding: 1px 0; width: 85px;">{{ __('Investasi') }}</td>
-                                    <td style="padding: 1px 0; width: 8px;">:</td>
-                                    <td style="padding: 1px 0;">Non Proyek/Proyek *)</td>
+                                    <td style="border: none; padding: 0; text-align: left; width: 18px;">Rp</td>
+                                    <td style="border: none; padding: 0; text-align: right;">{{ number_format($harga, 0, ',', '.') }}</td>
                                 </tr>
+                            </table>
+                        </td>
+                        <td class="text-right">
+                            <table style="width: 100%; border-collapse: collapse; border: none;">
                                 <tr>
-                                    <td style="padding: 1px 0;">{{ __('Non Investasi') }}</td>
-                                    <td style="padding: 1px 0;">:</td>
-                                    <td style="padding: 1px 0;">Non Proyek/Proyek *)</td>
+                                    <td style="border: none; padding: 0; text-align: left; width: 18px;">Rp</td>
+                                    <td style="border: none; padding: 0; text-align: right;">{{ number_format($total, 0, ',', '.') }}</td>
                                 </tr>
                             </table>
                         </td>
                     </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+                @endforeach
 
-    {{-- INFORMASI SPESIFIK / FIELD NON-TABEL --}}
-    @if(count($customNonTableFields) > 0)
-        <div class="info-card">
-            <div style="font-size: 8.5px; font-weight: bold; color: #7F1D1D; text-transform: uppercase; margin-bottom: 3px;">
-                {{ __('Informasi Tambahan') }}
-            </div>
-            <table class="meta-table">
-                @foreach($customNonTableFields as $f)
-                    @php
-                        $val = $metadata[$f['name']] ?? null;
-                    @endphp
-                    @if($val !== null && $val !== '')
+                <tr class="total-row">
+                    <td colspan="{{ $hasExpDate ? 6 : 5 }}" style="border: none;"></td>
+                    <td class="bg-yellow text-center" style="font-weight: bold; border: 1px solid #000;">Rp</td>
+                    <td class="bg-yellow text-right" style="font-weight: bold; border: 1px solid #000; padding: 3px 6px;">
+                        {{ number_format($grandTotal, 0, ',', '.') }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        {{-- 4 Signature Boxes --}}
+        <table class="sig-container">
+            <tr>
+                <td class="sig-box-cell">
+                    <table class="sig-card">
+                        <tr><td class="sig-card-header">Pemohon</td></tr>
                         <tr>
-                            <td class="meta-label" style="width: 160px; font-weight: bold;">{{ $f['label'] }}</td>
-                            <td class="meta-colon">:</td>
-                            <td>
-                                @if($f['type'] === 'date' && strtotime($val))
-                                    {{ \Carbon\Carbon::parse($val)->format('d F Y') }}
-                                @elseif($f['type'] === 'number')
-                                    {{ is_numeric($val) ? number_format((float)$val, 0, ',', '.') : $val }}
-                                @elseif($f['type'] === 'textarea')
-                                    {!! nl2br(e($val)) !!}
-                                @else
-                                    {{ $val }}
+                            <td class="sig-card-body">
+                                @if($verificationUrl)
+                                    <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 44px; height: 44px; display: inline-block;" />
                                 @endif
                             </td>
                         </tr>
-                    @endif
-                @endforeach
-            </table>
-        </div>
-    @endif
-
-    {{-- DYNAMIC TABLES (DATA PENUMPANG, ITEMS, JADWAL, DLL) --}}
-    @foreach($tableList as $tblKey => $tbl)
-        @php
-            $tRows = $tbl['rows'] ?? [];
-            $tCols = $tbl['columns'] ?? [];
-            if (empty($tCols) && !empty($tRows[0])) {
-                $tCols = array_keys($tRows[0]);
-            }
-
-            // Check if stock layout
-            $colsLower = array_map('strtolower', $tCols);
-            $hasMax = in_array('max perbulan', $colsLower);
-            $hasSaatIni = in_array('saat ini', $colsLower) || in_array('stock saat ini', $colsLower);
-            $hasPermintaan = in_array('permintaan', $colsLower);
-            $isStockLayout = $hasMax && $hasSaatIni && $hasPermintaan;
-            $hasExpDate = in_array('exp date', $colsLower) || in_array('kadaluarsa', $colsLower);
-
-            $grandTotal = 0;
-            $hasCurrencyCol = false;
-        @endphp
-
-        @if(!empty($tRows) && count($tRows) > 0)
-            <div class="data-table-container">
-                <div class="section-header">
-                    {{ strtoupper($tbl['label']) }}
-                </div>
-                <table class="data-table">
-                    <thead>
-                        @if($isStockLayout)
-                            <tr>
-                                <th rowspan="2" style="width: {{ $hasExpDate ? '20%' : '26%' }};">{{ __('Nama Barang') }}</th>
-                                <th rowspan="2" style="width: {{ $hasExpDate ? '17%' : '21%' }};">{{ __('Keterangan') }}</th>
-                                @if($hasExpDate)
-                                    <th rowspan="2" style="width: 9%;">{{ __('Exp Date') }}</th>
-                                @endif
-                                <th colspan="3" style="width: 25%;">{{ __('STOCK') }}</th>
-                                <th rowspan="2" style="width: 14%;">{{ __('Harga Perk./Item') }}</th>
-                                <th rowspan="2" style="width: 14%;">{{ __('Jml harga perkiraan') }}</th>
-                            </tr>
-                            <tr>
-                                <th style="width: 9%;">{{ __('Max Perbulan') }}</th>
-                                <th style="width: 8%;">{{ __('Saat ini') }}</th>
-                                <th style="width: 8%;">{{ __('Permintaan') }}</th>
-                            </tr>
-                        @else
-                            <tr>
-                                <th style="width: 35px;">No</th>
-                                @foreach($tCols as $col)
-                                    <th>{{ $col }}</th>
-                                @endforeach
-                            </tr>
-                        @endif
-                    </thead>
-                    <tbody>
-                        @php $rNum = 1; @endphp
-                        @foreach($tRows as $row)
-                            @php
-                                $isCatRow = false;
-                                $catTitle = '';
-                                if (!empty($row['_category'])) {
-                                    $isCatRow = true;
-                                    $catTitle = $row['_category'];
-                                } elseif (!empty($row['kategori']) && count(array_filter($row)) === 1) {
-                                    $isCatRow = true;
-                                    $catTitle = $row['kategori'];
-                                }
-                            @endphp
-
-                            @if($isCatRow)
-                                <tr class="category-row">
-                                    <td colspan="{{ count($tCols) + ($isStockLayout ? 1 : 1) }}">{{ $catTitle }}</td>
-                                </tr>
-                            @else
-                                <tr>
-                                    @if($isStockLayout)
-                                        @php
-                                            $nama = $row['Nama Barang'] ?? ($row['nama_barang'] ?? ($row['item_name'] ?? '-'));
-                                            $ket = $row['Keterangan'] ?? ($row['keterangan'] ?? ($row['description'] ?? '-'));
-                                            $exp = $row['Exp Date'] ?? ($row['exp_date'] ?? ($row['Kadaluarsa'] ?? '-'));
-                                            $max = $row['Max Perbulan'] ?? ($row['max_perbulan'] ?? '-');
-                                            $saatIni = $row['Saat ini'] ?? ($row['saat_ini'] ?? ($row['Stock Saat Ini'] ?? '0'));
-                                            $permintaan = $row['Permintaan'] ?? ($row['permintaan'] ?? ($row['quantity'] ?? '0'));
-                                            
-                                            $hargaRaw = $row['Harga Perk./Item'] ?? ($row['harga'] ?? ($row['unit_price'] ?? 0));
-                                            $harga = (float) preg_replace('/[^\d.]/', '', str_replace(',', '.', (string)$hargaRaw));
-                                            
-                                            $totalRaw = $row['Jml harga perkiraan'] ?? ($row['total'] ?? ($row['total_price'] ?? ($harga * (float)$permintaan)));
-                                            $total = (float) preg_replace('/[^\d.]/', '', str_replace(',', '.', (string)$totalRaw));
-                                            
-                                            $grandTotal += $total;
-                                            $hasCurrencyCol = true;
-                                        @endphp
-                                        <td class="text-left">{{ $nama }}</td>
-                                        <td class="text-left">{{ $ket }}</td>
-                                        @if($hasExpDate)
-                                            <td class="text-center">{{ $exp }}</td>
-                                        @endif
-                                        <td class="text-center">{{ $max }}</td>
-                                        <td class="text-center">{{ $saatIni }}</td>
-                                        <td class="text-center">{{ $permintaan }}</td>
-                                        <td class="text-right">
-                                            <table style="width: 100%; border-collapse: collapse; border: none;">
-                                                <tr>
-                                                    <td style="border: none; padding: 0; text-align: left; width: 18px;">Rp</td>
-                                                    <td style="border: none; padding: 0; text-align: right;">{{ number_format($harga, 0, ',', '.') }}</td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                        <td class="text-right">
-                                            <table style="width: 100%; border-collapse: collapse; border: none;">
-                                                <tr>
-                                                    <td style="border: none; padding: 0; text-align: left; width: 18px;">Rp</td>
-                                                    <td style="border: none; padding: 0; text-align: right;">{{ number_format($total, 0, ',', '.') }}</td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                    @else
-                                        <td class="text-center" style="width: 35px; color: #6b7280;">{{ $rNum++ }}</td>
-                                        @foreach($tCols as $col)
-                                            @php
-                                                // Case-insensitive key lookup in row
-                                                $cellVal = '-';
-                                                foreach ($row as $k => $v) {
-                                                    if (strtolower(trim((string)$k)) === strtolower(trim((string)$col))) {
-                                                        $cellVal = $v;
-                                                        break;
-                                                    }
-                                                }
-                                                if ($cellVal === '-' && isset($row[$col])) {
-                                                    $cellVal = $row[$col];
-                                                }
-
-                                                $isPrice = preg_match('/harga|biaya|nominal|tarif|price|rp|total|subtotal/i', $col);
-                                                $isQty = preg_match('/qty|jumlah|kuantitas|unit|pcs/i', $col);
-                                                $isNum = is_numeric(str_replace(['.', ','], '', (string)$cellVal));
-
-                                                if ($isPrice && $isNum) {
-                                                    $numericVal = (float) preg_replace('/[^\d.]/', '', str_replace(',', '.', (string)$cellVal));
-                                                    if (preg_match('/total|jml/i', $col)) {
-                                                        $grandTotal += $numericVal;
-                                                        $hasCurrencyCol = true;
-                                                    }
-                                                }
-                                            @endphp
-                                            <td class="{{ $isPrice ? 'text-right' : ($isQty ? 'text-center' : 'text-left') }}">
-                                                @if($isPrice && $isNum)
-                                                    <table style="width: 100%; border-collapse: collapse; border: none;">
-                                                        <tr>
-                                                            <td style="border: none; padding: 0; text-align: left; width: 18px;">Rp</td>
-                                                            <td style="border: none; padding: 0; text-align: right;">{{ number_format((float)preg_replace('/[^\d.]/', '', str_replace(',', '.', (string)$cellVal)), 0, ',', '.') }}</td>
-                                                        </tr>
-                                                    </table>
-                                                @else
-                                                    {{ $cellVal }}
-                                                @endif
-                                            </td>
-                                        @endforeach
-                                    @endif
-                                </tr>
-                            @endif
-                        @endforeach
-
-                        {{-- Total Row if applicable --}}
-                        @if($hasCurrencyCol || $grandTotal > 0)
-                            <tr class="total-row">
-                                @if($isStockLayout)
-                                    <td colspan="{{ $hasExpDate ? 6 : 5 }}" style="border: none;"></td>
-                                    <td class="bg-yellow text-center" style="font-weight: bold; border: 1px solid #000;">Rp</td>
-                                    <td class="bg-yellow text-right" style="font-weight: bold; border: 1px solid #000; padding: 3px 6px;">
-                                        {{ number_format($grandTotal, 0, ',', '.') }}
-                                    </td>
+                        <tr><td class="sig-card-footer">{{ $pemohon->name ?? '-' }}</td></tr>
+                    </table>
+                </td>
+                <td class="sig-box-cell">
+                    <table class="sig-card">
+                        <tr><td class="sig-card-header">Disetujui</td></tr>
+                        <tr>
+                            <td class="sig-card-body">
+                                @if($disetujuiApproval && $disetujuiApproval->status === 'approved' && $verificationUrl)
+                                    <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 44px; height: 44px; display: inline-block;" />
                                 @else
-                                    <td colspan="{{ count($tCols) }}" class="text-right" style="font-weight: bold; padding: 4px 6px;">{{ __('TOTAL') }}</td>
-                                    <td class="bg-yellow text-right" style="font-weight: bold; border: 1px solid #000; padding: 3px 6px;">
-                                        Rp {{ number_format($grandTotal, 0, ',', '.') }}
-                                    </td>
+                                    <span style="color: #aaa; font-size: 8px;">Pending</span>
                                 @endif
-                            </tr>
-                        @endif
-                    </tbody>
-                </table>
-            </div>
-        @endif
-    @endforeach
-
-    {{-- LAMPIRAN BERKAS / FOTO (SIM, FOTO BARANG, BUKTI PENDUKUNG) --}}
-    @if(count($imageAttachments) > 0)
-        <div class="attachment-section">
-            <div class="section-header">
-                {{ __('LAMPIRAN BERKAS / FOTO') }}
-            </div>
-            <div style="text-align: left;">
-                @foreach($imageAttachments as $img)
-                    <div class="attachment-card">
-                        <div class="attachment-card-title">{{ $img['label'] }}</div>
-                        <img src="{{ $img['uri'] }}" alt="{{ $img['label'] }}" />
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    @endif
-
-    {{-- DAFTAR DOKUMEN LAMPIRAN LAINNYA --}}
-    @if(count($fileAttachments) > 0)
-        <div class="attachment-list-box">
-            <div style="font-size: 8.5px; font-weight: bold; color: #374151; margin-bottom: 3px;">
-                {{ __('Dokumen Lampiran Tambahan:') }}
-            </div>
-            <ol style="margin: 0; padding-left: 18px; font-size: 8px; color: #4b5563;">
-                @foreach($fileAttachments as $f)
-                    <li style="margin-bottom: 2px;">
-                        <strong>{{ $f['filename'] }}</strong> ({{ strtoupper($f['ext']) }}) — <em>{{ $f['label'] }}</em>
-                    </li>
-                @endforeach
-            </ol>
-        </div>
-    @endif
-
-    {{-- SYARAT & KETENTUAN (JIKA ADA) --}}
-    @php
-        $terms = $templateModel ? ($templateModel->fields['terms_and_conditions'] ?? null) : null;
-    @endphp
-    @if($terms)
-        <div style="border: 1px solid #e5e7eb; background-color: #fafafa; padding: 6px 10px; margin-top: 10px; margin-bottom: 12px; page-break-inside: avoid;">
-            <div style="font-size: 8.5px; font-weight: bold; color: #374151; text-transform: uppercase; margin-bottom: 3px;">
-                {{ __('Syarat & Ketentuan') }}
-            </div>
-            <ol style="margin: 0; padding-left: 15px; font-size: 8px; line-height: 1.4;">
-                @foreach(explode("\n", str_replace("\r", "", trim($terms))) as $termItem)
-                    @if(trim($termItem) !== '')
-                        <li style="margin-bottom: 2px;">{{ trim($termItem) }}</li>
-                    @endif
-                @endforeach
-            </ol>
-        </div>
-    @endif
-
-    {{-- DIGITAL APPROVAL BLOCK (MATCHING IMAGE 1 RESMI SISTEM CONFIRMME) --}}
-    <div class="approval-block-wrapper">
-        <div class="section-header" style="border-bottom: none; margin-bottom: 4px;">
-            &#128737; {{ __('Digital Approval Block') }}
-        </div>
-
-        <table class="approval-table">
-            {{-- Baris 1: Status Badge --}}
-            <tr>
-                @foreach($approvalCols as $c)
-                    <th style="width: {{ $colWidth }}%; text-align: center; padding: 4px 2px; background: #f9fafb;">
-                        <span class="{{ $c['badge_class'] }}">{{ $c['badge'] }}</span>
-                    </th>
-                @endforeach
-            </tr>
-
-            {{-- Baris 2: QR Code / Checkmark Circle --}}
-            <tr>
-                @foreach($approvalCols as $c)
-                    <td style="text-align: center; vertical-align: middle; padding: 5px 2px; height: 58px;">
-                        @if($c['is_requester'])
-                            <div class="created-circle">&#10003;</div>
-                            <div class="signed-label" style="color: #059669;">Created</div>
-                        @elseif($c['status'] === 'approved' && $verificationUrl)
-                            <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 42px; height: 42px; display: inline-block;" alt="QR" />
-                            <div class="signed-label">Signed</div>
-                        @elseif($c['status'] === 'approved')
-                            <div style="font-size: 8px; font-weight: bold; color: #059669; padding: 15px 0;">APPROVED</div>
-                        @else
-                            <div style="font-size: 8px; color: #9ca3af; border: 1px dashed #d1d5db; width: 42px; height: 42px; line-height: 42px; margin: 0 auto; border-radius: 4px;">Pending</div>
-                        @endif
-                    </td>
-                @endforeach
-            </tr>
-
-            {{-- Baris 3: Sub-label --}}
-            <tr>
-                @foreach($approvalCols as $c)
-                    <td style="text-align: center; padding: 2px; font-size: 6.5px; color: #6b7280; font-style: italic; background: #fafafa;">
-                        {{ $c['sub_label'] }}
-                    </td>
-                @endforeach
-            </tr>
-
-            {{-- Baris 4: Nama Lengkap (Bold, Underlined) --}}
-            <tr>
-                @foreach($approvalCols as $c)
-                    <td style="text-align: center; padding: 3px 2px; font-size: 7.5px; font-weight: bold; color: #111;">
-                        <span style="text-decoration: underline;">{{ $c['name'] }}</span>
-                    </td>
-                @endforeach
-            </tr>
-
-            {{-- Baris 5: Jabatan / Posisi --}}
-            <tr>
-                @foreach($approvalCols as $c)
-                    <td style="text-align: center; padding: 2px; font-size: 7px; color: #4b5563;">
-                        {{ $c['title'] }}
-                    </td>
-                @endforeach
-            </tr>
-
-            {{-- Baris 6: Tanggal & Jam (WIB) --}}
-            <tr>
-                @foreach($approvalCols as $c)
-                    <td style="text-align: center; padding: 2px; font-size: 6.5px; color: #6b7280;">
-                        @if($c['date'])
-                            <div>{{ \Carbon\Carbon::parse($c['date'])->format('d/m/Y') }}</div>
-                            <div>{{ \Carbon\Carbon::parse($c['date'])->format('H:i') }} WIB</div>
-                        @else
-                            -
-                        @endif
-                    </td>
-                @endforeach
-            </tr>
-
-            {{-- Baris 7: IP Address --}}
-            <tr>
-                @foreach($approvalCols as $c)
-                    <td style="text-align: center; padding: 2px; font-size: 6.5px; color: #9ca3af;">
-                        @if(!empty($c['ip']))
-                            IP: {{ $c['ip'] }}
-                        @else
-                            &nbsp;
-                        @endif
-                    </td>
-                @endforeach
+                            </td>
+                        </tr>
+                        <tr><td class="sig-card-footer">{{ $disetujuiApproval?->approver?->name ?? '-' }}</td></tr>
+                    </table>
+                </td>
+                <td class="sig-box-cell">
+                    <table class="sig-card">
+                        <tr><td class="sig-card-header">Mengetahui</td></tr>
+                        <tr>
+                            <td class="sig-card-body">
+                                @if($mengetahuiUser && $document->status === 'completed' && $verificationUrl)
+                                    <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 44px; height: 44px; display: inline-block;" />
+                                @endif
+                            </td>
+                        </tr>
+                        <tr><td class="sig-card-footer">{{ $mengetahuiUser->name ?? '-' }}</td></tr>
+                    </table>
+                </td>
+                <td class="sig-box-cell">
+                    <table class="sig-card">
+                        <tr><td class="sig-card-header">Bagian Keuangan</td></tr>
+                        <tr>
+                            <td class="sig-card-body">
+                                @if($financeApproval && $financeApproval->status === 'approved' && $verificationUrl)
+                                    <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 44px; height: 44px; display: inline-block;" />
+                                @else
+                                    <span style="color: #aaa; font-size: 8px;">Pending</span>
+                                @endif
+                            </td>
+                        </tr>
+                        <tr><td class="sig-card-footer">{{ $financeUser->name ?? '-' }}</td></tr>
+                    </table>
+                </td>
             </tr>
         </table>
 
-        {{-- Green Verification Box (Official Document - Digitally Verified) --}}
-        @if($verificationUrl)
-            <table class="verified-banner">
-                <tr>
-                    <td style="width: 48px; text-align: center; vertical-align: middle; padding: 5px;">
-                        <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 42px; height: 42px;" alt="QR" />
-                    </td>
-                    <td style="vertical-align: middle; padding: 4px 8px;">
-                        <div style="font-size: 8.5px; font-weight: bold; color: #065f46;">
-                            &#128737; Official Document - Digitally Verified
+        <div class="verification-footer">
+            <strong>Catatan Verifikasi:</strong> Dokumen ini diterbitkan secara elektronik oleh ConfirmMe - PT Info Solusindo Data Utama. Scan QR Code untuk memverifikasi keabsahan dokumen. Hash: {{ substr($document->approval_hash ?? 'N/A', 0, 32) }}...
+        </div>
+
+    @else
+        {{-- ========================================================================= --}}
+        {{-- PRESET A: FORMULIR KERJA RESMI PERUSAHAAN (PORTRAIT - GAMBAR 1)           --}}
+        {{-- ========================================================================= --}}
+        @php
+            $categoryName = $template ? ($template->fields['document_category'] ?? $template->name) : 'FORMULIR DOKUMEN';
+            if ($categoryName === 'peminjaman_aset' || str_contains(strtolower($document->title), 'mobil') || str_contains(strtolower($document->title), 'kendaraan')) {
+                $categoryName = 'PENGGUNAAN KENDARAAN OPERASIONAL';
+            }
+            $categoryName = strtoupper(str_replace('_', ' ', $categoryName));
+        @endphp
+
+        <!-- Fixed Header Box (Formulir Kerja - Repeated on every page) -->
+        <header>
+            @include('pdf.partials.company-header', [
+                'accentColor' => '#7F1D1D',
+                'docNumber' => $document->document_number,
+                'docDate' => $document->created_at ? $document->created_at->format('d F Y') : now()->format('d F Y'),
+            ])
+        </header>
+
+        <div class="container">
+            <!-- Sub-Header Banner (Category matching Image 1) -->
+            <div class="sub-header-banner">{{ $categoryName }}</div>
+
+            <!-- Document Title -->
+            <div class="doc-title-banner">{{ $document->title }}</div>
+
+            <!-- Intro Paragraph (Description) -->
+            @if($document->description)
+                <div style="margin-bottom: 12px; font-size: 11px; line-height: 1.6; text-align: justify; color: #222;">
+                    {!! nl2br(e($document->description)) !!}
+                </div>
+            @endif
+
+            {{-- Dynamic Fields: Key-Value Form Fields (Matching Image 1) --}}
+            @if(count($dynamicFields) > 0 && !empty($metadata))
+                @php
+                    $tableFields = [];
+                    $skipNext = false;
+                    $nonTableFields = [];
+
+                    foreach ($dynamicFields as $f) {
+                        if (($f['type'] ?? '') === 'table') {
+                            $tableFields[] = $f;
+                        } else {
+                            $nonTableFields[] = $f;
+                        }
+                    }
+                @endphp
+
+                @if(count($nonTableFields) > 0)
+                    <table class="info-table">
+                        @for($i = 0; $i < count($nonTableFields); $i++)
+                            @php
+                                if ($skipNext) {
+                                    $skipNext = false;
+                                    continue;
+                                }
+
+                                $field = $nonTableFields[$i];
+                                $fName = $field['name'];
+                                $fVal = $metadata[$fName] ?? null;
+                                $fType = $field['type'] ?? 'text';
+                                $fLabel = $field['label'];
+
+                                // Intelligent pairing: Date + Time
+                                $nextField = $nonTableFields[$i + 1] ?? null;
+                                $pairedTime = null;
+                                $pairedLabel = '';
+                                if ($fType === 'date' && $nextField && ($nextField['type'] ?? '') === 'time') {
+                                    $nextVal = $metadata[$nextField['name']] ?? null;
+                                    if ($nextVal) {
+                                        $pairedTime = $nextVal;
+                                        $pairedLabel = $nextField['label'];
+                                        $skipNext = true;
+                                    }
+                                }
+                            @endphp
+
+                            <tr style="page-break-inside: avoid;">
+                                <th>{{ $fLabel }}</th>
+                                <td>
+                                    @if($fType === 'textarea')
+                                        : {!! nl2br(e($fVal ?: '-')) !!}
+                                    @elseif($fType === 'file' && $fVal)
+                                        @php
+                                            $ext = strtolower(pathinfo($fVal, PATHINFO_EXTENSION));
+                                            $relPath = ltrim(str_replace('public/', '', $fVal), '/');
+                                            $imgPath = storage_path('app/public/' . $relPath);
+                                            if (!file_exists($imgPath)) {
+                                                $imgPath = public_path('storage/' . $relPath);
+                                            }
+                                            $imgDataUri = null;
+                                            if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif']) && file_exists($imgPath)) {
+                                                $mime = ($ext === 'png') ? 'image/png' : 'image/jpeg';
+                                                $imgDataUri = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($imgPath));
+                                            }
+                                        @endphp
+                                        @if($imgDataUri)
+                                            <div class="attachment-box">
+                                                <img src="{{ $imgDataUri }}" class="attachment-img" alt="{{ $fLabel }}" />
+                                            </div>
+                                        @else
+                                            : <em>{{ basename($fVal) }}</em>
+                                        @endif
+                                    @else
+                                        @php
+                                            $displayVal = $fVal ?: '-';
+                                            if ($fVal && $fType === 'date' && strtotime($fVal)) {
+                                                $displayVal = \Carbon\Carbon::parse($fVal)->format('d/m/Y');
+                                            } elseif ($fVal && $fType === 'number' && is_numeric($fVal)) {
+                                                $displayVal = number_format((float)$fVal, 0, ',', '.');
+                                            }
+                                        @endphp
+
+                                        : {{ $displayVal }}
+
+                                        @if($pairedTime)
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            <strong>{{ $pairedLabel }}:</strong> {{ $pairedTime }} WIB
+                                        @endif
+                                    @endif
+                                </td>
+                            </tr>
+                        @endfor
+                    </table>
+                @endif
+
+                {{-- Dynamic Tables (e.g. Data Penumpang dalam Mobil) --}}
+                @foreach($tableFields as $tField)
+                    @php
+                        $tName = $tField['name'];
+                        $tData = $metadata[$tName] ?? [];
+                        $tCols = !empty($tField['columns']) 
+                            ? array_filter(array_map('trim', explode(',', $tField['columns'])))
+                            : (!empty($tData[0]) ? array_keys($tData[0]) : ['Item']);
+                    @endphp
+
+                    @if(is_array($tData) && count($tData) > 0)
+                        <div class="data-table-container">
+                            <div class="section-title">{{ strtoupper($tField['label']) }}</div>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 35px; text-align: center;">No</th>
+                                        @foreach($tCols as $col)
+                                            <th>{{ $col }}</th>
+                                        @endforeach
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php $rowIdx = 1; @endphp
+                                    @foreach($tData as $row)
+                                        <tr>
+                                            <td style="text-align: center; width: 35px; color: #6b7280;">{{ $rowIdx++ }}</td>
+                                            @foreach($tCols as $col)
+                                                @php
+                                                    $cellVal = '-';
+                                                    foreach ($row as $k => $v) {
+                                                        if (strtolower(trim((string)$k)) === strtolower(trim((string)$col))) {
+                                                            $cellVal = $v;
+                                                            break;
+                                                        }
+                                                    }
+                                                    if ($cellVal === '-' && isset($row[$col])) {
+                                                        $cellVal = $row[$col];
+                                                    }
+                                                @endphp
+                                                <td>{{ $cellVal }}</td>
+                                            @endforeach
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
-                        <div style="font-size: 7.5px; color: #047857; margin-top: 1px;">
-                            Scan QR Code to verify document authenticity.
-                        </div>
-                        <div style="font-size: 7px; color: #059669; word-break: break-all; margin-top: 1px;">
-                            {{ $verificationUrl }}
-                        </div>
-                    </td>
-                </tr>
-            </table>
-        @endif
-    </div>
+                    @endif
+                @endforeach
+            @endif
+
+            {{-- Terms & Conditions / Disclaimer (Matching Image 1) --}}
+            @php
+                $terms = $template ? ($template->fields['terms_and_conditions'] ?? null) : null;
+            @endphp
+            @if($terms)
+                <div style="margin-top: 15px; margin-bottom: 15px; font-size: 10.5px; color: #333; line-height: 1.6; text-align: justify; page-break-inside: avoid;">
+                    {!! nl2br(e($terms)) !!}
+                </div>
+            @endif
+
+            {{-- Signature Block (Matching Image 1 + Digital QR Signatures) --}}
+            <div class="signature-section">
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 6px;">
+                    <tr>
+                        <td style="text-align: right; font-size: 11px; padding-bottom: 4px;">
+                            Jakarta, {{ $docDate->format('d F Y') }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center; font-size: 11px; padding-bottom: 10px;">
+                            Disetujui,
+                        </td>
+                    </tr>
+                </table>
+
+                <table class="signature-table">
+                    <tr>
+                        <td style="width: {{ round(100 / (1 + max(count($approvals), 1)), 2) }}%;">
+                            <div class="sig-role-label">{{ __('Pemohon') }}</div>
+                        </td>
+                        @foreach($approvals as $approval)
+                            <td style="width: {{ round(100 / (1 + max(count($approvals), 1)), 2) }}%;">
+                                <div class="sig-role-label">{{ $approval->approver?->position ?? ($approval->role_label ?? 'Approver') }}</div>
+                            </td>
+                        @endforeach
+                    </tr>
+
+                    <tr>
+                        <td>
+                            @if($verificationUrl)
+                                <div class="sig-qr-box">
+                                    <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR">
+                                </div>
+                                <div style="font-size: 7.5px; color: #059669; font-weight: bold; margin-top: 1px;">Signed</div>
+                            @else
+                                <div class="sig-pending-box"><span>-</span></div>
+                            @endif
+                        </td>
+                        @foreach($approvals as $approval)
+                            <td>
+                                @if($approval->status === 'approved' && $verificationUrl)
+                                    <div class="sig-qr-box">
+                                        <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR">
+                                    </div>
+                                    <div style="font-size: 7.5px; color: #059669; font-weight: bold; margin-top: 1px;">Signed</div>
+                                @elseif($approval->status === 'approved')
+                                    <div style="font-size: 8.5px; font-weight: bold; color: #059669; height: 60px; line-height: 60px;">APPROVED</div>
+                                @else
+                                    <div class="sig-pending-box"><span>Pending</span></div>
+                                @endif
+                            </td>
+                        @endforeach
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <div class="sig-name">( {{ $pemohon->name ?? 'Pemohon' }} )</div>
+                            @if($pemohon && $pemohon->employee_id)
+                                <div class="sig-nip">NIP. {{ $pemohon->employee_id }}</div>
+                            @endif
+                        </td>
+                        @foreach($approvals as $approval)
+                            <td>
+                                @if($approval->approver)
+                                    <div class="sig-name">( {{ $approval->approver->name }} )</div>
+                                    @if($approval->approver->employee_id)
+                                        <div class="sig-nip">NIP. {{ $approval->approver->employee_id }}</div>
+                                    @endif
+                                @else
+                                    <div class="sig-name">( - )</div>
+                                @endif
+                            </td>
+                        @endforeach
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <span class="sig-date">
+                                {{ $document->submitted_at ? $document->submitted_at->format('d/m/Y H:i') . ' WIB' : ($document->created_at ? $document->created_at->format('d/m/Y H:i') . ' WIB' : '') }}
+                            </span>
+                        </td>
+                        @foreach($approvals as $approval)
+                            <td>
+                                <span class="sig-date">
+                                    {{ $approval->action_at ? $approval->action_at->format('d/m/Y H:i') . ' WIB' : '-' }}
+                                </span>
+                            </td>
+                        @endforeach
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Verification Footer -->
+            <div class="verification-footer">
+                <table>
+                    <tr>
+                        <td style="width: 78%; padding-right: 15px;">
+                            <strong>{{ __("Catatan Verifikasi") }}:</strong><br>
+                            {{ __("Dokumen ini diterbitkan secara elektronik oleh sistem ConfirmMe - PT Info Solusindo Data Utama.") }}
+                            {{ __("Scan QR Code di atas untuk memverifikasi keaslian dokumen.") }}<br>
+                            <strong>ID Dokumen:</strong> {{ $document->document_number }} | <strong>Hash:</strong> {{ substr($document->approval_hash ?? 'N/A', 0, 32) }}...
+                        </td>
+                        <td style="width: 22%; text-align: center;">
+                            @if(isset($qrCode))
+                                <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code" style="width: 50px; height: 50px;">
+                                <div style="font-size: 7px; color: #888; margin-top: 2px;">{{ __("Scan untuk verifikasi") }}</div>
+                            @endif
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    @endif
 </body>
 
 </html>

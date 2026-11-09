@@ -750,14 +750,13 @@ class DocumentController extends Controller
             ? $document->template 
             : ($document->template->code ?? $document->documentTemplate->code ?? 'document');
         $templateCode = strtolower(str_replace('-', '_', (string)$rawCode));
-        $viewName = 'pdf.' . $templateCode;
-
-        // Fallback to generic document view if specific view doesn't exist
-        if (!view()->exists($viewName)) {
-            $viewName = 'pdf.document';
+        // Use universal pdf.document engine (invoice & purchase-order keep their dedicated views)
+        $viewName = 'pdf.document';
+        if (in_array($templateCode, ['invoice', 'purchase_order']) && view()->exists('pdf.' . $templateCode)) {
+            $viewName = 'pdf.' . $templateCode;
         }
 
-        // Determine orientation dynamically (Zero Hardcoding)
+        // Determine orientation and layout dynamically (Zero Hardcoding)
         $template = null;
         if (is_object($document->template) && $document->template instanceof \App\Models\DocumentTemplate) {
             $template = $document->template;
@@ -765,31 +764,17 @@ class DocumentController extends Controller
             $template = \App\Models\DocumentTemplate::where('code', $rawCode)->first();
         }
 
+        $layoutSetting = $template ? ($template->fields['pdf_layout'] ?? 'auto') : 'auto';
         $orientation = 'portrait';
-        if ($template) {
-            $pref = $template->fields['pdf_orientation'] ?? 'auto';
-            if ($pref === 'landscape') {
-                $orientation = 'landscape';
-            } elseif ($pref === 'portrait') {
-                $orientation = 'portrait';
-            } else {
-                // Auto-detect: if template has a table field with >= 4 columns, use landscape
-                $dynamicFields = $template->fields['dynamic_fields'] ?? [];
-                foreach ($dynamicFields as $field) {
-                    if (($field['type'] ?? '') === 'table') {
-                        $cols = array_filter(array_map('trim', explode(',', $field['columns'] ?? '')));
-                        if (count($cols) >= 4) {
-                            $orientation = 'landscape';
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        // Also check if document has tabular items or purchase order
-        if (!empty($document->metadata['items']) || $document->purchaseOrder) {
+        if ($layoutSetting === 'tabel_pengadaan') {
             $orientation = 'landscape';
+        } elseif ($layoutSetting === 'formulir_kerja') {
+            $orientation = 'portrait';
+        } else {
+            // Auto-detect: if template has wide purchasing table or PO
+            if (str_contains($templateCode, 'pembelian') || str_contains($templateCode, 'pengadaan') || !empty($document->metadata['kategori_pembelian']) || $document->purchaseOrder) {
+                $orientation = 'landscape';
+            }
         }
 
         // Force English locale for PDF to avoid CJK font issues in DomPDF
