@@ -347,47 +347,75 @@
         {{-- PRESET B: DAFTAR PENGADAAN / PEMBELIAN BARANG (LANDSCAPE)                 --}}
         {{-- ========================================================================= --}}
         @php
-            $kategori = $metadata['kategori_pembelian'] ?? null;
-            if (!$kategori) {
-                if (stripos($document->title, 'P3K') !== false) {
-                    $kategori = 'Kebutuhan P3K';
-                } elseif (stripos($document->title, 'Pantry') !== false) {
-                    $kategori = 'Kebutuhan Pantry';
-                } elseif (stripos($document->title, 'ATK') !== false || stripos($document->title, 'Alat Tulis') !== false) {
-                    $kategori = 'Alat Tulis Kantor';
-                } else {
-                    $kategori = $document->title;
-                }
-            }
-            $subTitle = ucwords(strtolower(trim($kategori)));
+            $kategori = $metadata['kategori_pembelian'] ?? ($metadata['kategori'] ?? null);
+            $mainTitle = strtoupper($template->name ?? $document->title);
+            $subTitle = $kategori ? ucwords(strtolower(trim($kategori))) : null;
 
             $logoPath = public_path('images/logo-infodata.jpg');
             $logoDataUri = file_exists($logoPath)
                 ? 'data:image/jpeg;base64,' . base64_encode(file_get_contents($logoPath))
                 : null;
 
-            $rawItems = $metadata['items'] ?? [];
-            if (empty($rawItems) && $document->purchaseOrder && $document->purchaseOrder->items) {
-                $rawItems = $document->purchaseOrder->items->map(function($poItem) {
-                    return [
-                        'Nama Barang' => $poItem->item_name,
-                        'Keterangan' => $poItem->description,
-                        'Max Perbulan' => '-',
-                        'Saat ini' => '0',
-                        'Permintaan' => $poItem->quantity,
-                        'Harga Perk./Item' => $poItem->unit_price,
-                        'Jml harga perkiraan' => $poItem->total_price,
-                    ];
-                })->toArray();
-            }
-
-            $hasExpDate = false;
-            foreach ($rawItems as $it) {
-                if (!empty($it['Exp Date']) || !empty($it['exp_date']) || !empty($it['Kadaluarsa'])) {
-                    $hasExpDate = true;
-                    break;
+            $parseMoney = function($raw): float {
+                if (is_int($raw) || is_float($raw)) return (float)$raw;
+                if (empty($raw)) return 0.0;
+                
+                $clean = trim((string)$raw);
+                $clean = preg_replace('/^(?:rp\.?|idr)\s*/i', '', $clean);
+                $clean = preg_replace('/[^\d.,]/', '', $clean);
+                $clean = trim($clean, "., ");
+                if ($clean === '') return 0.0;
+                
+                if (str_contains($clean, '.') && str_contains($clean, ',')) {
+                    $lastDot = strrpos($clean, '.');
+                    $lastComma = strrpos($clean, ',');
+                    if ($lastComma > $lastDot) {
+                        $clean = str_replace('.', '', $clean);
+                        $clean = str_replace(',', '.', $clean);
+                    } else {
+                        $clean = str_replace(',', '', $clean);
+                    }
+                } elseif (str_contains($clean, '.')) {
+                    $parts = explode('.', $clean);
+                    $isThousand = true;
+                    for ($i = 1; $i < count($parts); $i++) {
+                        if (strlen($parts[$i]) !== 3) {
+                            $isThousand = false;
+                            break;
+                        }
+                    }
+                    if ($isThousand && count($parts) > 1) {
+                        $clean = str_replace('.', '', $clean);
+                    }
+                } elseif (str_contains($clean, ',')) {
+                    $parts = explode(',', $clean);
+                    $isThousand = true;
+                    for ($i = 1; $i < count($parts); $i++) {
+                        if (strlen($parts[$i]) !== 3) {
+                            $isThousand = false;
+                            break;
+                        }
+                    }
+                    if ($isThousand && count($parts) > 1) {
+                        $clean = str_replace(',', '', $clean);
+                    } else {
+                        $clean = str_replace(',', '.', $clean);
+                    }
                 }
-            }
+                
+                return (float)$clean;
+            };
+
+            $parseQty = function($raw): float {
+                if (is_int($raw) || is_float($raw)) return (float)$raw;
+                if (empty($raw)) return 0.0;
+                
+                $clean = trim((string)$raw);
+                if (preg_match('/(\d+(?:[.,]\d+)?)/', $clean, $matches)) {
+                    return (float) str_replace(',', '.', $matches[1]);
+                }
+                return 0.0;
+            };
 
             // 4 Approver boxes
             $disetujuiApproval = $approvals->first(function($app) {
@@ -410,9 +438,60 @@
                 return str_contains($r, 'finance') || str_contains($r, 'keuangan');
             });
             $financeUser = $financeApproval?->approver;
+
+            // Resolve dynamic table fields
+            $tableFields = [];
+            foreach ($dynamicFields as $f) {
+                if (($f['type'] ?? '') === 'table') {
+                    $tableFields[] = $f;
+                }
+            }
+
+            if (empty($tableFields)) {
+                $fallbackItems = $metadata['items'] ?? ($metadata['daftar_barang'] ?? ($metadata['data_barang'] ?? ($metadata['pembelian_barang'] ?? [])));
+                if (empty($fallbackItems)) {
+                    foreach ($metadata as $metaKey => $metaVal) {
+                        if (is_array($metaVal) && !empty($metaVal) && isset($metaVal[0]) && is_array($metaVal[0])) {
+                            $fallbackItems = $metaVal;
+                            $tableFields[] = [
+                                'name' => $metaKey,
+                                'label' => ucwords(str_replace('_', ' ', $metaKey)),
+                                'columns' => implode(', ', array_keys($metaVal[0])),
+                                '_data' => $fallbackItems,
+                            ];
+                            break;
+                        }
+                    }
+                } elseif (!empty($fallbackItems)) {
+                    $tableFields[] = [
+                        'name' => 'items',
+                        'label' => 'Daftar Barang',
+                        'columns' => !empty($fallbackItems[0]) && is_array($fallbackItems[0]) ? implode(', ', array_keys($fallbackItems[0])) : 'Item',
+                        '_data' => $fallbackItems,
+                    ];
+                }
+            }
+
+            if (empty($tableFields) && $document->purchaseOrder && $document->purchaseOrder->items) {
+                $poRows = $document->purchaseOrder->items->map(function($poItem) {
+                    return [
+                        'Nama Barang' => $poItem->item_name,
+                        'Keterangan' => $poItem->description,
+                        'Permintaan' => $poItem->quantity,
+                        'Harga Perk./Item' => $poItem->unit_price,
+                        'Jml Harga Perkiraan' => $poItem->total_price,
+                    ];
+                })->toArray();
+                $tableFields[] = [
+                    'name' => 'po_items',
+                    'label' => 'Daftar Barang PO',
+                    'columns' => 'Nama Barang, Keterangan, Permintaan, Harga Perk./Item, Jml Harga Perkiraan',
+                    '_data' => $poRows,
+                ];
+            }
         @endphp
 
-        {{-- Kop Pembelian --}}
+        {{-- Kop Landscape Dinamis --}}
         <table class="header-table">
             <tr>
                 <td style="width: 37%;">
@@ -444,139 +523,214 @@
                 </td>
 
                 <td style="width: 26%; text-align: center; padding-top: 10px;">
-                    <div class="doc-title-main">PERMINTAAN PEMBELIAN BARANG</div>
-                    <div class="doc-title-sub">"{{ $subTitle }}"</div>
+                    <div class="doc-title-main">{{ $mainTitle }}</div>
+                    @if($subTitle && strtolower($subTitle) !== strtolower($mainTitle))
+                        <div class="doc-title-sub">"{{ $subTitle }}"</div>
+                    @endif
                 </td>
 
                 <td style="width: 37%; padding-left: 20px;">
-                    <table class="meta-table" style="margin-top: 25px;">
-                        <tr>
-                            <td class="meta-label" style="width: 140px;">Lokasi Permintaan</td>
-                            <td class="meta-colon">:</td>
-                            <td class="meta-value-line">{{ $metadata['lokasi_permintaan'] ?? 'GMH' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="meta-label">Perkiraan Tgl Penerimaan</td>
-                            <td class="meta-colon">:</td>
-                            <td class="meta-value-line">
-                                @php $tglTerima = $metadata['perkiraan_tgl_penerimaan'] ?? null; @endphp
-                                {{ $tglTerima ? (is_string($tglTerima) && strtotime($tglTerima) ? \Carbon\Carbon::parse($tglTerima)->format('d F Y') : $tglTerima) : ($document->created_at ? $document->created_at->format('d F Y') : now()->format('d F Y')) }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="meta-label" style="vertical-align: top;">Jenis Pembelian</td>
-                            <td class="meta-colon" style="vertical-align: top;">:</td>
-                            <td style="vertical-align: top; padding: 0;">
-                                <table style="width: 100%; border-collapse: collapse;">
-                                    <tr>
-                                        <td style="padding: 1px 0; width: 85px;">Investasi</td>
-                                        <td style="padding: 1px 0; width: 8px;">:</td>
-                                        <td style="padding: 1px 0;">Non Proyek/Proyek *)</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 1px 0;">Non Investasi</td>
-                                        <td style="padding: 1px 0;">:</td>
-                                        <td style="padding: 1px 0;">Non Proyek/Proyek *)</td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
+                    <table class="meta-table" style="margin-top: 20px;">
+                        @if(!empty($metadata['lokasi_permintaan']) || !empty($metadata['lokasi']))
+                            <tr>
+                                <td class="meta-label" style="width: 140px;">Lokasi Permintaan</td>
+                                <td class="meta-colon">:</td>
+                                <td class="meta-value-line">{{ $metadata['lokasi_permintaan'] ?? $metadata['lokasi'] }}</td>
+                            </tr>
+                        @endif
+
+                        @php
+                            $tglTerima = $metadata['perkiraan_tgl_penerimaan'] ?? ($metadata['expected_delivery'] ?? ($metadata['delivery_date'] ?? null));
+                        @endphp
+                        @if(!empty($tglTerima))
+                            <tr>
+                                <td class="meta-label">Perkiraan Tgl Penerimaan</td>
+                                <td class="meta-colon">:</td>
+                                <td class="meta-value-line">
+                                    {{ (is_string($tglTerima) && strtotime($tglTerima)) ? \Carbon\Carbon::parse($tglTerima)->format('d F Y') : $tglTerima }}
+                                </td>
+                            </tr>
+                        @endif
+
+                        @if(isset($metadata['jenis_pembelian']) || isset($metadata['kategori_pembelian']))
+                            <tr>
+                                <td class="meta-label" style="vertical-align: top;">Jenis Pembelian</td>
+                                <td class="meta-colon" style="vertical-align: top;">:</td>
+                                <td style="vertical-align: top; padding: 0;">
+                                    <table style="width: 100%; border-collapse: collapse;">
+                                        <tr>
+                                            <td style="padding: 1px 0; width: 85px;">Investasi</td>
+                                            <td style="padding: 1px 0; width: 8px;">:</td>
+                                            <td style="padding: 1px 0;">Non Proyek/Proyek *)</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding: 1px 0;">Non Investasi</td>
+                                            <td style="padding: 1px 0;">:</td>
+                                            <td style="padding: 1px 0;">Non Proyek/Proyek *)</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        @endif
                     </table>
                 </td>
             </tr>
         </table>
 
-        {{-- Data Table Belanja --}}
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th rowspan="2" style="width: {{ $hasExpDate ? '20%' : '26%' }};">Nama Barang</th>
-                    <th rowspan="2" style="width: {{ $hasExpDate ? '17%' : '21%' }};">Keterangan</th>
-                    @if($hasExpDate)
-                        <th rowspan="2" style="width: 9%;">Exp Date</th>
-                    @endif
-                    <th colspan="3" style="width: 25%;">STOCK</th>
-                    <th rowspan="2" style="width: 14%;">Harga Perk./Item</th>
-                    <th rowspan="2" style="width: 14%;">Jml harga perkiraan</th>
-                </tr>
-                <tr>
-                    <th style="width: 9%;">Max Perbulan</th>
-                    <th style="width: 8%;">Saat ini</th>
-                    <th style="width: 8%;">Permintaan</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php
-                    $grandTotal = 0;
-                    $currentCat = null;
-                @endphp
-                @foreach($rawItems as $item)
-                    @php
-                        $nama = $item['Nama Barang'] ?? ($item['nama_barang'] ?? ($item['item_name'] ?? '-'));
-                        $ket = $item['Keterangan'] ?? ($item['keterangan'] ?? ($item['description'] ?? '-'));
-                        $exp = $item['Exp Date'] ?? ($item['exp_date'] ?? ($item['Kadaluarsa'] ?? '-'));
-                        $max = $item['Max Perbulan'] ?? ($item['max_perbulan'] ?? '-');
-                        $saatIni = $item['Saat ini'] ?? ($item['saat_ini'] ?? ($item['Stock Saat Ini'] ?? '0'));
-                        $permintaan = $item['Permintaan'] ?? ($item['permintaan'] ?? ($item['quantity'] ?? '0'));
-                        
-                        $hargaRaw = $item['Harga Perk./Item'] ?? ($item['harga'] ?? ($item['unit_price'] ?? 0));
-                        $harga = (float) preg_replace('/[^\d.]/', '', str_replace(',', '.', (string)$hargaRaw));
-                        
-                        $totalRaw = $item['Jml harga perkiraan'] ?? ($item['total'] ?? ($item['total_price'] ?? ($harga * (float)$permintaan)));
-                        $total = (float) preg_replace('/[^\d.]/', '', str_replace(',', '.', (string)$totalRaw));
-                        $grandTotal += $total;
+        {{-- Render Tabel Dinamis (100% Dynamic Universal Table) --}}
+        @foreach($tableFields as $tField)
+            @php
+                $tName = $tField['name'];
+                $rows = $tField['_data'] ?? ($metadata[$tName] ?? ($metadata['items'] ?? []));
+                if (!is_array($rows) || empty($rows)) continue;
 
-                        $namaLower = strtolower(trim($nama));
-                        if ($currentCat === null) {
-                            if (str_contains($namaLower, 'tolak angin') || str_contains($namaLower, 'sangobion') || str_contains($namaLower, 'obat')) {
-                                $currentCat = 'Obat-obatan';
-                                echo '<tr class="category-row"><td colspan="' . ($hasExpDate ? 8 : 7) . '">' . $currentCat . '</td></tr>';
-                            } elseif (str_contains($namaLower, 'double tape') || str_contains($namaLower, 'lakban')) {
-                                $currentCat = 'Lemari ATK No.1';
-                                echo '<tr class="category-row"><td colspan="' . ($hasExpDate ? 8 : 7) . '">' . $currentCat . '</td></tr>';
-                            }
-                        } elseif ($currentCat === 'Lemari ATK No.1' && (str_contains($namaLower, 'paper bag finnace') || str_contains($namaLower, 'kertas a4'))) {
-                            $currentCat = 'Lemari ATK No.2';
-                            echo '<tr class="category-row"><td colspan="' . ($hasExpDate ? 8 : 7) . '">' . $currentCat . '</td></tr>';
+                $rawCols = !empty($tField['columns']) 
+                    ? array_map('trim', explode(',', $tField['columns']))
+                    : (!empty($rows[0]) && is_array($rows[0]) ? array_keys($rows[0]) : ['Item']);
+                $columns = array_values(array_filter($rawCols));
+
+                $priceCol = null;
+                $qtyCol = null;
+                $totalCol = null;
+                $categoryCol = null;
+
+                foreach ($columns as $c) {
+                    $cClean = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $c));
+                    if ($totalCol === null && in_array($cClean, ['total', 'jmlhargaperkiraan', 'jumlahharga', 'totalharga', 'subtotal', 'totalbiaya'])) {
+                        $totalCol = $c;
+                    }
+                    if ($categoryCol === null && in_array($cClean, ['kategori', 'kategoribarang', 'category', 'kelompok', 'group'])) {
+                        $categoryCol = $c;
+                    }
+                    if ($priceCol === null && (str_contains($cClean, 'harga') || str_contains($cClean, 'price') || str_contains($cClean, 'biaya') || str_contains($cClean, 'tarif'))) {
+                        if (!str_contains($cClean, 'total') && !str_contains($cClean, 'jml')) {
+                            $priceCol = $c;
                         }
-                    @endphp
-                    <tr>
-                        <td class="text-left">{{ $nama }}</td>
-                        <td class="text-left">{{ $ket }}</td>
-                        @if($hasExpDate)
-                            <td class="text-center">{{ $exp }}</td>
-                        @endif
-                        <td class="text-center">{{ $max }}</td>
-                        <td class="text-center">{{ $saatIni }}</td>
-                        <td class="text-center">{{ $permintaan }}</td>
-                        <td class="text-right">
-                            <table style="width: 100%; border-collapse: collapse; border: none;">
-                                <tr>
-                                    <td style="border: none; padding: 0; text-align: left; width: 18px;">Rp</td>
-                                    <td style="border: none; padding: 0; text-align: right;">{{ number_format($harga, 0, ',', '.') }}</td>
-                                </tr>
-                            </table>
-                        </td>
-                        <td class="text-right">
-                            <table style="width: 100%; border-collapse: collapse; border: none;">
-                                <tr>
-                                    <td style="border: none; padding: 0; text-align: left; width: 18px;">Rp</td>
-                                    <td style="border: none; padding: 0; text-align: right;">{{ number_format($total, 0, ',', '.') }}</td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                @endforeach
+                    }
+                    if ($qtyCol === null && (str_contains($cClean, 'qty') || str_contains($cClean, 'jumlah') || str_contains($cClean, 'kuantitas') || str_contains($cClean, 'permintaan') || str_contains($cClean, 'vol') || str_contains($cClean, 'volume'))) {
+                        if (!str_contains($cClean, 'harga') && !str_contains($cClean, 'biaya') && !str_contains($cClean, 'total')) {
+                            $qtyCol = $c;
+                        }
+                    }
+                }
 
-                <tr class="total-row">
-                    <td colspan="{{ $hasExpDate ? 6 : 5 }}" style="border: none;"></td>
-                    <td class="bg-yellow text-center" style="font-weight: bold; border: 1px solid #000;">Rp</td>
-                    <td class="bg-yellow text-right" style="font-weight: bold; border: 1px solid #000; padding: 3px 6px;">
-                        {{ number_format($grandTotal, 0, ',', '.') }}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                $hasPriceCalculation = ($priceCol !== null || $totalCol !== null);
+                $showCalculatedTotalCol = ($priceCol !== null && $totalCol === null);
+                $totalColCount = 1 + count($columns) + ($showCalculatedTotalCol ? 1 : 0);
+            @endphp
+
+            @if(count($tableFields) > 1)
+                <div style="font-size: 10px; font-weight: bold; margin-top: 10px; margin-bottom: 4px; text-transform: uppercase;">
+                    {{ $tField['label'] }}
+                </div>
+            @endif
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 30px; text-align: center;">No</th>
+                        @foreach($columns as $col)
+                            <th style="text-align: {{ ($col === $priceCol || $col === $totalCol) ? 'right' : 'center' }};">
+                                {{ $col }}
+                            </th>
+                        @endforeach
+                        @if($showCalculatedTotalCol)
+                            <th style="width: 14%; text-align: right;">Jml Harga Perkiraan</th>
+                        @endif
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                        $grandTotal = 0;
+                        $lastCategory = null;
+                    @endphp
+                    @foreach($rows as $rIdx => $row)
+                        @php
+                            if (!is_array($row)) continue;
+
+                            $currentCat = $categoryCol ? ($row[$categoryCol] ?? null) : null;
+                            if ($currentCat && $currentCat !== $lastCategory) {
+                                $lastCategory = $currentCat;
+                                echo '<tr class="category-row"><td colspan="' . $totalColCount . '">' . e($currentCat) . '</td></tr>';
+                            }
+
+                            $rowPrice = 0;
+                            $rowQty = 1;
+                            $rowTotal = 0;
+
+                            if ($priceCol && isset($row[$priceCol])) {
+                                $rowPrice = $parseMoney($row[$priceCol]);
+                            }
+                            if ($qtyCol && isset($row[$qtyCol])) {
+                                $rowQty = $parseQty($row[$qtyCol]);
+                            }
+                            if ($totalCol && isset($row[$totalCol])) {
+                                $rowTotal = $parseMoney($row[$totalCol]);
+                            } elseif ($priceCol) {
+                                $rowTotal = $rowPrice * $rowQty;
+                            }
+                            $grandTotal += $rowTotal;
+                        @endphp
+                        <tr>
+                            <td style="text-align: center; width: 30px; color: #555;">{{ $rIdx + 1 }}</td>
+                            @foreach($columns as $col)
+                                @php
+                                    $val = $row[$col] ?? '-';
+                                    $isPrice = ($col === $priceCol);
+                                    $isTotal = ($col === $totalCol);
+                                    $isQty = ($col === $qtyCol);
+                                @endphp
+
+                                @if($isPrice)
+                                    <td class="text-right">
+                                        <table style="width: 100%; border-collapse: collapse; border: none;">
+                                            <tr>
+                                                <td style="border: none; padding: 0; text-align: left; width: 18px;">Rp</td>
+                                                <td style="border: none; padding: 0; text-align: right;">{{ number_format($rowPrice, 0, ',', '.') }}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                @elseif($isTotal)
+                                    <td class="text-right">
+                                        <table style="width: 100%; border-collapse: collapse; border: none;">
+                                            <tr>
+                                                <td style="border: none; padding: 0; text-align: left; width: 18px;">Rp</td>
+                                                <td style="border: none; padding: 0; text-align: right;">{{ number_format($rowTotal, 0, ',', '.') }}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                @elseif($isQty || is_numeric($val) || (is_string($val) && strlen($val) <= 15 && preg_match('/^\d+[\s\w]*$/', trim($val))))
+                                    <td class="text-center">{{ $val }}</td>
+                                @else
+                                    <td class="text-left">{{ $val }}</td>
+                                @endif
+                            @endforeach
+
+                            @if($showCalculatedTotalCol)
+                                <td class="text-right">
+                                    <table style="width: 100%; border-collapse: collapse; border: none;">
+                                        <tr>
+                                            <td style="border: none; padding: 0; text-align: left; width: 18px;">Rp</td>
+                                            <td style="border: none; padding: 0; text-align: right;">{{ number_format($rowTotal, 0, ',', '.') }}</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            @endif
+                        </tr>
+                    @endforeach
+
+                    @if($hasPriceCalculation)
+                        <tr class="total-row">
+                            <td colspan="{{ $totalColCount - 2 }}" style="border: none;"></td>
+                            <td class="bg-yellow text-center" style="font-weight: bold; border: 1px solid #000; width: 35px;">Rp</td>
+                            <td class="bg-yellow text-right" style="font-weight: bold; border: 1px solid #000; padding: 3px 6px;">
+                                {{ number_format($grandTotal, 0, ',', '.') }}
+                            </td>
+                        </tr>
+                    @endif
+                </tbody>
+            </table>
+        @endforeach
 
         {{-- 4 Signature Boxes --}}
         <table class="sig-container">
