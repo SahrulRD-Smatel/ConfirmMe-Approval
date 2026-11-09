@@ -734,7 +734,7 @@ class DocumentController extends Controller
     {
         $this->authorize('view', $document);
 
-        $document->load(['user', 'approvals.approver']);
+        $document->load(['user', 'approvals.approver', 'documentTemplate']);
         
         // Ensure QR Hash exists
         if (!$document->approval_hash) {
@@ -757,7 +757,40 @@ class DocumentController extends Controller
             $viewName = 'pdf.document';
         }
 
-        $orientation = ($templateCode === 'pembelian_barang') ? 'landscape' : 'portrait';
+        // Determine orientation dynamically (Zero Hardcoding)
+        $template = null;
+        if (is_object($document->template) && $document->template instanceof \App\Models\DocumentTemplate) {
+            $template = $document->template;
+        } elseif (!empty($rawCode)) {
+            $template = \App\Models\DocumentTemplate::where('code', $rawCode)->first();
+        }
+
+        $orientation = 'portrait';
+        if ($template) {
+            $pref = $template->fields['pdf_orientation'] ?? 'auto';
+            if ($pref === 'landscape') {
+                $orientation = 'landscape';
+            } elseif ($pref === 'portrait') {
+                $orientation = 'portrait';
+            } else {
+                // Auto-detect: if template has a table field with >= 4 columns, use landscape
+                $dynamicFields = $template->fields['dynamic_fields'] ?? [];
+                foreach ($dynamicFields as $field) {
+                    if (($field['type'] ?? '') === 'table') {
+                        $cols = array_filter(array_map('trim', explode(',', $field['columns'] ?? '')));
+                        if (count($cols) >= 4) {
+                            $orientation = 'landscape';
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Also check if document has tabular items or purchase order
+        if (!empty($document->metadata['items']) || $document->purchaseOrder) {
+            $orientation = 'landscape';
+        }
 
         // Force English locale for PDF to avoid CJK font issues in DomPDF
         app()->setLocale('en');

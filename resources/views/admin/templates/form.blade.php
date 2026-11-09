@@ -114,6 +114,17 @@
                     </select>
                 </div>
 
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Orientasi PDF') }}</label>
+                    <select name="fields[pdf_orientation]"
+                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10">
+                        <option value="auto" {{ ($fields['pdf_orientation'] ?? 'auto') === 'auto' ? 'selected' : '' }}>{{ __('Otomatis (Landscape jika tabel >= 4 kolom)') }}</option>
+                        <option value="portrait" {{ ($fields['pdf_orientation'] ?? '') === 'portrait' ? 'selected' : '' }}>{{ __('Portrait (Tegak)') }}</option>
+                        <option value="landscape" {{ ($fields['pdf_orientation'] ?? '') === 'landscape' ? 'selected' : '' }}>{{ __('Landscape (Mendatar / Lebar)') }}</option>
+                    </select>
+                    <p class="mt-1 text-xs text-gray-400">{{ __('Tata letak kertas saat dokumen dicetak/diunduh sebagai PDF') }}</p>
+                </div>
+
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Deskripsi Template') }}</label>
                     <textarea name="description" rows="2" placeholder="{{ __('Deskripsi singkat kapan template ini digunakan...') }}"
