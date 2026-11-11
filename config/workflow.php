@@ -192,6 +192,18 @@ return [
         'direktur_operasional' => 'Direktur Operasional',
         'presiden_direktur' => 'Presiden Direktur',
         'finance' => 'Finance',
+        'ga' => 'Staff GA',
+        'staff_ga' => 'Staff GA',
+        'manager_hrga' => 'Manager HRGA',
+        'hrga' => 'HRGA',
+        'admin_operasional' => 'Admin Operasional',
+        'it_internal' => 'IT Internal',
+        'staff_it' => 'Staff IT',
+        'it_spv' => 'IT SPV',
+        'spv_it' => 'IT SPV',
+        'spv' => 'SPV',
+        'staff' => 'Staff',
+        'admin' => 'Administrator',
     ],
 
     /*

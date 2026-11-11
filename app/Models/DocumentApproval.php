@@ -103,18 +103,22 @@ class DocumentApproval extends Model
     public function getRoleLabelAttribute(): string
     {
         // Use config role_labels for proper display names
-        $roleLabels = config('workflow.role_labels', []);
+        $roleLabels = function_exists('config') ? config('workflow.role_labels', []) : [];
 
         if (isset($roleLabels[$this->approver_role])) {
-            return $roleLabels[$this->approver_role];
+            return format_acronyms($roleLabels[$this->approver_role]);
         }
 
-        $cleanRole = str_replace('role:', '', $this->approver_role);
-        if (str_starts_with($this->approver_role, 'user:')) {
+        $cleanRole = preg_replace('/^(role:|user:)/', '', (string)$this->approver_role);
+        if (str_starts_with((string)$this->approver_role, 'user:')) {
             return 'Spesifik User';
         }
 
-        return ucwords(str_replace('_', ' ', $cleanRole));
+        if (isset($roleLabels[$cleanRole])) {
+            return format_acronyms($roleLabels[$cleanRole]);
+        }
+
+        return role_label($cleanRole);
     }
 
     /**

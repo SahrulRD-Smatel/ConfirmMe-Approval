@@ -367,7 +367,7 @@
         @php
             $kategori = $metadata['kategori_pembelian'] ?? ($metadata['kategori'] ?? null);
             $mainTitle = strtoupper($template->name ?? $document->title);
-            $subTitle = $kategori ? ucwords(strtolower(trim($kategori))) : null;
+            $subTitle = $kategori ? format_acronyms(ucwords(strtolower(trim($kategori)))) : null;
 
             $logoPath = public_path('images/logo-infodata.jpg');
             $logoDataUri = file_exists($logoPath)
@@ -530,12 +530,12 @@
                         <tr>
                             <td class="meta-label">Dept/Divisi</td>
                             <td class="meta-colon">:</td>
-                            <td class="meta-value-line">{{ $document->department ?? ($document->user->department ?? 'GA/HRGA') }}</td>
+                            <td class="meta-value-line">{{ format_acronyms($document->department ?? ($document->user->department ?? 'GA/HRGA')) }}</td>
                         </tr>
                         <tr>
                             <td class="meta-label">Keterangan/Projek</td>
                             <td class="meta-colon">:</td>
-                            <td class="meta-value-line">{{ $metadata['keterangan'] ?? ($document->description ?? $document->title) }}</td>
+                            <td class="meta-value-line">{{ format_acronyms($metadata['keterangan'] ?? ($document->description ?? $document->title)) }}</td>
                         </tr>
                     </table>
                 </td>
@@ -553,7 +553,7 @@
                             <tr>
                                 <td class="meta-label" style="width: 140px;">Lokasi Permintaan</td>
                                 <td class="meta-colon">:</td>
-                                <td class="meta-value-line">{{ $metadata['lokasi_permintaan'] ?? $metadata['lokasi'] }}</td>
+                                <td class="meta-value-line">{{ format_acronyms($metadata['lokasi_permintaan'] ?? $metadata['lokasi']) }}</td>
                             </tr>
                         @endif
 
@@ -836,7 +836,7 @@
                                     @endif
                                 </td>
                             </tr>
-                            <tr><td class="sig-card-footer">{{ $disetujuiApproval?->approver?->name ?? '-' }}</td></tr>
+                            <tr><td class="sig-card-footer">{{ format_acronyms($disetujuiApproval?->approver?->name ?? '-') }}</td></tr>
                         </table>
                     </td>
                     <td class="sig-box-cell" style="width: 25%;">
@@ -849,7 +849,7 @@
                                     @endif
                                 </td>
                             </tr>
-                            <tr><td class="sig-card-footer">{{ $mengetahuiUser->name ?? '-' }}</td></tr>
+                            <tr><td class="sig-card-footer">{{ format_acronyms($mengetahuiUser->name ?? '-') }}</td></tr>
                         </table>
                     </td>
                     <td class="sig-box-cell" style="width: 25%;">
@@ -864,7 +864,7 @@
                                     @endif
                                 </td>
                             </tr>
-                            <tr><td class="sig-card-footer">{{ $financeUser->name ?? '-' }}</td></tr>
+                            <tr><td class="sig-card-footer">{{ format_acronyms($financeUser->name ?? '-') }}</td></tr>
                         </table>
                     </td>
                 </tr>
@@ -887,7 +887,7 @@
                                     @endif
                                 </td>
                             </tr>
-                            <tr><td class="sig-card-footer">{{ $pemohon->name ?? '-' }}</td></tr>
+                            <tr><td class="sig-card-footer">{{ format_acronyms($pemohon->name ?? '-') }}</td></tr>
                         </table>
                     </td>
                     @foreach($approvals as $approval)
@@ -895,7 +895,7 @@
                             <table class="sig-card">
                                 <tr>
                                     <td class="sig-card-header">
-                                        {{ $approval->approver?->position ?? ($approval->role_label ?? 'Approver') }}
+                                        {{ format_acronyms($approval->approver?->position ?? ($approval->role_label ?? 'Approver')) }}
                                     </td>
                                 </tr>
                                 <tr>
@@ -908,7 +908,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="sig-card-footer">{{ $approval->approver?->name ?? '-' }}</td>
+                                    <td class="sig-card-footer">{{ format_acronyms($approval->approver?->name ?? '-') }}</td>
                                 </tr>
                             </table>
                         </td>
@@ -1142,7 +1142,7 @@
                         </td>
                         @foreach($approvals as $approval)
                             <td style="width: {{ round(100 / (1 + max(count($approvals), 1)), 2) }}%;">
-                                <div class="sig-role-label">{{ $approval->approver?->position ?? ($approval->role_label ?? 'Approver') }}</div>
+                                <div class="sig-role-label">{{ format_acronyms($approval->approver?->position ?? ($approval->role_label ?? 'Approver')) }}</div>
                             </td>
                         @endforeach
                     </tr>
@@ -1176,7 +1176,7 @@
 
                     <tr>
                         <td>
-                            <div class="sig-name">( {{ $pemohon->name ?? 'Pemohon' }} )</div>
+                            <div class="sig-name">( {{ format_acronyms($pemohon->name ?? 'Pemohon') }} )</div>
                             @if($pemohon && $pemohon->employee_id)
                                 <div class="sig-nip">NIP. {{ $pemohon->employee_id }}</div>
                             @endif
@@ -1184,7 +1184,7 @@
                         @foreach($approvals as $approval)
                             <td>
                                 @if($approval->approver)
-                                    <div class="sig-name">( {{ $approval->approver->name }} )</div>
+                                    <div class="sig-name">( {{ format_acronyms($approval->approver->name) }} )</div>
                                     @if($approval->approver->employee_id)
                                         <div class="sig-nip">NIP. {{ $approval->approver->employee_id }}</div>
                                     @endif

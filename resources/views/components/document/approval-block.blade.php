@@ -11,10 +11,14 @@
     $requester = $document?->user;
     $requesterTitle = 'Staff'; // default
     if ($requester) {
-        if ($requester->hasRole('presiden_direktur')) {
+        if ($requester->position) {
+            $requesterTitle = format_acronyms($requester->position);
+        } elseif ($requester->hasRole('presiden_direktur')) {
             $requesterTitle = 'Presiden Direktur';
-        } elseif ($requester->hasAnyRole(['direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales'])) {
+        } elseif ($requester->hasAnyRole(['direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional'])) {
             $requesterTitle = 'Direktur';
+        } elseif ($requester->hasRole('manager_hrga')) {
+            $requesterTitle = 'Manager HRGA';
         } elseif ($requester->hasRole('manager')) {
             $requesterTitle = 'Manager';
         } elseif ($requester->hasRole('supervisor')) {
@@ -23,6 +27,8 @@
             $requesterTitle = 'Finance';
         } elseif ($requester->hasRole('hrd')) {
             $requesterTitle = 'HRD';
+        } elseif ($requester->hasRole('ga')) {
+            $requesterTitle = 'Staff GA';
         }
     }
 
@@ -46,7 +52,7 @@
             $label = $isLast ? (($type === 'loan') ? __('Final Approval') : __('Approved')) : __('Reviewed');
             
             // Format role name for display
-            $roleName = $approval->approver?->position ?? $approval->role_label ?? 'Approver';
+            $roleName = format_acronyms($approval->approver?->position ?? $approval->role_label ?? 'Approver');
 
             $columns[] = [
                 'is_requester' => false,

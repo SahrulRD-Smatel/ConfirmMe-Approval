@@ -161,7 +161,7 @@
                                     <div class="flex flex-wrap items-baseline justify-between gap-2">
                                         <div class="min-w-0">
                                             <p class="truncate text-sm font-semibold text-gray-900">{{ $approval->approver->name ?? 'Unknown' }}</p>
-                                            <p class="text-xs text-gray-500">{{ $approval->approver?->position ?? $approval->role_label }}</p>
+                                            <p class="text-xs text-gray-500">{{ format_acronyms($approval->approver?->position ?? $approval->role_label) }}</p>
                                         </div>
                                         <div class="shrink-0 text-right">
                                             @if($approval->action_at)

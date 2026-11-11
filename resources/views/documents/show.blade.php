@@ -383,7 +383,7 @@
                                 @endif
                             </div>
                             <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $approval->approver?->position ?? $approval->role_label }}</p>
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ format_acronyms($approval->approver?->position ?? $approval->role_label) }}</p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">{{ $approval->approver->name }}</p>
                                 @if($approval->action_at)
                                     <p class="text-xs text-gray-400 mt-1">{{ $approval->action_at->format('d M Y H:i') }}</p>

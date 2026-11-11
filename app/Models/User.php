@@ -180,6 +180,22 @@ class User extends Authenticatable
     }
 
     /**
+     * Format position with uppercase acronyms.
+     */
+    public function getPositionAttribute($value): ?string
+    {
+        return $value ? format_acronyms($value) : $value;
+    }
+
+    /**
+     * Format division with uppercase acronyms.
+     */
+    public function getDivisionAttribute($value): ?string
+    {
+        return $value ? format_acronyms($value) : $value;
+    }
+
+    /**
      * Get all attendance records for this user.
      */
     public function attendances(): HasMany

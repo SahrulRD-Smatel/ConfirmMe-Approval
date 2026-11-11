@@ -144,7 +144,7 @@
                                         <span
                                             class="text-xs text-gray-500">{{ $approval->action_at?->format('d M Y H:i') }}</span>
                                     </div>
-                                    <p class="text-xs text-gray-600 dark:text-gray-400">{{ $approval->approver?->position ?? $approval->role_label }}</p>
+                                    <p class="text-xs text-gray-600 dark:text-gray-400">{{ format_acronyms($approval->approver?->position ?? $approval->role_label) }}</p>
                                     @if($approval->comment)
                                         <p class="text-sm text-gray-700 dark:text-gray-300 mt-2 italic">"{{ $approval->comment }}"
                                         </p>
@@ -425,7 +425,7 @@
                                 @endif
                             </div>
                             <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $approval->approver?->position ?? $approval->role_label }}</p>
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ format_acronyms($approval->approver?->position ?? $approval->role_label) }}</p>
                                 <p class="text-xs text-gray-500">
                                     {{ $approval->status === 'pending' && $approval->approver_id === auth()->id() ? __('Menunggu Anda') : $approval->status_label }}
                                 </p>

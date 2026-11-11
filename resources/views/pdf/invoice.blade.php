@@ -412,7 +412,7 @@
                     <tr>
                         <td><div class="sig-role-label">{{ __("Pemohon") }}</div></td>
                         @foreach($approvals as $approval)
-                            <td><div class="sig-role-label">{{ $approval->approver?->position ?? $approval->role_label ?? 'Approver' }}</div></td>
+                            <td><div class="sig-role-label">{{ format_acronyms($approval->approver?->position ?? $approval->role_label ?? 'Approver') }}</div></td>
                         @endforeach
                     </tr>
                     <tr>

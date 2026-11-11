@@ -152,7 +152,7 @@ class DocumentApprovalMail extends Mailable
             ->get()
             ->map(fn($approval) => [
                 'name' => $approval->approver->name ?? 'Unknown',
-                'role' => config("workflow.role_labels.{$approval->approver_role}", $approval->approver_role),
+                'role' => format_acronyms($approval->role_label),
                 'approved_at' => $approval->approved_at?->format('d M Y H:i'),
             ])
             ->toArray();
