@@ -50,9 +50,18 @@ jobs:
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.CPANEL_SSH_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.CPANEL_SSH_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
+          echo "" >> ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -p "${{ secrets.CPANEL_PORT }}" "${{ secrets.CPANEL_HOST }}" >> ~/.ssh/known_hosts
+          ssh-keyscan -T 15 -p "${{ secrets.CPANEL_PORT }}" "${{ secrets.CPANEL_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
+          cat << 'EOF' > ~/.ssh/config
+          Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+            ServerAliveInterval 60
+            ServerAliveCountMax 10
+          EOF
+          chmod 600 ~/.ssh/config
 
       # 7. Create Deployment Archive
       - name: Create Deployment Archive
@@ -74,6 +83,8 @@ jobs:
       - name: Upload Archive to cPanel
         run: |
           scp \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
             -i ~/.ssh/id_rsa \
             -P "${{ secrets.CPANEL_PORT }}" \
             /tmp/deploy.tar.gz \
@@ -83,6 +94,8 @@ jobs:
       - name: Deploy on cPanel
         run: |
           ssh \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
             -i ~/.ssh/id_rsa \
             -p "${{ secrets.CPANEL_PORT }}" \
             "${{ secrets.CPANEL_USER }}@${{ secrets.CPANEL_HOST }}" \
