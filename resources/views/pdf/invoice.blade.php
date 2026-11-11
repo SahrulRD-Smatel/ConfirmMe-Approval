@@ -270,7 +270,7 @@
         @include('pdf.partials.company-header', [
             'accentColor' => '#7F1D1D',
             'docNumber' => $invoice->invoice_number,
-            'docDate' => \Carbon\Carbon::parse($invoice->invoice_date)->format('d F Y'),
+            'docDate' => \Carbon\Carbon::parse($invoice->invoice_date)->translatedFormat('d F Y'),
         ])
     </header>
 
@@ -292,11 +292,11 @@
                 <table class="info-table">
                     <tr>
                         <th>Tgl Invoice</th>
-                        <td>: {{ \Carbon\Carbon::parse($invoice->invoice_date)->format('d F Y') }}</td>
+                        <td>: {{ \Carbon\Carbon::parse($invoice->invoice_date)->translatedFormat('d F Y') }}</td>
                     </tr>
                     <tr>
                         <th>Jatuh Tempo</th>
-                        <td>: {{ \Carbon\Carbon::parse($invoice->due_date)->format('d F Y') }}</td>
+                        <td>: {{ \Carbon\Carbon::parse($invoice->due_date)->translatedFormat('d F Y') }}</td>
                     </tr>
                     @if($invoice->purchaseOrder)
                     <tr>

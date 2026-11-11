@@ -10,7 +10,7 @@ class MyLoanController extends Controller
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
-            abort_unless(auth()->user()->hasPermissionTo('menu-my-loans'), 403, 'Anda tidak memiliki akses ke fitur ini.');
+            abort_unless(auth()->user()->can('menu-my-loans'), 403, 'Anda tidak memiliki akses ke fitur ini.');
             return $next($request);
         });
     }

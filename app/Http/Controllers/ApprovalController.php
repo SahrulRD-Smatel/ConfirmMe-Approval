@@ -223,7 +223,7 @@ class ApprovalController extends Controller
     public function bulk(Request $request)
     {
         $user = auth()->user();
-        abort_unless($user->hasPermissionTo('menu-bulk-approval'), 403, 'Anda tidak memiliki akses ke fitur ini.');
+        abort_unless($user->can('menu-bulk-approval'), 403, 'Anda tidak memiliki akses ke fitur ini.');
 
         // Get documents awaiting this user's approval
         $documents = Document::where('current_approver_id', $user->id)
@@ -247,7 +247,7 @@ class ApprovalController extends Controller
     public function bulkProcess(Request $request)
     {
         $user = auth()->user();
-        abort_unless($user->hasPermissionTo('menu-bulk-approval'), 403, 'Anda tidak memiliki akses ke fitur ini.');
+        abort_unless($user->can('menu-bulk-approval'), 403, 'Anda tidak memiliki akses ke fitur ini.');
 
         $validated = $request->validate([
             'document_ids' => 'required|array|min:1',

@@ -60,7 +60,7 @@
                     <div>
                         <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Tanggal Dibuat') }}</dt>
                         <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-                            {{ $document->created_at->format('d M Y H:i') }}
+                            {{ $document->created_at->translatedFormat('d M Y H:i') }} WIB
                         </dd>
                     </div>
                     @if($document->approved_budget)
@@ -143,7 +143,7 @@
                                 </p>
                                 @if($approval->approved_at)
                                     <p class="text-xs text-gray-400 mt-1">
-                                        {{ $approval->approved_at->format('d M Y H:i') }}
+                                        {{ $approval->approved_at->translatedFormat('d M Y H:i') }} WIB
                                     </p>
                                 @endif
                                 @if($approval->notes)

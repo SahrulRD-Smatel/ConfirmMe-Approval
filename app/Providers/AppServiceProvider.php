@@ -21,6 +21,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        \Carbon\Carbon::setLocale(config('app.locale', 'id'));
+
         // Membatasi akses dashboard Pulse di lingkungan Production
         Gate::define('viewPulse', function (User $user) {
             return in_array($user->email, [

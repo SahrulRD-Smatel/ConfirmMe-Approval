@@ -260,7 +260,7 @@
                                 {{ __('Who\'s Off Today') }}
                             </h3>
                             <span
-                                class="text-[11px] font-medium text-gray-400 bg-gray-100 px-2 py-1 rounded-full">{{ now()->format('D, d M') }}</span>
+                                class="text-[11px] font-medium text-gray-400 bg-gray-100 px-2 py-1 rounded-full">{{ now()->translatedFormat('D, d M') }}</span>
                         </div>
                         <div class="space-y-0">
                             @forelse($whosOff as $leave)

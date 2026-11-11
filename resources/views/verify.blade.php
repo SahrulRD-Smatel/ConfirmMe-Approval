@@ -121,7 +121,7 @@
                         </div>
                         <div>
                             <dt class="text-xs text-gray-500">{{ __('Tanggal Pengajuan') }}</dt>
-                            <dd class="mt-1 text-sm font-semibold text-gray-900">{{ $document->created_at->format('d M Y, H:i') }} WIB</dd>
+                            <dd class="mt-1 text-sm font-semibold text-gray-900">{{ $document->created_at->translatedFormat('d M Y, H:i') }} WIB</dd>
                         </div>
                         @if($document->approved_budget)
                             <div class="sm:col-span-2">
@@ -193,7 +193,7 @@
                                 </svg>
                                 <div class="min-w-0">
                                     <p class="text-sm font-semibold text-white">{{ __('Persetujuan final oleh') }} {{ $finalApproval->approver->name ?? __('Presiden Direktur') }}</p>
-                                    <p class="mt-0.5 text-xs text-white/80">{{ $finalApproval->action_at?->format('d F Y, H:i') }} WIB</p>
+                                    <p class="mt-0.5 text-xs text-white/80">{{ $finalApproval->action_at?->translatedFormat('d F Y, H:i') }} WIB</p>
                                 </div>
                             </div>
                         </div>

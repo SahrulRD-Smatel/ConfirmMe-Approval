@@ -46,7 +46,7 @@
                     <div>
                         <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Tanggal Pengajuan') }}</dt>
                         <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-                            {{ $document->submitted_at?->format('d F Y H:i') ?? $document->created_at->format('d F Y H:i') }}
+                            {{ ($document->submitted_at ?? $document->created_at)->translatedFormat('d F Y H:i') }} WIB
                         </dd>
                     </div>
                     @if((float) $document->estimated_budget > 0)
@@ -142,7 +142,7 @@
                                             {{ $approval->approver->name }}
                                         </p>
                                         <span
-                                            class="text-xs text-gray-500">{{ $approval->action_at?->format('d M Y H:i') }}</span>
+                                            class="text-xs text-gray-500">{{ $approval->action_at ? $approval->action_at->translatedFormat('d M Y H:i') . ' WIB' : '' }}</span>
                                     </div>
                                     <p class="text-xs text-gray-600 dark:text-gray-400">{{ format_acronyms($approval->approver?->position ?? $approval->role_label) }}</p>
                                     @if($approval->comment)

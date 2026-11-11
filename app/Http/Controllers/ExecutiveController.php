@@ -19,7 +19,7 @@ class ExecutiveController extends Controller
     {
         $this->workflowService = $workflowService;
         $this->middleware(function ($request, $next) {
-            abort_unless(auth()->user()->hasPermissionTo('menu-executive-dashboard'), 403, 'Akses ditolak.');
+            abort_unless(auth()->user()->can('menu-executive-dashboard'), 403, 'Akses ditolak.');
             return $next($request);
         });
     }

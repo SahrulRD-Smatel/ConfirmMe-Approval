@@ -111,7 +111,7 @@
                             </div>
                             <p class="text-sm text-gray-800 font-medium whitespace-pre-wrap">{{ $document->revision_notes }}</p>
                             @if($document->revision_requested_at)
-                                <p class="text-xs text-gray-400 mt-2">{{ $document->revision_requested_at->format('d F Y, H:i') }}</p>
+                                <p class="text-xs text-gray-400 mt-2">{{ $document->revision_requested_at->translatedFormat('d F Y, H:i') }} WIB</p>
                             @endif
                         </div>
                     @endif
@@ -208,7 +208,7 @@
                     <div>
                         <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Tanggal Dibuat') }}</dt>
                         <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-                            {{ $document->created_at->format('d F Y H:i') }}
+                            {{ $document->created_at->translatedFormat('d F Y H:i') }} WIB
                         </dd>
                     </div>
                     @if((float) $document->estimated_budget > 0)
@@ -386,7 +386,7 @@
                                 <p class="text-sm font-medium text-gray-900 dark:text-white">{{ format_acronyms($approval->approver?->position ?? $approval->role_label) }}</p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">{{ $approval->approver->name }}</p>
                                 @if($approval->action_at)
-                                    <p class="text-xs text-gray-400 mt-1">{{ $approval->action_at->format('d M Y H:i') }}</p>
+                                    <p class="text-xs text-gray-400 mt-1">{{ $approval->action_at->translatedFormat('d M Y H:i') }} WIB</p>
                                 @endif
                                 @if($approval->comment)
                                     <p class="text-xs text-gray-600 dark:text-gray-400 mt-1 italic">"{{ $approval->comment }}"

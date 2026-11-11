@@ -14,7 +14,7 @@ class DocumentPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasPermissionTo('view-document');
+        return $user->can('view-document');
     }
 
     /**
@@ -23,7 +23,7 @@ class DocumentPolicy
     public function view(User $user, Document $document): Response|bool
     {
         // Check if user has view permission
-        if (!$user->hasPermissionTo('view-document')) {
+        if (!$user->can('view-document')) {
             Log::warning('DocumentPolicy::view denied - missing view-document permission', [
                 'user_id' => $user->id,
                 'user_roles' => $user->getRoleNames()->toArray(),
@@ -153,7 +153,7 @@ class DocumentPolicy
     public function submit(User $user, Document $document): bool
     {
         // Check if user has submit permission
-        if (!$user->hasPermissionTo('submit-document')) {
+        if (!$user->can('submit-document')) {
             return false;
         }
 
@@ -172,7 +172,7 @@ class DocumentPolicy
     public function approve(User $user, Document $document): Response|bool
     {
         // Check if user has approve permission
-        if (!$user->hasPermissionTo('approve-document')) {
+        if (!$user->can('approve-document')) {
             Log::warning('DocumentPolicy::approve denied - missing approve-document permission', [
                 'user_id' => $user->id,
                 'user_roles' => $user->getRoleNames()->toArray(),
@@ -207,7 +207,7 @@ class DocumentPolicy
     public function reject(User $user, Document $document): bool
     {
         // Check if user has reject permission
-        if (!$user->hasPermissionTo('reject-document')) {
+        if (!$user->can('reject-document')) {
             return false;
         }
 
@@ -221,7 +221,7 @@ class DocumentPolicy
     public function print(User $user, Document $document): bool
     {
         // Check if user has print permission
-        if (!$user->hasPermissionTo('print-document')) {
+        if (!$user->can('print-document')) {
             return false;
         }
 
@@ -239,7 +239,7 @@ class DocumentPolicy
      */
     public function restore(User $user, Document $document): bool
     {
-        return $user->hasPermissionTo('view-audit-log');
+        return $user->can('view-audit-log');
     }
 
     /**

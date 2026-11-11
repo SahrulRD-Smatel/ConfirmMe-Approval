@@ -258,7 +258,7 @@
         @include('pdf.partials.company-header', [
             'accentColor' => '#7F1D1D',
             'docNumber' => $po->po_number,
-            'docDate' => \Carbon\Carbon::parse($po->order_date)->format('d F Y'),
+            'docDate' => \Carbon\Carbon::parse($po->order_date)->translatedFormat('d F Y'),
         ])
     </header>
 
@@ -282,11 +282,11 @@
                 <table class="info-table">
                     <tr>
                         <th>Tgl Order</th>
-                        <td>: {{ \Carbon\Carbon::parse($po->order_date)->format('d F Y') }}</td>
+                        <td>: {{ \Carbon\Carbon::parse($po->order_date)->translatedFormat('d F Y') }}</td>
                     </tr>
                     <tr>
                         <th>Estimasi Kirim</th>
-                        <td>: {{ $po->expected_delivery_date ? \Carbon\Carbon::parse($po->expected_delivery_date)->format('d F Y') : '-' }}</td>
+                        <td>: {{ $po->expected_delivery_date ? \Carbon\Carbon::parse($po->expected_delivery_date)->translatedFormat('d F Y') : '-' }}</td>
                     </tr>
                     <tr>
                         <th>Referensi Dokumen</th>

@@ -315,7 +315,7 @@ class AttendanceController extends Controller
     public function locations()
     {
         $user = auth()->user();
-        abort_unless($user->hasPermissionTo('menu-office-locations'), 403, 'Anda tidak memiliki akses ke fitur ini.');
+        abort_unless($user->can('menu-office-locations'), 403, 'Anda tidak memiliki akses ke fitur ini.');
 
         $locations = OfficeLocation::orderBy('name')->get();
 
@@ -328,7 +328,7 @@ class AttendanceController extends Controller
     public function storeLocation(Request $request)
     {
         $user = auth()->user();
-        abort_unless($user->hasPermissionTo('menu-office-locations'), 403, 'Anda tidak memiliki akses ke fitur ini.');
+        abort_unless($user->can('menu-office-locations'), 403, 'Anda tidak memiliki akses ke fitur ini.');
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -349,7 +349,7 @@ class AttendanceController extends Controller
     public function exportPdf(Request $request)
     {
         $user = auth()->user();
-        if (!$user->hasPermissionTo('view-attendance')) {
+        if (!$user->can('view-attendance')) {
             abort(403, 'Anda tidak memiliki akses untuk export laporan absensi.');
         }
 
@@ -390,7 +390,7 @@ class AttendanceController extends Controller
     public function exportCsv(Request $request)
     {
         $user = auth()->user();
-        if (!$user->hasPermissionTo('view-attendance')) {
+        if (!$user->can('view-attendance')) {
             abort(403, 'Anda tidak memiliki akses untuk export laporan absensi.');
         }
 
@@ -464,7 +464,7 @@ class AttendanceController extends Controller
     public function exportXlsx(Request $request)
     {
         $user = auth()->user();
-        if (!$user->hasPermissionTo('view-attendance')) {
+        if (!$user->can('view-attendance')) {
             abort(403, 'Anda tidak memiliki akses untuk export laporan absensi.');
         }
 
@@ -518,7 +518,7 @@ class AttendanceController extends Controller
     public function importData(Request $request)
     {
         $user = auth()->user();
-        if (!$user->hasPermissionTo('manage-attendance')) {
+        if (!$user->can('manage-attendance')) {
             abort(403, 'Anda tidak memiliki akses untuk import data absensi.');
         }
 
@@ -761,7 +761,7 @@ class AttendanceController extends Controller
     public function downloadImportTemplate()
     {
         $user = auth()->user();
-        if (!$user->hasPermissionTo('manage-attendance')) {
+        if (!$user->can('manage-attendance')) {
             abort(403);
         }
 

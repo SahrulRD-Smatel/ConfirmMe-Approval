@@ -525,7 +525,7 @@
                         <tr>
                             <td class="meta-label">Tanggal</td>
                             <td class="meta-colon">:</td>
-                            <td class="meta-value-line">{{ $document->created_at ? $document->created_at->format('d F Y') : now()->format('d F Y') }}</td>
+                            <td class="meta-value-line">{{ $document->created_at ? $document->created_at->translatedFormat('d F Y') : now()->translatedFormat('d F Y') }}</td>
                         </tr>
                         <tr>
                             <td class="meta-label">Dept/Divisi</td>
@@ -565,7 +565,7 @@
                                 <td class="meta-label">Perkiraan Tgl Penerimaan</td>
                                 <td class="meta-colon">:</td>
                                 <td class="meta-value-line">
-                                    {{ (is_string($tglTerima) && strtotime($tglTerima)) ? \Carbon\Carbon::parse($tglTerima)->format('d F Y') : $tglTerima }}
+                                    {{ (is_string($tglTerima) && strtotime($tglTerima)) ? \Carbon\Carbon::parse($tglTerima)->translatedFormat('d F Y') : $tglTerima }}
                                 </td>
                             </tr>
                         @endif
@@ -938,7 +938,7 @@
             @include('pdf.partials.company-header', [
                 'accentColor' => '#7F1D1D',
                 'docNumber' => $document->document_number,
-                'docDate' => $document->created_at ? $document->created_at->format('d F Y') : now()->format('d F Y'),
+                'docDate' => $document->created_at ? $document->created_at->translatedFormat('d F Y') : now()->translatedFormat('d F Y'),
             ])
         </header>
 
@@ -1125,7 +1125,7 @@
                 <table style="width: 100%; border-collapse: collapse; margin-bottom: 6px;">
                     <tr>
                         <td style="text-align: right; font-size: 11px; padding-bottom: 4px;">
-                            Jakarta, {{ $docDate->format('d F Y') }}
+                            Jakarta, {{ $docDate->translatedFormat('d F Y') }}
                         </td>
                     </tr>
                     <tr>

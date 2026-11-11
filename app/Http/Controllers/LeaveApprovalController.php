@@ -224,7 +224,7 @@ class LeaveApprovalController extends Controller
     private function applyRoleBasedFilter($query, User $user): void
     {
         // Global viewers (Admin, etc)
-        if ($user->hasPermissionTo('view-all-documents')) {
+        if ($user->can('view-all-documents')) {
             // Can see all pending
             return;
         }

@@ -20,16 +20,21 @@ class LocalizationMiddleware
         // When language switcher feature is disabled, lock entire application to Indonesian
         if (!feature_active('feature_language_switch')) {
             App::setLocale('id');
+            \Carbon\Carbon::setLocale('id');
             return $next($request);
         }
 
         if (Auth::check()) {
             $locale = Auth::user()->locale ?? 'id';
             App::setLocale($locale);
+            \Carbon\Carbon::setLocale($locale);
         } else if ($request->session()->has('locale')) {
-            App::setLocale($request->session()->get('locale'));
+            $locale = $request->session()->get('locale');
+            App::setLocale($locale);
+            \Carbon\Carbon::setLocale($locale);
         } else {
             App::setLocale('id'); // Default
+            \Carbon\Carbon::setLocale('id');
         }
 
         return $next($request);

@@ -14,7 +14,7 @@
 @php
     $headerAccent = $accentColor ?? '#7F1D1D';
     $revision = $docRevision ?? '01';
-    $docDateFormatted = $docDate ?? now()->format('d F Y');
+    $docDateFormatted = $docDate ?? now()->translatedFormat('d F Y');
 @endphp
 
 <div class="company-header">

@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -10,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (DB::table('system_features')->where('key', 'feature_language_switch')->doesntExist()) {
+        if (Schema::hasTable('system_features') && DB::table('system_features')->where('key', 'feature_language_switch')->doesntExist()) {
             DB::table('system_features')->insert([
                 'key' => 'feature_language_switch',
                 'name' => 'Multi-Language / Ganti Bahasa',
@@ -27,6 +28,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::table('system_features')->where('key', 'feature_language_switch')->delete();
+        if (Schema::hasTable('system_features')) {
+            DB::table('system_features')->where('key', 'feature_language_switch')->delete();
+        }
     }
 };
+

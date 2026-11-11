@@ -16,7 +16,7 @@ class AnnouncementController extends Controller
     private function authorizeAnnouncementAccess(): void
     {
         $user = auth()->user();
-        abort_unless($user->hasPermissionTo('menu-announcements'), 403, 'Anda tidak memiliki akses untuk mengelola pengumuman.');
+        abort_unless($user->can('menu-announcements'), 403, 'Anda tidak memiliki akses untuk mengelola pengumuman.');
     }
 
     /**
