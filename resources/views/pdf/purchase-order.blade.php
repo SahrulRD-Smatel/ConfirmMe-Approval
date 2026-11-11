@@ -444,8 +444,8 @@
                     </td>
                     <td style="width: 25%; text-align: center;">
                         @if(isset($qrCode))
-                            <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code" style="width: 60px; height: 60px;">
-                            <div style="font-size: 7px; color: #888; margin-top: 3px;">Scan untuk verifikasi</div>
+                            <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code" style="width: 75px; height: 75px; display: block; margin: 0 auto;">
+                            <div style="font-size: 7.5px; font-weight: bold; color: #475569; margin-top: 3px;">Scan untuk verifikasi</div>
                         @endif
                     </td>
                 </tr>

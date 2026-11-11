@@ -231,40 +231,61 @@
             }
 
             .signature-table {
-                width: 100%;
                 border-collapse: collapse;
+                margin-left: auto;
+                margin-right: auto;
             }
 
             .signature-table td {
                 text-align: center;
                 vertical-align: top;
-                padding: 4px 6px;
+                padding: 3px 6px;
             }
 
             .sig-role-label {
                 font-size: 10px;
                 font-weight: bold;
-                color: #333;
-                margin-bottom: 6px;
+                color: #1f2937;
+                margin-bottom: 4px;
+                min-height: 14px;
+                line-height: 1.25;
             }
 
             .sig-qr-box {
-                width: 60px;
-                height: 60px;
-                margin: 4px auto;
+                width: 78px;
+                height: 78px;
+                margin: 2px auto 1px auto;
                 display: block;
             }
 
             .sig-qr-box img {
-                width: 60px;
-                height: 60px;
+                width: 78px;
+                height: 78px;
+                display: block;
+            }
+
+            .sig-status-signed {
+                font-size: 8px;
+                color: #059669;
+                font-weight: bold;
+                margin-top: 2px;
+                letter-spacing: 0.3px;
+            }
+
+            .sig-status-approved {
+                font-size: 9px;
+                font-weight: bold;
+                color: #059669;
+                height: 78px;
+                line-height: 78px;
             }
 
             .sig-pending-box {
-                width: 60px;
-                height: 60px;
-                margin: 4px auto;
-                border: 1px dashed #ccc;
+                width: 78px;
+                height: 78px;
+                margin: 2px auto;
+                border: 1px dashed #cbd5e1;
+                background-color: #f8fafc;
                 display: table;
             }
 
@@ -273,35 +294,39 @@
                 vertical-align: middle;
                 text-align: center;
                 font-size: 8px;
-                color: #aaa;
+                color: #94a3b8;
             }
 
             .sig-name {
-                font-size: 10px;
+                font-size: 9.5px;
                 font-weight: bold;
-                color: #1a1a1a;
+                color: #111827;
                 display: block;
-                margin-bottom: 2px;
+                margin-top: 4px;
+                margin-bottom: 1px;
+                line-height: 1.25;
             }
 
             .sig-nip {
                 font-size: 8px;
-                color: #555;
+                color: #4b5563;
+                margin-top: 1px;
             }
 
             .sig-date {
                 font-size: 8px;
-                color: #6b7280;
+                color: #64748b;
+                display: block;
                 margin-top: 2px;
             }
 
             .verification-footer {
-                margin-top: 18px;
-                padding: 8px 10px;
+                margin-top: 16px;
+                padding: 8px 12px;
                 background-color: #f8fafc;
-                border: 1px solid #e2e8f0;
-                font-size: 8px;
-                color: #555;
+                border: 1px solid #cbd5e1;
+                font-size: 8.5px;
+                color: #475569;
                 page-break-inside: avoid;
             }
 
@@ -839,26 +864,14 @@
                             <tr><td class="sig-card-footer">{{ format_acronyms($disetujuiApproval?->approver?->name ?? '-') }}</td></tr>
                         </table>
                     </td>
-                    <td class="sig-box-cell" style="width: 25%;">
-                        <table class="sig-card">
-                            <tr><td class="sig-card-header">Mengetahui</td></tr>
-                            <tr>
-                                <td class="sig-card-body">
-                                    @if($mengetahuiUser && $document->status === 'completed' && $verificationUrl)
-                                        <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 44px; height: 44px; display: inline-block;" />
-                                    @endif
-                                </td>
-                            </tr>
-                            <tr><td class="sig-card-footer">{{ format_acronyms($mengetahuiUser->name ?? '-') }}</td></tr>
-                        </table>
-                    </td>
+                    
                     <td class="sig-box-cell" style="width: 25%;">
                         <table class="sig-card">
                             <tr><td class="sig-card-header">Bagian Keuangan</td></tr>
                             <tr>
                                 <td class="sig-card-body">
                                     @if($financeApproval && $financeApproval->status === 'approved' && $verificationUrl)
-                                        <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 44px; height: 44px; display: inline-block;" />
+                                        <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 65px; height: 65px; display: inline-block;" />
                                     @else
                                         <span style="color: #aaa; font-size: 8px;">Pending</span>
                                     @endif
@@ -867,6 +880,21 @@
                             <tr><td class="sig-card-footer">{{ format_acronyms($financeUser->name ?? '-') }}</td></tr>
                         </table>
                     </td>
+
+                    <td class="sig-box-cell" style="width: 25%;">
+                        <table class="sig-card">
+                            <tr><td class="sig-card-header">Mengetahui</td></tr>
+                            <tr>
+                                <td class="sig-card-body">
+                                    @if($mengetahuiUser && $document->status === 'completed' && $verificationUrl)
+                                        <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 65px; height: 65px; display: inline-block;" />
+                                    @endif
+                                </td>
+                            </tr>
+                            <tr><td class="sig-card-footer">{{ format_acronyms($mengetahuiUser->name ?? '-') }}</td></tr>
+                        </table>
+                    </td>
+                    
                 </tr>
             </table>
         @else
@@ -883,7 +911,7 @@
                             <tr>
                                 <td class="sig-card-body">
                                     @if($verificationUrl)
-                                        <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 44px; height: 44px; display: inline-block;" />
+                                        <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 65px; height: 65px; display: inline-block;" />
                                     @endif
                                 </td>
                             </tr>
@@ -901,7 +929,7 @@
                                 <tr>
                                     <td class="sig-card-body">
                                         @if($approval->status === 'approved' && $verificationUrl)
-                                            <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 44px; height: 44px; display: inline-block;" />
+                                            <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 65px; height: 65px; display: inline-block;" />
                                         @else
                                             <span style="color: #aaa; font-size: 8px;">{{ ucfirst($approval->status ?? 'pending') }}</span>
                                         @endif
@@ -918,7 +946,23 @@
         @endif
 
         <div class="verification-footer">
-            <strong>Catatan Verifikasi:</strong> Dokumen ini diterbitkan secara elektronik oleh ConfirmMe - PT Info Solusindo Data Utama. Scan QR Code untuk memverifikasi keabsahan dokumen. Hash: {{ substr($document->approval_hash ?? 'N/A', 0, 32) }}...
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <td style="width: 80%; padding-right: 15px; vertical-align: middle; line-height: 1.4;">
+                        <strong style="color: #0f172a; font-size: 9px;">Catatan Verifikasi:</strong><br>
+                        Dokumen ini diterbitkan secara elektronik oleh ConfirmMe - PT Info Solusindo Data Utama. Scan QR Code di samping untuk memverifikasi keabsahan dokumen.<br>
+                        <span style="color: #334155; font-size: 8px;"><strong>ID Dokumen:</strong> {{ $document->document_number }} | <strong>Hash:</strong> {{ substr($document->approval_hash ?? 'N/A', 0, 32) }}...</span>
+                    </td>
+                    <td style="width: 20%; text-align: center; vertical-align: middle;">
+                        @if(isset($qrCode))
+                            <div style="display: inline-block; text-align: center;">
+                                <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code" style="width: 68px; height: 68px; display: block; margin: 0 auto;">
+                                <div style="font-size: 7.5px; font-weight: bold; color: #475569; margin-top: 2px;">Scan verifikasi</div>
+                            </div>
+                        @endif
+                    </td>
+                </tr>
+            </table>
         </div>
 
     @else
@@ -1135,97 +1179,118 @@
                     </tr>
                 </table>
 
-                <table class="signature-table">
-                    <tr>
-                        <td style="width: {{ round(100 / (1 + max(count($approvals), 1)), 2) }}%;">
-                            <div class="sig-role-label">{{ __('Pemohon') }}</div>
-                        </td>
-                        @foreach($approvals as $approval)
-                            <td style="width: {{ round(100 / (1 + max(count($approvals), 1)), 2) }}%;">
-                                <div class="sig-role-label">{{ format_acronyms($approval->approver?->position ?? ($approval->role_label ?? 'Approver')) }}</div>
-                            </td>
-                        @endforeach
-                    </tr>
+                @php
+                    $allSigners = collect();
 
-                    <tr>
-                        <td>
-                            @if($verificationUrl)
-                                <div class="sig-qr-box">
-                                    <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR">
-                                </div>
-                                <div style="font-size: 7.5px; color: #059669; font-weight: bold; margin-top: 1px;">Signed</div>
-                            @else
-                                <div class="sig-pending-box"><span>-</span></div>
-                            @endif
-                        </td>
-                        @foreach($approvals as $approval)
-                            <td>
-                                @if($approval->status === 'approved' && $verificationUrl)
-                                    <div class="sig-qr-box">
-                                        <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR">
-                                    </div>
-                                    <div style="font-size: 7.5px; color: #059669; font-weight: bold; margin-top: 1px;">Signed</div>
-                                @elseif($approval->status === 'approved')
-                                    <div style="font-size: 8.5px; font-weight: bold; color: #059669; height: 60px; line-height: 60px;">APPROVED</div>
-                                @else
-                                    <div class="sig-pending-box"><span>Pending</span></div>
-                                @endif
-                            </td>
-                        @endforeach
-                    </tr>
+                    // 1. Pemohon (Always first in document workflow)
+                    $allSigners->push([
+                        'role' => __('Pemohon'),
+                        'name' => format_acronyms($pemohon->name ?? 'Pemohon'),
+                        'nip' => $pemohon->employee_id ?? null,
+                        'is_signed' => (bool)$verificationUrl,
+                        'signed_label' => 'Signed',
+                        'signed_date' => $document->submitted_at ? $document->submitted_at->format('d/m/Y H:i') . ' WIB' : ($document->created_at ? $document->created_at->format('d/m/Y H:i') . ' WIB' : ''),
+                        'status' => 'approved',
+                    ]);
 
-                    <tr>
-                        <td>
-                            <div class="sig-name">( {{ format_acronyms($pemohon->name ?? 'Pemohon') }} )</div>
-                            @if($pemohon && $pemohon->employee_id)
-                                <div class="sig-nip">NIP. {{ $pemohon->employee_id }}</div>
-                            @endif
-                        </td>
-                        @foreach($approvals as $approval)
-                            <td>
-                                @if($approval->approver)
-                                    <div class="sig-name">( {{ format_acronyms($approval->approver->name) }} )</div>
-                                    @if($approval->approver->employee_id)
-                                        <div class="sig-nip">NIP. {{ $approval->approver->employee_id }}</div>
+                    // 2. Approvers in sequential workflow order
+                    foreach ($approvals as $approval) {
+                        $allSigners->push([
+                            'role' => format_acronyms($approval->approver?->position ?? ($approval->role_label ?? 'Approver')),
+                            'name' => $approval->approver ? format_acronyms($approval->approver->name) : '-',
+                            'nip' => $approval->approver?->employee_id ?? null,
+                            'is_signed' => $approval->status === 'approved' && $verificationUrl,
+                            'signed_label' => $approval->status === 'approved' ? 'Signed' : ucfirst($approval->status ?? 'pending'),
+                            'signed_date' => $approval->action_at ? $approval->action_at->format('d/m/Y H:i') . ' WIB' : '-',
+                            'status' => $approval->status,
+                        ]);
+                    }
+
+                    // Chunk into maximum 3 barcodes per row for large scannable display
+                    $signerChunks = $allSigners->chunk(3);
+                @endphp
+
+                @foreach($signerChunks as $chunkIndex => $chunk)
+                    @php
+                        $countInChunk = $chunk->count();
+                        if ($signerChunks->count() === 1) {
+                            $tableWidth = $countInChunk === 1 ? '38%' : ($countInChunk === 2 ? '70%' : '100%');
+                        } else {
+                            $tableWidth = $countInChunk === 3 ? '100%' : ($countInChunk === 2 ? '66.66%' : '33.33%');
+                        }
+                        $cellWidth = round(100 / $countInChunk, 2) . '%';
+                    @endphp
+
+                    <table class="signature-table" align="center" style="width: {{ $tableWidth }}; margin: {{ $chunkIndex > 0 ? '14px' : '0' }} auto 0 auto;">
+                        {{-- Row 1: Role Label --}}
+                        <tr>
+                            @foreach($chunk as $signer)
+                                <td style="width: {{ $cellWidth }};">
+                                    <div class="sig-role-label">{{ $signer['role'] }}</div>
+                                </td>
+                            @endforeach
+                        </tr>
+
+                        {{-- Row 2: QR Code / Signature Status --}}
+                        <tr>
+                            @foreach($chunk as $signer)
+                                <td>
+                                    @if($signer['is_signed'])
+                                        <div class="sig-qr-box">
+                                            <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code">
+                                        </div>
+                                        <div class="sig-status-signed">{{ $signer['signed_label'] }}</div>
+                                    @elseif($signer['status'] === 'approved')
+                                        <div class="sig-status-approved">APPROVED</div>
+                                    @else
+                                        <div class="sig-pending-box">
+                                            <span>{{ $signer['signed_label'] }}</span>
+                                        </div>
                                     @endif
-                                @else
-                                    <div class="sig-name">( - )</div>
-                                @endif
-                            </td>
-                        @endforeach
-                    </tr>
+                                </td>
+                            @endforeach
+                        </tr>
 
-                    <tr>
-                        <td>
-                            <span class="sig-date">
-                                {{ $document->submitted_at ? $document->submitted_at->format('d/m/Y H:i') . ' WIB' : ($document->created_at ? $document->created_at->format('d/m/Y H:i') . ' WIB' : '') }}
-                            </span>
-                        </td>
-                        @foreach($approvals as $approval)
-                            <td>
-                                <span class="sig-date">
-                                    {{ $approval->action_at ? $approval->action_at->format('d/m/Y H:i') . ' WIB' : '-' }}
-                                </span>
-                            </td>
-                        @endforeach
-                    </tr>
-                </table>
+                        {{-- Row 3: Name & NIP --}}
+                        <tr>
+                            @foreach($chunk as $signer)
+                                <td>
+                                    <div class="sig-name">( {{ $signer['name'] }} )</div>
+                                    @if(!empty($signer['nip']))
+                                        <div class="sig-nip">NIP. {{ $signer['nip'] }}</div>
+                                    @endif
+                                </td>
+                            @endforeach
+                        </tr>
+
+                        {{-- Row 4: Timestamp --}}
+                        <tr>
+                            @foreach($chunk as $signer)
+                                <td>
+                                    <span class="sig-date">{{ $signer['signed_date'] }}</span>
+                                </td>
+                            @endforeach
+                        </tr>
+                    </table>
+                @endforeach
             </div>
 
             <!-- Verification Footer -->
             <div class="verification-footer">
                 <table>
                     <tr>
-                        <td style="width: 78%; padding-right: 15px;">
-                            <strong>{{ __("Catatan Verifikasi") }}:</strong><br>
+                        <td style="width: 74%; padding-right: 15px; vertical-align: middle; line-height: 1.45;">
+                            <strong style="color: #0f172a; font-size: 9px;">{{ __("Catatan Verifikasi") }}:</strong><br>
                             {{ __("Dokumen ini diterbitkan secara elektronik oleh sistem ConfirmMe - PT Info Solusindo Data Utama.") }}
-                            {{ __("Scan QR Code di atas untuk memverifikasi keaslian dokumen.") }}<br>
-                            <strong>ID Dokumen:</strong> {{ $document->document_number }} | <strong>Hash:</strong> {{ substr($document->approval_hash ?? 'N/A', 0, 32) }}...
+                            {{ __("Scan QR Code di samping untuk memverifikasi keaslian dokumen.") }}<br>
+                            <span style="color: #1e293b; font-size: 8px;"><strong>ID Dokumen:</strong> {{ $document->document_number }} | <strong>Hash:</strong> {{ substr($document->approval_hash ?? 'N/A', 0, 32) }}...</span>
                         </td>
-                        <td style="width: 22%; text-align: center;">
+                        <td style="width: 26%; text-align: center; vertical-align: middle;">
                             @if(isset($qrCode))
-                                <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code" style="width: 50px; height: 50px;">
-                                <div style="font-size: 7px; color: #888; margin-top: 2px;">{{ __("Scan untuk verifikasi") }}</div>
+                                <div style="display: inline-block; text-align: center;">
+                                    <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code" style="width: 78px; height: 78px; display: block; margin: 0 auto;">
+                                    <div style="font-size: 7.5px; font-weight: bold; color: #475569; margin-top: 3px;">{{ __("Scan untuk verifikasi") }}</div>
+                                </div>
                             @endif
                         </td>
                     </tr>

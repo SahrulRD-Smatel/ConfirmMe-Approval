@@ -344,7 +344,7 @@ class InvoiceController extends Controller
         $invoice->load(['document', 'purchaseOrder']);
 
         $verifyUrl = route('verify.show', $invoice->approval_hash ?? $invoice->document->approval_hash ?? 'invalid');
-        $qrCode = base64_encode(QrCode::format('svg')->size(80)->generate($verifyUrl));
+        $qrCode = base64_encode(QrCode::format('svg')->size(150)->margin(1)->generate($verifyUrl));
 
         // Force Indonesian locale for PDF
         app()->setLocale('id');

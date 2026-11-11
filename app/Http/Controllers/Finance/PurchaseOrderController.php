@@ -301,7 +301,7 @@ class PurchaseOrderController extends Controller
         $po->load(['document', 'items']);
 
         $verifyUrl = route('verify.show', $po->approval_hash ?? $po->document->approval_hash ?? 'invalid');
-        $qrCode = base64_encode(QrCode::format('svg')->size(80)->generate($verifyUrl));
+        $qrCode = base64_encode(QrCode::format('svg')->size(150)->margin(1)->generate($verifyUrl));
 
         // Force Indonesian locale for PDF
         app()->setLocale('id');
