@@ -28,12 +28,12 @@ class ArchiveController extends Controller
                         });
 
                     // Department documents
-                    if ($user->hasPermissionTo('view-department-documents')) {
+                    if ($user->can('view-department-documents')) {
                         $query->orWhere('department', $user->department);
                     }
 
                     // Finance documents
-                    if ($user->hasPermissionTo('view-finance-documents')) {
+                    if ($user->can('view-finance-documents')) {
                         $query->orWhereIn('approval_type', ['po', 'invoice']);
                     }
                 });

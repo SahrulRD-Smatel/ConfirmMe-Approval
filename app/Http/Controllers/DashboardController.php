@@ -11,17 +11,7 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
-        // Finance role uses integrated finance dashboard
-        if (($user->can('manage-budget') || $user->can('view-finance-documents')) && feature_active('module_finance')) {
-            return redirect()->route('finance.dashboard');
-        }
-
-        // Executive dashboard
-        if ($user->hasRole('presiden_direktur')) {
-            return redirect()->route('executive.dashboard');
-        }
-
-        // System Administrator dashboard
+        // 1. System Administrator dashboard (Admin selalu prioritas ke Admin Dashboard)
         if ($user->hasRole('admin')) {
             $adminStats = [
                 'total_users' => \App\Models\User::count(),
@@ -42,7 +32,7 @@ class DashboardController extends Controller
             // Role Distribution
             $roles = \Spatie\Permission\Models\Role::withCount('users')->get();
             $roleDistribution = [
-                'labels' => $roles->pluck('name')->map(fn($name) => ucwords(str_replace('_', ' ', $name)))->toArray(),
+                'labels' => $roles->pluck('name')->map(fn($name) => role_label($name))->toArray(),
                 'data' => $roles->pluck('users_count')->toArray(),
             ];
 
@@ -60,6 +50,16 @@ class DashboardController extends Controller
             ];
 
             return view('admin.dashboard', compact('adminStats', 'todayLogs', 'yesterdayLogs', 'recentUsers', 'roleDistribution', 'trafficChart'));
+        }
+
+        // 2. Executive dashboard (Presiden Direktur)
+        if ($user->hasRole('presiden_direktur') || $user->can('menu-executive-dashboard')) {
+            return redirect()->route('executive.dashboard');
+        }
+
+        // 3. Finance Dedicated Dashboard (Hanya untuk pengelola modul Finance, BUKAN untuk sekadar view-finance-documents)
+        if (feature_active('module_finance') && ($user->hasRole('finance') || $user->can('manage-budget'))) {
+            return redirect()->route('finance.dashboard');
         }
 
         // Base stats query based on role

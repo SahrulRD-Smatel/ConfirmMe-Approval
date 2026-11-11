@@ -15,11 +15,11 @@ class ReportController extends Controller
     {
         $query = Document::query();
 
-        if ($user->hasPermissionTo('view-all-documents')) {
+        if ($user->can('view-all-documents')) {
             return $query;
         }
 
-        if ($user->hasPermissionTo('view-finance-documents')) {
+        if ($user->can('view-finance-documents')) {
             $query->where(function ($q) use ($user) {
                 $q->whereIn('approval_type', ['po', 'po_internal', 'invoice'])
                   ->orWhere('user_id', $user->id)
@@ -30,7 +30,7 @@ class ReportController extends Controller
             return $query;
         }
 
-        if ($user->hasPermissionTo('view-department-documents')) {
+        if ($user->can('view-department-documents')) {
             $query->where(function ($q) use ($user) {
                 $q->where('department', $user->department)
                   ->orWhere('user_id', $user->id)

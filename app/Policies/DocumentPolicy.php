@@ -43,17 +43,17 @@ class DocumentPolicy
         }
 
         // Global view access (Admin, HRD, Directors)
-        if ($user->hasPermissionTo('view-all-documents')) {
+        if ($user->can('view-all-documents')) {
             return true;
         }
 
         // Department-level view access (Manager, Supervisor)
-        if ($user->hasPermissionTo('view-department-documents') && $user->department === $document->department) {
+        if ($user->can('view-department-documents') && $user->department === $document->department) {
             return true;
         }
 
         // Finance-specific view access
-        if ($user->hasPermissionTo('view-finance-documents')) {
+        if ($user->can('view-finance-documents')) {
             if (in_array($document->approval_type, ['po', 'invoice'])) {
                 return true;
             }
@@ -63,7 +63,7 @@ class DocumentPolicy
         }
 
         // Feature-specific access (Purchasing)
-        if ($user->hasPermissionTo('manage-purchasing') && $document->approval_type === 'po') {
+        if ($user->can('manage-purchasing') && $document->approval_type === 'po') {
             return true;
         }
 

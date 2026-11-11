@@ -28,7 +28,7 @@ class SearchController extends Controller
         });
 
         // Permission-based scoping
-        if (!$user->hasPermissionTo('view-all-documents')) {
+        if (!$user->can('view-all-documents')) {
             $documentsQuery->where(function ($q) use ($user) {
                 // Own documents
                 $q->where('user_id', $user->id)
@@ -38,18 +38,18 @@ class SearchController extends Controller
                   });
 
                 // Department documents
-                if ($user->hasPermissionTo('view-department-documents')) {
+                if ($user->can('view-department-documents')) {
                     $q->orWhere('department', $user->department);
                 }
 
                 // Finance documents
-                if ($user->hasPermissionTo('view-finance-documents')) {
+                if ($user->can('view-finance-documents')) {
                     $q->orWhereIn('approval_type', ['po', 'invoice'])
                       ->orWhereIn('status', ['finance_review', 'waiting_disbursement', 'paid']);
                 }
                 
                 // Purchasing documents
-                if ($user->hasPermissionTo('manage-purchasing')) {
+                if ($user->can('manage-purchasing')) {
                     $q->orWhere('approval_type', 'po');
                 }
             });

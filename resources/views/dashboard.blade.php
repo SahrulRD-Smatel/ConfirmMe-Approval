@@ -212,7 +212,7 @@
                             </a>
 
                             {{-- Modul Keuangan (If Finance module active & user permitted) --}}
-                            @if(feature_active('module_finance') && auth()->user()->canAny(['manage-budget', 'view-finance-documents', 'create-po', 'create-invoice', 'manage-purchasing']))
+                            @if(feature_active('module_finance') && auth()->user()->canAny(['manage-budget', 'create-po', 'create-invoice', 'manage-purchasing']))
                             <a href="{{ route('finance.dashboard') }}" class="quick-link-card group dark:hover:bg-gray-700/50">
                                 <div class="icon-wrap bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 group-hover:bg-primary-50 group-hover:text-primary-700 dark:group-hover:bg-primary-950/60 dark:group-hover:text-primary-400">
                                     <x-icon name="banknotes" class="w-5 h-5" />
