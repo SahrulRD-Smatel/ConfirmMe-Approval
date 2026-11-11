@@ -303,8 +303,8 @@ class PurchaseOrderController extends Controller
         $verifyUrl = route('verify.show', $po->approval_hash ?? $po->document->approval_hash ?? 'invalid');
         $qrCode = base64_encode(QrCode::format('svg')->size(80)->generate($verifyUrl));
 
-        // Force English locale for PDF to avoid CJK font issues in DomPDF
-        app()->setLocale('en');
+        // Force Indonesian locale for PDF
+        app()->setLocale('id');
 
         return $this->renderPdfWithPageCounter('pdf.purchase-order', [
             'po' => $po,

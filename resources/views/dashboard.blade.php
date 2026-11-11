@@ -24,10 +24,9 @@
                 const mins = String(now.getMinutes()).padStart(2, '0');
                 const secs = String(now.getSeconds()).padStart(2, '0');
 
-                // Format: 07.53 am
-                const ampm = hours >= 12 ? 'pm' : 'am';
-                const h12 = hours % 12 || 12;
-                this.currentTime = String(h12).padStart(2, '0') + '.' + mins + ' ' + ampm;
+                // Format: 12.51 WIB
+                const hours24 = String(hours).padStart(2, '0');
+                this.currentTime = hours24 + '.' + mins + ' WIB';
 
                 if (hours >= 5 && hours < 12) {
                     this.greeting = {{ \Illuminate\Support\Js::from(__('Selamat Pagi')) }};
@@ -59,7 +58,7 @@
                         {{-- Big Clock --}}
                         <div class="mt-4">
                             <span class="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white font-display tracking-tight"
-                                x-text="currentTime">07.53 am</span>
+                                x-text="currentTime">12.00 WIB</span>
                         </div>
                     </div>
 

@@ -17,6 +17,12 @@ class LocalizationMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // When language switcher feature is disabled, lock entire application to Indonesian
+        if (!feature_active('feature_language_switch')) {
+            App::setLocale('id');
+            return $next($request);
+        }
+
         if (Auth::check()) {
             $locale = Auth::user()->locale ?? 'id';
             App::setLocale($locale);

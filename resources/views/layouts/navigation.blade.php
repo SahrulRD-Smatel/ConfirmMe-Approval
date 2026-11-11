@@ -19,6 +19,7 @@
             </div>
 
             <!-- Language Dropdown -->
+            @if(feature_active('feature_language_switch'))
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
@@ -71,6 +72,7 @@
                     </x-slot>
                 </x-dropdown>
             </div>
+            @endif
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-2">

@@ -369,8 +369,8 @@ class AttendanceController extends Controller
             'total_early_leave' => $reportData->sum('early_leave'),
         ];
 
-        // Force English locale for PDF to avoid CJK font issues in DomPDF
-        app()->setLocale('en');
+        // Force Indonesian locale for PDF
+        app()->setLocale('id');
 
         $pdf = Pdf::loadView('attendances.attendance-export', compact(
             'reportData', 'month', 'year', 'department', 'totalStats'

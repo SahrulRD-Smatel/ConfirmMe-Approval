@@ -155,9 +155,11 @@ if (!function_exists('feature_active')) {
         return Cache::remember("system_feature_{$key}", 3600, function () use ($key) {
             $feature = DB::table('system_features')->where('key', $key)->first();
             
-            // If feature doesn't exist, assume it's active by default to prevent breaking
+            // If feature doesn't exist:
+            // Language switch defaults to false (Indonesian only by default)
+            // Other system modules default to true to prevent breaking
             if (!$feature) {
-                return true;
+                return $key === 'feature_language_switch' ? false : true;
             }
             
             return (bool) $feature->is_active;

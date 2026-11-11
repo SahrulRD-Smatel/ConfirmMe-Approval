@@ -179,8 +179,8 @@ class ReportController extends Controller
             ->get();
 
         // Set locale ke English secara paksa khusus untuk PDF
-        // agar tidak menggunakan font CJK yang bermasalah di DomPDF
-        app()->setLocale('en');
+        // Gunakan locale id untuk ekspor PDF
+        app()->setLocale('id');
 
         $pdf = Pdf::loadView('reports.export', compact('documents'));
 

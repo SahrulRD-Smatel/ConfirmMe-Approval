@@ -781,8 +781,8 @@ class DocumentController extends Controller
             }
         }
 
-        // Force English locale for PDF to avoid CJK font issues in DomPDF
-        app()->setLocale('en');
+        // Force Indonesian locale for PDF
+        app()->setLocale('id');
 
         // Render with dynamic page counter in header
         $filename = 'DOC-' . $document->document_number . '.pdf';

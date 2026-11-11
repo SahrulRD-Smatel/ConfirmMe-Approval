@@ -120,6 +120,7 @@
                 </div>
             </div>
 
+            @if(feature_active('feature_language_switch'))
             <!-- Separator -->
             <div class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200 dark:lg:bg-gray-700"></div>
 
@@ -170,6 +171,7 @@
 
             <!-- Separator -->
             <div class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200 dark:lg:bg-gray-700"></div>
+            @endif
 
             <!-- User Dropdown -->
             <div x-data="{ open: false }" class="relative">
