@@ -34,7 +34,9 @@ class ArchiveController extends Controller
 
                     // Finance documents
                     if ($user->can('view-finance-documents')) {
-                        $query->orWhereIn('approval_type', ['po', 'invoice']);
+                        $query->orWhere(function ($sub) {
+                            $sub->financial();
+                        });
                     }
                 });
             })

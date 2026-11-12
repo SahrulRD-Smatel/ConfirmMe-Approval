@@ -69,6 +69,10 @@ class DashboardController extends Controller
             // View all
         } elseif ($user->can('view-department-documents')) {
             $documentsQuery->where('department', $user->department);
+        } elseif ($user->can('view-finance-documents')) {
+            $documentsQuery->where(function ($q) use ($user) {
+                $q->financial()->orWhere('user_id', $user->id);
+            });
         } else {
             $documentsQuery->where('user_id', $user->id);
         }

@@ -44,8 +44,9 @@ class SearchController extends Controller
 
                 // Finance documents
                 if ($user->can('view-finance-documents')) {
-                    $q->orWhereIn('approval_type', ['po', 'invoice'])
-                      ->orWhereIn('status', ['finance_review', 'waiting_disbursement', 'paid']);
+                    $q->orWhere(function ($sub) {
+                        $sub->financial();
+                    });
                 }
                 
                 // Purchasing documents

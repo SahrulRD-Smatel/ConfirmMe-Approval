@@ -47,6 +47,8 @@ class PurchaseOrderController extends Controller
      */
     public function create(Request $request)
     {
+        abort_unless(auth()->user()->canAny(['create-po', 'manage-purchasing']), 403, 'Akses terbatas untuk membuat Purchase Order.');
+
         $document = null;
         if ($request->filled('document_id')) {
             $document = Document::findOrFail($request->document_id);
@@ -65,6 +67,8 @@ class PurchaseOrderController extends Controller
      */
     public function store(Request $request)
     {
+        abort_unless(auth()->user()->canAny(['create-po', 'manage-purchasing']), 403, 'Akses terbatas untuk membuat Purchase Order.');
+
         // Sanitize currency inputs (strip thousand separators)
         $this->sanitizeMoneyFields($request, ['tax_amount']);
 
@@ -154,6 +158,8 @@ class PurchaseOrderController extends Controller
      */
     public function edit(PurchaseOrder $po)
     {
+        abort_unless(auth()->user()->canAny(['create-po', 'manage-purchasing']), 403, 'Akses terbatas untuk mengubah Purchase Order.');
+
         $po->load('items');
         return view('finance.po.edit', compact('po'));
     }
@@ -163,6 +169,8 @@ class PurchaseOrderController extends Controller
      */
     public function update(Request $request, PurchaseOrder $po)
     {
+        abort_unless(auth()->user()->canAny(['create-po', 'manage-purchasing']), 403, 'Akses terbatas untuk mengubah Purchase Order.');
+
         if ($po->status !== 'draft') {
             return back()->with('error', 'PO yang sudah diterbitkan tidak dapat diubah!');
         }
@@ -244,6 +252,8 @@ class PurchaseOrderController extends Controller
      */
     public function destroy(PurchaseOrder $po)
     {
+        abort_unless(auth()->user()->canAny(['create-po', 'manage-purchasing']), 403, 'Akses terbatas untuk menghapus Purchase Order.');
+
         if ($po->status !== 'draft') {
             return back()->with('error', 'PO yang sudah diterbitkan tidak dapat dihapus!');
         }
@@ -259,6 +269,8 @@ class PurchaseOrderController extends Controller
      */
     public function issue(PurchaseOrder $po)
     {
+        abort_unless(auth()->user()->canAny(['create-po', 'manage-purchasing']), 403, 'Akses terbatas untuk menerbitkan Purchase Order.');
+
         if ($po->status !== 'draft') {
             return back()->with('error', 'PO sudah diterbitkan sebelumnya!');
         }

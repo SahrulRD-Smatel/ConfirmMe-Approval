@@ -21,7 +21,7 @@ class ReportController extends Controller
 
         if ($user->can('view-finance-documents')) {
             $query->where(function ($q) use ($user) {
-                $q->whereIn('approval_type', ['po', 'po_internal', 'invoice'])
+                $q->financial()
                   ->orWhere('user_id', $user->id)
                   ->orWhereHas('approvals', function ($q2) use ($user) {
                       $q2->where('approver_id', $user->id);

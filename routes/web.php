@@ -147,12 +147,12 @@ Route::middleware(['auth', 'verified', 'active', 'has_role'])->group(function ()
     });
 
     // Finance Routes (Dynamic - Permissions based)
-    Route::prefix('finance')->name('finance.')->middleware(['permission:manage-budget|create-po|create-invoice|manage-purchasing|print-po|print-invoice', 'feature:module_finance'])->group(function () {
+    Route::prefix('finance')->name('finance.')->middleware(['permission:manage-budget|create-po|create-invoice|manage-purchasing|print-po|print-invoice|view-finance-documents', 'feature:module_finance'])->group(function () {
         // Dashboard
         Route::get('/', [FinanceDashboardController::class, 'index'])->name('dashboard');
 
         // Budgets
-        Route::resource('budgets', BudgetController::class);
+        Route::resource('budgets', BudgetController::class)->middleware('can:manage-budget');
 
         // Purchase Orders
         Route::resource('po', PurchaseOrderController::class);

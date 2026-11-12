@@ -52,6 +52,8 @@ class InvoiceController extends Controller
      */
     public function create(Request $request)
     {
+        abort_unless(auth()->user()->can('create-invoice'), 403, 'Akses terbatas untuk membuat Invoice.');
+
         $document = null;
         if ($request->filled('document_id')) {
             $document = Document::findOrFail($request->document_id);
@@ -69,6 +71,8 @@ class InvoiceController extends Controller
      */
     public function store(Request $request)
     {
+        abort_unless(auth()->user()->can('create-invoice'), 403, 'Akses terbatas untuk membuat Invoice.');
+
         // Sanitize currency inputs (strip thousand separators)
         $this->sanitizeMoneyFields($request, ['subtotal', 'tax_amount']);
 
@@ -101,6 +105,8 @@ class InvoiceController extends Controller
      */
     public function createFromPO(PurchaseOrder $po)
     {
+        abort_unless(auth()->user()->can('create-invoice'), 403, 'Akses terbatas untuk membuat Invoice dari PO.');
+
         // Check if PO is issued
         if ($po->status !== 'issued') {
             return back()->with('error', 'Hanya PO yang sudah diterbitkan yang bisa dibuat invoice!');
@@ -148,6 +154,8 @@ class InvoiceController extends Controller
      */
     public function edit(Invoice $invoice)
     {
+        abort_unless(auth()->user()->can('create-invoice'), 403, 'Akses terbatas untuk mengubah Invoice.');
+
         return view('finance.invoices.edit', compact('invoice'));
     }
 
@@ -156,6 +164,8 @@ class InvoiceController extends Controller
      */
     public function update(Request $request, Invoice $invoice)
     {
+        abort_unless(auth()->user()->can('create-invoice'), 403, 'Akses terbatas untuk mengubah Invoice.');
+
         if ($invoice->status === 'paid') {
             return back()->with('error', 'Invoice yang sudah lunas tidak dapat diubah!');
         }
@@ -187,6 +197,8 @@ class InvoiceController extends Controller
      */
     public function destroy(Invoice $invoice)
     {
+        abort_unless(auth()->user()->can('create-invoice'), 403, 'Akses terbatas untuk menghapus Invoice.');
+
         if ($invoice->status !== 'draft') {
             return back()->with('error', 'Invoice yang sudah diterbitkan tidak dapat dihapus!');
         }
@@ -204,6 +216,8 @@ class InvoiceController extends Controller
      */
     public function recordPayment(Request $request, Invoice $invoice)
     {
+        abort_unless(auth()->user()->canAny(['create-invoice', 'manage-budget']), 403, 'Akses terbatas untuk mencatat pembayaran Invoice.');
+
         return DB::transaction(function () use ($request, $invoice) {
             // If no amount provided, mark as fully paid
             if (!$request->filled('amount')) {
@@ -255,6 +269,8 @@ class InvoiceController extends Controller
      */
     public function cancel(Request $request, Invoice $invoice)
     {
+        abort_unless(auth()->user()->canAny(['create-invoice', 'manage-budget']), 403, 'Akses terbatas untuk membatalkan Invoice.');
+
         $request->validate([
             'cancellation_reason' => 'required|string|max:500',
         ], [

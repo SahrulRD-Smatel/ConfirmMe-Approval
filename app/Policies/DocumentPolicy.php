@@ -14,7 +14,11 @@ class DocumentPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view-document');
+        return $user->can('view-document')
+            || $user->can('view-all-documents')
+            || $user->can('view-department-documents')
+            || $user->can('view-finance-documents')
+            || $user->can('menu-archive');
     }
 
     /**
@@ -22,58 +26,48 @@ class DocumentPolicy
      */
     public function view(User $user, Document $document): Response|bool
     {
-        // Check if user has view permission
-        if (!$user->can('view-document')) {
-            Log::warning('DocumentPolicy::view denied - missing view-document permission', [
-                'user_id' => $user->id,
-                'user_roles' => $user->getRoleNames()->toArray(),
-                'document_id' => $document->id,
-            ]);
-            return Response::deny("Akses ditolak: Anda tidak memiliki permission 'view-document'. Role Anda: " . $user->getRoleNames()->implode(', '));
-        }
-
-        // Owner can view
-        if ((int) $user->id === (int) $document->user_id) {
-            return true;
-        }
-
-        // Current approver can view
-        if ((int) $user->id === (int) ($document->current_approver_id ?? 0)) {
-            return true;
-        }
-
-        // Global view access (Admin, HRD, Directors)
+        // 1. Global view access (Admin, HRD, Directors with view-all-documents)
         if ($user->can('view-all-documents')) {
             return true;
         }
 
-        // Department-level view access (Manager, Supervisor)
-        if ($user->can('view-department-documents') && $user->department === $document->department) {
+        // 2. Owner can always view their own document
+        if ((int) $user->id === (int) $document->user_id) {
             return true;
         }
 
-        // Finance-specific view access
-        if ($user->can('view-finance-documents')) {
-            if (in_array($document->approval_type, ['po', 'invoice'])) {
-                return true;
-            }
-            if (in_array($document->status, ['finance_review', 'approved', 'completed', 'paid', 'waiting_disbursement'])) {
-                return true;
-            }
-        }
-
-        // Feature-specific access (Purchasing)
-        if ($user->can('manage-purchasing') && $document->approval_type === 'po') {
+        // 3. Current approver can view
+        if ((int) $user->id === (int) ($document->current_approver_id ?? 0)) {
             return true;
         }
 
-        // Users who have approved this document
+        // 4. Users who have approved/acted on this document in history
         if ($document->approvals()->where('approver_id', $user->id)->exists()) {
             return true;
         }
 
-        // Pihak Mengetahui (Tembusan / Observers) listed in template
+        // 5. Pihak Mengetahui (Tembusan / Observers) listed in template
         if ($document->getNotifyUsers()->contains('id', $user->id)) {
+            return true;
+        }
+
+        // 6. Department-level view access (Manager, Supervisor within same department)
+        if ($user->can('view-department-documents') && !empty($user->department) && $user->department === $document->department) {
+            return true;
+        }
+
+        // 7. Finance-specific view access (Can view any financial document across all departments)
+        if ($user->can('view-finance-documents') && $document->isFinancial()) {
+            return true;
+        }
+
+        // 8. Feature-specific access (Purchasing)
+        if ($user->can('manage-purchasing') && in_array($document->approval_type, ['po', 'po_internal', 'purchase_request'])) {
+            return true;
+        }
+
+        // 9. Standard view-document permission (allows viewing within user's department)
+        if ($user->can('view-document') && !empty($user->department) && $user->department === $document->department) {
             return true;
         }
 
@@ -122,8 +116,8 @@ class DocumentPolicy
             return false;
         }
 
-        // Only draft or revision documents can be updated
-        return in_array($document->status, ['draft', 'revision']);
+        // Only draft, revision, or pending confirmation documents can be updated
+        return in_array($document->status, ['draft', 'revision', 'pending_requester_confirmation']);
     }
 
     /**
@@ -162,8 +156,8 @@ class DocumentPolicy
             return false;
         }
 
-        // Only draft or revision documents can be submitted
-        return in_array($document->status, ['draft', 'revision']);
+        // Only draft, revision, or pending confirmation documents can be submitted
+        return in_array($document->status, ['draft', 'revision', 'pending_requester_confirmation']);
     }
 
     /**

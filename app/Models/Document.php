@@ -315,6 +315,21 @@ class Document extends Model
         return $query->where('approval_type', $type);
     }
 
+    /**
+     * Scope query to financial documents
+     */
+    public function scopeFinancial($query)
+    {
+        return $query->where(function ($q) {
+            $q->whereIn('approval_type', ['po', 'po_internal', 'invoice', 'loan', 'purchase_request'])
+              ->orWhere('estimated_budget', '>', 0)
+              ->orWhere('approved_budget', '>', 0)
+              ->orWhere('original_budget', '>', 0)
+              ->orWhere('confirmed_amount', '>', 0)
+              ->orWhereIn('status', ['finance_review', 'waiting_disbursement', 'paid']);
+        });
+    }
+
     // ==================== HELPERS ====================
 
     /**
@@ -441,6 +456,41 @@ class Document extends Model
     public function isFinalized(): bool
     {
         return in_array($this->status, ['approved', 'rejected', 'completed', 'paid', 'waiting_disbursement']);
+    }
+
+    /**
+     * Determine if this document is a financial document
+     */
+    public function isFinancial(): bool
+    {
+        if (in_array($this->approval_type, ['po', 'po_internal', 'invoice', 'loan', 'purchase_request'])) {
+            return true;
+        }
+
+        if ((float) $this->estimated_budget > 0
+            || (float) $this->approved_budget > 0
+            || (float) $this->original_budget > 0
+            || (float) $this->confirmed_amount > 0) {
+            return true;
+        }
+
+        if (in_array($this->status, ['finance_review', 'waiting_disbursement', 'paid'])) {
+            return true;
+        }
+
+        if ($this->relationLoaded('purchaseOrder') && $this->purchaseOrder !== null) {
+            return true;
+        }
+
+        if ($this->relationLoaded('invoice') && $this->invoice !== null) {
+            return true;
+        }
+
+        if ($this->relationLoaded('employeeLoan') && $this->employeeLoan !== null) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
