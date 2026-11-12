@@ -381,6 +381,12 @@
                     </table>
                 </div>
 
+                @php
+                    $genSignerQr = function(string $url) {
+                        return base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(150)->margin(1)->generate($url));
+                    };
+                @endphp
+
                 <table class="signature-table">
                     <tr>
                         <td><div class="sig-role-label">{{ __("Pemohon") }}</div></td>
@@ -391,7 +397,7 @@
                     <tr>
                         <td>
                             @if($verificationUrl)
-                                <div class="sig-qr-box"><img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR"></div>
+                                <div class="sig-qr-box"><img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'requester'])) }}" alt="QR"></div>
                             @else
                                 <div class="sig-pending-box"><span>-</span></div>
                             @endif
@@ -399,7 +405,7 @@
                         @foreach($approvals as $approval)
                             <td>
                                 @if($approval->status === 'approved' && $verificationUrl)
-                                    <div class="sig-qr-box"><img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR"></div>
+                                    <div class="sig-qr-box"><img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $approval->id])) }}" alt="QR"></div>
                                 @else
                                     <div class="sig-pending-box"><span>Pending</span></div>
                                 @endif
@@ -420,12 +426,6 @@
                                     <span class="sig-name">-</span>
                                 @endif
                             </td>
-                        @endforeach
-                    </tr>
-                    <tr>
-                        <td><span class="sig-date">{{ $document->submitted_at ? $document->submitted_at->format('d/m/Y H:i') : $document->created_at->format('d/m/Y H:i') }}</span></td>
-                        @foreach($approvals as $approval)
-                            <td><span class="sig-date">{{ $approval->action_at ? $approval->action_at->format('d/m/Y H:i') : '-' }}</span></td>
                         @endforeach
                     </tr>
                 </table>

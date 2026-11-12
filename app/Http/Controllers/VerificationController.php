@@ -33,12 +33,22 @@ class VerificationController extends Controller
             ->filter(fn($a) => str_contains(strtolower($a->approver_role ?? ''), 'presiden'))
             ->first();
 
+        // Check if specific step or signer was scanned
+        $scannedApproval = null;
+        if (request()->filled('step')) {
+            $scannedApproval = $document->approvals->where('id', request('step'))->first();
+        }
+
+        $scannedSigner = request('signer'); // 'requester', 'mengetahui', 'finance'
+
         return view('verify', [
             'valid' => true,
             'document' => $document,
             'isFullyApproved' => $isFullyApproved,
             'finalApproval' => $finalApproval,
             'approvals' => $document->approvals->sortBy('approval_order'),
+            'scannedApproval' => $scannedApproval,
+            'scannedSigner' => $scannedSigner,
         ]);
     }
 }

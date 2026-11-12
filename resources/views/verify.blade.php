@@ -99,6 +99,61 @@
                     </div>
                 @endif
 
+                {{-- Scanned Signer Highlight (Personalized E-Signature) --}}
+                @if($scannedApproval)
+                    <div class="border-b border-gray-100 bg-emerald-50/70 p-6 sm:p-7">
+                        <div class="flex items-start gap-4">
+                            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-sm">
+                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <span class="inline-block rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-800">
+                                    {{ __('Tanda Tangan Elektronik Sah') }}
+                                </span>
+                                <h3 class="mt-1 text-base font-bold text-gray-900">{{ $scannedApproval->approver?->name ?? 'Approver' }}</h3>
+                                <p class="text-xs text-gray-600">
+                                    {{ format_acronyms($scannedApproval->approver?->position ?? $scannedApproval->role_label) }}
+                                    @if($scannedApproval->approver?->employee_id)
+                                        &bull; NIP. {{ $scannedApproval->approver->employee_id }}
+                                    @endif
+                                </p>
+                                @if($scannedApproval->action_at)
+                                    <p class="mt-2 text-xs text-emerald-800">
+                                        <span class="font-semibold">{{ __('Waktu Persetujuan') }}:</span> {{ $scannedApproval->action_at->translatedFormat('d F Y, H:i') }} WIB
+                                    </p>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                @elseif($scannedSigner === 'requester')
+                    <div class="border-b border-gray-100 bg-blue-50/70 p-6 sm:p-7">
+                        <div class="flex items-start gap-4">
+                            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-sm">
+                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <span class="inline-block rounded-full bg-blue-100 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-blue-800">
+                                    {{ __('Tanda Tangan Pemohon Sah') }}
+                                </span>
+                                <h3 class="mt-1 text-base font-bold text-gray-900">{{ $document->user->name }}</h3>
+                                <p class="text-xs text-gray-600">
+                                    {{ format_acronyms($document->user->position ?? 'Staff') }}
+                                    @if($document->user->employee_id)
+                                        &bull; NIP. {{ $document->user->employee_id }}
+                                    @endif
+                                </p>
+                                <p class="mt-2 text-xs text-blue-800">
+                                    <span class="font-semibold">{{ __('Waktu Pengajuan') }}:</span> {{ ($document->submitted_at ?? $document->created_at)->translatedFormat('d F Y, H:i') }} WIB
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 {{-- Document details --}}
                 <div class="border-b border-gray-100 p-6 sm:p-8">
                     <h3 class="text-xs font-bold uppercase tracking-[0.14em] text-gray-400">{{ __('Detail Dokumen') }}</h3>

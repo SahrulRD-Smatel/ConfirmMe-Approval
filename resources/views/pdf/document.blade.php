@@ -832,6 +832,12 @@
             );
         @endphp
 
+        @php
+            $genSignerQr = function(string $url) {
+                return base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(150)->margin(1)->generate($url));
+            };
+        @endphp
+
         @if($isPurchasingWorkflow)
             {{-- Standard 4-box layout for Purchasing / PO --}}
             <table class="sig-container">
@@ -842,7 +848,7 @@
                             <tr>
                                 <td class="sig-card-body">
                                     @if($verificationUrl)
-                                        <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 44px; height: 44px; display: inline-block;" />
+                                        <img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'requester'])) }}" style="width: 44px; height: 44px; display: inline-block;" />
                                     @endif
                                 </td>
                             </tr>
@@ -855,7 +861,7 @@
                             <tr>
                                 <td class="sig-card-body">
                                     @if($disetujuiApproval && $disetujuiApproval->status === 'approved' && $verificationUrl)
-                                        <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 44px; height: 44px; display: inline-block;" />
+                                        <img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $disetujuiApproval->id])) }}" style="width: 44px; height: 44px; display: inline-block;" />
                                     @else
                                         <span style="color: #aaa; font-size: 8px;">Pending</span>
                                     @endif
@@ -871,7 +877,9 @@
                             <tr>
                                 <td class="sig-card-body">
                                     @if($financeApproval && $financeApproval->status === 'approved' && $verificationUrl)
-                                        <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 65px; height: 65px; display: inline-block;" />
+                                        <img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $financeApproval->id])) }}" style="width: 65px; height: 65px; display: inline-block;" />
+                                    @elseif($verificationUrl)
+                                        <img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'finance'])) }}" style="width: 65px; height: 65px; display: inline-block;" />
                                     @else
                                         <span style="color: #aaa; font-size: 8px;">Pending</span>
                                     @endif
@@ -887,7 +895,7 @@
                             <tr>
                                 <td class="sig-card-body">
                                     @if($mengetahuiUser && $document->status === 'completed' && $verificationUrl)
-                                        <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 65px; height: 65px; display: inline-block;" />
+                                        <img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'mengetahui'])) }}" style="width: 65px; height: 65px; display: inline-block;" />
                                     @endif
                                 </td>
                             </tr>
@@ -911,7 +919,7 @@
                             <tr>
                                 <td class="sig-card-body">
                                     @if($verificationUrl)
-                                        <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 65px; height: 65px; display: inline-block;" />
+                                        <img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'requester'])) }}" style="width: 65px; height: 65px; display: inline-block;" />
                                     @endif
                                 </td>
                             </tr>
@@ -929,7 +937,7 @@
                                 <tr>
                                     <td class="sig-card-body">
                                         @if($approval->status === 'approved' && $verificationUrl)
-                                            <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 65px; height: 65px; display: inline-block;" />
+                                            <img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $approval->id])) }}" style="width: 65px; height: 65px; display: inline-block;" />
                                         @else
                                             <span style="color: #aaa; font-size: 8px;">{{ ucfirst($approval->status ?? 'pending') }}</span>
                                         @endif
@@ -1182,6 +1190,10 @@
                 @php
                     $allSigners = collect();
 
+                    $genSignerQr = function(string $url) {
+                        return base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(150)->margin(1)->generate($url));
+                    };
+
                     // 1. Pemohon (Always first in document workflow)
                     $allSigners->push([
                         'role' => __('Pemohon'),
@@ -1189,8 +1201,8 @@
                         'nip' => $pemohon->employee_id ?? null,
                         'is_signed' => (bool)$verificationUrl,
                         'signed_label' => 'Signed',
-                        'signed_date' => $document->submitted_at ? $document->submitted_at->format('d/m/Y H:i') . ' WIB' : ($document->created_at ? $document->created_at->format('d/m/Y H:i') . ' WIB' : ''),
                         'status' => 'approved',
+                        'qr_code' => $verificationUrl ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'requester'])) : null,
                     ]);
 
                     // 2. Approvers in sequential workflow order
@@ -1201,8 +1213,10 @@
                             'nip' => $approval->approver?->employee_id ?? null,
                             'is_signed' => $approval->status === 'approved' && $verificationUrl,
                             'signed_label' => $approval->status === 'approved' ? 'Signed' : ucfirst($approval->status ?? 'pending'),
-                            'signed_date' => $approval->action_at ? $approval->action_at->format('d/m/Y H:i') . ' WIB' : '-',
                             'status' => $approval->status,
+                            'qr_code' => ($approval->status === 'approved' && $verificationUrl)
+                                ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $approval->id]))
+                                : null,
                         ]);
                     }
 
@@ -1237,7 +1251,7 @@
                                 <td>
                                     @if($signer['is_signed'])
                                         <div class="sig-qr-box">
-                                            <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code">
+                                            <img src="data:image/svg+xml;base64,{{ $signer['qr_code'] ?? $qrCode }}" alt="QR Code">
                                         </div>
                                         <div class="sig-status-signed">{{ $signer['signed_label'] }}</div>
                                     @elseif($signer['status'] === 'approved')
@@ -1259,15 +1273,6 @@
                                     @if(!empty($signer['nip']))
                                         <div class="sig-nip">NIP. {{ $signer['nip'] }}</div>
                                     @endif
-                                </td>
-                            @endforeach
-                        </tr>
-
-                        {{-- Row 4: Timestamp --}}
-                        <tr>
-                            @foreach($chunk as $signer)
-                                <td>
-                                    <span class="sig-date">{{ $signer['signed_date'] }}</span>
                                 </td>
                             @endforeach
                         </tr>
