@@ -93,7 +93,7 @@
 
                     {{-- Position --}}
                     <div class="rounded-2xl border border-gray-200/80 bg-gray-50/70 p-4 dark:border-gray-800/80 dark:bg-gray-800/60">
-                        <span class="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400">{{ __('Jabatan') }}</span>
+                        <span class="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400">{{ __('Posisi/Jabatan') }}</span>
                         <span class="mt-2 block truncate text-sm font-semibold text-gray-900 dark:text-gray-100">{{ $user->position ?? '-' }}</span>
                     </div>
 
