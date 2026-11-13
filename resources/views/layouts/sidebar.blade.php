@@ -174,30 +174,46 @@
 
 
         <!-- Finance Menu - Dynamic via Permissions -->
-        @if(feature_active('module_finance') && auth()->user()->canAny(['manage-budget', 'create-po', 'create-invoice', 'print-po', 'print-invoice', 'manage-purchasing']))
+        @php
+            $hasBudgetAccess = auth()->user()->can('manage-budget');
+            $hasPoAccess = auth()->user()->canAny(['create-po', 'manage-purchasing', 'print-po']);
+            $hasInvoiceAccess = auth()->user()->canAny(['create-invoice', 'print-invoice']);
+            $hasLoanFinanceAccess = feature_active('module_loan') && auth()->user()->canAny(['manage-budget', 'create-invoice', 'manage-purchasing']);
+            $canSeeFinanceSection = feature_active('module_finance') && ($hasBudgetAccess || $hasPoAccess || $hasInvoiceAccess || $hasLoanFinanceAccess);
+        @endphp
+        @if($canSeeFinanceSection)
             <x-sidebar-section title="{{ __('Keuangan') }}" :collapsed="$sidebarCollapsed ?? false">
 
-                <x-sidebar-link :href="route('finance.budgets.index')" :active="request()->routeIs('finance.budgets.*')"
-                    icon="banknotes">
-                    {{ __('Manajemen Anggaran') }}
-                </x-sidebar-link>
-                <x-sidebar-link :href="route('finance.po.index')" :active="request()->routeIs('finance.po.*')"
-                    icon="document-duplicate">
-                    {{ __('Purchase Orders') }}
-                    @if(($sidebarBadges['pendingPOCount'] ?? 0) > 0)
-                        <span
-                            class="ml-auto bg-primary-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-pulse">{{ $sidebarBadges['pendingPOCount'] }}</span>
-                    @endif
-                </x-sidebar-link>
-                <x-sidebar-link :href="route('finance.invoices.index')" :active="request()->routeIs('finance.invoices.*')"
-                    icon="receipt-percent">
-                    {{ __('Invoices') }}
-                    @if(($sidebarBadges['pendingInvoiceCount'] ?? 0) > 0)
-                        <span
-                            class="ml-auto bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-pulse">{{ $sidebarBadges['pendingInvoiceCount'] }}</span>
-                    @endif
-                </x-sidebar-link>
-                @if(feature_active('module_loan'))
+                @if($hasBudgetAccess)
+                    <x-sidebar-link :href="route('finance.budgets.index')" :active="request()->routeIs('finance.budgets.*')"
+                        icon="banknotes">
+                        {{ __('Manajemen Anggaran') }}
+                    </x-sidebar-link>
+                @endif
+
+                @if($hasPoAccess)
+                    <x-sidebar-link :href="route('finance.po.index')" :active="request()->routeIs('finance.po.*')"
+                        icon="document-duplicate">
+                        {{ __('Purchase Orders') }}
+                        @if(($sidebarBadges['pendingPOCount'] ?? 0) > 0)
+                            <span
+                                class="ml-auto bg-primary-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-pulse">{{ $sidebarBadges['pendingPOCount'] }}</span>
+                        @endif
+                    </x-sidebar-link>
+                @endif
+
+                @if($hasInvoiceAccess)
+                    <x-sidebar-link :href="route('finance.invoices.index')" :active="request()->routeIs('finance.invoices.*')"
+                        icon="receipt-percent">
+                        {{ __('Invoices') }}
+                        @if(($sidebarBadges['pendingInvoiceCount'] ?? 0) > 0)
+                            <span
+                                class="ml-auto bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-pulse">{{ $sidebarBadges['pendingInvoiceCount'] }}</span>
+                        @endif
+                    </x-sidebar-link>
+                @endif
+
+                @if($hasLoanFinanceAccess)
                     <x-sidebar-link :href="route('finance.loans.index')" :active="request()->routeIs('finance.loans.*')"
                         icon="currency-dollar">
                         {{ __('Pinjaman Karyawan') }}
