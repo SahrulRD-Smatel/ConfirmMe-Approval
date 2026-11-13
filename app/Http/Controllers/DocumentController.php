@@ -745,9 +745,9 @@ class DocumentController extends Controller
             $document->generateHash();
         }
 
-        // Generate QR Code URL with tight margin for maximal scannability
+        // Generate QR Code URL with zero margin and high resolution for maximal scannability
         $verificationUrl = route('verify.show', $document->approval_hash);
-        $qrCode = base64_encode(QrCode::format('svg')->size(150)->margin(1)->generate($verificationUrl));
+        $qrCode = base64_encode(QrCode::format('svg')->size(300)->margin(0)->generate($verificationUrl));
 
         // Determine the view name based on template code
         $rawCode = is_string($document->template) 

@@ -829,16 +829,17 @@
                 ]);
             }
 
-            // In landscape, up to 6 signers fit cleanly in 1 row. If > 6, chunk by 4.
-            $chunkSize = $allSigners->count() <= 6 ? $allSigners->count() : 4;
+            // In landscape, if more than 4 signers, split evenly into 2 rows (e.g. 5 => 3 & 2, 6 => 3 & 3, 7 => 4 & 3, 8 => 4 & 4)
+            $chunkSize = $allSigners->count() > 4 ? (int) ceil($allSigners->count() / 2) : $allSigners->count();
             $signerRows = $allSigners->chunk($chunkSize);
         @endphp
 
-        @foreach($signerRows as $row)
+        @foreach($signerRows as $rowIndex => $row)
             @php
+                $tableWidth = round(($row->count() / $chunkSize) * 100, 2) . '%';
                 $colWidth = round(100 / $row->count(), 2);
             @endphp
-            <table class="sig-container" style="margin-top: 10px;">
+            <table class="sig-container" align="center" style="width: {{ $tableWidth }}; margin: {{ $rowIndex > 0 ? '12px' : '8px' }} auto 0 auto;">
                 <tr>
                     @foreach($row as $signer)
                         <td class="sig-box-cell" style="width: {{ $colWidth }}%;">
@@ -868,7 +869,7 @@
         <div class="verification-footer">
             <table style="width: 100%; border-collapse: collapse;">
                 <tr>
-                    <td style="width: 80%; padding-right: 15px; vertical-align: middle; line-height: 1.4;">
+                    <td style="width: 78%; padding-right: 15px; vertical-align: middle; line-height: 1.45;">
                         <strong style="color: #0f172a; font-size: 9px;">Catatan Verifikasi:</strong><br>
                         Dokumen ini diterbitkan secara elektronik oleh ConfirmMe - PT Info Solusindo Data Utama. Scan QR Code di samping untuk memverifikasi keabsahan dokumen.<br>
                         <span style="color: #334155; font-size: 8px;"><strong>ID Dokumen:</strong> {{ $document->document_number }} | <strong>Hash:</strong> {{ substr($document->approval_hash ?? 'N/A', 0, 32) }}...</span>
@@ -882,11 +883,11 @@
                             </div>
                         @endif
                     </td>
-                    <td style="width: 20%; text-align: center; vertical-align: middle;">
+                    <td style="width: 22%; text-align: center; vertical-align: middle;">
                         @if(isset($qrCode))
                             <div style="display: inline-block; text-align: center;">
-                                <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code" style="width: 70px; height: 70px; display: block; margin: 0 auto;">
-                                <div style="font-size: 7.5px; font-weight: bold; color: #475569; margin-top: 2px;">Scan verifikasi</div>
+                                <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code" style="width: 88px; height: 88px; display: block; margin: 0 auto;">
+                                <div style="font-size: 8px; font-weight: bold; color: #334155; margin-top: 3px;">Scan verifikasi</div>
                             </div>
                         @endif
                     </td>
@@ -1141,18 +1142,15 @@
                         ]);
                     }
 
-                    // Chunk into maximum 3 barcodes per row for large scannable display
-                    $signerChunks = $allSigners->chunk(3);
+                    // If more than 4 signers, split evenly into 2 rows (e.g. 5 => 3 & 2, 6 => 3 & 3, 7 => 4 & 3, 8 => 4 & 4)
+                    $chunkSize = $allSigners->count() > 4 ? (int) ceil($allSigners->count() / 2) : $allSigners->count();
+                    $signerChunks = $allSigners->chunk($chunkSize);
                 @endphp
 
                 @foreach($signerChunks as $chunkIndex => $chunk)
                     @php
                         $countInChunk = $chunk->count();
-                        if ($signerChunks->count() === 1) {
-                            $tableWidth = $countInChunk === 1 ? '38%' : ($countInChunk === 2 ? '70%' : '100%');
-                        } else {
-                            $tableWidth = $countInChunk === 3 ? '100%' : ($countInChunk === 2 ? '66.66%' : '33.33%');
-                        }
+                        $tableWidth = round(($countInChunk / $chunkSize) * 100, 2) . '%';
                         $cellWidth = round(100 / $countInChunk, 2) . '%';
                     @endphp
 
@@ -1223,8 +1221,8 @@
                         <td style="width: 26%; text-align: center; vertical-align: middle;">
                             @if(isset($qrCode))
                                 <div style="display: inline-block; text-align: center;">
-                                    <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code" style="width: 78px; height: 78px; display: block; margin: 0 auto;">
-                                    <div style="font-size: 7.5px; font-weight: bold; color: #475569; margin-top: 3px;">{{ __("Scan untuk verifikasi") }}</div>
+                                    <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code" style="width: 88px; height: 88px; display: block; margin: 0 auto;">
+                                    <div style="font-size: 8px; font-weight: bold; color: #334155; margin-top: 3px;">{{ __("Scan untuk verifikasi") }}</div>
                                 </div>
                             @endif
                         </td>
