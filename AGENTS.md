@@ -67,9 +67,9 @@ Sistem memiliki 2 preset layout visual terpadu di dalam `pdf.document`:
 2. **Daftar Pengadaan / Pembelian Barang (Landscape / A4 Mendatar):**
    - **Khusus untuk dokumen belanja tabular:** Permintaan Pembelian Barang (ATK, P3K, Pantry, Aset).
    - **Komponen Wajib:**
-     - Kertas mendatar (Landscape) dengan margin `@page { size: A4 landscape; margin: 20mm 22mm 18mm 22mm; }` agar konten memiliki jarak bernapas elegan dan proporsional (~7.4% per sisi) dari tepi kertas, sejajar dengan standar Portrait.
+     - Kertas mendatar (Landscape) dengan margin `@page { size: A4 landscape; margin: 8mm 12mm 8mm 12mm; }` agar konten proporsional dan tidak menyisakan ruang kosong berlebih di pinggir kertas.
      - Tabel belanja 7–8 kolom dengan sub-kategori emas `#F7CE3E`, kalkulasi Grand Total otomatis berlatar kuning emas, dan kop pembelian Info Data.
-     - 4 kotak tanda tangan resmi (Pemohon, Disetujui, Mengetahui, Keuangan) serta catatan verifikasi elektronik.
+     - 4 kotak tanda tangan resmi (Pemohon, Disetujui, Bagian Keuangan, Mengetahui) dengan QR code barcode ukuran seragam 70x70px yang mudah di-scan dan tinggi kotak presisi rata sejajar.
 
 ### Pemilihan Layout di Form Builder:
 - Admin dapat menentukan tipe layout di menu *Admin -> Buat/Edit Template* melalui dropdown `fields[pdf_layout]`:

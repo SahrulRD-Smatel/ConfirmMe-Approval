@@ -14,7 +14,7 @@
             {{-- LANDSCAPE STYLES (DAFTAR PENGADAAN / PEMBELIAN BARANG) --}}
             @page {
                 size: A4 landscape;
-                margin: 20mm 22mm 18mm 22mm !important;
+                margin: 8mm 12mm 8mm 12mm !important;
             }
 
             body {
@@ -50,12 +50,12 @@
             .total-row td { font-weight: bold; }
             .bg-yellow { background-color: #F7CE3E !important; }
 
-            .sig-container { width: 100%; border-collapse: collapse; margin-top: 12px; page-break-inside: avoid; }
-            .sig-box-cell { width: 25%; padding: 0 4px; vertical-align: top; }
+            .sig-container { width: 100%; border-collapse: collapse; margin-top: 10px; page-break-inside: avoid; }
+            .sig-box-cell { width: 25%; padding: 0 5px; vertical-align: top; }
             .sig-card { width: 100%; border: 1px solid #000; border-collapse: collapse; }
-            .sig-card-header { border-bottom: 1px solid #000; text-align: center; font-weight: bold; font-size: 9.5px; padding: 3px; background-color: #fff; height: 18px; }
-            .sig-card-body { text-align: center; vertical-align: middle; height: 50px; padding: 2px; position: relative; }
-            .sig-card-footer { border-top: 1px solid #000; text-align: center; font-weight: bold; font-size: 9px; padding: 3px 2px; background-color: #fff; height: 20px; }
+            .sig-card-header { border-bottom: 1px solid #000; text-align: center; font-weight: bold; font-size: 9px; padding: 4px 2px; background-color: #fff; height: 16px; }
+            .sig-card-body { text-align: center; vertical-align: middle; height: 74px; min-height: 74px; padding: 3px 2px; background-color: #fff; }
+            .sig-card-footer { border-top: 1px solid #000; text-align: center; font-weight: bold; font-size: 8.5px; padding: 4px 2px; background-color: #fff; height: 18px; }
 
             .text-center { text-align: center; }
             .text-right { text-align: right; }
@@ -834,7 +834,7 @@
 
         @php
             $genSignerQr = function(string $url) {
-                return base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(150)->margin(1)->generate($url));
+                return base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(250)->margin(0)->generate($url));
             };
         @endphp
 
@@ -848,11 +848,13 @@
                             <tr>
                                 <td class="sig-card-body">
                                     @if($verificationUrl)
-                                        <img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'requester'])) }}" style="width: 44px; height: 44px; display: inline-block;" />
+                                        <img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'requester'])) }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
+                                    @else
+                                        <div style="height: 70px; line-height: 70px; color: #aaa; font-size: 8.5px; text-align: center;">-</div>
                                     @endif
                                 </td>
                             </tr>
-                            <tr><td class="sig-card-footer">{{ $pemohon->name ?? '-' }}</td></tr>
+                            <tr><td class="sig-card-footer">{{ format_acronyms($pemohon->name ?? '-') }}</td></tr>
                         </table>
                     </td>
                     <td class="sig-box-cell" style="width: 25%;">
@@ -861,9 +863,9 @@
                             <tr>
                                 <td class="sig-card-body">
                                     @if($disetujuiApproval && $disetujuiApproval->status === 'approved' && $verificationUrl)
-                                        <img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $disetujuiApproval->id])) }}" style="width: 44px; height: 44px; display: inline-block;" />
+                                        <img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $disetujuiApproval->id])) }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
                                     @else
-                                        <span style="color: #aaa; font-size: 8px;">Pending</span>
+                                        <div style="height: 70px; line-height: 70px; color: #aaa; font-size: 8.5px; text-align: center;">Pending</div>
                                     @endif
                                 </td>
                             </tr>
@@ -877,11 +879,11 @@
                             <tr>
                                 <td class="sig-card-body">
                                     @if($financeApproval && $financeApproval->status === 'approved' && $verificationUrl)
-                                        <img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $financeApproval->id])) }}" style="width: 65px; height: 65px; display: inline-block;" />
-                                    @elseif($verificationUrl)
-                                        <img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'finance'])) }}" style="width: 65px; height: 65px; display: inline-block;" />
+                                        <img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $financeApproval->id])) }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
+                                    @elseif($verificationUrl && ($document->status === 'completed' || $document->status === 'paid' || $financeUser))
+                                        <img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'finance'])) }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
                                     @else
-                                        <span style="color: #aaa; font-size: 8px;">Pending</span>
+                                        <div style="height: 70px; line-height: 70px; color: #aaa; font-size: 8.5px; text-align: center;">Pending</div>
                                     @endif
                                 </td>
                             </tr>
@@ -894,8 +896,10 @@
                             <tr><td class="sig-card-header">Mengetahui</td></tr>
                             <tr>
                                 <td class="sig-card-body">
-                                    @if($mengetahuiUser && $document->status === 'completed' && $verificationUrl)
-                                        <img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'mengetahui'])) }}" style="width: 65px; height: 65px; display: inline-block;" />
+                                    @if($mengetahuiUser && in_array($document->status, ['approved', 'completed', 'paid']) && $verificationUrl)
+                                        <img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'mengetahui'])) }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
+                                    @else
+                                        <div style="height: 70px; line-height: 70px; color: #aaa; font-size: 8.5px; text-align: center;">-</div>
                                     @endif
                                 </td>
                             </tr>
@@ -919,7 +923,9 @@
                             <tr>
                                 <td class="sig-card-body">
                                     @if($verificationUrl)
-                                        <img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'requester'])) }}" style="width: 65px; height: 65px; display: inline-block;" />
+                                        <img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'requester'])) }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
+                                    @else
+                                        <div style="height: 70px; line-height: 70px; color: #aaa; font-size: 8.5px; text-align: center;">-</div>
                                     @endif
                                 </td>
                             </tr>
@@ -937,9 +943,9 @@
                                 <tr>
                                     <td class="sig-card-body">
                                         @if($approval->status === 'approved' && $verificationUrl)
-                                            <img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $approval->id])) }}" style="width: 65px; height: 65px; display: inline-block;" />
+                                            <img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $approval->id])) }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
                                         @else
-                                            <span style="color: #aaa; font-size: 8px;">{{ ucfirst($approval->status ?? 'pending') }}</span>
+                                            <div style="height: 70px; line-height: 70px; color: #aaa; font-size: 8.5px; text-align: center;">{{ ucfirst($approval->status ?? 'pending') }}</div>
                                         @endif
                                     </td>
                                 </tr>
@@ -964,7 +970,7 @@
                     <td style="width: 20%; text-align: center; vertical-align: middle;">
                         @if(isset($qrCode))
                             <div style="display: inline-block; text-align: center;">
-                                <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code" style="width: 68px; height: 68px; display: block; margin: 0 auto;">
+                                <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code" style="width: 70px; height: 70px; display: block; margin: 0 auto;">
                                 <div style="font-size: 7.5px; font-weight: bold; color: #475569; margin-top: 2px;">Scan verifikasi</div>
                             </div>
                         @endif
