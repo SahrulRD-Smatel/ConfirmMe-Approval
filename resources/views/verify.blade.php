@@ -152,6 +152,36 @@
                             </div>
                         </div>
                     </div>
+                @elseif($scannedSigner === 'mengetahui')
+                    @php
+                        $notifUser = $document->getNotifyUsers()->first();
+                    @endphp
+                    <div class="border-b border-gray-100 bg-amber-50/70 p-6 sm:p-7">
+                        <div class="flex items-start gap-4">
+                            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-600 text-white shadow-sm">
+                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                </svg>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <span class="inline-block rounded-full bg-amber-100 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-800">
+                                    {{ __('Pihak Mengetahui / Tembusan') }}
+                                </span>
+                                @if($notifUser)
+                                    <h3 class="mt-1 text-base font-bold text-gray-900">{{ $notifUser->name }}</h3>
+                                    <p class="text-xs text-gray-600">
+                                        {{ format_acronyms($notifUser->position ?? 'Staff') }}
+                                        @if($notifUser->employee_id)
+                                            &bull; NIP. {{ $notifUser->employee_id }}
+                                        @endif
+                                    </p>
+                                @endif
+                                <p class="mt-2 text-xs text-amber-800">
+                                    {{ __('Dokumen resmi ini telah disetujui sepenuhnya dan tercatat untuk pihak terkait.') }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 @endif
 
                 {{-- Document details --}}

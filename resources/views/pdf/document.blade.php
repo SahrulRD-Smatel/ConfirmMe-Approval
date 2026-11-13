@@ -1112,7 +1112,7 @@
                     $allSigners = collect();
 
                     $genSignerQr = function(string $url) {
-                        return base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(150)->margin(1)->generate($url));
+                        return base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(250)->margin(0)->generate($url));
                     };
 
                     // 1. Pemohon (Always first in document workflow)
@@ -1210,6 +1210,15 @@
                             {{ __("Dokumen ini diterbitkan secara elektronik oleh sistem ConfirmMe - PT Info Solusindo Data Utama.") }}
                             {{ __("Scan QR Code di samping untuk memverifikasi keaslian dokumen.") }}<br>
                             <span style="color: #1e293b; font-size: 8px;"><strong>ID Dokumen:</strong> {{ $document->document_number }} | <strong>Hash:</strong> {{ substr($document->approval_hash ?? 'N/A', 0, 32) }}...</span>
+                            @php
+                                $tembusanUsers = collect();
+                                try { $tembusanUsers = $document->getNotifyUsers(); } catch (\Throwable $e) {}
+                            @endphp
+                            @if($tembusanUsers->isNotEmpty())
+                                <div style="margin-top: 3px; font-size: 8px; color: #475569;">
+                                    <strong>{{ __('Tembusan (Mengetahui)') }}:</strong> {{ $tembusanUsers->map(fn($u) => format_acronyms($u->name) . ' (' . format_acronyms($u->position ?? $u->department ?? 'Staff') . ')')->implode(', ') }}
+                                </div>
+                            @endif
                         </td>
                         <td style="width: 26%; text-align: center; vertical-align: middle;">
                             @if(isset($qrCode))
