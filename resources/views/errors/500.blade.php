@@ -62,6 +62,18 @@
                     </svg>
                     {{ __('Ke Dashboard') }}
                 </a>
+                @auth
+                    <form method="POST" action="{{ route('logout') }}" class="w-full sm:w-auto">
+                        @csrf
+                        <button type="submit"
+                            class="inline-flex w-full items-center justify-center rounded-xl border border-red-200 bg-red-50 px-6 py-3 text-sm font-semibold text-red-700 transition-all hover:-translate-y-0.5 hover:bg-red-100 hover:shadow-md dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-900/50 sm:w-auto">
+                            <svg class="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+                            </svg>
+                            {{ __('Keluar') }}
+                        </button>
+                    </form>
+                @endauth
             </div>
 
             <p class="anim-fade-up mt-10 text-xs text-gray-400 dark:text-gray-500" style="animation-delay:0.4s">

@@ -52,8 +52,8 @@ class DashboardController extends Controller
             return view('admin.dashboard', compact('adminStats', 'todayLogs', 'yesterdayLogs', 'recentUsers', 'roleDistribution', 'trafficChart'));
         }
 
-        // 2. Executive dashboard (Presiden Direktur)
-        if ($user->hasRole('presiden_direktur') || $user->can('menu-executive-dashboard')) {
+        // 2. Executive dashboard (Presiden Direktur / Executive Role)
+        if ($user->can('menu-executive-dashboard')) {
             return redirect()->route('executive.dashboard');
         }
 

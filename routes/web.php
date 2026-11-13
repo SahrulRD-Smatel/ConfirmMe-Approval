@@ -83,7 +83,7 @@ Route::middleware(['auth', 'verified', 'active', 'has_role'])->group(function ()
     // Leave Requests (All authenticated users)
     Route::resource('leave-requests', \App\Http\Controllers\LeaveRequestController::class)
         ->except(['edit', 'update', 'destroy'])
-        ->middleware('feature:module_hris');
+        ->middleware(['feature:module_hris', 'can:menu-my-leaves']);
 
     // Leave Approval (Supervisor for staff, HR Manager/Director for higher roles)
     Route::prefix('leave-approvals')->name('leave-approvals.')
@@ -213,8 +213,8 @@ Route::middleware(['auth', 'verified', 'active', 'has_role'])->group(function ()
         Route::get('/audit-logs/{auditLog}', [AuditLogController::class, 'show'])->name('audit-logs.show')->middleware('can:view-audit-log');
     });
 
-    // Executive Routes (Presiden Direktur only)
-    Route::prefix('executive')->name('executive.')->middleware('role:presiden_direktur')->group(function () {
+    // Executive Routes
+    Route::prefix('executive')->name('executive.')->middleware('can:menu-executive-dashboard')->group(function () {
         Route::get('/', [\App\Http\Controllers\ExecutiveController::class, 'dashboard'])->name('dashboard');
         Route::get('/approvals', [\App\Http\Controllers\ExecutiveController::class, 'approvals'])->name('approvals');
         Route::get('/approvals/{document}', [\App\Http\Controllers\ExecutiveController::class, 'showApproval'])->name('approvals.show');
@@ -225,7 +225,7 @@ Route::middleware(['auth', 'verified', 'active', 'has_role'])->group(function ()
     });
 
     // My Loans (Employee view of their own loans)
-    Route::middleware('feature:module_loan')->group(function () {
+    Route::middleware(['feature:module_loan', 'can:menu-my-loans'])->group(function () {
         Route::get('/my-loans', [MyLoanController::class, 'index'])->name('my-loans.index');
         Route::get('/my-loans/{loan}', [MyLoanController::class, 'show'])->name('my-loans.show');
     });

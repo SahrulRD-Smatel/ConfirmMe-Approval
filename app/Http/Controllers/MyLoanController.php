@@ -7,14 +7,6 @@ use Illuminate\Http\Request;
 
 class MyLoanController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware(function ($request, $next) {
-            abort_unless(auth()->user()->can('menu-my-loans'), 403, 'Anda tidak memiliki akses ke fitur ini.');
-            return $next($request);
-        });
-    }
-
     public function index(Request $request)
     {
         $loans = EmployeeLoan::with(['document', 'repayments'])

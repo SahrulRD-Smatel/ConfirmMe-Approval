@@ -190,6 +190,7 @@ class DatabaseSeeder extends Seeder
                 'view-reports',
                 'export-reports',
                 'view-audit-log',
+                'menu-executive-dashboard',
             ],
             'finance' => [
                 'create-document',

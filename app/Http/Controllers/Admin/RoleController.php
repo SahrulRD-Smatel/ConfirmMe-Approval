@@ -14,7 +14,7 @@ class RoleController extends Controller
      */
     private function getGroupedPermissions()
     {
-        $permissions = Permission::where('name', '!=', 'menu-executive-dashboard')->orderBy('name')->pluck('name');
+        $permissions = Permission::orderBy('name')->pluck('name');
         
         $groups = [];
         foreach ($permissions as $perm) {
@@ -24,7 +24,9 @@ class RoleController extends Controller
                 'type' => self::getPermissionLabel($perm)['type'],
             ];
 
-            if (str_contains($perm, 'document') || str_contains($perm, 'menu-archive') || str_contains($perm, 'menu-team-documents') || str_contains($perm, 'menu-bulk-approval')) {
+            if (str_contains($perm, 'executive')) {
+                $groups[__('Eksekutif')][] = $data;
+            } elseif (str_contains($perm, 'document') || str_contains($perm, 'menu-archive') || str_contains($perm, 'menu-team-documents') || str_contains($perm, 'menu-bulk-approval')) {
                 $groups[__('Dokumen')][] = $data;
             } elseif (str_contains($perm, 'budget') || str_contains($perm, 'po') || str_contains($perm, 'invoice') || str_contains($perm, 'purchasing') || str_contains($perm, 'menu-my-loans')) {
                 $groups[__('Keuangan')][] = $data;
@@ -46,6 +48,7 @@ class RoleController extends Controller
     {
         $labels = [
             'menu-bulk-approval' => ['type' => 'MENU', 'label' => 'Bulk Approval'],
+            'menu-executive-dashboard' => ['type' => 'MENU', 'label' => 'Executive Dashboard'],
             'menu-office-locations' => ['type' => 'MENU', 'label' => 'Lokasi Kantor'],
             'menu-announcements' => ['type' => 'MENU', 'label' => 'Pengumuman'],
             'menu-my-loans' => ['type' => 'MENU', 'label' => 'Pinjaman Saya'],

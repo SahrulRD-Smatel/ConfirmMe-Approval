@@ -64,7 +64,7 @@ return Application::configure(basePath: dirname(__DIR__))
             ]);
 
             // Render as 403 using our custom error page
-            abort(403, $e->getMessage());
+            return response()->view('errors.403', ['exception' => $e], 403);
         });
     })->create();
 

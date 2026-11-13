@@ -16,10 +16,6 @@ class LeaveRequestController extends Controller
     {
         $this->notificationService = $notificationService;
         $this->leaveApprovalController = $leaveApprovalController;
-        $this->middleware(function ($request, $next) {
-            abort_unless(auth()->user()->can('menu-my-leaves'), 403, 'Anda tidak memiliki akses ke fitur ini.');
-            return $next($request);
-        });
     }
 
     /**
