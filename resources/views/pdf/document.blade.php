@@ -460,28 +460,6 @@
                 return 0.0;
             };
 
-            // 4 Approver boxes
-            $disetujuiApproval = $approvals->first(function($app) {
-                $r = strtolower($app->approver_role ?? '');
-                return !str_contains($r, 'finance') && !str_contains($r, 'keuangan') && !str_contains($r, 'ga');
-            }) ?? $approvals->first();
-
-            $notifyUsers = collect();
-            try { $notifyUsers = $document->getNotifyUsers(); } catch (\Throwable $e) {}
-            $mengetahuiUser = $notifyUsers->first();
-            if (!$mengetahuiUser && $approvals->count() >= 2) {
-                $mengetahuiApproval = $approvals->first(function($app) {
-                    return str_contains(strtolower($app->approver_role ?? ''), 'ga') || str_contains(strtolower($app->approver_role ?? ''), 'hrga');
-                });
-                $mengetahuiUser = $mengetahuiApproval?->approver;
-            }
-
-            $financeApproval = $approvals->first(function($app) {
-                $r = strtolower($app->approver_role ?? '');
-                return str_contains($r, 'finance') || str_contains($r, 'keuangan');
-            });
-            $financeUser = $financeApproval?->approver;
-
             // Resolve dynamic table fields
             $tableFields = [];
             foreach ($dynamicFields as $f) {
@@ -821,143 +799,71 @@
             </table>
         @endforeach
 
-        {{-- Adaptive Landscape Signatures --}}
-        @php
-            $isPurchasingWorkflow = (
-                str_contains(strtolower($template->code ?? $document->title), 'pembelian') ||
-                str_contains(strtolower($template->code ?? $document->title), 'pengadaan') ||
-                !empty($metadata['kategori_pembelian']) ||
-                $document->purchaseOrder ||
-                $financeApproval !== null
-            );
-        @endphp
-
+        {{-- Adaptive Landscape Signatures (Pemohon & Approvers Only - Mengetahui has no signature box) --}}
         @php
             $genSignerQr = function(string $url) {
                 return base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(250)->margin(0)->generate($url));
             };
+
+            $allSigners = collect();
+
+            // 1. Pemohon (Always first in document workflow)
+            $allSigners->push([
+                'role' => 'Pemohon',
+                'name' => format_acronyms($pemohon->name ?? '-'),
+                'is_signed' => (bool)$verificationUrl,
+                'status' => 'approved',
+                'qr_url' => $verificationUrl ? route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'requester']) : null,
+            ]);
+
+            // 2. Approvers in sequential workflow order
+            foreach ($approvals as $approval) {
+                $allSigners->push([
+                    'role' => format_acronyms($approval->approver?->position ?? ($approval->role_label ?? 'Approver')),
+                    'name' => format_acronyms($approval->approver?->name ?? '-'),
+                    'is_signed' => $approval->status === 'approved' && $verificationUrl,
+                    'status' => $approval->status,
+                    'qr_url' => ($approval->status === 'approved' && $verificationUrl)
+                        ? route('verify.show', ['hash' => $document->approval_hash, 'step' => $approval->id])
+                        : null,
+                ]);
+            }
+
+            // In landscape, up to 6 signers fit cleanly in 1 row. If > 6, chunk by 4.
+            $chunkSize = $allSigners->count() <= 6 ? $allSigners->count() : 4;
+            $signerRows = $allSigners->chunk($chunkSize);
         @endphp
 
-        @if($isPurchasingWorkflow)
-            {{-- Standard 4-box layout for Purchasing / PO --}}
-            <table class="sig-container">
-                <tr>
-                    <td class="sig-box-cell" style="width: 25%;">
-                        <table class="sig-card">
-                            <tr><td class="sig-card-header">Pemohon</td></tr>
-                            <tr>
-                                <td class="sig-card-body">
-                                    @if($verificationUrl)
-                                        <img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'requester'])) }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
-                                    @else
-                                        <div style="height: 70px; line-height: 70px; color: #aaa; font-size: 8.5px; text-align: center;">-</div>
-                                    @endif
-                                </td>
-                            </tr>
-                            <tr><td class="sig-card-footer">{{ format_acronyms($pemohon->name ?? '-') }}</td></tr>
-                        </table>
-                    </td>
-                    <td class="sig-box-cell" style="width: 25%;">
-                        <table class="sig-card">
-                            <tr><td class="sig-card-header">Disetujui</td></tr>
-                            <tr>
-                                <td class="sig-card-body">
-                                    @if($disetujuiApproval && $disetujuiApproval->status === 'approved' && $verificationUrl)
-                                        <img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $disetujuiApproval->id])) }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
-                                    @else
-                                        <div style="height: 70px; line-height: 70px; color: #aaa; font-size: 8.5px; text-align: center;">Pending</div>
-                                    @endif
-                                </td>
-                            </tr>
-                            <tr><td class="sig-card-footer">{{ format_acronyms($disetujuiApproval?->approver?->name ?? '-') }}</td></tr>
-                        </table>
-                    </td>
-                    
-                    <td class="sig-box-cell" style="width: 25%;">
-                        <table class="sig-card">
-                            <tr><td class="sig-card-header">Bagian Keuangan</td></tr>
-                            <tr>
-                                <td class="sig-card-body">
-                                    @if($financeApproval && $financeApproval->status === 'approved' && $verificationUrl)
-                                        <img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $financeApproval->id])) }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
-                                    @elseif($verificationUrl && ($document->status === 'completed' || $document->status === 'paid' || $financeUser))
-                                        <img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'finance'])) }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
-                                    @else
-                                        <div style="height: 70px; line-height: 70px; color: #aaa; font-size: 8.5px; text-align: center;">Pending</div>
-                                    @endif
-                                </td>
-                            </tr>
-                            <tr><td class="sig-card-footer">{{ format_acronyms($financeUser->name ?? '-') }}</td></tr>
-                        </table>
-                    </td>
-
-                    <td class="sig-box-cell" style="width: 25%;">
-                        <table class="sig-card">
-                            <tr><td class="sig-card-header">Mengetahui</td></tr>
-                            <tr>
-                                <td class="sig-card-body">
-                                    @if($mengetahuiUser && in_array($document->status, ['approved', 'completed', 'paid']) && $verificationUrl)
-                                        <img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'mengetahui'])) }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
-                                    @else
-                                        <div style="height: 70px; line-height: 70px; color: #aaa; font-size: 8.5px; text-align: center;">-</div>
-                                    @endif
-                                </td>
-                            </tr>
-                            <tr><td class="sig-card-footer">{{ format_acronyms($mengetahuiUser->name ?? '-') }}</td></tr>
-                        </table>
-                    </td>
-                    
-                </tr>
-            </table>
-        @else
-            {{-- Dynamic cards for each approver for general landscape documents --}}
+        @foreach($signerRows as $row)
             @php
-                $cardCount = 1 + max(1, count($approvals));
-                $cardWidth = round(100 / $cardCount, 2);
+                $colWidth = round(100 / $row->count(), 2);
             @endphp
-            <table class="sig-container">
+            <table class="sig-container" style="margin-top: 10px;">
                 <tr>
-                    <td class="sig-box-cell" style="width: {{ $cardWidth }}%;">
-                        <table class="sig-card">
-                            <tr><td class="sig-card-header">Pemohon</td></tr>
-                            <tr>
-                                <td class="sig-card-body">
-                                    @if($verificationUrl)
-                                        <img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'requester'])) }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
-                                    @else
-                                        <div style="height: 70px; line-height: 70px; color: #aaa; font-size: 8.5px; text-align: center;">-</div>
-                                    @endif
-                                </td>
-                            </tr>
-                            <tr><td class="sig-card-footer">{{ format_acronyms($pemohon->name ?? '-') }}</td></tr>
-                        </table>
-                    </td>
-                    @foreach($approvals as $approval)
-                        <td class="sig-box-cell" style="width: {{ $cardWidth }}%;">
+                    @foreach($row as $signer)
+                        <td class="sig-box-cell" style="width: {{ $colWidth }}%;">
                             <table class="sig-card">
                                 <tr>
-                                    <td class="sig-card-header">
-                                        {{ format_acronyms($approval->approver?->position ?? ($approval->role_label ?? 'Approver')) }}
-                                    </td>
+                                    <td class="sig-card-header">{{ $signer['role'] }}</td>
                                 </tr>
                                 <tr>
                                     <td class="sig-card-body">
-                                        @if($approval->status === 'approved' && $verificationUrl)
-                                            <img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $approval->id])) }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
+                                        @if($signer['is_signed'] && $signer['qr_url'])
+                                            <img src="data:image/svg+xml;base64,{{ $genSignerQr($signer['qr_url']) }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
                                         @else
-                                            <div style="height: 70px; line-height: 70px; color: #aaa; font-size: 8.5px; text-align: center;">{{ ucfirst($approval->status ?? 'pending') }}</div>
+                                            <div style="height: 70px; line-height: 70px; color: #aaa; font-size: 8.5px; text-align: center;">{{ ucfirst($signer['status'] ?? 'pending') }}</div>
                                         @endif
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="sig-card-footer">{{ format_acronyms($approval->approver?->name ?? '-') }}</td>
+                                    <td class="sig-card-footer">{{ $signer['name'] }}</td>
                                 </tr>
                             </table>
                         </td>
                     @endforeach
                 </tr>
             </table>
-        @endif
+        @endforeach
 
         <div class="verification-footer">
             <table style="width: 100%; border-collapse: collapse;">
@@ -966,6 +872,15 @@
                         <strong style="color: #0f172a; font-size: 9px;">Catatan Verifikasi:</strong><br>
                         Dokumen ini diterbitkan secara elektronik oleh ConfirmMe - PT Info Solusindo Data Utama. Scan QR Code di samping untuk memverifikasi keabsahan dokumen.<br>
                         <span style="color: #334155; font-size: 8px;"><strong>ID Dokumen:</strong> {{ $document->document_number }} | <strong>Hash:</strong> {{ substr($document->approval_hash ?? 'N/A', 0, 32) }}...</span>
+                        @php
+                            $tembusanUsers = collect();
+                            try { $tembusanUsers = $document->getNotifyUsers(); } catch (\Throwable $e) {}
+                        @endphp
+                        @if($tembusanUsers->isNotEmpty())
+                            <div style="margin-top: 3px; font-size: 7.5px; color: #475569;">
+                                <strong>Tembusan (Mengetahui):</strong> {{ $tembusanUsers->map(fn($u) => format_acronyms($u->name) . ' (' . format_acronyms($u->position ?? $u->department ?? 'Staff') . ')')->implode(', ') }}
+                            </div>
+                        @endif
                     </td>
                     <td style="width: 20%; text-align: center; vertical-align: middle;">
                         @if(isset($qrCode))

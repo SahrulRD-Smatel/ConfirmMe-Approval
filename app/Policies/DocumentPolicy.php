@@ -46,8 +46,8 @@ class DocumentPolicy
             return true;
         }
 
-        // 5. Pihak Mengetahui (Tembusan / Observers) listed in template
-        if ($document->getNotifyUsers()->contains('id', $user->id)) {
+        // 5. Pihak Mengetahui (Tembusan / Observers) listed in template - only accessible once document is legal/approved
+        if (in_array($document->status, ['approved', 'completed', 'paid']) && $document->getNotifyUsers()->contains('id', $user->id)) {
             return true;
         }
 

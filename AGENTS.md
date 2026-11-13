@@ -69,7 +69,7 @@ Sistem memiliki 2 preset layout visual terpadu di dalam `pdf.document`:
    - **Komponen Wajib:**
      - Kertas mendatar (Landscape) dengan margin `@page { size: A4 landscape; margin: 8mm 12mm 8mm 12mm; }` agar konten proporsional dan tidak menyisakan ruang kosong berlebih di pinggir kertas.
      - Tabel belanja 7–8 kolom dengan sub-kategori emas `#F7CE3E`, kalkulasi Grand Total otomatis berlatar kuning emas, dan kop pembelian Info Data.
-     - 4 kotak tanda tangan resmi (Pemohon, Disetujui, Bagian Keuangan, Mengetahui) dengan QR code barcode ukuran seragam 70x70px yang mudah di-scan dan tinggi kotak presisi rata sejajar.
+     - Kotak tanda tangan resmi dinamis untuk Pemohon dan para Approver dengan QR code barcode ukuran seragam 70x70px yang mudah di-scan dan tinggi kotak presisi rata sejajar. Pihak Mengetahui (Tembusan) tidak memiliki tanda tangan/barcode, melainkan dicantumkan sebagai tembusan resmi di catatan verifikasi.
 
 ### Pemilihan Layout di Form Builder:
 - Admin dapat menentukan tipe layout di menu *Admin -> Buat/Edit Template* melalui dropdown `fields[pdf_layout]`:
