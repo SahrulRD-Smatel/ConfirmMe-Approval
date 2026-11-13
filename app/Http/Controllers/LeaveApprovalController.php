@@ -58,8 +58,8 @@ class LeaveApprovalController extends Controller
             return true;
         }
 
-        // Presiden Direktur can approve Director leave directly
-        if ($user->hasRole('presiden_direktur')) {
+        // Presiden Direktur / Executive can approve Director leave directly
+        if ($user->hasRole('presiden_direktur') || $user->can('menu-executive-dashboard')) {
             return true;
         }
 
@@ -269,8 +269,8 @@ class LeaveApprovalController extends Controller
             abort(403, 'Anda tidak berhak menyetujui pengajuan cuti ini.');
         }
 
-        // Presiden Direktur has ultimate executive authority — directly finalize approval (skips HR tiers)
-        if ($user->hasRole('presiden_direktur')) {
+        // Presiden Direktur / Executive has ultimate executive authority — directly finalize approval (skips HR tiers)
+        if ($user->hasRole('presiden_direktur') || $user->can('menu-executive-dashboard')) {
             return $this->finalizeApproval($leaveRequest, $user);
         }
 

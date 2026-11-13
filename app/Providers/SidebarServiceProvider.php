@@ -55,8 +55,8 @@ class SidebarServiceProvider extends ServiceProvider
                 // Leave request counts — uses current_approver_id (synced with 4-step system)
                 $data['pendingLeaveCount'] = $this->getPendingLeaveCount($user);
 
-                // Presiden Direktur specific
-                if ($user->hasRole('presiden_direktur')) {
+                // Executive / Presiden Direktur specific
+                if ($user->can('menu-executive-dashboard') || $user->hasRole('presiden_direktur')) {
                     $data['presdirPendingCount'] = \App\Models\Document::where('status', 'presiden_review')
                         ->where('current_approver_id', $user->id)
                         ->count();

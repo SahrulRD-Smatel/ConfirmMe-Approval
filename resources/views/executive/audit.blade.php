@@ -21,6 +21,7 @@
                 <label class="block text-xs font-medium text-gray-500 mb-1">{{ __('Tipe') }}</label>
                 <select name="type" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-xl">
                     <option value="">{{ __('Semua Tipe') }}</option>
+                    <option value="only" {{ request('type') == 'only' ? 'selected' : '' }}>{{ __('Dokumen Umum') }}</option>
                     <option value="po" {{ request('type') == 'po' ? 'selected' : '' }}>PO</option>
                     <option value="invoice" {{ request('type') == 'invoice' ? 'selected' : '' }}>Invoice</option>
                     <option value="loan" {{ request('type') == 'loan' ? 'selected' : '' }}>Loan</option>

@@ -21,6 +21,7 @@
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('Tipe') }}</label>
                 <select name="type" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-xl focus:ring-purple-500 focus:border-purple-500">
                     <option value="">{{ __('Semua Tipe') }}</option>
+                    <option value="only" {{ request('type') == 'only' ? 'selected' : '' }}>{{ __('Dokumen Umum') }}</option>
                     <option value="po" {{ request('type') == 'po' ? 'selected' : '' }}>Purchase Order</option>
                     <option value="invoice" {{ request('type') == 'invoice' ? 'selected' : '' }}>Invoice</option>
                     <option value="loan" {{ request('type') == 'loan' ? 'selected' : '' }}>Employee Loan</option>
@@ -40,10 +41,9 @@
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('Divisi') }}</label>
                 <select name="division" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-xl focus:ring-purple-500 focus:border-purple-500">
                     <option value="">{{ __('Semua Divisi') }}</option>
-                    <option value="IT" {{ request('division') == 'IT' ? 'selected' : '' }}>IT</option>
-                    <option value="HR" {{ request('division') == 'HR' ? 'selected' : '' }}>HR</option>
-                    <option value="Finance" {{ request('division') == 'Finance' ? 'selected' : '' }}>Finance</option>
-                    <option value="Sales" {{ request('division') == 'Sales' ? 'selected' : '' }}>Sales</option>
+                    @foreach($departments ?? [] as $dept)
+                        <option value="{{ $dept }}" {{ request('division') == $dept ? 'selected' : '' }}>{{ $dept }}</option>
+                    @endforeach
                 </select>
             </div>
             <div class="flex items-end gap-2">
@@ -97,8 +97,10 @@
                                             'po' => 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
                                             'invoice' => 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200',
                                             'loan' => 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+                                            'only' => 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200',
+                                            'bulk' => 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200',
                                         ];
-                                        $typeLabels = ['po' => 'PO', 'invoice' => 'Invoice', 'loan' => 'Loan'];
+                                        $typeLabels = ['po' => 'PO', 'invoice' => 'Invoice', 'loan' => __('Pinjaman'), 'only' => __('Umum'), 'bulk' => 'Bulk'];
                                     @endphp
                                     <span class="px-2 py-1 text-xs font-medium rounded-full {{ $typeColors[$document->approval_type] ?? 'bg-gray-100 text-gray-800' }}">
                                         {{ $typeLabels[$document->approval_type] ?? ucfirst($document->approval_type) }}

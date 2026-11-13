@@ -48,31 +48,32 @@ class ExecutiveController extends Controller
             'overdue_count' => $pendingApprovals->filter(fn($d) => $d->created_at->diffInDays(now()) > 7)->count(),
         ];
 
-        // Monthly spending data (last 6 months)
+        // Monthly spending data (last 6 months) - All approved documents with budget
         $monthlySpending = Document::where('status', 'approved')
-            ->whereIn('approval_type', ['po', 'invoice', 'loan'])
             ->where('approved_at', '>=', now()->subMonths(6))
+            ->where('approved_budget', '>', 0)
             ->select(
                 DB::raw('MONTH(approved_at) as month'),
                 DB::raw('YEAR(approved_at) as year'),
                 DB::raw('SUM(approved_budget) as total')
             )
-            ->groupBy('year', 'month')
-            ->orderBy('year')
-            ->orderBy('month')
+            ->groupBy(DB::raw('YEAR(approved_at)'), DB::raw('MONTH(approved_at)'))
+            ->orderBy(DB::raw('YEAR(approved_at)'))
+            ->orderBy(DB::raw('MONTH(approved_at)'))
             ->get();
 
-        // Division distribution
+        // Division distribution (All approved documents with budget this year)
         $divisionData = Document::where('status', 'approved')
-            ->whereIn('approval_type', ['po', 'invoice'])
+            ->whereNotNull('department')
+            ->where('department', '!=', '')
             ->where('approved_at', '>=', now()->startOfYear())
+            ->where('approved_budget', '>', 0)
             ->select('department', DB::raw('SUM(approved_budget) as total'))
             ->groupBy('department')
             ->get();
 
-        // Approval type distribution
-        $typeData = Document::whereIn('approval_type', ['po', 'invoice', 'loan'])
-            ->where('status', 'presiden_review')
+        // Approval type distribution in pending review
+        $typeData = Document::where('status', 'presiden_review')
             ->select('approval_type', DB::raw('COUNT(*) as count'))
             ->groupBy('approval_type')
             ->get();
@@ -87,6 +88,12 @@ class ExecutiveController extends Controller
             if ($last == 0) return $current > 0 ? 100 : 0;
             return round((($current - $last) / $last) * 100, 1);
         };
+
+        // Total Company Spending (from all approved documents)
+        $totalThisYear = Document::where('status', 'approved')->whereYear('approved_at', $year)->sum('approved_budget');
+        $totalThisMonth = Document::where('status', 'approved')->whereYear('approved_at', $year)->whereMonth('approved_at', $currentMonth)->sum('approved_budget');
+        $totalLastMonth = Document::where('status', 'approved')->whereYear('approved_at', $lastMonthYear)->whereMonth('approved_at', $lastMonth)->sum('approved_budget');
+        $totalGrowth = $calculateGrowth($totalThisMonth, $totalLastMonth);
 
         // PO
         $poThisYear = Document::where('approval_type', 'po')->where('status', 'approved')->whereYear('approved_at', $year)->sum('approved_budget');
@@ -105,12 +112,6 @@ class ExecutiveController extends Controller
         $loanThisMonth = Document::where('approval_type', 'loan')->whereIn('status', ['approved', 'completed'])->whereYear('approved_at', $year)->whereMonth('approved_at', $currentMonth)->sum('approved_budget');
         $loanLastMonth = Document::where('approval_type', 'loan')->whereIn('status', ['approved', 'completed'])->whereYear('approved_at', $lastMonthYear)->whereMonth('approved_at', $lastMonth)->sum('approved_budget');
         $loanGrowth = $calculateGrowth($loanThisMonth, $loanLastMonth);
-
-        // Total
-        $totalThisYear = $poThisYear + $invThisYear;
-        $totalThisMonth = $poThisMonth + $invThisMonth;
-        $totalLastMonth = $poLastMonth + $invLastMonth;
-        $totalGrowth = $calculateGrowth($totalThisMonth, $totalLastMonth);
 
         $financeStats = [
             'total' => ['value' => $totalThisYear, 'growth' => $totalGrowth],
@@ -158,7 +159,9 @@ class ExecutiveController extends Controller
             ->orderBy('created_at', 'asc')
             ->paginate(10);
 
-        return view('executive.approvals', compact('documents'));
+        $departments = \App\Models\Department::orderBy('name')->pluck('name');
+
+        return view('executive.approvals', compact('documents', 'departments'));
     }
 
     /**
@@ -286,15 +289,13 @@ class ExecutiveController extends Controller
     public function audit(Request $request)
     {
         $query = ApprovalLog::whereIn('action', ['approved', 'rejected'])
-            ->whereHas('document', function ($q) {
-                $q->whereIn('approval_type', ['po', 'invoice', 'loan']);
-            })
             ->with(['document', 'user']);
 
         // Filter by high-value only
         if ($request->boolean('high_value')) {
             $query->whereHas('document', function ($q) {
-                $q->where('approved_budget', '>=', 100000000); // >= 100 juta
+                $q->where('approved_budget', '>=', 100000000)
+                  ->orWhere('estimated_budget', '>=', 100000000);
             });
         }
 
@@ -310,7 +311,7 @@ class ExecutiveController extends Controller
             $query->where('created_at', '>=', $request->from);
         }
         if ($request->filled('to')) {
-            $query->where('created_at', '<=', $request->to);
+            $query->where('created_at', '<=', $request->to . ' 23:59:59');
         }
 
         $logs = $query->orderByDesc('created_at')
