@@ -1,4 +1,4 @@
-﻿@props(['document'])
+@props(['document'])
             <!-- Type-Specific Details -->
             @if($document->metadata && count($document->metadata) > 0)
                 <x-ui.card>
