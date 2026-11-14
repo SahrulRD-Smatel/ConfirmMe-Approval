@@ -133,7 +133,7 @@
                                 @endif
                             </td>
                             <td class="px-4 py-3 text-gray-500 dark:text-gray-400 text-xs">
-                                {{ $document->created_at->format('d M Y') }}
+                                {{ $document->created_at->translatedFormat('d M Y') }}
                             </td>
                         </tr>
                     @empty

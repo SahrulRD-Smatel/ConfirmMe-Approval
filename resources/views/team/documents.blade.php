@@ -95,7 +95,7 @@
                                 </x-ui.badge>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                {{ $document->created_at->format('d M Y') }}
+                                {{ $document->created_at->translatedFormat('d M Y') }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <a href="{{ route('documents.show', $document) }}"

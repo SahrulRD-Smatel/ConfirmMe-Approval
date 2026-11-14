@@ -64,7 +64,7 @@
                                 </p>
                                 <div class="mt-2 flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
                                     <span>{{ $document->user->name }}</span>
-                                    <span>{{ $document->created_at->format('d M Y') }}</span>
+                                    <span>{{ $document->created_at->translatedFormat('d M Y') }}</span>
                                 </div>
                             </div>
                             <x-icon name="chevron-right" class="w-5 h-5 text-gray-400 flex-shrink-0" />

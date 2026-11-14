@@ -18,14 +18,14 @@
                                 <div>
                                     <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Tanggal Berlaku') }}</dt>
                                     <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-                                        {{ \Carbon\Carbon::parse($meta['effective_date'])->format('d F Y') }}</dd>
+                                        {{ \Carbon\Carbon::parse($meta['effective_date'])->translatedFormat('d F Y') }}</dd>
                                 </div>
                             @endif
                             @if(!empty($meta['expiry_date']))
                                 <div>
                                     <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Tanggal Kadaluarsa') }}</dt>
                                     <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-                                        {{ \Carbon\Carbon::parse($meta['expiry_date'])->format('d F Y') }}</dd>
+                                        {{ \Carbon\Carbon::parse($meta['expiry_date'])->translatedFormat('d F Y') }}</dd>
                                 </div>
                             @endif
                             @if(!empty($meta['related_department']))
@@ -62,7 +62,7 @@
                                 <div>
                                     <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Estimasi Pengiriman') }}</dt>
                                     <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-                                        {{ \Carbon\Carbon::parse($meta['expected_delivery'])->format('d F Y') }}</dd>
+                                        {{ \Carbon\Carbon::parse($meta['expected_delivery'])->translatedFormat('d F Y') }}</dd>
                                 </div>
                             @endif
                             @if(!empty($meta['subtotal']))
@@ -103,7 +103,7 @@
                                 <div>
                                     <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Tanggal Invoice') }}</dt>
                                     <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-                                        {{ \Carbon\Carbon::parse($meta['invoice_date'])->format('d F Y') }}</dd>
+                                        {{ \Carbon\Carbon::parse($meta['invoice_date'])->translatedFormat('d F Y') }}</dd>
                                 </div>
                             @endif
                             @if(!empty($meta['vendor_name']))
@@ -122,7 +122,7 @@
                                 <div>
                                     <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Jatuh Tempo') }}</dt>
                                     <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-                                        {{ \Carbon\Carbon::parse($meta['payment_due_date'])->format('d F Y') }}</dd>
+                                        {{ \Carbon\Carbon::parse($meta['payment_due_date'])->translatedFormat('d F Y') }}</dd>
                                 </div>
                             @endif
                             @if(!empty($meta['bank_account']))

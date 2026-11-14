@@ -80,7 +80,9 @@
                                     <dd class="mt-1 text-sm text-gray-900 dark:text-white font-medium">
                                         @if($fieldValue)
                                             @if($field['type'] === 'date')
-                                                {{ \Carbon\Carbon::parse($fieldValue)->format('d F Y') }}
+                                                {{ \Carbon\Carbon::parse($fieldValue)->translatedFormat('d F Y') }}
+                                            @elseif($field['type'] === 'time')
+                                                {{ (strpos($fieldValue, 'WIB') !== false) ? $fieldValue : $fieldValue . ' WIB' }}
                                             @elseif($field['type'] === 'number')
                                                 {{ is_numeric($fieldValue) ? number_format((float)$fieldValue, 0, ',', '.') : $fieldValue }}
                                             @else

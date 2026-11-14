@@ -243,10 +243,65 @@
                             </div>
                         </template>
 
-                        <!-- Text / Date / Time -->
-                        <template x-if="['text', 'date', 'time'].includes(field.type)">
+                        <!-- Text / Date -->
+                        <template x-if="['text', 'date'].includes(field.type)">
                             <input :type="field.type" :name="`metadata[${field.name}]`" x-model="metadata[field.name]" :required="field.required == '1' || field.required === true"
                                 class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20">
+                        </template>
+
+                        <!-- Time (WIB 24-Jam Format) -->
+                        <template x-if="field.type === 'time'">
+                            <div class="flex items-center gap-2" x-data="{
+                                hour: '',
+                                minute: '',
+                                init() {
+                                    let val = metadata[field.name] || '';
+                                    if (val) {
+                                        let parts = String(val).split(':');
+                                        if (parts.length >= 2) {
+                                            let h = parseInt(parts[0], 10);
+                                            if (String(val).toLowerCase().includes('pm') && h < 12) h += 12;
+                                            if (String(val).toLowerCase().includes('am') && h === 12) h = 0;
+                                            this.hour = String(h).padStart(2, '0');
+                                            let m = parseInt(parts[1], 10);
+                                            this.minute = isNaN(m) ? '00' : String(m).padStart(2, '0');
+                                        }
+                                    }
+                                },
+                                updateTime() {
+                                    if (!this.hour && !this.minute) {
+                                        metadata[field.name] = '';
+                                    } else {
+                                        let h = this.hour || '00';
+                                        let m = this.minute || '00';
+                                        metadata[field.name] = `${h}:${m}`;
+                                    }
+                                }
+                            }">
+                                <div class="relative flex-1">
+                                    <select x-model="hour" @change="updateTime()" :required="field.required == '1' || field.required === true"
+                                        class="block w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-4 focus:ring-primary-500/20 font-medium">
+                                        <option value="">{{ __('-- Jam --') }}</option>
+                                        <template x-for="h in Array.from({length: 24}, (_, i) => String(i).padStart(2, '0'))" :key="h">
+                                            <option :value="h" x-text="h"></option>
+                                        </template>
+                                    </select>
+                                </div>
+                                <span class="text-gray-400 font-bold text-lg select-none">:</span>
+                                <div class="relative flex-1">
+                                    <select x-model="minute" @change="updateTime()" :required="field.required == '1' || field.required === true"
+                                        class="block w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-4 focus:ring-primary-500/20 font-medium">
+                                        <option value="">{{ __('-- Menit --') }}</option>
+                                        <template x-for="m in Array.from({length: 60}, (_, i) => String(i).padStart(2, '0'))" :key="m">
+                                            <option :value="m" x-text="m"></option>
+                                        </template>
+                                    </select>
+                                </div>
+                                <span class="px-3.5 py-3 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-xs font-bold rounded-xl shrink-0 select-none">
+                                    WIB
+                                </span>
+                                <input type="hidden" :name="`metadata[${field.name}]`" :value="metadata[field.name]">
+                            </div>
                         </template>
 
                         <!-- Textarea -->

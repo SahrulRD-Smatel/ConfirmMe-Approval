@@ -91,7 +91,7 @@
                                 </x-ui.badge>
                             </td>
                             <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                {{ $approval->action_at?->format('d M Y H:i') ?? '-' }}
+                                {{ $approval->action_at ? $approval->action_at->translatedFormat('d M Y H:i') . ' WIB' : '-' }}
                             </td>
                             <td class="px-5 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <a href="{{ route('documents.show', $approval->document) }}"

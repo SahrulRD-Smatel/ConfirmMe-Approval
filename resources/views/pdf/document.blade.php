@@ -1011,7 +1011,9 @@
                                                 $displayVal = implode(', ', array_filter($displayVal, 'is_scalar'));
                                             }
                                             if ($fVal && $fType === 'date' && strtotime($fVal)) {
-                                                $displayVal = \Carbon\Carbon::parse($fVal)->format('d/m/Y');
+                                                $displayVal = \Carbon\Carbon::parse($fVal)->translatedFormat('d/m/Y');
+                                            } elseif ($fVal && $fType === 'time') {
+                                                $displayVal = (strpos($fVal, 'WIB') !== false) ? $fVal : $fVal . ' WIB';
                                             } elseif ($fVal && $fType === 'number' && is_numeric($fVal)) {
                                                 $displayVal = number_format((float)$fVal, 0, ',', '.');
                                             }
