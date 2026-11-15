@@ -100,19 +100,6 @@
                 width: 100%;
             }
 
-            /* Sub-Header Banner (Category matching Image 1) */
-            .sub-header-banner {
-                background-color: #1e3a5f;
-                color: white;
-                text-align: center;
-                padding: 6px 15px;
-                margin-bottom: 8px;
-                font-size: 11.5px;
-                font-weight: bold;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-            }
-
             .doc-title-banner {
                 text-align: center;
                 padding: 4px 15px;
@@ -919,16 +906,10 @@
         <div class="container">
             @php
                 $isStpd = str_contains(strtolower($document->title), 'surat tugas') || ($template && $template->code === 'STPD');
-                $showSubHeaderBanner = !$isStpd && !empty($categoryName) && strtoupper(trim($categoryName)) !== strtoupper(trim($document->title));
             @endphp
 
-            <!-- Sub-Header Banner (Hidden for STPD or duplicate) -->
-            @if($showSubHeaderBanner)
-                <div class="sub-header-banner">{{ $categoryName }}</div>
-            @endif
-
             <!-- Document Title -->
-            <div class="doc-title-banner" style="{{ $isStpd ? 'margin-bottom: 16px;' : '' }}">
+            <div class="doc-title-banner" style="margin-top: 4px; {{ $isStpd ? 'margin-bottom: 16px;' : 'margin-bottom: 14px;' }}">
                 {{ $document->title }}
                 @if($isStpd)
                     <div style="font-size: 11px; font-weight: normal; margin-top: 4px; letter-spacing: 0.5px;">NO : {{ $document->document_number }}</div>
