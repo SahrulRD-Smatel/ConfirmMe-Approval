@@ -904,10 +904,475 @@
         </header>
 
         <div class="container">
-            <!-- Document Title -->
-            <div class="doc-title-banner" style="margin-top: 4px; margin-bottom: 16px;">
-                {{ $document->title }}
-            </div>
+            @php
+                $templateCode = strtolower(str_replace(['-', ' '], '_', (string)($template ? $template->code : ($document->template ?? ''))));
+                $isStpd = $templateCode === 'stpd' || str_contains(strtolower($document->title), 'surat tugas');
+                $isUmbpd = $templateCode === 'hr_umbpd' || str_contains(strtolower($document->title), 'pemesanan tiket') || str_contains(strtolower($document->title), 'uang muka');
+
+                $genSignerQr = function(string $url) {
+                    return base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(250)->margin(0)->generate($url));
+                };
+            @endphp
+
+            @if($isStpd)
+                {{-- ========================================================================= --}}
+                {{-- PRESET STPD: SURAT TUGAS PERJALANAN DINAS (SESUAI EXCEL LEMBAR 1)          --}}
+                {{-- ========================================================================= --}}
+                @php
+                    $pemberiNama = $metadata['pemberi_tugas_nama'] ?? ($metadata['nama_pemberi_tugas'] ?? '-');
+                    $pemberiJabatan = $metadata['pemberi_tugas_jabatan'] ?? ($metadata['jabatan_pemberi_tugas'] ?? '-');
+                    $pemberiDept = $metadata['pemberi_tugas_dept'] ?? ($metadata['dept_div_pemberi_tugas'] ?? ($metadata['dept_pemberi_tugas'] ?? '-'));
+
+                    $penerimaNama = $metadata['nama_yang_ditugaskan'] ?? ($metadata['nama_penerima_tugas'] ?? ($metadata['nama_karyawan'] ?? '-'));
+                    $penerimaJabatan = $metadata['jabatan_yang_ditugaskan'] ?? ($metadata['jabatan'] ?? '-');
+                    $penerimaDept = $metadata['dept_div_yang_ditugaskan'] ?? ($metadata['dept_div'] ?? ($metadata['departemen'] ?? '-'));
+
+                    $tugasVal = $metadata['tugas'] ?? ($metadata['tugas_keperluan'] ?? '-');
+                    $kotaVal = $metadata['kota_tujuan'] ?? ($metadata['tujuan'] ?? '-');
+                    $tglBerangkat = !empty($metadata['tanggal_berangkat']) ? \Carbon\Carbon::parse($metadata['tanggal_berangkat'])->translatedFormat('d/m/Y') : '-';
+                    $tglKembali = !empty($metadata['tanggal_kembali']) ? \Carbon\Carbon::parse($metadata['tanggal_kembali'])->translatedFormat('d/m/Y') : '-';
+                    $transportVal = $metadata['jenis_transportasi'] ?? '-';
+                    $catatanVal = $metadata['catatan'] ?? ($metadata['catatan_tambahan'] ?? null);
+
+                    $pemberiQr = null;
+                    $penerimaQr = null;
+                    $pemberiDate = $docDate->translatedFormat('d/m/Y');
+                    $penerimaDate = $docDate->translatedFormat('d/m/Y');
+
+                    $creatorNameNorm = strtolower(trim($pemohon->name ?? ''));
+                    $pemberiNorm = strtolower(trim($pemberiNama));
+                    $penerimaNorm = strtolower(trim($penerimaNama));
+
+                    if ($verificationUrl) {
+                        $pemohonQrCode = $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'requester']));
+                        if ($creatorNameNorm && $pemberiNorm && str_contains($pemberiNorm, $creatorNameNorm)) {
+                            $pemberiQr = $pemohonQrCode;
+                        } else {
+                            $penerimaQr = $pemohonQrCode;
+                        }
+                    }
+
+                    $firstApproved = $document->approvals->where('status', 'approved')->first();
+                    $atasanNama = '...........................';
+                    $atasanDate = '............';
+                    $atasanQr = null;
+
+                    if ($firstApproved && $firstApproved->approver) {
+                        $atasanNama = format_acronyms($firstApproved->approver->name);
+                        $atasanDate = $firstApproved->action_at ? $firstApproved->action_at->translatedFormat('d/m/Y') : $docDate->translatedFormat('d/m/Y');
+                        $atasanQr = $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => $firstApproved->id]));
+                    } elseif ($document->approvals->count() > 0) {
+                        $firstPending = $document->approvals->first();
+                        if ($firstPending && $firstPending->approver) {
+                            $atasanNama = format_acronyms($firstPending->approver->name);
+                        }
+                    }
+                @endphp
+
+                <!-- Document Title -->
+                <div class="doc-title-banner" style="margin-top: 4px; margin-bottom: 14px;">
+                    {{ $document->title }}
+                </div>
+
+                <!-- Bagian 1: Pemberi Tugas -->
+                <div style="font-size: 11px; margin-bottom: 3px; color: #111;">Yang bertanda tangan di bawah ini,</div>
+                <table class="info-table" style="margin-bottom: 10px;">
+                    <tr>
+                        <th style="width: 140px; padding: 2.5px 0;">Nama</th>
+                        <td style="width: 12px; padding: 2.5px 0;">:</td>
+                        <td style="padding: 2.5px 0;">{{ $pemberiNama }}</td>
+                    </tr>
+                    <tr>
+                        <th style="width: 140px; padding: 2.5px 0;">Jabatan</th>
+                        <td style="width: 12px; padding: 2.5px 0;">:</td>
+                        <td style="padding: 2.5px 0;">{{ $pemberiJabatan }}</td>
+                    </tr>
+                    <tr>
+                        <th style="width: 140px; padding: 2.5px 0;">Dept/Div</th>
+                        <td style="width: 12px; padding: 2.5px 0;">:</td>
+                        <td style="padding: 2.5px 0;">{{ $pemberiDept }}</td>
+                    </tr>
+                </table>
+
+                <!-- Bagian 2: Penerima Tugas -->
+                <div style="font-size: 11px; margin-bottom: 3px; color: #111;">Menugaskan,</div>
+                <table class="info-table" style="margin-bottom: 10px;">
+                    <tr>
+                        <th style="width: 140px; padding: 2.5px 0;">Nama</th>
+                        <td style="width: 12px; padding: 2.5px 0;">:</td>
+                        <td style="padding: 2.5px 0;">{{ $penerimaNama }}</td>
+                    </tr>
+                    <tr>
+                        <th style="width: 140px; padding: 2.5px 0;">Jabatan</th>
+                        <td style="width: 12px; padding: 2.5px 0;">:</td>
+                        <td style="padding: 2.5px 0;">{{ $penerimaJabatan }}</td>
+                    </tr>
+                    <tr>
+                        <th style="width: 140px; padding: 2.5px 0;">Dept/Div</th>
+                        <td style="width: 12px; padding: 2.5px 0;">:</td>
+                        <td style="padding: 2.5px 0;">{{ $penerimaDept }}</td>
+                    </tr>
+                </table>
+
+                <!-- Bagian 3: Pelaksanaan Dinas -->
+                <div style="font-size: 11px; margin-bottom: 3px; color: #111;">Untuk melaksanakan perjalanan dinas</div>
+                <table class="info-table" style="margin-bottom: 10px;">
+                    <tr>
+                        <th style="width: 140px; padding: 2.5px 0;">Tugas</th>
+                        <td style="width: 12px; padding: 2.5px 0;">:</td>
+                        <td style="padding: 2.5px 0;">{!! nl2br(e($tugasVal)) !!}</td>
+                    </tr>
+                    <tr>
+                        <th style="width: 140px; padding: 2.5px 0;">Kota tujuan</th>
+                        <td style="width: 12px; padding: 2.5px 0;">:</td>
+                        <td style="padding: 2.5px 0;">{{ $kotaVal }}</td>
+                    </tr>
+                    <tr>
+                        <th style="width: 140px; padding: 2.5px 0;">Tanggal Berangkat</th>
+                        <td style="width: 12px; padding: 2.5px 0;">:</td>
+                        <td style="padding: 2.5px 0;">{{ $tglBerangkat }}</td>
+                    </tr>
+                    <tr>
+                        <th style="width: 140px; padding: 2.5px 0;">Tanggal Kembali</th>
+                        <td style="width: 12px; padding: 2.5px 0;">:</td>
+                        <td style="padding: 2.5px 0;">{{ $tglKembali }}</td>
+                    </tr>
+                    <tr>
+                        <th style="width: 140px; padding: 2.5px 0;">Jenis Transportasi</th>
+                        <td style="width: 12px; padding: 2.5px 0;">:</td>
+                        <td style="padding: 2.5px 0;">{{ $transportVal }}</td>
+                    </tr>
+                </table>
+
+                <!-- Bagian 4: Catatan Box Sesuai Excel -->
+                <div style="border: 1px solid #111; padding: 5px 8px; margin-top: 6px; margin-bottom: 12px; min-height: 44px; page-break-inside: avoid;">
+                    <strong style="display: block; font-size: 11px; margin-bottom: 2px;">Catatan :</strong>
+                    <div style="font-size: 10px; color: #222;">
+                        {!! $catatanVal ? nl2br(e($catatanVal)) : '&nbsp;' !!}
+                    </div>
+                </div>
+
+                <!-- Bagian 5: Tabel Tanda Tangan 4 Kolom Sesuai Excel -->
+                <table style="width: 100%; border-collapse: collapse; margin-top: 10px; page-break-inside: avoid;">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%; border: 1px solid #111; padding: 4px; text-align: center; font-size: 10px; font-weight: bold; background-color: #f8fafc;">Yang menugaskan</th>
+                            <th style="width: 25%; border: 1px solid #111; padding: 4px; text-align: center; font-size: 10px; font-weight: bold; background-color: #f8fafc;">Atasan Langsung</th>
+                            <th style="width: 25%; border: 1px solid #111; padding: 4px; text-align: center; font-size: 10px; font-weight: bold; background-color: #f8fafc;">Pejabat Setempat</th>
+                            <th style="width: 25%; border: 1px solid #111; padding: 4px; text-align: center; font-size: 10px; font-weight: bold; background-color: #f8fafc;">Yang ditugaskan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="border: 1px solid #111; height: 70px; vertical-align: middle; text-align: center; padding: 3px;">
+                                @if($pemberiQr)
+                                    <img src="data:image/svg+xml;base64,{{ $pemberiQr }}" style="width: 55px; height: 55px; display: block; margin: 0 auto;" />
+                                    <div style="font-size: 7px; color: #166534; font-weight: bold; margin-top: 1px;">Signed</div>
+                                @else
+                                    <div style="height: 55px;"></div>
+                                @endif
+                            </td>
+                            <td style="border: 1px solid #111; height: 70px; vertical-align: middle; text-align: center; padding: 3px;">
+                                @if($atasanQr)
+                                    <img src="data:image/svg+xml;base64,{{ $atasanQr }}" style="width: 55px; height: 55px; display: block; margin: 0 auto;" />
+                                    <div style="font-size: 7px; color: #166534; font-weight: bold; margin-top: 1px;">Signed</div>
+                                @else
+                                    <div style="height: 55px;"></div>
+                                @endif
+                            </td>
+                            <td style="border: 1px solid #111; height: 70px; vertical-align: middle; text-align: center; padding: 3px;">
+                                <div style="height: 55px; color: #999; font-size: 8px; line-height: 55px; font-style: italic;">(Cap / Paraf Cabang)</div>
+                            </td>
+                            <td style="border: 1px solid #111; height: 70px; vertical-align: middle; text-align: center; padding: 3px;">
+                                @if($penerimaQr)
+                                    <img src="data:image/svg+xml;base64,{{ $penerimaQr }}" style="width: 55px; height: 55px; display: block; margin: 0 auto;" />
+                                    <div style="font-size: 7px; color: #166534; font-weight: bold; margin-top: 1px;">Signed</div>
+                                @else
+                                    <div style="height: 55px;"></div>
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #111; padding: 3px; text-align: center; font-size: 9px;">
+                                <div style="font-weight: bold;">( {{ $pemberiNama }} )</div>
+                                <div style="margin-top: 2px; font-size: 8px; color: #333;">Tgl : {{ $pemberiDate }}</div>
+                            </td>
+                            <td style="border: 1px solid #111; padding: 3px; text-align: center; font-size: 9px;">
+                                <div style="font-weight: bold;">( {{ $atasanNama }} )</div>
+                                <div style="margin-top: 2px; font-size: 8px; color: #333;">Tgl : {{ $atasanDate }}</div>
+                            </td>
+                            <td style="border: 1px solid #111; padding: 3px; text-align: center; font-size: 9px;">
+                                <div style="font-weight: bold;">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</div>
+                                <div style="margin-top: 2px; font-size: 8px; color: #333;">Tgl : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                            </td>
+                            <td style="border: 1px solid #111; padding: 3px; text-align: center; font-size: 9px;">
+                                <div style="font-weight: bold;">( {{ $penerimaNama }} )</div>
+                                <div style="margin-top: 2px; font-size: 8px; color: #333;">Tgl : {{ $penerimaDate }}</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            @elseif($isUmbpd)
+                {{-- ========================================================================= --}}
+                {{-- PRESET HR_UMBPD: TIKET & UANG MUKA PERJALANAN DINAS (SESUAI EXCEL LEMBAR 2)--}}
+                {{-- ========================================================================= --}}
+                @php
+                    $pemohonNama = $metadata['nama_pemohon'] ?? ($pemohon->name ?? '-');
+                    $divisiDept = $metadata['divisi_dept'] ?? ($pemohon->department->name ?? '-');
+                    $kotaTujuan = $metadata['kota_tujuan'] ?? '-';
+                    $keperluanVal = $metadata['keperluan'] ?? '-';
+                    $tglBerangkat = !empty($metadata['tgl_berangkat']) ? \Carbon\Carbon::parse($metadata['tgl_berangkat'])->translatedFormat('d/m/Y') : '-';
+                    $tglKembali = !empty($metadata['tgl_kembali']) ? \Carbon\Carbon::parse($metadata['tgl_kembali'])->translatedFormat('d/m/Y') : '-';
+                    $catatanTiket = $metadata['catatan_tiket'] ?? '-';
+
+                    $totalEstimasi = !empty($metadata['total_estimasi_pemohon']) ? (float)$metadata['total_estimasi_pemohon'] : 0;
+
+                    $diketahuiApprover = $document->approvals->get(0);
+                    $hrdApprover = $document->approvals->get(1);
+                    $financeApprover = $document->approvals->get(2);
+
+                    $diketahuiName = ($diketahuiApprover && $diketahuiApprover->approver) ? format_acronyms($diketahuiApprover->approver->name) : '...........................';
+                    $diketahuiDate = ($diketahuiApprover && $diketahuiApprover->action_at) ? $diketahuiApprover->action_at->translatedFormat('d/m/Y') : '............';
+                    $diketahuiQr = ($diketahuiApprover && $diketahuiApprover->status === 'approved') ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => $diketahuiApprover->id])) : null;
+
+                    $hrdName = ($hrdApprover && $hrdApprover->approver) ? format_acronyms($hrdApprover->approver->name) : ($metadata['hrd_name'] ?? 'Faisal Abduh');
+                    $hrdDate = ($hrdApprover && $hrdApprover->action_at) ? $hrdApprover->action_at->translatedFormat('d/m/Y') : '............';
+                    $hrdQr = ($hrdApprover && $hrdApprover->status === 'approved') ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => $hrdApprover->id])) : null;
+
+                    $financeName = ($financeApprover && $financeApprover->approver) ? format_acronyms($financeApprover->approver->name) : ($metadata['finance_name'] ?? 'Fajar Trimuri Jantono');
+                    $financeDate = ($financeApprover && $financeApprover->action_at) ? $financeApprover->action_at->translatedFormat('d/m/Y') : '............';
+                    $financeQr = ($financeApprover && $financeApprover->status === 'approved') ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => $financeApprover->id])) : null;
+
+                    $pemohonQr = $verificationUrl ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'requester'])) : null;
+                @endphp
+
+                <!-- Form Identifier Top Right -->
+                <div style="text-align: right; font-size: 9.5px; font-weight: bold; margin-top: -6px; margin-bottom: 2px; letter-spacing: 0.5px; color: #111;">
+                    Form 01A/HR-UMBPD/05
+                </div>
+
+                <!-- Document Title -->
+                <div class="doc-title-banner" style="margin-top: 2px; margin-bottom: 10px; font-size: 11.5px; line-height: 1.35;">
+                    PEMESANAN TIKET &amp; PERMINTAAN UANG MUKA<br>PERJALANAN DINAS
+                </div>
+
+                <!-- Info Pemohon Table -->
+                <table class="info-table" style="margin-bottom: 8px;">
+                    <tr>
+                        <th style="width: 120px; padding: 2px 0;">Nama Pemohon</th>
+                        <td style="width: 12px; padding: 2px 0;">:</td>
+                        <td style="padding: 2px 0;">{{ $pemohonNama }}</td>
+                    </tr>
+                    <tr>
+                        <th style="width: 120px; padding: 2px 0;">Divisi / Dept</th>
+                        <td style="width: 12px; padding: 2px 0;">:</td>
+                        <td style="padding: 2px 0;">{{ $divisiDept }}</td>
+                    </tr>
+                    <tr>
+                        <th style="width: 120px; padding: 2px 0;">Kota Tujuan</th>
+                        <td style="width: 12px; padding: 2px 0;">:</td>
+                        <td style="padding: 2px 0;">{{ $kotaTujuan }}</td>
+                    </tr>
+                    <tr>
+                        <th style="width: 120px; padding: 2px 0;">Keperluan</th>
+                        <td style="width: 12px; padding: 2px 0;">:</td>
+                        <td style="padding: 2px 0;">{!! nl2br(e($keperluanVal)) !!}</td>
+                    </tr>
+                    <tr>
+                        <th style="width: 120px; padding: 2px 0;">Tgl Berangkat</th>
+                        <td style="width: 12px; padding: 2px 0;">:</td>
+                        <td style="padding: 2px 0;">{{ $tglBerangkat }}</td>
+                    </tr>
+                    <tr>
+                        <th style="width: 120px; padding: 2px 0;">Tgl Kembali</th>
+                        <td style="width: 12px; padding: 2px 0;">:</td>
+                        <td style="padding: 2px 0;">{{ $tglKembali }}</td>
+                    </tr>
+                </table>
+
+                <!-- Tabel 1: Pemesanan Tiket (8 Kolom Sesuai Excel) -->
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 2px; font-size: 9px;">
+                    <thead>
+                        <tr style="background-color: #cbd5e1;">
+                            <th style="width: 25px; border: 1px solid #111; padding: 2.5px; text-align: center;">No</th>
+                            <th style="border: 1px solid #111; padding: 2.5px; text-align: center;">Tanggal</th>
+                            <th style="border: 1px solid #111; padding: 2.5px; text-align: center;">Dari</th>
+                            <th style="border: 1px solid #111; padding: 2.5px; text-align: center;">Tujuan</th>
+                            <th style="border: 1px solid #111; padding: 2.5px; text-align: center;">Jam</th>
+                            <th style="border: 1px solid #111; padding: 2.5px; text-align: center;">Jenis Transportasi*</th>
+                            <th style="border: 1px solid #111; padding: 2.5px; text-align: center;">Kelas*</th>
+                            <th style="border: 1px solid #111; padding: 2.5px; text-align: center; width: 90px;">Harga Tiket</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php
+                            $tiketRows = $metadata['pemesanan_tiket'] ?? [];
+                            if (!is_array($tiketRows) || count($tiketRows) === 0) {
+                                $tiketRows = [];
+                            }
+                            while (count($tiketRows) < 5) {
+                                $tiketRows[] = [];
+                            }
+                        @endphp
+                        @foreach($tiketRows as $idx => $tRow)
+                            <tr>
+                                <td style="border: 1px solid #111; padding: 2px; text-align: center;">{{ $idx + 1 }}</td>
+                                <td style="border: 1px solid #111; padding: 2px; text-align: center;">{{ $tRow['tanggal'] ?? ($tRow['Tanggal'] ?? '') }}</td>
+                                <td style="border: 1px solid #111; padding: 2px; text-align: center;">{{ $tRow['dari'] ?? ($tRow['Dari'] ?? '') }}</td>
+                                <td style="border: 1px solid #111; padding: 2px; text-align: center;">{{ $tRow['tujuan'] ?? ($tRow['Tujuan'] ?? '') }}</td>
+                                <td style="border: 1px solid #111; padding: 2px; text-align: center;">{{ $tRow['jam'] ?? ($tRow['Jam'] ?? '') }}</td>
+                                <td style="border: 1px solid #111; padding: 2px; text-align: center;">{{ $tRow['jenis_transportasi'] ?? ($tRow['Jenis Transportasi'] ?? '') }}</td>
+                                <td style="border: 1px solid #111; padding: 2px; text-align: center;">{{ $tRow['kelas'] ?? ($tRow['Kelas'] ?? '') }}</td>
+                                <td style="border: 1px solid #111; padding: 2px; text-align: center; font-size: 8px; color: #333;">Team HR</td>
+                            </tr>
+                        @endforeach
+                        <tr>
+                            <td colspan="7" style="border: 1px solid #111; padding: 2px 6px; text-align: right; font-weight: bold;">Total</td>
+                            <td style="border: 1px solid #111; padding: 2px; text-align: right; font-weight: bold; font-size: 8.5px;">Rp0</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div style="border: 1px solid #111; border-top: none; padding: 2.5px 6px; margin-bottom: 8px; font-size: 9px;">
+                    <strong>Catatan :</strong> {{ $catatanTiket }}
+                </div>
+
+                <!-- Tabel 2: Perincian Uang Muka Sesuai Excel -->
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 9px;">
+                    <thead>
+                        <tr style="background-color: #cbd5e1;">
+                            <th colspan="2" style="border: 1px solid #111; padding: 2.5px; text-align: center; font-weight: bold;">Perincian Uang Muka</th>
+                            <th style="border: 1px solid #111; padding: 2.5px; text-align: center; width: 140px; font-weight: bold;">Jumlah (Rp)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="width: 25px; border: 1px solid #111; padding: 2px; text-align: center;">1</td>
+                            <td style="border: 1px solid #111; padding: 2px 6px;">Airport Tax</td>
+                            <td style="border: 1px solid #111; padding: 2px; text-align: center; color: #444; font-size: 8px;">{{ !empty($metadata['um_airport_tax']) ? number_format((float)$metadata['um_airport_tax'], 0, ',', '.') : 'Team HR' }}</td>
+                        </tr>
+                        <tr>
+                            <td style="width: 25px; border: 1px solid #111; padding: 2px; text-align: center;">2</td>
+                            <td style="border: 1px solid #111; padding: 2px 6px;">Akomodasi (hotel / mess / kel)</td>
+                            <td style="border: 1px solid #111; padding: 2px; text-align: center; color: #444; font-size: 8px;">{{ !empty($metadata['um_akomodasi']) ? number_format((float)$metadata['um_akomodasi'], 0, ',', '.') : 'Team HR' }}</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #111; padding: 2px; text-align: center; vertical-align: top;" rowspan="2">3</td>
+                            <td style="border: 1px solid #111; padding: 2px 6px;">
+                                Transportasi :<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;a.&nbsp;&nbsp;Antar kota (Taxi)
+                            </td>
+                            <td style="border: 1px solid #111; padding: 2px; text-align: center; vertical-align: middle; color: #444; font-size: 8px;">{{ !empty($metadata['um_transport_antar_kota']) ? number_format((float)$metadata['um_transport_antar_kota'], 0, ',', '.') : 'Team HR' }}</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #111; padding: 2px 6px;">
+                                &nbsp;&nbsp;&nbsp;&nbsp;b.&nbsp;&nbsp;Dalam kota (tujuan & domisili)
+                            </td>
+                            <td style="border: 1px solid #111; padding: 2px 6px; text-align: right;">{{ !empty($metadata['um_transport_dalam_kota']) ? number_format((float)$metadata['um_transport_dalam_kota'], 0, ',', '.') : '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td style="width: 25px; border: 1px solid #111; padding: 2px; text-align: center;">4</td>
+                            <td style="border: 1px solid #111; padding: 2px 6px;">Uang Saku x Hr</td>
+                            <td style="border: 1px solid #111; padding: 2px 6px; text-align: right;">{{ !empty($metadata['um_uang_saku']) ? number_format((float)$metadata['um_uang_saku'], 0, ',', '.') : '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td style="width: 25px; border: 1px solid #111; padding: 2px 6px;">Insidental x Hr</td>
+                            <td style="border: 1px solid #111; padding: 2px 6px; text-align: right;">{{ !empty($metadata['um_insidental']) ? number_format((float)$metadata['um_insidental'], 0, ',', '.') : '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td style="width: 25px; border: 1px solid #111; padding: 2px; text-align: center; vertical-align: top;">6</td>
+                            <td style="border: 1px solid #111; padding: 2px 6px;">
+                                Lain – lain :<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;a.&nbsp;&nbsp;Biaya tak terduga didalam kota tujuan
+                            </td>
+                            <td style="border: 1px solid #111; padding: 2px; text-align: center; vertical-align: middle; font-size: 8px; color: #444;">{{ !empty($metadata['um_biaya_tak_terduga']) ? number_format((float)$metadata['um_biaya_tak_terduga'], 0, ',', '.') : 'Perhitungan dari Team HR' }}</td>
+                        </tr>
+                        <tr style="background-color: #f1f5f9; font-weight: bold;">
+                            <td colspan="2" style="border: 1px solid #111; padding: 3px 6px; text-align: center; text-transform: uppercase;">TOTAL ( Estimasi dari Pemohon )</td>
+                            <td style="border: 1px solid #111; padding: 3px 6px; text-align: right;">Rp {{ number_format($totalEstimasi, 0, ',', '.') }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Tabel Tanda Tangan 4 Kolom Sesuai Excel -->
+                <table style="width: 100%; border-collapse: collapse; margin-top: 8px; page-break-inside: avoid;">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%; border: 1px solid #111; padding: 3.5px; text-align: center; font-size: 9.5px; font-weight: bold; background-color: #f8fafc;">Pemohon</th>
+                            <th style="width: 25%; border: 1px solid #111; padding: 3.5px; text-align: center; font-size: 9.5px; font-weight: bold; background-color: #f8fafc;">Diketahui</th>
+                            <th style="width: 25%; border: 1px solid #111; padding: 3.5px; text-align: center; font-size: 9.5px; font-weight: bold; background-color: #f8fafc;">HRD</th>
+                            <th style="width: 25%; border: 1px solid #111; padding: 3.5px; text-align: center; font-size: 9.5px; font-weight: bold; background-color: #f8fafc;">Finance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="border: 1px solid #111; height: 65px; vertical-align: middle; text-align: center; padding: 2px;">
+                                @if($pemohonQr)
+                                    <img src="data:image/svg+xml;base64,{{ $pemohonQr }}" style="width: 50px; height: 50px; display: block; margin: 0 auto;" />
+                                    <div style="font-size: 7px; color: #166534; font-weight: bold; margin-top: 1px;">Signed</div>
+                                @else
+                                    <div style="height: 50px;"></div>
+                                @endif
+                            </td>
+                            <td style="border: 1px solid #111; height: 65px; vertical-align: middle; text-align: center; padding: 2px;">
+                                @if($diketahuiQr)
+                                    <img src="data:image/svg+xml;base64,{{ $diketahuiQr }}" style="width: 50px; height: 50px; display: block; margin: 0 auto;" />
+                                    <div style="font-size: 7px; color: #166534; font-weight: bold; margin-top: 1px;">Signed</div>
+                                @else
+                                    <div style="height: 50px;"></div>
+                                @endif
+                            </td>
+                            <td style="border: 1px solid #111; height: 65px; vertical-align: middle; text-align: center; padding: 2px;">
+                                @if($hrdQr)
+                                    <img src="data:image/svg+xml;base64,{{ $hrdQr }}" style="width: 50px; height: 50px; display: block; margin: 0 auto;" />
+                                    <div style="font-size: 7px; color: #166534; font-weight: bold; margin-top: 1px;">Signed</div>
+                                @else
+                                    <div style="height: 50px;"></div>
+                                @endif
+                            </td>
+                            <td style="border: 1px solid #111; height: 65px; vertical-align: middle; text-align: center; padding: 2px;">
+                                @if($financeQr)
+                                    <img src="data:image/svg+xml;base64,{{ $financeQr }}" style="width: 50px; height: 50px; display: block; margin: 0 auto;" />
+                                    <div style="font-size: 7px; color: #166534; font-weight: bold; margin-top: 1px;">Signed</div>
+                                @else
+                                    <div style="height: 50px;"></div>
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #111; padding: 2.5px; text-align: center; font-size: 8.5px;">
+                                <div style="font-weight: bold;">( {{ $pemohonNama }} )</div>
+                                <div style="margin-top: 1.5px; font-size: 7.5px; color: #333;">Tanggal : {{ $docDate->translatedFormat('d/m/Y') }}</div>
+                            </td>
+                            <td style="border: 1px solid #111; padding: 2.5px; text-align: center; font-size: 8.5px;">
+                                <div style="font-weight: bold;">( {{ $diketahuiName }} )</div>
+                                <div style="margin-top: 1.5px; font-size: 7.5px; color: #333;">Tanggal : {{ $diketahuiDate }}</div>
+                            </td>
+                            <td style="border: 1px solid #111; padding: 2.5px; text-align: center; font-size: 8.5px;">
+                                <div style="font-weight: bold;">( {{ $hrdName }} )</div>
+                                <div style="margin-top: 1.5px; font-size: 7.5px; color: #333;">Tgl : {{ $hrdDate }}</div>
+                            </td>
+                            <td style="border: 1px solid #111; padding: 2.5px; text-align: center; font-size: 8.5px;">
+                                <div style="font-weight: bold;">( {{ $financeName }} )</div>
+                                <div style="margin-top: 1.5px; font-size: 7.5px; color: #333;">Tgl : {{ $financeDate }}</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Footer Legend Sesuai Excel -->
+                <div style="font-size: 8px; line-height: 1.4; color: #333; margin-top: 6px; page-break-inside: avoid;">
+                    <strong>*) Keterangan :</strong><br>
+                    Jenis Transportasi &nbsp;: &nbsp;[BIS] Bis; &nbsp;[PU] Pesawat Udara; &nbsp;[KA] Kereta Api<br>
+                    Kelas &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;[FC] Bisnis; &nbsp;[EKO] Ekonomi<br>
+                    Tanggal perkiraan kembali WAJIB dicantumkan meskipun belum dapat dipastikan.
+                </div>
+
+            @else
+                <!-- Document Title -->
+                <div class="doc-title-banner" style="margin-top: 4px; margin-bottom: 16px;">
+                    {{ $document->title }}
+                </div>
 
             <!-- Intro Paragraph (Description) -->
             @if($document->description)
@@ -1018,7 +1483,6 @@
                         @endfor
                     </table>
                 @endif
-            @endif
 
                 {{-- Dynamic Tables (e.g. Data Penumpang dalam Mobil) --}}
                 @foreach($tableFields as $tField)
@@ -1188,7 +1652,9 @@
                     </table>
                 @endforeach
             </div>
+            @endif
 
+            @if(!$isUmbpd)
             <!-- Verification Footer -->
             <div class="verification-footer">
                 <table>
@@ -1219,6 +1685,12 @@
                     </tr>
                 </table>
             </div>
+            @else
+            <!-- Compact Single-Line Security Verification for UMBPD 1-page fit -->
+            <div style="margin-top: 6px; font-size: 7.5px; color: #64748b; text-align: center; border-top: 1px dashed #cbd5e1; padding-top: 3px;">
+                Dokumen elektronik resmi ConfirmMe | <strong>ID:</strong> {{ $document->document_number }} | <strong>Hash:</strong> {{ substr($document->approval_hash ?? 'N/A', 0, 24) }}... | PT Info Solusindo Data Utama
+            </div>
+            @endif
         </div>
     @endif
 </body>
