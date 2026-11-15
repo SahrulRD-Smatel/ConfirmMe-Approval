@@ -120,8 +120,8 @@
 
             .info-table th {
                 text-align: left;
-                width: 150px;
-                padding: 2.5px 0;
+                width: 175px;
+                padding: 3.5px 0;
                 color: #333;
                 font-weight: normal;
                 font-size: 11px;
@@ -130,7 +130,7 @@
             }
 
             .info-table td {
-                padding: 2.5px 0;
+                padding: 3.5px 0;
                 font-size: 11px;
                 color: #111;
                 vertical-align: top;
@@ -904,26 +904,19 @@
         </header>
 
         <div class="container">
-            @php
-                $isStpd = str_contains(strtolower($document->title), 'surat tugas') || ($template && $template->code === 'STPD');
-            @endphp
-
             <!-- Document Title -->
-            <div class="doc-title-banner" style="margin-top: 4px; {{ $isStpd ? 'margin-bottom: 16px;' : 'margin-bottom: 14px;' }}">
+            <div class="doc-title-banner" style="margin-top: 4px; margin-bottom: 16px;">
                 {{ $document->title }}
-                @if($isStpd)
-                    <div style="font-size: 11px; font-weight: normal; margin-top: 4px; letter-spacing: 0.5px;">NO : {{ $document->document_number }}</div>
-                @endif
             </div>
 
-            <!-- Intro Paragraph (Description - skipped for STPD because STPD has structured sections) -->
-            @if($document->description && !$isStpd)
+            <!-- Intro Paragraph (Description) -->
+            @if($document->description)
                 <div style="margin-bottom: 12px; font-size: 11px; line-height: 1.6; text-align: justify; color: #222;">
                     {!! nl2br(e($document->description)) !!}
                 </div>
             @endif
 
-            {{-- Dynamic Fields: Key-Value Form Fields (Matching Image 1) --}}
+            {{-- Dynamic Fields: Key-Value Form Fields (Universal Dynamic Rendering) --}}
             @if(count($dynamicFields) > 0 && !empty($metadata))
                 @php
                     $tableFields = [];
@@ -939,194 +932,93 @@
                     }
                 @endphp
 
-                @if($isStpd)
-                    {{-- STPD SPECIFIC SECTIONED LAYOUT (MATCHING IMAGE 2 EXACTLY) --}}
-                    @php
-                        $valOf = function($keys) use ($metadata) {
-                            foreach ((array)$keys as $k) {
-                                if (isset($metadata[$k]) && $metadata[$k] !== null && $metadata[$k] !== '') {
-                                    return $metadata[$k];
+                @if(count($nonTableFields) > 0)
+                    <table class="info-table">
+                        @for($i = 0; $i < count($nonTableFields); $i++)
+                            @php
+                                if ($skipNext) {
+                                    $skipNext = false;
+                                    continue;
                                 }
-                            }
-                            return '-';
-                        };
 
-                        $pemberiNama = $valOf(['pemberi_tugas_nama', 'nama_pemberi_tugas']);
-                        $pemberiJabatan = $valOf(['pemberi_tugas_jabatan', 'jabatan_pemberi_tugas']);
-                        $pemberiDept = $valOf(['pemberi_tugas_dept', 'dept_div_pemberi_tugas', 'dept_pemberi_tugas']);
+                                $field = $nonTableFields[$i];
+                                $fName = $field['name'];
+                                $fVal = $metadata[$fName] ?? null;
+                                $fType = $field['type'] ?? 'text';
+                                $fLabel = $field['label'];
 
-                        $penerimaNama = $valOf(['nama_yang_ditugaskan', 'nama_penerima_tugas', 'nama_karyawan']);
-                        $penerimaJabatan = $valOf(['jabatan_yang_ditugaskan', 'jabatan']);
-                        $penerimaDept = $valOf(['dept_div_yang_ditugaskan', 'dept_div', 'departemen']);
-
-                        $tugasVal = $valOf(['tugas', 'tugas_keperluan', 'keperluan']);
-                        $kotaVal = $valOf(['kota_tujuan', 'tujuan']);
-                        $tglBerangkat = $valOf(['tanggal_berangkat', 'tgl_berangkat']);
-                        $tglKembali = $valOf(['tanggal_kembali', 'tgl_kembali']);
-                        $transportVal = $valOf(['jenis_transportasi', 'transportasi']);
-                        $catatanVal = $valOf(['catatan', 'catatan_tambahan']);
-
-                        if ($tglBerangkat !== '-' && strtotime($tglBerangkat)) {
-                            $tglBerangkat = \Carbon\Carbon::parse($tglBerangkat)->translatedFormat('d/m/Y');
-                        }
-                        if ($tglKembali !== '-' && strtotime($tglKembali)) {
-                            $tglKembali = \Carbon\Carbon::parse($tglKembali)->translatedFormat('d/m/Y');
-                        }
-                    @endphp
-
-                    <!-- Bagian 1: Pemberi Tugas -->
-                    <div style="font-size: 11px; margin-bottom: 3px; color: #111;">Yang bertanda tangan di bawah ini,</div>
-                    <table class="info-table" style="margin-bottom: 14px;">
-                        <tr>
-                            <th style="width: 140px; padding: 2.5px 0;">Nama</th>
-                            <td style="padding: 2.5px 0;">: {{ $pemberiNama }}</td>
-                        </tr>
-                        <tr>
-                            <th style="width: 140px; padding: 2.5px 0;">Jabatan</th>
-                            <td style="padding: 2.5px 0;">: {{ $pemberiJabatan }}</td>
-                        </tr>
-                        <tr>
-                            <th style="width: 140px; padding: 2.5px 0;">Dept/Div</th>
-                            <td style="padding: 2.5px 0;">: {{ $pemberiDept }}</td>
-                        </tr>
-                    </table>
-
-                    <!-- Bagian 2: Penerima Tugas -->
-                    <div style="font-size: 11px; margin-bottom: 3px; color: #111;">Menugaskan,</div>
-                    <table class="info-table" style="margin-bottom: 14px;">
-                        <tr>
-                            <th style="width: 140px; padding: 2.5px 0;">Nama</th>
-                            <td style="padding: 2.5px 0;">: {{ $penerimaNama }}</td>
-                        </tr>
-                        <tr>
-                            <th style="width: 140px; padding: 2.5px 0;">Jabatan</th>
-                            <td style="padding: 2.5px 0;">: {{ $penerimaJabatan }}</td>
-                        </tr>
-                        <tr>
-                            <th style="width: 140px; padding: 2.5px 0;">Dept/Div</th>
-                            <td style="padding: 2.5px 0;">: {{ $penerimaDept }}</td>
-                        </tr>
-                    </table>
-
-                    <!-- Bagian 3: Pelaksanaan Tugas -->
-                    <div style="font-size: 11px; margin-bottom: 3px; color: #111;">Untuk melaksanakan perjalanan dinas</div>
-                    <table class="info-table" style="margin-bottom: 14px;">
-                        <tr>
-                            <th style="width: 140px; padding: 2.5px 0;">Tugas</th>
-                            <td style="padding: 2.5px 0;">: {!! nl2br(e($tugasVal)) !!}</td>
-                        </tr>
-                        <tr>
-                            <th style="width: 140px; padding: 2.5px 0;">Kota tujuan</th>
-                            <td style="padding: 2.5px 0;">: {{ $kotaVal }}</td>
-                        </tr>
-                        <tr>
-                            <th style="width: 140px; padding: 2.5px 0;">Tanggal Berangkat</th>
-                            <td style="padding: 2.5px 0;">: {{ $tglBerangkat }}</td>
-                        </tr>
-                        <tr>
-                            <th style="width: 140px; padding: 2.5px 0;">Tanggal Kembali</th>
-                            <td style="padding: 2.5px 0;">: {{ $tglKembali }}</td>
-                        </tr>
-                        <tr>
-                            <th style="width: 140px; padding: 2.5px 0;">Jenis Transportasi</th>
-                            <td style="padding: 2.5px 0;">: {{ $transportVal }}</td>
-                        </tr>
-                    </table>
-
-                    <!-- Bagian 4: Kotak Catatan (Box Sesuai Format Gambar 2) -->
-                    <div style="border: 1px solid #000; padding: 8px 10px; margin-top: 10px; margin-bottom: 16px; min-height: 52px; page-break-inside: avoid;">
-                        <strong style="display: block; font-size: 11px; margin-bottom: 4px;">Catatan :</strong>
-                        <div style="font-size: 10.5px; color: #222;">
-                            {!! ($catatanVal && $catatanVal !== '-') ? nl2br(e($catatanVal)) : '&nbsp;' !!}
-                        </div>
-                    </div>
-                @else
-                    @if(count($nonTableFields) > 0)
-                        <table class="info-table">
-                            @for($i = 0; $i < count($nonTableFields); $i++)
-                                @php
-                                    if ($skipNext) {
-                                        $skipNext = false;
-                                        continue;
+                                // Intelligent pairing: Date + Time
+                                $nextField = $nonTableFields[$i + 1] ?? null;
+                                $pairedTime = null;
+                                $pairedLabel = '';
+                                if ($fType === 'date' && $nextField && ($nextField['type'] ?? '') === 'time') {
+                                    $nextVal = $metadata[$nextField['name']] ?? null;
+                                    if ($nextVal) {
+                                        $pairedTime = $nextVal;
+                                        $pairedLabel = $nextField['label'];
+                                        $skipNext = true;
                                     }
+                                }
+                            @endphp
 
-                                    $field = $nonTableFields[$i];
-                                    $fName = $field['name'];
-                                    $fVal = $metadata[$fName] ?? null;
-                                    $fType = $field['type'] ?? 'text';
-                                    $fLabel = $field['label'];
-
-                                    // Intelligent pairing: Date + Time
-                                    $nextField = $nonTableFields[$i + 1] ?? null;
-                                    $pairedTime = null;
-                                    $pairedLabel = '';
-                                    if ($fType === 'date' && $nextField && ($nextField['type'] ?? '') === 'time') {
-                                        $nextVal = $metadata[$nextField['name']] ?? null;
-                                        if ($nextVal) {
-                                            $pairedTime = $nextVal;
-                                            $pairedLabel = $nextField['label'];
-                                            $skipNext = true;
-                                        }
-                                    }
-                                @endphp
-
-                                <tr style="page-break-inside: avoid;">
-                                    <th>{{ $fLabel }}</th>
-                                    <td>
-                                        @if($fType === 'textarea')
-                                            : {!! nl2br(e($fVal ?: '-')) !!}
-                                        @elseif($fType === 'file' && $fVal)
-                                            @php
-                                                $ext = strtolower(pathinfo($fVal, PATHINFO_EXTENSION));
-                                                $relPath = ltrim(str_replace('public/', '', $fVal), '/');
-                                                $imgPath = storage_path('app/public/' . $relPath);
-                                                if (!file_exists($imgPath)) {
-                                                    $imgPath = public_path('storage/' . $relPath);
-                                                }
-                                                if (!file_exists($imgPath)) {
-                                                    $imgPath = storage_path('app/' . $relPath);
-                                                }
-                                                $imgDataUri = null;
-                                                if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif']) && file_exists($imgPath)) {
-                                                    $mime = ($ext === 'png') ? 'image/png' : 'image/jpeg';
-                                                    $imgDataUri = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($imgPath));
-                                                }
-                                            @endphp
-                                            @if($imgDataUri)
-                                                <div class="attachment-box">
-                                                    <img src="{{ $imgDataUri }}" class="attachment-img" alt="{{ $fLabel }}" />
-                                                </div>
-                                            @else
-                                                : <em>{{ basename($fVal) }}</em>
-                                            @endif
+                            <tr style="page-break-inside: avoid;">
+                                <th style="width: 175px;">{{ $fLabel }}</th>
+                                <td style="width: 15px; text-align: left;">:</td>
+                                <td>
+                                    @if($fType === 'textarea')
+                                        {!! nl2br(e($fVal ?: '-')) !!}
+                                    @elseif($fType === 'file' && $fVal)
+                                        @php
+                                            $ext = strtolower(pathinfo($fVal, PATHINFO_EXTENSION));
+                                            $relPath = ltrim(str_replace('public/', '', $fVal), '/');
+                                            $imgPath = storage_path('app/public/' . $relPath);
+                                            if (!file_exists($imgPath)) {
+                                                $imgPath = public_path('storage/' . $relPath);
+                                            }
+                                            if (!file_exists($imgPath)) {
+                                                $imgPath = storage_path('app/' . $relPath);
+                                            }
+                                            $imgDataUri = null;
+                                            if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif']) && file_exists($imgPath)) {
+                                                $mime = ($ext === 'png') ? 'image/png' : 'image/jpeg';
+                                                $imgDataUri = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($imgPath));
+                                            }
+                                        @endphp
+                                        @if($imgDataUri)
+                                            <div class="attachment-box">
+                                                <img src="{{ $imgDataUri }}" class="attachment-img" alt="{{ $fLabel }}" />
+                                            </div>
                                         @else
-                                            @php
-                                                $displayVal = $fVal ?: '-';
-                                                if (is_array($displayVal)) {
-                                                    $displayVal = implode(', ', array_filter($displayVal, 'is_scalar'));
-                                                }
-                                                if ($fVal && $fType === 'date' && strtotime($fVal)) {
-                                                    $displayVal = \Carbon\Carbon::parse($fVal)->translatedFormat('d/m/Y');
-                                                } elseif ($fVal && $fType === 'time') {
-                                                    $displayVal = (strpos($fVal, 'WIB') !== false) ? $fVal : $fVal . ' WIB';
-                                                } elseif ($fVal && $fType === 'number' && is_numeric($fVal)) {
-                                                    $displayVal = number_format((float)$fVal, 0, ',', '.');
-                                                }
-                                            @endphp
-
-                                            : {{ $displayVal }}
-
-                                            @if($pairedTime)
-                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                                <strong>{{ $pairedLabel }}:</strong> {{ $pairedTime }} WIB
-                                            @endif
+                                            <em>{{ basename($fVal) }}</em>
                                         @endif
-                                    </td>
-                                </tr>
-                            @endfor
-                        </table>
-                    @endif
+                                    @else
+                                        @php
+                                            $displayVal = $fVal ?: '-';
+                                            if (is_array($displayVal)) {
+                                                $displayVal = implode(', ', array_filter($displayVal, 'is_scalar'));
+                                            }
+                                            if ($fVal && $fType === 'date' && strtotime($fVal)) {
+                                                $displayVal = \Carbon\Carbon::parse($fVal)->translatedFormat('d/m/Y');
+                                            } elseif ($fVal && $fType === 'time') {
+                                                $displayVal = (strpos($fVal, 'WIB') !== false) ? $fVal : $fVal . ' WIB';
+                                            } elseif ($fVal && $fType === 'number' && is_numeric($fVal)) {
+                                                $displayVal = number_format((float)$fVal, 0, ',', '.');
+                                            }
+                                        @endphp
+
+                                        {{ $displayVal }}
+
+                                        @if($pairedTime)
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            <strong>{{ $pairedLabel }}:</strong> {{ $pairedTime }} WIB
+                                        @endif
+                                    @endif
+                                </td>
+                            </tr>
+                        @endfor
+                    </table>
                 @endif
+            @endif
 
                 {{-- Dynamic Tables (e.g. Data Penumpang dalam Mobil) --}}
                 @foreach($tableFields as $tField)
@@ -1193,20 +1085,18 @@
             @endif
 
             {{-- Signature Block (Matching Image 1 + Digital QR Signatures) --}}
-            <div class="signature-section" style="{{ $isStpd ? 'margin-top: 30px;' : 'margin-top: 20px;' }}">
+            <div class="signature-section" style="margin-top: 35px;">
                 <table style="width: 100%; border-collapse: collapse; margin-bottom: 6px;">
                     <tr>
-                        <td style="text-align: right; font-size: 11px; padding-bottom: 4px;">
+                        <td style="text-align: right; font-size: 11px; padding-bottom: 6px;">
                             Jakarta, {{ $docDate->translatedFormat('d F Y') }}
                         </td>
                     </tr>
-                    @if(!$isStpd)
                     <tr>
                         <td style="text-align: center; font-size: 11px; padding-bottom: 10px;">
                             Disetujui,
                         </td>
                     </tr>
-                    @endif
                 </table>
 
                 @php
