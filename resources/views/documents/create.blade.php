@@ -76,7 +76,7 @@
             // Set defaults to form 0
             this.forms = [{ 
                 id: Date.now(), 
-                title: tpl.defaultTitle || '', 
+                title: tpl.defaultTitle || tpl.name || '', 
                 description: tpl.defaultDesc || '',
                 subtotal: 0,
                 taxAmount: 0
@@ -89,7 +89,7 @@
             if (this.forms.length < 10) {
                 this.forms.push({
                     id: Date.now(),
-                    title: this.selectedTemplate ? this.selectedTemplate.defaultTitle : '',
+                    title: this.selectedTemplate ? (this.selectedTemplate.defaultTitle || this.selectedTemplate.name) : '',
                     description: this.selectedTemplate ? this.selectedTemplate.defaultDesc : '',
                     subtotal: 0,
                     taxAmount: 0
@@ -422,7 +422,7 @@
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Kategori Dokumen') }}</label>
-                                            <input type="text" :name="`documents[${index}][document_category]`" readonly :value="selectedTemplate ? selectedTemplate.defaultCategory : ''" class="block w-full px-4 py-3 border border-gray-200 bg-gray-50 rounded-xl text-gray-500 cursor-not-allowed">
+                                            <input type="text" :name="`documents[${index}][document_category]`" readonly :value="selectedTemplate ? (selectedTemplate.defaultCategory || selectedTemplate.name) : ''" class="block w-full px-4 py-3 border border-gray-200 bg-gray-50 rounded-xl text-gray-500 cursor-not-allowed">
                                         </div>
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Tanggal Berlaku') }}</label>
