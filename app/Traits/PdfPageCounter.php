@@ -37,15 +37,19 @@ trait PdfPageCounter
 
         // Page number coordinates
         if ($orientation === 'landscape') {
-            // A4 landscape = 841.89pt wide x 595.28pt high (margin: 20mm top, 22mm right = content ends at 779.5pt)
-            $x = 735;
-            $y = 30;
+            // A4 landscape = 841.89pt wide x 595.28pt high (margin: 12mm right = content ends at ~807.87pt)
+            $x = 770;
+            $y = 28;
             $size = 7;
             $color = [0.3, 0.3, 0.3];
         } else {
-            // Portrait
-            $x = 448;
-            $y = 66;
+            // Portrait - Aligned with mathematical precision to row 4 of the standardized company header table
+            // Row 1 (No. Dokumen):    x=449.78, y_cpdf=811.21
+            // Row 2 (Status Revisi):  x=449.78, y_cpdf=795.36
+            // Row 3 (Tanggal Berlaku):x=449.78, y_cpdf=779.51
+            // Row 4 (Halaman):        x=449.78, y_cpdf=763.66 -> canvas y=70.37
+            $x = 449.78;
+            $y = 70.37;
             $size = 6.75;
             $color = [0.2, 0.2, 0.2];
         }

@@ -381,9 +381,12 @@
             $mainTitle = strtoupper($template->name ?? $document->title);
             $subTitle = $kategori ? format_acronyms(ucwords(strtolower(trim($kategori)))) : null;
 
-            $logoPath = public_path('images/logo-infodata.jpg');
+            $logoPath = file_exists(public_path('images/logo.png'))
+                ? public_path('images/logo.png')
+                : public_path('images/logo-infodata.jpg');
+            $logoMime = str_ends_with($logoPath, '.png') ? 'image/png' : 'image/jpeg';
             $logoDataUri = file_exists($logoPath)
-                ? 'data:image/jpeg;base64,' . base64_encode(file_get_contents($logoPath))
+                ? 'data:' . $logoMime . ';base64,' . base64_encode(file_get_contents($logoPath))
                 : null;
 
             $parseMoney = function($raw): float {
@@ -504,7 +507,7 @@
             <tr>
                 <td style="width: 37%;">
                     @if($logoDataUri)
-                        <img src="{{ $logoDataUri }}" style="height: 48px; width: auto; margin-bottom: 5px; display: block;" />
+                        <img src="{{ $logoDataUri }}" style="height: 64px; width: auto; margin-bottom: 5px; display: block;" />
                     @endif
                     <table class="meta-table">
                         <tr>
