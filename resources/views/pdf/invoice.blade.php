@@ -179,37 +179,37 @@
         }
 
         .sig-qr-box {
-            width: 55px;
-            height: 55px;
+            width: 75px;
+            height: 75px;
             margin: 2px auto 1px auto;
             display: block;
         }
 
         .sig-qr-box img {
-            width: 55px;
-            height: 55px;
+            width: 75px;
+            height: 75px;
             display: block;
         }
 
         .sig-status-signed {
-            font-size: 7.5px;
+            font-size: 8px;
             color: #059669;
             font-weight: bold;
-            margin-top: 1px;
+            margin-top: 2px;
             letter-spacing: 0.3px;
         }
 
         .sig-status-approved {
-            font-size: 8px;
+            font-size: 8.5px;
             font-weight: bold;
             color: #059669;
-            height: 55px;
-            line-height: 55px;
+            height: 75px;
+            line-height: 75px;
         }
 
         .sig-pending-box {
-            width: 55px;
-            height: 55px;
+            width: 75px;
+            height: 75px;
             margin: 2px auto;
             border: 1px dashed #cbd5e1;
             background-color: #f8fafc;
@@ -403,7 +403,7 @@
             $verificationUrl = $verificationHash ? route('verify.show', $verificationHash) : null;
 
             $genSignerQr = function(string $url) {
-                return base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(150)->margin(0)->generate($url));
+                return base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(300)->margin(1)->generate($url));
             };
 
             $allSigners = collect();
@@ -522,7 +522,7 @@
                     <td style="width: 25%; text-align: center; vertical-align: middle;">
                         @if(isset($qrCode))
                             <div style="display: inline-block; text-align: center;">
-                                <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code" style="width: 65px; height: 65px; display: block; margin: 0 auto;">
+                                <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code" style="width: 85px; height: 85px; display: block; margin: 0 auto;">
                                 <div style="font-size: 7.5px; font-weight: bold; color: #334155; margin-top: 2px;">{{ __('Scan untuk verifikasi') }}</div>
                             </div>
                         @endif

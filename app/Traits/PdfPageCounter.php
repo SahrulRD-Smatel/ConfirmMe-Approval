@@ -45,7 +45,7 @@ trait PdfPageCounter
         } else {
             // Portrait
             $x = 448;
-            $y = 72;
+            $y = 66;
             $size = 6.75;
             $color = [0.2, 0.2, 0.2];
         }
