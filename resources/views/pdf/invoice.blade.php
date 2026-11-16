@@ -7,15 +7,15 @@
     <title>{{ $invoice->invoice_number }}</title>
     <style>
         @page {
-            margin: 125px 40px 30px 40px !important;
+            margin: 140px 45px 35px 45px !important;
         }
 
         header {
             position: fixed;
-            top: -105px;
+            top: -115px;
             left: 0;
             right: 0;
-            height: 80px;
+            height: 105px;
         }
 
         header .company-header {
@@ -42,8 +42,8 @@
 
         .doc-title-banner {
             text-align: center;
-            padding: 2px 10px;
-            margin-bottom: 10px;
+            margin-top: 4px;
+            margin-bottom: 14px;
             font-size: 13px;
             font-weight: bold;
             text-transform: uppercase;
@@ -52,7 +52,7 @@
         }
 
         .section-title {
-            font-size: 10.5px;
+            font-size: 10px;
             font-weight: bold;
             color: #7F1D1D;
             margin-bottom: 4px;
@@ -151,93 +151,67 @@
             background-color: #f9fafb;
         }
 
-        /* Signature Section (Adaptive Grid matching document.blade.php) */
+        /* Signature Section - Standardized Boxed Cards matching PERMINTAAN PEMBELIAN BARANG */
         .signature-section {
-            margin-top: 12px;
+            margin-top: 8px;
             page-break-inside: avoid;
         }
 
-        .signature-table {
+        .sig-container {
+            width: 100%;
             border-collapse: collapse;
-            margin-left: auto;
-            margin-right: auto;
+            margin-top: 6px;
+            page-break-inside: avoid;
         }
 
-        .signature-table td {
-            text-align: center;
+        .sig-box-cell {
+            padding: 0 4px;
             vertical-align: top;
-            padding: 2px 6px;
         }
 
-        .sig-role-label {
-            font-size: 9px;
+        .sig-card {
+            width: 100%;
+            border: 1px solid #000;
+            border-collapse: collapse;
+        }
+
+        .sig-card-header {
+            border-bottom: 1px solid #000;
+            text-align: center;
             font-weight: bold;
-            color: #1f2937;
-            margin-bottom: 3px;
-            min-height: 12px;
-            line-height: 1.2;
+            font-size: 8.5px;
+            padding: 4px 2px;
+            background-color: #fff;
+            height: 16px;
+            color: #000;
         }
 
-        .sig-qr-box {
-            width: 75px;
-            height: 75px;
-            margin: 2px auto 1px auto;
-            display: block;
+        .sig-card-body {
+            text-align: center;
+            vertical-align: middle;
+            height: 74px;
+            min-height: 74px;
+            padding: 2px;
+            background-color: #fff;
         }
 
-        .sig-qr-box img {
-            width: 75px;
-            height: 75px;
-            display: block;
+        .sig-card-footer {
+            border-top: 1px solid #000;
+            text-align: center;
+            font-size: 8.5px;
+            font-weight: bold;
+            padding: 4px 2px;
+            background-color: #fff;
+            min-height: 18px;
+            color: #000;
         }
 
         .sig-status-signed {
-            font-size: 8px;
+            font-size: 7.5px;
             color: #059669;
             font-weight: bold;
-            margin-top: 2px;
-            letter-spacing: 0.3px;
-        }
-
-        .sig-status-approved {
-            font-size: 8.5px;
-            font-weight: bold;
-            color: #059669;
-            height: 75px;
-            line-height: 75px;
-        }
-
-        .sig-pending-box {
-            width: 75px;
-            height: 75px;
-            margin: 2px auto;
-            border: 1px dashed #cbd5e1;
-            background-color: #f8fafc;
-            display: table;
-        }
-
-        .sig-pending-box span {
-            display: table-cell;
-            vertical-align: middle;
-            text-align: center;
-            font-size: 7.5px;
-            color: #94a3b8;
-        }
-
-        .sig-name {
-            font-size: 8.5px;
-            font-weight: bold;
-            color: #111827;
-            display: block;
-            margin-top: 2px;
-            margin-bottom: 1px;
-            line-height: 1.2;
-        }
-
-        .sig-nip {
-            font-size: 7.5px;
-            color: #4b5563;
             margin-top: 1px;
+            letter-spacing: 0.3px;
         }
 
         /* Verification Footer matching document.blade.php */
@@ -279,49 +253,51 @@
         <div class="doc-title-banner">INVOICE</div>
 
         <!-- Vendor & Invoice Info (Clean 2-Column Layout) -->
-        <div style="display: table; width: 100%; margin-bottom: 8px;">
-            <div style="display: table-cell; width: 50%; vertical-align: top; padding-right: 15px;">
-                <div class="section-title">{{ __('Tagihan Kepada (Vendor)') }}</div>
-                <div style="font-weight: bold; font-size: 11.5px; color: #111827; margin-bottom: 2px;">{{ $invoice->vendor_name }}</div>
-                @if($invoice->vendor_address)<div style="font-size: 9.5px; color: #4b5563; line-height: 1.35;">{{ $invoice->vendor_address }}</div>@endif
-            </div>
-            <div style="display: table-cell; width: 50%; vertical-align: top;">
-                <div class="section-title">{{ __('Informasi Tagihan') }}</div>
-                <table class="info-table">
-                    <tr>
-                        <th>{{ __('Tgl Invoice') }}</th>
-                        <td style="width: 10px;">:</td>
-                        <td>{{ \Carbon\Carbon::parse($invoice->invoice_date)->translatedFormat('d F Y') }}</td>
-                    </tr>
-                    <tr>
-                        <th>{{ __('Jatuh Tempo') }}</th>
-                        <td>:</td>
-                        <td>{{ \Carbon\Carbon::parse($invoice->due_date)->translatedFormat('d F Y') }}</td>
-                    </tr>
-                    @if($invoice->purchaseOrder)
-                    <tr>
-                        <th>{{ __('No. Purchase Order') }}</th>
-                        <td>:</td>
-                        <td>{{ $invoice->purchaseOrder->po_number }}</td>
-                    </tr>
-                    @endif
-                    <tr>
-                        <th>{{ __('Referensi Dokumen') }}</th>
-                        <td>:</td>
-                        <td>{{ $invoice->document ? $invoice->document->document_number : '-' }}</td>
-                    </tr>
-                    <tr>
-                        <th>{{ __('Status') }}</th>
-                        <td>:</td>
-                        <td>
-                            <span class="status-badge status-{{ $invoice->status === 'paid' ? 'paid' : ($invoice->status === 'cancelled' ? 'cancelled' : 'draft') }}">
-                                {{ $invoice->status }}
-                            </span>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </div>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px;">
+            <tr>
+                <td style="width: 50%; vertical-align: top; padding-right: 15px;">
+                    <div class="section-title">{{ __('Tagihan Kepada (Vendor)') }}</div>
+                    <div style="font-weight: bold; font-size: 11px; color: #111827; margin-bottom: 2px;">{{ $invoice->vendor_name }}</div>
+                    @if($invoice->vendor_address)<div style="font-size: 9.5px; color: #4b5563; line-height: 1.35;">{{ $invoice->vendor_address }}</div>@endif
+                </td>
+                <td style="width: 50%; vertical-align: top;">
+                    <div class="section-title">{{ __('Informasi Tagihan') }}</div>
+                    <table class="info-table">
+                        <tr>
+                            <th>{{ __('Tgl Invoice') }}</th>
+                            <td style="width: 10px;">:</td>
+                            <td>{{ \Carbon\Carbon::parse($invoice->invoice_date)->translatedFormat('d F Y') }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ __('Jatuh Tempo') }}</th>
+                            <td>:</td>
+                            <td>{{ \Carbon\Carbon::parse($invoice->due_date)->translatedFormat('d F Y') }}</td>
+                        </tr>
+                        @if($invoice->purchaseOrder)
+                        <tr>
+                            <th>{{ __('No. Purchase Order') }}</th>
+                            <td>:</td>
+                            <td>{{ $invoice->purchaseOrder->po_number }}</td>
+                        </tr>
+                        @endif
+                        <tr>
+                            <th>{{ __('Referensi Dokumen') }}</th>
+                            <td>:</td>
+                            <td>{{ $invoice->document ? $invoice->document->document_number : '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ __('Status') }}</th>
+                            <td>:</td>
+                            <td>
+                                <span class="status-badge status-{{ $invoice->status === 'paid' ? 'paid' : ($invoice->status === 'cancelled' ? 'cancelled' : 'draft') }}">
+                                    {{ $invoice->status }}
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
 
         <!-- Items Table with Integrated Totals (No CSS floats) -->
         @php
@@ -460,47 +436,37 @@
                     @php
                         $countInChunk = $chunk->count();
                         $tableWidth = round(($countInChunk / $chunkSize) * 100, 2) . '%';
-                        $cellWidth = round(100 / $countInChunk, 2) . '%';
+                        $colWidth = round(100 / $countInChunk, 2);
                     @endphp
 
-                    <table class="signature-table" align="center" style="width: {{ $tableWidth }}; margin: {{ $chunkIndex > 0 ? '6px' : '0' }} auto 0 auto;">
-                        {{-- Row 1: Role Label --}}
+                    <table class="sig-container" align="center" style="width: {{ $tableWidth }}; margin: {{ $chunkIndex > 0 ? '6px' : '0' }} auto 0 auto;">
                         <tr>
                             @foreach($chunk as $signer)
-                                <td style="width: {{ $cellWidth }};">
-                                    <div class="sig-role-label">{{ $signer['role'] }}</div>
-                                </td>
-                            @endforeach
-                        </tr>
-
-                        {{-- Row 2: QR Code / Signature Status --}}
-                        <tr>
-                            @foreach($chunk as $signer)
-                                <td>
-                                    @if($signer['is_signed'])
-                                        <div class="sig-qr-box">
-                                            <img src="data:image/svg+xml;base64,{{ $signer['qr_code'] }}" alt="QR Code">
-                                        </div>
-                                        <div class="sig-status-signed">{{ $signer['signed_label'] }}</div>
-                                    @elseif($signer['status'] === 'approved')
-                                        <div class="sig-status-approved">APPROVED</div>
-                                    @else
-                                        <div class="sig-pending-box">
-                                            <span>{{ $signer['signed_label'] }}</span>
-                                        </div>
-                                    @endif
-                                </td>
-                            @endforeach
-                        </tr>
-
-                        {{-- Row 3: Name & NIP --}}
-                        <tr>
-                            @foreach($chunk as $signer)
-                                <td>
-                                    <div class="sig-name">( {{ $signer['name'] }} )</div>
-                                    @if(!empty($signer['nip']))
-                                        <div class="sig-nip">NIP. {{ $signer['nip'] }}</div>
-                                    @endif
+                                <td class="sig-box-cell" style="width: {{ $colWidth }}%;">
+                                    <table class="sig-card">
+                                        <tr>
+                                            <td class="sig-card-header">{{ $signer['role'] }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="sig-card-body">
+                                                @if($signer['is_signed'] && $signer['qr_code'])
+                                                    <img src="data:image/svg+xml;base64,{{ $signer['qr_code'] }}" alt="QR Code" style="width: 70px; height: 70px; display: block; margin: 0 auto;">
+                                                @elseif($signer['status'] === 'approved')
+                                                    <div style="height: 70px; line-height: 70px; color: #059669; font-size: 9px; font-weight: bold; text-align: center;">APPROVED</div>
+                                                @else
+                                                    <div style="height: 70px; line-height: 70px; color: #aaa; font-size: 8.5px; text-align: center;">{{ ucfirst($signer['status'] ?? 'pending') }}</div>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="sig-card-footer">
+                                                <div>{{ $signer['name'] }}</div>
+                                                @if(!empty($signer['nip']))
+                                                    <div style="font-size: 7.5px; font-weight: normal; color: #555;">NIP. {{ $signer['nip'] }}</div>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </td>
                             @endforeach
                         </tr>
@@ -522,7 +488,7 @@
                     <td style="width: 25%; text-align: center; vertical-align: middle;">
                         @if(isset($qrCode))
                             <div style="display: inline-block; text-align: center;">
-                                <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code" style="width: 85px; height: 85px; display: block; margin: 0 auto;">
+                                <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code" style="width: 70px; height: 70px; display: block; margin: 0 auto;">
                                 <div style="font-size: 7.5px; font-weight: bold; color: #334155; margin-top: 2px;">{{ __('Scan untuk verifikasi') }}</div>
                             </div>
                         @endif

@@ -239,15 +239,15 @@
             }
 
             .sig-qr-box {
-                width: 78px;
-                height: 78px;
+                width: 70px;
+                height: 70px;
                 margin: 2px auto 1px auto;
                 display: block;
             }
 
             .sig-qr-box img {
-                width: 78px;
-                height: 78px;
+                width: 70px;
+                height: 70px;
                 display: block;
             }
 
@@ -263,13 +263,13 @@
                 font-size: 9px;
                 font-weight: bold;
                 color: #059669;
-                height: 78px;
-                line-height: 78px;
+                height: 70px;
+                line-height: 70px;
             }
 
             .sig-pending-box {
-                width: 78px;
-                height: 78px;
+                width: 70px;
+                height: 70px;
                 margin: 2px auto;
                 border: 1px dashed #cbd5e1;
                 background-color: #f8fafc;
@@ -789,7 +789,7 @@
         {{-- Adaptive Landscape Signatures (Pemohon & Approvers Only - Mengetahui has no signature box) --}}
         @php
             $genSignerQr = function(string $url) {
-                return base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(250)->margin(0)->generate($url));
+                return base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(300)->margin(1)->generate($url));
             };
 
             $allSigners = collect();
@@ -873,7 +873,7 @@
                     <td style="width: 22%; text-align: center; vertical-align: middle;">
                         @if(isset($qrCode))
                             <div style="display: inline-block; text-align: center;">
-                                <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code" style="width: 88px; height: 88px; display: block; margin: 0 auto;">
+                                <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code" style="width: 70px; height: 70px; display: block; margin: 0 auto;">
                                 <div style="font-size: 8px; font-weight: bold; color: #334155; margin-top: 3px;">Scan verifikasi</div>
                             </div>
                         @endif
@@ -910,7 +910,7 @@
                 $isUmbpd = $templateCode === 'hr_umbpd' || str_contains(strtolower($document->title), 'pemesanan tiket') || str_contains(strtolower($document->title), 'uang muka');
 
                 $genSignerQr = function(string $url) {
-                    return base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(250)->margin(0)->generate($url));
+                    return base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(300)->margin(1)->generate($url));
                 };
             @endphp
 
@@ -1064,31 +1064,31 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td style="border: 1px solid #111; height: 70px; vertical-align: middle; text-align: center; padding: 3px;">
+                            <td style="border: 1px solid #111; height: 76px; vertical-align: middle; text-align: center; padding: 3px;">
                                 @if($pemberiQr)
-                                    <img src="data:image/svg+xml;base64,{{ $pemberiQr }}" style="width: 55px; height: 55px; display: block; margin: 0 auto;" />
+                                    <img src="data:image/svg+xml;base64,{{ $pemberiQr }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
                                     <div style="font-size: 7px; color: #166534; font-weight: bold; margin-top: 1px;">Signed</div>
                                 @else
-                                    <div style="height: 55px;"></div>
+                                    <div style="height: 70px;"></div>
                                 @endif
                             </td>
-                            <td style="border: 1px solid #111; height: 70px; vertical-align: middle; text-align: center; padding: 3px;">
+                            <td style="border: 1px solid #111; height: 76px; vertical-align: middle; text-align: center; padding: 3px;">
                                 @if($atasanQr)
-                                    <img src="data:image/svg+xml;base64,{{ $atasanQr }}" style="width: 55px; height: 55px; display: block; margin: 0 auto;" />
+                                    <img src="data:image/svg+xml;base64,{{ $atasanQr }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
                                     <div style="font-size: 7px; color: #166534; font-weight: bold; margin-top: 1px;">Signed</div>
                                 @else
-                                    <div style="height: 55px;"></div>
+                                    <div style="height: 70px;"></div>
                                 @endif
                             </td>
-                            <td style="border: 1px solid #111; height: 70px; vertical-align: middle; text-align: center; padding: 3px;">
-                                <div style="height: 55px; color: #999; font-size: 8px; line-height: 55px; font-style: italic;">(Cap / Paraf Cabang)</div>
+                            <td style="border: 1px solid #111; height: 76px; vertical-align: middle; text-align: center; padding: 3px;">
+                                <div style="height: 70px; color: #999; font-size: 8px; line-height: 70px; font-style: italic;">(Cap / Paraf Cabang)</div>
                             </td>
-                            <td style="border: 1px solid #111; height: 70px; vertical-align: middle; text-align: center; padding: 3px;">
+                            <td style="border: 1px solid #111; height: 76px; vertical-align: middle; text-align: center; padding: 3px;">
                                 @if($penerimaQr)
-                                    <img src="data:image/svg+xml;base64,{{ $penerimaQr }}" style="width: 55px; height: 55px; display: block; margin: 0 auto;" />
+                                    <img src="data:image/svg+xml;base64,{{ $penerimaQr }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
                                     <div style="font-size: 7px; color: #166534; font-weight: bold; margin-top: 1px;">Signed</div>
                                 @else
-                                    <div style="height: 55px;"></div>
+                                    <div style="height: 70px;"></div>
                                 @endif
                             </td>
                         </tr>
@@ -1567,7 +1567,7 @@
                     $allSigners = collect();
 
                     $genSignerQr = function(string $url) {
-                        return base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(250)->margin(0)->generate($url));
+                        return base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(300)->margin(1)->generate($url));
                     };
 
                     // 1. Pemohon (Always first in document workflow)
@@ -1677,7 +1677,7 @@
                         <td style="width: 26%; text-align: center; vertical-align: middle;">
                             @if(isset($qrCode))
                                 <div style="display: inline-block; text-align: center;">
-                                    <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code" style="width: 88px; height: 88px; display: block; margin: 0 auto;">
+                                    <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code" style="width: 70px; height: 70px; display: block; margin: 0 auto;">
                                     <div style="font-size: 8px; font-weight: bold; color: #334155; margin-top: 3px;">{{ __("Scan untuk verifikasi") }}</div>
                                 </div>
                             @endif
