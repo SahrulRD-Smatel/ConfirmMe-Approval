@@ -558,9 +558,15 @@ class AttendanceController extends Controller
         foreach ($rows as $rowIndex => $row) {
             $lineNumber = $rowIndex + 2; // row 1 = header, index starts at 0
 
-            // Normalize column names (case-insensitive, trimmed)
+            // Normalize column names (case-insensitive, trimmed) & handle DateTime objects from FastExcel
             $row = collect($row)->mapWithKeys(function ($value, $key) {
-                return [strtolower(trim($key)) => trim($value ?? '')];
+                $cleanKey = strtolower(trim((string)$key));
+                if ($value instanceof \DateTimeInterface) {
+                    $cleanVal = $value->format('Y-m-d H:i:s');
+                } else {
+                    $cleanVal = trim((string)($value ?? ''));
+                }
+                return [$cleanKey => $cleanVal];
             });
 
             // Extract fields (support both English and Indonesian column names)

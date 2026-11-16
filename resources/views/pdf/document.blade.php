@@ -888,10 +888,10 @@
         {{-- ========================================================================= --}}
         @php
             $categoryName = $template ? ($template->fields['document_category'] ?? $template->name) : 'FORMULIR DOKUMEN';
-            if ($categoryName === 'peminjaman_aset' || str_contains(strtolower($document->title), 'mobil') || str_contains(strtolower($document->title), 'kendaraan')) {
+            if (empty($categoryName) || $categoryName === 'peminjaman_aset') {
                 $categoryName = 'PENGGUNAAN KENDARAAN OPERASIONAL';
             }
-            $categoryName = strtoupper(str_replace('_', ' ', $categoryName));
+            $categoryName = strtoupper(str_replace('_', ' ', (string)$categoryName));
         @endphp
 
         <!-- Fixed Header Box (Formulir Kerja - Repeated on every page) -->
@@ -906,8 +906,8 @@
         <div class="container">
             @php
                 $templateCode = strtolower(str_replace(['-', ' '], '_', (string)($template ? $template->code : ($document->template ?? ''))));
-                $isStpd = $templateCode === 'stpd' || str_contains(strtolower($document->title), 'surat tugas');
-                $isUmbpd = $templateCode === 'hr_umbpd' || str_contains(strtolower($document->title), 'pemesanan tiket') || str_contains(strtolower($document->title), 'uang muka');
+                $isStpd = $templateCode === 'stpd' || (!empty($metadata['pemberi_tugas_nama']) && !empty($metadata['nama_yang_ditugaskan']));
+                $isUmbpd = $templateCode === 'hr_umbpd' || (!empty($metadata['pemesanan_tiket']) && !empty($metadata['total_estimasi_pemohon']));
 
                 $genSignerQr = function(string $url) {
                     return base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(300)->margin(1)->generate($url));
@@ -1136,11 +1136,11 @@
                     $diketahuiDate = ($diketahuiApprover && $diketahuiApprover->action_at) ? $diketahuiApprover->action_at->translatedFormat('d/m/Y') : '............';
                     $diketahuiQr = ($diketahuiApprover && $diketahuiApprover->status === 'approved') ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => $diketahuiApprover->id])) : null;
 
-                    $hrdName = ($hrdApprover && $hrdApprover->approver) ? format_acronyms($hrdApprover->approver->name) : ($metadata['hrd_name'] ?? 'Faisal Abduh');
+                    $hrdName = ($hrdApprover && $hrdApprover->approver) ? format_acronyms($hrdApprover->approver->name) : ($metadata['hrd_name'] ?? '...........................');
                     $hrdDate = ($hrdApprover && $hrdApprover->action_at) ? $hrdApprover->action_at->translatedFormat('d/m/Y') : '............';
                     $hrdQr = ($hrdApprover && $hrdApprover->status === 'approved') ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => $hrdApprover->id])) : null;
 
-                    $financeName = ($financeApprover && $financeApprover->approver) ? format_acronyms($financeApprover->approver->name) : ($metadata['finance_name'] ?? 'Fajar Trimuri Jantono');
+                    $financeName = ($financeApprover && $financeApprover->approver) ? format_acronyms($financeApprover->approver->name) : ($metadata['finance_name'] ?? '...........................');
                     $financeDate = ($financeApprover && $financeApprover->action_at) ? $financeApprover->action_at->translatedFormat('d/m/Y') : '............';
                     $financeQr = ($financeApprover && $financeApprover->status === 'approved') ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => $financeApprover->id])) : null;
 
@@ -1306,36 +1306,36 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td style="border: 1px solid #111; height: 65px; vertical-align: middle; text-align: center; padding: 2px;">
+                            <td style="border: 1px solid #111; height: 68px; vertical-align: middle; text-align: center; padding: 2px;">
                                 @if($pemohonQr)
-                                    <img src="data:image/svg+xml;base64,{{ $pemohonQr }}" style="width: 50px; height: 50px; display: block; margin: 0 auto;" />
+                                    <img src="data:image/svg+xml;base64,{{ $pemohonQr }}" style="width: 60px; height: 60px; display: block; margin: 0 auto;" />
                                     <div style="font-size: 7px; color: #166534; font-weight: bold; margin-top: 1px;">Signed</div>
                                 @else
-                                    <div style="height: 50px;"></div>
+                                    <div style="height: 60px;"></div>
                                 @endif
                             </td>
-                            <td style="border: 1px solid #111; height: 65px; vertical-align: middle; text-align: center; padding: 2px;">
+                            <td style="border: 1px solid #111; height: 68px; vertical-align: middle; text-align: center; padding: 2px;">
                                 @if($diketahuiQr)
-                                    <img src="data:image/svg+xml;base64,{{ $diketahuiQr }}" style="width: 50px; height: 50px; display: block; margin: 0 auto;" />
+                                    <img src="data:image/svg+xml;base64,{{ $diketahuiQr }}" style="width: 60px; height: 60px; display: block; margin: 0 auto;" />
                                     <div style="font-size: 7px; color: #166534; font-weight: bold; margin-top: 1px;">Signed</div>
                                 @else
-                                    <div style="height: 50px;"></div>
+                                    <div style="height: 60px;"></div>
                                 @endif
                             </td>
-                            <td style="border: 1px solid #111; height: 65px; vertical-align: middle; text-align: center; padding: 2px;">
+                            <td style="border: 1px solid #111; height: 68px; vertical-align: middle; text-align: center; padding: 2px;">
                                 @if($hrdQr)
-                                    <img src="data:image/svg+xml;base64,{{ $hrdQr }}" style="width: 50px; height: 50px; display: block; margin: 0 auto;" />
+                                    <img src="data:image/svg+xml;base64,{{ $hrdQr }}" style="width: 60px; height: 60px; display: block; margin: 0 auto;" />
                                     <div style="font-size: 7px; color: #166534; font-weight: bold; margin-top: 1px;">Signed</div>
                                 @else
-                                    <div style="height: 50px;"></div>
+                                    <div style="height: 60px;"></div>
                                 @endif
                             </td>
-                            <td style="border: 1px solid #111; height: 65px; vertical-align: middle; text-align: center; padding: 2px;">
+                            <td style="border: 1px solid #111; height: 68px; vertical-align: middle; text-align: center; padding: 2px;">
                                 @if($financeQr)
-                                    <img src="data:image/svg+xml;base64,{{ $financeQr }}" style="width: 50px; height: 50px; display: block; margin: 0 auto;" />
+                                    <img src="data:image/svg+xml;base64,{{ $financeQr }}" style="width: 60px; height: 60px; display: block; margin: 0 auto;" />
                                     <div style="font-size: 7px; color: #166534; font-weight: bold; margin-top: 1px;">Signed</div>
                                 @else
-                                    <div style="height: 50px;"></div>
+                                    <div style="height: 60px;"></div>
                                 @endif
                             </td>
                         </tr>
