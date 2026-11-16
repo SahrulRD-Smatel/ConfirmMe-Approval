@@ -7,12 +7,12 @@
     <title>{{ $po->po_number }}</title>
     <style>
         @page {
-            margin: 130px 50px 60px 50px !important;
+            margin: 125px 40px 35px 40px !important;
         }
 
         header {
             position: fixed;
-            top: -100px;
+            top: -105px;
             left: 0;
             right: 0;
             height: 80px;
@@ -30,8 +30,8 @@
 
         body {
             font-family: 'DejaVu Sans', sans-serif;
-            font-size: 12px;
-            line-height: 1.5;
+            font-size: 11px;
+            line-height: 1.35;
             color: #333;
         }
 
@@ -39,24 +39,11 @@
             width: 100%;
         }
 
-        /* Sub-Header Banner */
-        .sub-header-banner {
-            background-color: #1e3a5f;
-            color: white;
-            text-align: center;
-            padding: 8px 15px;
-            margin-bottom: 5px;
-            font-size: 13px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
         .doc-title-banner {
             text-align: center;
-            padding: 8px 15px;
-            margin-bottom: 20px;
-            font-size: 15px;
+            padding: 2px 10px;
+            margin-bottom: 8px;
+            font-size: 13px;
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -66,36 +53,36 @@
         /* Info Table */
         .info-table {
             width: 100%;
-            margin-bottom: 20px;
+            margin-bottom: 8px;
             border-collapse: collapse;
         }
 
         .info-table th {
             text-align: left;
             width: 120px;
-            padding: 6px;
+            padding: 2.5px 6px;
             font-weight: bold;
             vertical-align: top;
-            font-size: 11px;
+            font-size: 10px;
         }
 
         .info-table td {
-            padding: 6px;
+            padding: 2.5px 6px;
             vertical-align: top;
-            font-size: 11px;
+            font-size: 10px;
         }
 
         /* Data Table */
         .data-table {
             width: 100%;
-            margin-bottom: 20px;
+            margin-bottom: 8px;
             border-collapse: collapse;
         }
 
         .data-table th, .data-table td {
-            padding: 10px 8px;
+            padding: 4px 6px;
             border: 1px solid #e5e7eb;
-            font-size: 11px;
+            font-size: 10px;
             word-wrap: break-word;
         }
 
@@ -109,42 +96,44 @@
             color: white;
             font-weight: bold;
             text-transform: uppercase;
-            font-size: 10px;
+            font-size: 9px;
         }
 
         /* Content */
         .section {
-            margin-bottom: 20px;
+            margin-bottom: 8px;
         }
 
         .section-title {
-            font-size: 13px;
+            font-size: 11px;
             font-weight: bold;
             color: #7F1D1D;
-            margin-bottom: 12px;
-            padding-bottom: 6px;
-            border-bottom: 2px solid #7F1D1D;
+            margin-bottom: 5px;
+            padding-bottom: 2px;
+            border-bottom: 1.5px solid #7F1D1D;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         .content-box {
             background-color: #f8fafc;
-            padding: 15px;
+            padding: 6px 10px;
             border: 1px solid #e2e8f0;
             border-radius: 4px;
+            font-size: 10px;
         }
 
         /* Totals */
         .totals-table {
-            width: 40%;
+            width: 42%;
             float: right;
             border-collapse: collapse;
         }
         
         .totals-table th, .totals-table td {
-            padding: 6px;
+            padding: 2.5px 5px;
             text-align: right;
+            font-size: 9.5px;
         }
         
         .totals-table th {
@@ -153,13 +142,13 @@
         
         .totals-total {
             font-weight: bold;
-            font-size: 14px;
-            border-top: 2px solid #333;
+            font-size: 10.5px;
+            border-top: 1.5px solid #333;
         }
 
         /* Signature Block */
         .signature-section {
-            margin-top: 30px;
+            margin-top: 8px;
             page-break-inside: avoid;
         }
 
@@ -171,31 +160,32 @@
         .signature-table td {
             text-align: center;
             vertical-align: top;
-            padding: 5px 8px;
+            padding: 2px 3px;
         }
 
         .sig-role-label {
-            font-size: 10px;
+            font-size: 8.5px;
             font-weight: bold;
             color: #333;
-            margin-bottom: 8px;
+            margin-bottom: 3px;
+            line-height: 1.15;
         }
 
         .sig-qr-box {
-            width: 70px;
-            height: 70px;
-            margin: 8px auto;
+            width: 58px;
+            height: 58px;
+            margin: 3px auto;
         }
 
         .sig-qr-box img {
-            width: 70px;
-            height: 70px;
+            width: 58px;
+            height: 58px;
         }
 
         .sig-pending-box {
-            width: 70px;
-            height: 70px;
-            margin: 8px auto;
+            width: 58px;
+            height: 58px;
+            margin: 3px auto;
             border: 1px dashed #ccc;
             display: table;
         }
@@ -209,33 +199,33 @@
         }
 
         .sig-name {
-            font-size: 10px;
+            font-size: 8.5px;
             font-weight: bold;
             color: #1a1a1a;
             border-bottom: 1px solid #333;
             display: inline-block;
-            padding-bottom: 2px;
-            margin-bottom: 3px;
+            padding-bottom: 1px;
+            margin-bottom: 1px;
         }
 
         .sig-nip {
-            font-size: 8px;
+            font-size: 7.5px;
             color: #555;
         }
 
         .sig-date {
-            font-size: 8px;
+            font-size: 7.5px;
             color: #888;
-            margin-top: 2px;
+            margin-top: 1px;
         }
 
         /* Verification Footer */
         .verification-footer {
-            margin-top: 25px;
-            padding: 10px;
+            margin-top: 8px;
+            padding: 5px 8px;
             background-color: #f8fafc;
             border: 1px solid #e2e8f0;
-            font-size: 9px;
+            font-size: 7.5px;
             color: #666;
             page-break-inside: avoid;
         }
@@ -264,12 +254,11 @@
 
     <div class="container">
 
-        <!-- Sub-Header Banner -->
-        <div class="sub-header-banner">Purchase Order</div>
-        <div class="doc-title-banner">{{ $po->po_number }}</div>
+        <!-- Document Title -->
+        <div class="doc-title-banner">PURCHASE ORDER</div>
 
         <!-- Vendor & Order Info -->
-        <div style="display: table; width: 100%; margin-bottom: 20px;">
+        <div style="display: table; width: 100%; margin-bottom: 8px;">
             <div style="display: table-cell; width: 50%; vertical-align: top; padding-right: 15px;">
                 <div class="section-title">Kepada Yth. (Vendor)</div>
                 <div style="font-weight: bold; font-size: 14px;">{{ $po->vendor_name }}</div>
@@ -343,7 +332,7 @@
         </div>
 
         @if($po->notes)
-            <div class="section" style="page-break-before: always; padding-top: 20px;">
+            <div class="section" style="page-break-inside: avoid; margin-top: 8px;">
                 <div class="section-title">Catatan</div>
                 <div class="content-box">
                     {!! nl2br(e($po->notes)) !!}
@@ -352,9 +341,9 @@
         @endif
 
         @if($po->terms_conditions)
-            <div class="section" style="page-break-inside: avoid;">
+            <div class="section" style="page-break-inside: avoid; margin-top: 8px;">
                 <div class="section-title">Syarat & Ketentuan</div>
-                <div class="content-box" style="font-size: 11px;">
+                <div class="content-box">
                     {!! nl2br(e($po->terms_conditions)) !!}
                 </div>
             </div>
@@ -372,7 +361,7 @@
             <div class="signature-section">
                 <div class="section-title">{{ __("LEMBAR PERSETUJUAN") }}</div>
                 
-                <div style="margin-bottom: 15px;">
+                <div style="margin-bottom: 8px;">
                     <table style="width: 100%; border-collapse: collapse;">
                         <tr>
                             <td style="width: 50%; vertical-align: top; font-size: 11px;">Jakarta,</td>
@@ -397,7 +386,7 @@
                     <tr>
                         <td>
                             @if($verificationUrl)
-                                <div class="sig-qr-box"><img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'requester'])) }}" alt="QR"></div>
+                                <div class="sig-qr-box"><img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $verificationHash, 'signer' => 'requester'])) }}" alt="QR"></div>
                             @else
                                 <div class="sig-pending-box"><span>-</span></div>
                             @endif
@@ -405,7 +394,7 @@
                         @foreach($approvals as $approval)
                             <td>
                                 @if($approval->status === 'approved' && $verificationUrl)
-                                    <div class="sig-qr-box"><img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $approval->id])) }}" alt="QR"></div>
+                                    <div class="sig-qr-box"><img src="data:image/svg+xml;base64,{{ $genSignerQr(route('verify.show', ['hash' => $verificationHash, 'step' => $approval->id])) }}" alt="QR"></div>
                                 @else
                                     <div class="sig-pending-box"><span>Pending</span></div>
                                 @endif
