@@ -631,7 +631,7 @@ class DatabaseSeeder extends Seeder
                         ['name' => 'perusahaan', 'label' => 'Perusahaan', 'type' => 'text', 'required' => true],
                         ['name' => 'dokumen_po_do', 'label' => 'Dokumen P.O / D.O', 'type' => 'select', 'options' => 'Ada, Tidak', 'required' => true],
                         ['name' => 'no_po_do', 'label' => 'No. P.O / D.O', 'type' => 'text', 'required' => false],
-                        ['name' => 'lokasi_tujuan', 'label' => 'Lokasi Tujuan / Asal Barang', 'type' => 'textarea', 'required' => true],
+                        ['name' => 'lokasi_tujuan', 'label' => 'Lokasi Tujuan / Asal Barang', 'type' => 'select', 'options' => 'Gudang Pusat, Gudang Project, Vendor / Supplier, Customer / Site, Kantor Operasional, Lainnya', 'required' => true],
                         ['name' => 'tanggal_keluar_masuk', 'label' => 'Tanggal Keluar / Masuk', 'type' => 'date', 'required' => true],
                         ['name' => 'jam_keluar_masuk', 'label' => 'Jam Keluar / Masuk', 'type' => 'time', 'required' => true],
                         ['name' => 'alasan', 'label' => 'Alasan (Catatan Petugas)', 'type' => 'textarea', 'required' => false],
