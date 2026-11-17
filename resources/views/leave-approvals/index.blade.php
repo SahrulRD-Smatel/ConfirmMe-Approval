@@ -235,57 +235,68 @@
                     </div>
 
                     {{-- Confirmation Modal (matching approvals/show.blade.php pattern) --}}
-                    <div x-show="showConfirmModal" x-transition class="fixed inset-0 z-50 flex items-center justify-center bg-gray-950/70 p-4 backdrop-blur-sm" @click.self="showConfirmModal = false" style="display: none;">
-                        <div class="w-full max-w-md rounded-2xl border border-gray-200/80 bg-white p-6 shadow-soft-lg dark:border-gray-700 dark:bg-gray-900" @click.stop>
-                            {{-- Approve Confirmation --}}
-                            <template x-if="action === 'approve'">
-                                <div>
-                                    <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-success-100 dark:bg-success-900/30">
-                                        <x-icon name="check-circle" class="h-8 w-8 text-success-600" />
-                                    </div>
-                                    <h3 class="mb-2 text-center text-lg font-semibold text-gray-900 dark:text-white">{{ __('Konfirmasi Approval') }}</h3>
-                                    <p class="mb-5 text-center text-sm text-gray-600 dark:text-gray-400">
-                                        {{ __('Anda yakin ingin') }} <strong class="text-success-600">{{ __('MENYETUJUI') }}</strong> {{ __('pengajuan cuti') }} <strong>{{ $leave->user->name }}</strong>?
-                                        <br><span class="text-xs">{{ __('Tindakan ini tidak dapat dibatalkan.') }}</span>
-                                    </p>
-
-                                    <form action="{{ route('leave-approvals.approve', $leave) }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="comment" :value="approveComment">
-
-                                        <div class="flex gap-2">
-                                            <button type="button" @click="showConfirmModal = false" class="flex-1 rounded-xl border border-gray-300 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-primary-50/60 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">{{ __('Batal') }}</button>
-                                            <button type="submit" class="flex-1 rounded-xl bg-success-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-success-700">{{ __('Ya, Setujui') }}</button>
+                    <template x-teleport="body">
+                        <div x-show="showConfirmModal" x-transition
+                            x-init="$watch('showConfirmModal', value => {
+                                if (value) {
+                                    document.body.classList.add('overflow-hidden');
+                                } else {
+                                    document.body.classList.remove('overflow-hidden');
+                                }
+                            })"
+                            class="fixed inset-0 z-[9998] flex items-center justify-center bg-gray-950/75 p-4 backdrop-blur-sm"
+                            @click.self="showConfirmModal = false" style="display: none;">
+                            <div class="w-full max-w-md rounded-2xl border border-gray-200/80 bg-white p-6 shadow-soft-lg dark:border-gray-700 dark:bg-gray-900" @click.stop>
+                                {{-- Approve Confirmation --}}
+                                <template x-if="action === 'approve'">
+                                    <div>
+                                        <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-success-100 dark:bg-success-900/30">
+                                            <x-icon name="check-circle" class="h-8 w-8 text-success-600" />
                                         </div>
-                                    </form>
-                                </div>
-                            </template>
+                                        <h3 class="mb-2 text-center text-lg font-semibold text-gray-900 dark:text-white">{{ __('Konfirmasi Approval') }}</h3>
+                                        <p class="mb-5 text-center text-sm text-gray-600 dark:text-gray-400">
+                                            {{ __('Anda yakin ingin') }} <strong class="text-success-600">{{ __('MENYETUJUI') }}</strong> {{ __('pengajuan cuti') }} <strong>{{ $leave->user->name }}</strong>?
+                                            <br><span class="text-xs">{{ __('Tindakan ini tidak dapat dibatalkan.') }}</span>
+                                        </p>
 
-                            {{-- Reject Confirmation --}}
-                            <template x-if="action === 'reject'">
-                                <div>
-                                    <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-danger-100 dark:bg-danger-900/30">
-                                        <x-icon name="x-circle" class="h-8 w-8 text-danger-600" />
+                                        <form action="{{ route('leave-approvals.approve', $leave) }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="comment" :value="approveComment">
+
+                                            <div class="flex gap-2">
+                                                <button type="button" @click="showConfirmModal = false" class="flex-1 rounded-xl border border-gray-300 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-primary-50/60 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">{{ __('Batal') }}</button>
+                                                <button type="submit" class="flex-1 rounded-xl bg-success-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-success-700">{{ __('Ya, Setujui') }}</button>
+                                            </div>
+                                        </form>
                                     </div>
-                                    <h3 class="mb-2 text-center text-lg font-semibold text-gray-900 dark:text-white">{{ __('Konfirmasi Penolakan') }}</h3>
-                                    <p class="mb-5 text-center text-sm text-gray-600 dark:text-gray-400">
-                                        {{ __('Anda yakin ingin') }} <strong class="text-danger-600">{{ __('MENOLAK') }}</strong> {{ __('pengajuan cuti') }} <strong>{{ $leave->user->name }}</strong>?
-                                        <br><span class="text-xs">{{ __('Tindakan ini tidak dapat dibatalkan.') }}</span>
-                                    </p>
+                                </template>
 
-                                    <form action="{{ route('leave-approvals.reject', $leave) }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="rejection_reason" :value="rejectReason">
-
-                                        <div class="flex gap-2">
-                                            <button type="button" @click="showConfirmModal = false" class="flex-1 rounded-xl border border-gray-300 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-primary-50/60 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">{{ __('Batal') }}</button>
-                                            <button type="submit" class="flex-1 rounded-xl bg-danger-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-danger-700">{{ __('Ya, Tolak') }}</button>
+                                {{-- Reject Confirmation --}}
+                                <template x-if="action === 'reject'">
+                                    <div>
+                                        <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-danger-100 dark:bg-danger-900/30">
+                                            <x-icon name="x-circle" class="h-8 w-8 text-danger-600" />
                                         </div>
-                                    </form>
-                                </div>
-                            </template>
+                                        <h3 class="mb-2 text-center text-lg font-semibold text-gray-900 dark:text-white">{{ __('Konfirmasi Penolakan') }}</h3>
+                                        <p class="mb-5 text-center text-sm text-gray-600 dark:text-gray-400">
+                                            {{ __('Anda yakin ingin') }} <strong class="text-danger-600">{{ __('MENOLAK') }}</strong> {{ __('pengajuan cuti') }} <strong>{{ $leave->user->name }}</strong>?
+                                            <br><span class="text-xs">{{ __('Tindakan ini tidak dapat dibatalkan.') }}</span>
+                                        </p>
+
+                                        <form action="{{ route('leave-approvals.reject', $leave) }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="rejection_reason" :value="rejectReason">
+
+                                            <div class="flex gap-2">
+                                                <button type="button" @click="showConfirmModal = false" class="flex-1 rounded-xl border border-gray-300 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-primary-50/60 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">{{ __('Batal') }}</button>
+                                                <button type="submit" class="flex-1 rounded-xl bg-danger-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-danger-700">{{ __('Ya, Tolak') }}</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </template>
+                            </div>
                         </div>
-                    </div>
+                    </template>
                 </div>
             @endforeach
 

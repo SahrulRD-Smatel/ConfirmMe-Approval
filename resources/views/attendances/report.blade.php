@@ -261,9 +261,9 @@
 
     {{-- Import Modal --}}
     @if(auth()->user()->hasAnyRole(['admin', 'hrd']))
-        <div id="import-modal" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-modal="true">
+        <div id="import-modal" class="hidden fixed inset-0 z-[9998] overflow-y-auto" aria-modal="true">
             {{-- Backdrop --}}
-            <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity"
+            <div class="fixed inset-0 bg-gray-950/75 backdrop-blur-sm transition-opacity"
                  onclick="document.getElementById('import-modal').classList.add('hidden')"></div>
 
             {{-- Modal Content --}}

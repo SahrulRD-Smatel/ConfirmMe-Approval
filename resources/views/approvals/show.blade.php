@@ -291,111 +291,120 @@
                     </div>
 
                     <!-- Confirmation Modal -->
-                    <div x-show="showConfirmModal" x-transition
-                        class="fixed inset-0 z-50 flex items-center justify-center bg-gray-950/70 p-4 backdrop-blur-sm"
-                        @click.self="showConfirmModal = false" style="display: none;">
-                        <div class="w-full max-w-md rounded-3xl border border-gray-200/80 bg-white p-6 shadow-soft-lg dark:border-gray-700 dark:bg-gray-900" @click.stop>
-                            <!-- Approve Confirmation -->
-                            <template x-if="action === 'approve'">
-                                <div>
-                                    <div
-                                        class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-success-100 dark:bg-success-900/30 rounded-full">
-                                        <x-icon name="check-circle" class="w-10 h-10 text-success-600" />
-                                    </div>
-                                    <h3 class="text-xl font-semibold text-center text-gray-900 dark:text-white mb-2">
-                                        {{ __('Konfirmasi Approval') }}
-                                    </h3>
-                                    <p class="text-center text-gray-600 dark:text-gray-400 mb-6">
-                                        {{ __('Anda yakin ingin') }} <strong class="text-success-600">{{ __('MENYETUJUI') }}</strong> {{ __('dokumen ini?') }}
-                                        <br><span class="text-sm">{{ __('Tindakan ini tidak dapat dibatalkan.') }}</span>
-                                    </p>
-
-                                    <form action="{{ route('approvals.approve', $document) }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="approved_amount" :value="approvedAmount">
-                                        <input type="hidden" name="comment" :value="approveComment">
-
-                                        <div class="flex gap-3">
-                                            <button type="button" @click="showConfirmModal = false"
-                                                class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-primary-50/60 dark:hover:bg-gray-700 transition-colors">
-                                                {{ __('Batal') }}
-                                            </button>
-                                            <button type="submit" data-loading-text="{{ __('Menyetujui...') }}"
-                                                class="flex-1 px-4 py-2 bg-success-600 hover:bg-success-700 text-white rounded-xl transition-colors">
-                                                {{ __('Ya, Setujui') }}
-                                            </button>
+                    <template x-teleport="body">
+                        <div x-show="showConfirmModal" x-transition
+                            x-init="$watch('showConfirmModal', value => {
+                                if (value) {
+                                    document.body.classList.add('overflow-hidden');
+                                } else {
+                                    document.body.classList.remove('overflow-hidden');
+                                }
+                            })"
+                            class="fixed inset-0 z-[9998] flex items-center justify-center bg-gray-950/75 p-4 backdrop-blur-sm"
+                            @click.self="showConfirmModal = false" style="display: none;">
+                            <div class="w-full max-w-md rounded-3xl border border-gray-200/80 bg-white p-6 shadow-soft-lg dark:border-gray-700 dark:bg-gray-900" @click.stop>
+                                <!-- Approve Confirmation -->
+                                <template x-if="action === 'approve'">
+                                    <div>
+                                        <div
+                                            class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-success-100 dark:bg-success-900/30 rounded-full">
+                                            <x-icon name="check-circle" class="w-10 h-10 text-success-600" />
                                         </div>
-                                    </form>
-                                </div>
-                            </template>
+                                        <h3 class="text-xl font-semibold text-center text-gray-900 dark:text-white mb-2">
+                                            {{ __('Konfirmasi Approval') }}
+                                        </h3>
+                                        <p class="text-center text-gray-600 dark:text-gray-400 mb-6">
+                                            {{ __('Anda yakin ingin') }} <strong class="text-success-600">{{ __('MENYETUJUI') }}</strong> {{ __('dokumen ini?') }}
+                                            <br><span class="text-sm">{{ __('Tindakan ini tidak dapat dibatalkan.') }}</span>
+                                        </p>
 
-                            <!-- Reject Confirmation -->
-                            <template x-if="action === 'reject'">
-                                <div>
-                                    <div
-                                        class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-danger-100 dark:bg-danger-900/30 rounded-full">
-                                        <x-icon name="x-circle" class="w-10 h-10 text-danger-600" />
+                                        <form action="{{ route('approvals.approve', $document) }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="approved_amount" :value="approvedAmount">
+                                            <input type="hidden" name="comment" :value="approveComment">
+
+                                            <div class="flex gap-3">
+                                                <button type="button" @click="showConfirmModal = false"
+                                                    class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-primary-50/60 dark:hover:bg-gray-700 transition-colors">
+                                                    {{ __('Batal') }}
+                                                </button>
+                                                <button type="submit" data-loading-text="{{ __('Menyetujui...') }}"
+                                                    class="flex-1 px-4 py-2 bg-success-600 hover:bg-success-700 text-white rounded-xl transition-colors">
+                                                    {{ __('Ya, Setujui') }}
+                                                </button>
+                                            </div>
+                                        </form>
                                     </div>
-                                    <h3 class="text-xl font-semibold text-center text-gray-900 dark:text-white mb-2">
-                                        {{ __('Konfirmasi Penolakan') }}
-                                    </h3>
-                                    <p class="text-center text-gray-600 dark:text-gray-400 mb-6">
-                                        {{ __('Anda yakin ingin') }} <strong class="text-danger-600">{{ __('MENOLAK') }}</strong> {{ __('dokumen ini?') }}
-                                        <br><span class="text-sm">{{ __('Tindakan ini tidak dapat dibatalkan.') }}</span>
-                                    </p>
+                                </template>
 
-                                    <form action="{{ route('approvals.reject', $document) }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="comment" :value="rejectComment">
-
-                                        <div class="flex gap-3">
-                                            <button type="button" @click="showConfirmModal = false"
-                                                class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-primary-50/60 dark:hover:bg-gray-700 transition-colors">
-                                                {{ __('Batal') }}
-                                            </button>
-                                            <button type="submit" data-loading-text="{{ __('Menolak...') }}"
-                                                class="flex-1 px-4 py-2 bg-danger-600 hover:bg-danger-700 text-white rounded-xl transition-colors">
-                                                {{ __('Ya, Tolak') }}
-                                            </button>
+                                <!-- Reject Confirmation -->
+                                <template x-if="action === 'reject'">
+                                    <div>
+                                        <div
+                                            class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-danger-100 dark:bg-danger-900/30 rounded-full">
+                                            <x-icon name="x-circle" class="w-10 h-10 text-danger-600" />
                                         </div>
-                                    </form>
-                                </div>
-                            </template>
+                                        <h3 class="text-xl font-semibold text-center text-gray-900 dark:text-white mb-2">
+                                            {{ __('Konfirmasi Penolakan') }}
+                                        </h3>
+                                        <p class="text-center text-gray-600 dark:text-gray-400 mb-6">
+                                            {{ __('Anda yakin ingin') }} <strong class="text-danger-600">{{ __('MENOLAK') }}</strong> {{ __('dokumen ini?') }}
+                                            <br><span class="text-sm">{{ __('Tindakan ini tidak dapat dibatalkan.') }}</span>
+                                        </p>
 
-                            <!-- Revise Confirmation -->
-                            <template x-if="action === 'revise'">
-                                <div>
-                                    <div
-                                        class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-amber-100 dark:bg-amber-900/30 rounded-full">
-                                        <x-icon name="pencil-square" class="w-10 h-10 text-amber-600" />
+                                        <form action="{{ route('approvals.reject', $document) }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="comment" :value="rejectComment">
+
+                                            <div class="flex gap-3">
+                                                <button type="button" @click="showConfirmModal = false"
+                                                    class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-primary-50/60 dark:hover:bg-gray-700 transition-colors">
+                                                    {{ __('Batal') }}
+                                                </button>
+                                                <button type="submit" data-loading-text="{{ __('Menolak...') }}"
+                                                    class="flex-1 px-4 py-2 bg-danger-600 hover:bg-danger-700 text-white rounded-xl transition-colors">
+                                                    {{ __('Ya, Tolak') }}
+                                                </button>
+                                            </div>
+                                        </form>
                                     </div>
-                                    <h3 class="text-xl font-semibold text-center text-gray-900 dark:text-white mb-2">
-                                        {{ __('Konfirmasi Permintaan Revisi') }}
-                                    </h3>
-                                    <p class="text-center text-gray-600 dark:text-gray-400 mb-6">
-                                        {{ __('Anda yakin ingin') }} <strong class="text-amber-600">{{ __('MEMINTA REVISI') }}</strong> {{ __('dokumen ini?') }}
-                                        <br><span class="text-sm">{{ __('Dokumen akan dikembalikan ke pengaju untuk diperbaiki.') }}</span>
-                                    </p>
+                                </template>
 
-                                    <form action="{{ route('approvals.revise', $document) }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="comment" :value="reviseComment">
-
-                                        <div class="flex gap-3">
-                                            <button type="button" @click="showConfirmModal = false"
-                                                class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-primary-50/60 dark:hover:bg-gray-700 transition-colors">
-                                                {{ __('Batal') }}
-                                            </button>
-                                            <button type="submit" data-loading-text="{{ __('Mengirim...') }}"
-                                                class="flex-1 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl transition-colors">
-                                                {{ __('Ya, Minta Revisi') }}
-                                            </button>
+                                <!-- Revise Confirmation -->
+                                <template x-if="action === 'revise'">
+                                    <div>
+                                        <div
+                                            class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-amber-100 dark:bg-amber-900/30 rounded-full">
+                                            <x-icon name="pencil-square" class="w-10 h-10 text-amber-600" />
                                         </div>
-                                    </form>
-                                </div>
-                            </template>
+                                        <h3 class="text-xl font-semibold text-center text-gray-900 dark:text-white mb-2">
+                                            {{ __('Konfirmasi Permintaan Revisi') }}
+                                        </h3>
+                                        <p class="text-center text-gray-600 dark:text-gray-400 mb-6">
+                                            {{ __('Anda yakin ingin') }} <strong class="text-amber-600">{{ __('MEMINTA REVISI') }}</strong> {{ __('dokumen ini?') }}
+                                            <br><span class="text-sm">{{ __('Dokumen akan dikembalikan ke pengaju untuk diperbaiki.') }}</span>
+                                        </p>
+
+                                        <form action="{{ route('approvals.revise', $document) }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="comment" :value="reviseComment">
+
+                                            <div class="flex gap-3">
+                                                <button type="button" @click="showConfirmModal = false"
+                                                    class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-primary-50/60 dark:hover:bg-gray-700 transition-colors">
+                                                    {{ __('Batal') }}
+                                                </button>
+                                                <button type="submit" data-loading-text="{{ __('Mengirim...') }}"
+                                                    class="flex-1 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl transition-colors">
+                                                    {{ __('Ya, Minta Revisi') }}
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </template>
+                            </div>
                         </div>
-                    </div>
+                    </template>
                 </div>
             </x-ui.card>
 

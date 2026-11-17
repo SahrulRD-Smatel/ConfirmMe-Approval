@@ -147,77 +147,86 @@
             </template>
 
             <!-- Confirmation Modal -->
-            <div x-show="showConfirmModal" x-transition
-                class="fixed inset-0 z-50 flex items-center justify-center bg-gray-950/70 p-4 backdrop-blur-sm"
-                @click.self="showConfirmModal = false" style="display: none;">
-                <div class="w-full max-w-md rounded-3xl border border-gray-200/80 bg-white p-6 shadow-soft-lg dark:border-gray-700 dark:bg-gray-900" @click.stop>
-                    <!-- Approve Confirmation -->
-                    <template x-if="action === 'approve'">
-                        <div>
-                            <div
-                                class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-success-100 dark:bg-success-900/30 rounded-full">
-                                <x-icon name="check-circle" class="w-10 h-10 text-success-600" />
-                            </div>
-                            <h3 class="text-xl font-semibold text-center text-gray-900 dark:text-white mb-2">
-                                {{ __('Konfirmasi Approval') }}
-                            </h3>
-                            <p class="text-center text-gray-600 dark:text-gray-400 mb-2">
-                                {{ __('Anda yakin ingin') }} <strong class="text-success-600">{{ __('MENYETUJUI') }}</strong>
-                            </p>
-                            <p class="text-center text-lg font-bold text-gray-900 dark:text-white mb-4">
-                                <span x-text="selectedIds.length"></span> {{ __('dokumen?') }}
-                            </p>
-                            <p class="text-center text-sm text-gray-500 mb-6">
-                                {{ __('Tindakan ini tidak dapat dibatalkan.') }}
-                            </p>
+            <template x-teleport="body">
+                <div x-show="showConfirmModal" x-transition
+                    x-init="$watch('showConfirmModal', value => {
+                        if (value) {
+                            document.body.classList.add('overflow-hidden');
+                        } else {
+                            document.body.classList.remove('overflow-hidden');
+                        }
+                    })"
+                    class="fixed inset-0 z-[9998] flex items-center justify-center bg-gray-950/75 p-4 backdrop-blur-sm"
+                    @click.self="showConfirmModal = false" style="display: none;">
+                    <div class="w-full max-w-md rounded-3xl border border-gray-200/80 bg-white p-6 shadow-soft-lg dark:border-gray-700 dark:bg-gray-900" @click.stop>
+                        <!-- Approve Confirmation -->
+                        <template x-if="action === 'approve'">
+                            <div>
+                                <div
+                                    class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-success-100 dark:bg-success-900/30 rounded-full">
+                                    <x-icon name="check-circle" class="w-10 h-10 text-success-600" />
+                                </div>
+                                <h3 class="text-xl font-semibold text-center text-gray-900 dark:text-white mb-2">
+                                    {{ __('Konfirmasi Approval') }}
+                                </h3>
+                                <p class="text-center text-gray-600 dark:text-gray-400 mb-2">
+                                    {{ __('Anda yakin ingin') }} <strong class="text-success-600">{{ __('MENYETUJUI') }}</strong>
+                                </p>
+                                <p class="text-center text-lg font-bold text-gray-900 dark:text-white mb-4">
+                                    <span x-text="selectedIds.length"></span> {{ __('dokumen?') }}
+                                </p>
+                                <p class="text-center text-sm text-gray-500 mb-6">
+                                    {{ __('Tindakan ini tidak dapat dibatalkan.') }}
+                                </p>
 
-                            <div class="flex gap-3">
-                                <button type="button" @click="showConfirmModal = false"
-                                    class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-primary-50/60 dark:hover:bg-gray-700 transition-colors">
-                                    {{ __('Batal') }}
-                                </button>
-                                <button type="submit"
-                                    class="flex-1 px-4 py-2 bg-success-600 hover:bg-success-700 text-white rounded-xl transition-colors">
-                                    {{ __('Ya, Setujui Semua') }}
-                                </button>
+                                <div class="flex gap-3">
+                                    <button type="button" @click="showConfirmModal = false"
+                                        class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-primary-50/60 dark:hover:bg-gray-700 transition-colors">
+                                        {{ __('Batal') }}
+                                    </button>
+                                    <button type="submit"
+                                        class="flex-1 px-4 py-2 bg-success-600 hover:bg-success-700 text-white rounded-xl transition-colors">
+                                        {{ __('Ya, Setujui Semua') }}
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    </template>
+                        </template>
 
-                    <!-- Reject Confirmation -->
-                    <template x-if="action === 'reject'">
-                        <div>
-                            <div
-                                class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-danger-100 dark:bg-danger-900/30 rounded-full">
-                                <x-icon name="x-circle" class="w-10 h-10 text-danger-600" />
-                            </div>
-                            <h3 class="text-xl font-semibold text-center text-gray-900 dark:text-white mb-2">
-                                {{ __('Konfirmasi Penolakan') }}
-                            </h3>
-                            <p class="text-center text-gray-600 dark:text-gray-400 mb-2">
-                                {{ __('Anda yakin ingin') }} <strong class="text-danger-600">{{ __('MENOLAK') }}</strong>
-                            </p>
-                            <p class="text-center text-lg font-bold text-gray-900 dark:text-white mb-4">
-                                <span x-text="selectedIds.length"></span> {{ __('dokumen?') }}
-                            </p>
-                            <p class="text-center text-sm text-gray-500 mb-6">
-                                {{ __('Tindakan ini tidak dapat dibatalkan.') }}
-                            </p>
+                        <!-- Reject Confirmation -->
+                        <template x-if="action === 'reject'">
+                            <div>
+                                <div
+                                    class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-danger-100 dark:bg-danger-900/30 rounded-full">
+                                    <x-icon name="x-circle" class="w-10 h-10 text-danger-600" />
+                                </div>
+                                <h3 class="text-xl font-semibold text-center text-gray-900 dark:text-white mb-2">
+                                    {{ __('Konfirmasi Penolakan') }}
+                                </h3>
+                                <p class="text-center text-gray-600 dark:text-gray-400 mb-2">
+                                    {{ __('Anda yakin ingin') }} <strong class="text-danger-600">{{ __('MENOLAK') }}</strong>
+                                </p>
+                                <p class="text-center text-lg font-bold text-gray-900 dark:text-white mb-4">
+                                    <span x-text="selectedIds.length"></span> {{ __('dokumen?') }}
+                                </p>
+                                <p class="text-center text-sm text-gray-500 mb-6">
+                                    {{ __('Tindakan ini tidak dapat dibatalkan.') }}
+                                </p>
 
-                            <div class="flex gap-3">
-                                <button type="button" @click="showConfirmModal = false"
-                                    class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-primary-50/60 dark:hover:bg-gray-700 transition-colors">
-                                    {{ __('Batal') }}
-                                </button>
-                                <button type="submit"
-                                    class="flex-1 px-4 py-2 bg-danger-600 hover:bg-danger-700 text-white rounded-xl transition-colors">
-                                    {{ __('Ya, Tolak Semua') }}
-                                </button>
+                                <div class="flex gap-3">
+                                    <button type="button" @click="showConfirmModal = false"
+                                        class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-primary-50/60 dark:hover:bg-gray-700 transition-colors">
+                                        {{ __('Batal') }}
+                                    </button>
+                                    <button type="submit"
+                                        class="flex-1 px-4 py-2 bg-danger-600 hover:bg-danger-700 text-white rounded-xl transition-colors">
+                                        {{ __('Ya, Tolak Semua') }}
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    </template>
+                        </template>
+                    </div>
                 </div>
-            </div>
+            </template>
         </form>
     @else
         <x-ui.card>

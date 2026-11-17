@@ -207,109 +207,119 @@
                             </form>
 
                             {{-- Confirmation Modal --}}
-                            <div x-show="showConfirmModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto"
-                                aria-modal="true">
-                                <div
-                                    class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
-                                    {{-- Backdrop --}}
-                                    <div x-show="showConfirmModal" x-transition:enter="ease-out duration-300"
-                                        x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-                                        x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100"
-                                        x-transition:leave-end="opacity-0"
-                                        class="fixed inset-0 bg-gray-500/75 dark:bg-gray-900/80 transition-opacity"
-                                        @click="showConfirmModal = false"></div>
+                            <template x-teleport="body">
+                                <div x-show="showConfirmModal" x-cloak
+                                    x-init="$watch('showConfirmModal', value => {
+                                        if (value) {
+                                            document.body.classList.add('overflow-hidden');
+                                        } else {
+                                            document.body.classList.remove('overflow-hidden');
+                                        }
+                                    })"
+                                    class="fixed inset-0 z-[9998] overflow-y-auto"
+                                    aria-modal="true">
+                                    <div
+                                        class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+                                        {{-- Backdrop --}}
+                                        <div x-show="showConfirmModal" x-transition:enter="ease-out duration-300"
+                                            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                                            x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100"
+                                            x-transition:leave-end="opacity-0"
+                                            class="fixed inset-0 bg-gray-950/75 backdrop-blur-sm transition-opacity"
+                                            @click="showConfirmModal = false"></div>
 
-                                    {{-- Modal Content --}}
-                                    <div x-show="showConfirmModal" x-transition:enter="ease-out duration-300"
-                                        x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                                        x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                                        x-transition:leave="ease-in duration-200"
-                                        x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                                        x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                                        class="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl transform transition-all sm:max-w-lg sm:w-full mx-auto overflow-hidden">
+                                        {{-- Modal Content --}}
+                                        <div x-show="showConfirmModal" x-transition:enter="ease-out duration-300"
+                                            x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                                            x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                                            x-transition:leave="ease-in duration-200"
+                                            x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                                            x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                                            class="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl transform transition-all sm:max-w-lg sm:w-full mx-auto overflow-hidden">
 
-                                        {{-- Header --}}
-                                        <div
-                                            class="bg-yellow-50 dark:bg-yellow-900/20 px-6 py-4 border-b border-yellow-100 dark:border-yellow-800">
-                                            <div class="flex items-center gap-3">
-                                                <div
-                                                    class="flex-shrink-0 w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-800 flex items-center justify-center">
-                                                    <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none"
-                                                        stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                                    </svg>
-                                                </div>
-                                                <h3 class="text-lg font-bold text-yellow-800 dark:text-yellow-200">
-                                                    {{ __('Konfirmasi Pencairan Dana') }}
-                                                </h3>
-                                            </div>
-                                        </div>
-
-                                        {{-- Body --}}
-                                        <div class="px-6 py-5">
-                                            <p class="text-gray-600 dark:text-gray-300 mb-4">
-                                                {{ __('Anda akan mencairkan pinjaman dengan detail berikut') }}:
-                                            </p>
-
-                                            <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 space-y-3">
-                                                <div class="flex justify-between">
-                                                    <span class="text-sm text-gray-500 dark:text-gray-400">{{ __('Pemohon') }}:</span>
-                                                    <span
-                                                        class="text-sm font-medium text-gray-900 dark:text-white">{{ $loan->employee->name ?? '-' }}</span>
-                                                </div>
-                                                <div class="flex justify-between">
-                                                    <span class="text-sm text-gray-500 dark:text-gray-400">{{ __('Jumlah Pinjaman') }}:</span>
-                                                    <span
-                                                        class="text-lg font-bold text-green-600 dark:text-green-400">{{ $loan->formatted_loan_amount }}</span>
-                                                </div>
-                                                <div class="flex justify-between">
-                                                    <span class="text-sm text-gray-500 dark:text-gray-400">{{ __('Tenor') }}:</span>
-                                                    <span
-                                                        class="text-sm font-medium text-gray-900 dark:text-white">{{ $loan->installment_months }}
-                                                        {{ __('bulan') }}</span>
-                                                </div>
-                                                <div class="flex justify-between">
-                                                    <span class="text-sm text-gray-500 dark:text-gray-400">{{ __('Bank Tujuan') }}:</span>
-                                                    <span class="text-sm font-medium text-gray-900 dark:text-white">
-                                                        @if($loan->bank_name || $loan->employee->bank_name)
-                                                            {{ $loan->bank_name ?: $loan->employee->bank_name ?? '-' }} -
-                                                            {{ $loan->bank_account_number ?: $loan->employee->bank_account_number ?? '-' }}
-                                                        @else
-                                                            <span class="text-yellow-600">{{ __('Belum diisi') }}</span>
-                                                        @endif
-                                                    </span>
-                                                </div>
-                                            </div>
-
+                                            {{-- Header --}}
                                             <div
-                                                class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl">
-                                                <p class="text-sm text-yellow-700 dark:text-yellow-300">
-                                                    <strong>{{ __('Perhatian') }}:</strong> {{ __('Pastikan dana telah ditransfer ke rekening karyawan sebelum mengkonfirmasi pencairan ini.') }}
-                                                </p>
+                                                class="bg-yellow-50 dark:bg-yellow-900/20 px-6 py-4 border-b border-yellow-100 dark:border-yellow-800">
+                                                <div class="flex items-center gap-3">
+                                                    <div
+                                                        class="flex-shrink-0 w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-800 flex items-center justify-center">
+                                                        <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                                        </svg>
+                                                    </div>
+                                                    <h3 class="text-lg font-bold text-yellow-800 dark:text-yellow-200">
+                                                        {{ __('Konfirmasi Pencairan Dana') }}
+                                                    </h3>
+                                                </div>
                                             </div>
-                                        </div>
 
-                                        {{-- Footer --}}
-                                        <div class="bg-gray-50 dark:bg-gray-700/50 px-6 py-4 flex justify-end gap-3">
-                                            <button type="button" @click="showConfirmModal = false"
-                                                class="px-4 py-2 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-xl hover:bg-primary-50/60 dark:hover:bg-primary-50/600 font-medium">
-                                                {{ __('Batal') }}
-                                            </button>
-                                            <button type="button"
-                                                @click="document.getElementById('disbursementForm').submit()"
-                                                class="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 font-medium flex items-center gap-2">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M5 13l4 4L19 7" />
-                                                </svg>
-                                                {{ __('Ya, Cairkan Dana') }}
-                                            </button>
+                                            {{-- Body --}}
+                                            <div class="px-6 py-5">
+                                                <p class="text-gray-600 dark:text-gray-300 mb-4">
+                                                    {{ __('Anda akan mencairkan pinjaman dengan detail berikut') }}:
+                                                </p>
+
+                                                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 space-y-3">
+                                                    <div class="flex justify-between">
+                                                        <span class="text-sm text-gray-500 dark:text-gray-400">{{ __('Pemohon') }}:</span>
+                                                        <span
+                                                            class="text-sm font-medium text-gray-900 dark:text-white">{{ $loan->employee->name ?? '-' }}</span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span class="text-sm text-gray-500 dark:text-gray-400">{{ __('Jumlah Pinjaman') }}:</span>
+                                                        <span
+                                                            class="text-lg font-bold text-green-600 dark:text-green-400">{{ $loan->formatted_loan_amount }}</span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span class="text-sm text-gray-500 dark:text-gray-400">{{ __('Tenor') }}:</span>
+                                                        <span
+                                                            class="text-sm font-medium text-gray-900 dark:text-white">{{ $loan->installment_months }}
+                                                            {{ __('bulan') }}</span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span class="text-sm text-gray-500 dark:text-gray-400">{{ __('Bank Tujuan') }}:</span>
+                                                        <span class="text-sm font-medium text-gray-900 dark:text-white">
+                                                            @if($loan->bank_name || $loan->employee->bank_name)
+                                                                {{ $loan->bank_name ?: $loan->employee->bank_name ?? '-' }} -
+                                                                {{ $loan->bank_account_number ?: $loan->employee->bank_account_number ?? '-' }}
+                                                            @else
+                                                                <span class="text-yellow-600">{{ __('Belum diisi') }}</span>
+                                                            @endif
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <div
+                                                    class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl">
+                                                    <p class="text-sm text-yellow-700 dark:text-yellow-300">
+                                                        <strong>{{ __('Perhatian') }}:</strong> {{ __('Pastikan dana telah ditransfer ke rekening karyawan sebelum mengkonfirmasi pencairan ini.') }}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            {{-- Footer --}}
+                                            <div class="bg-gray-50 dark:bg-gray-700/50 px-6 py-4 flex justify-end gap-3">
+                                                <button type="button" @click="showConfirmModal = false"
+                                                    class="px-4 py-2 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-xl hover:bg-primary-50/60 dark:hover:bg-primary-50/600 font-medium">
+                                                    {{ __('Batal') }}
+                                                </button>
+                                                <button type="button"
+                                                    @click="document.getElementById('disbursementForm').submit()"
+                                                    class="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 font-medium flex items-center gap-2">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                    {{ __('Ya, Cairkan Dana') }}
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </template>
                         </div>
                     @endif
 
