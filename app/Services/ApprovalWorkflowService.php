@@ -61,12 +61,19 @@ class ApprovalWorkflowService
         $workflow = $this->getWorkflowForDocument($document);
         $requesterLevel = $this->getRequesterLevel($document->user);
 
+        // Retrieve template's custom signer configurations if configured
+        $template = null;
+        if ($document->template) {
+            $template = \App\Models\DocumentTemplate::withTrashed()->where('code', $document->template)->first();
+        }
+        $signerConfigs = $template?->fields['workflow_signers'] ?? [];
+
         $order = 1;
         $assignedApproverIds = []; // Track already-assigned approvers to prevent duplicates
         $hierarchy = $this->getRoleHierarchy();
         $functionalRoles = $this->getFunctionalRoles();
 
-        foreach ($workflow as $role) {
+        foreach ($workflow as $index => $role) {
 
 
             // Skip approval steps at or below requester's role level
@@ -82,12 +89,18 @@ class ApprovalWorkflowService
             $approver = $this->findApproverForRole($role, $document, $assignedApproverIds);
 
             if ($approver) {
+                $stepSigner = $signerConfigs[$index] ?? null;
+                $showInPdf = isset($stepSigner['show_in_pdf']) ? (bool)$stepSigner['show_in_pdf'] : true;
+                $pdfLabel = !empty($stepSigner['pdf_label']) ? trim($stepSigner['pdf_label']) : null;
+
                 DocumentApproval::create([
                     'document_id' => $document->id,
                     'approver_id' => $approver->id,
                     'approver_role' => $role,
                     'approval_order' => $order,
                     'status' => 'pending',
+                    'show_in_pdf' => $showInPdf,
+                    'pdf_label' => $pdfLabel,
                 ]);
                 $assignedApproverIds[] = $approver->id;
                 $order++;

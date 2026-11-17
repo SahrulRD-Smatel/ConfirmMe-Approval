@@ -807,9 +807,33 @@
             ]);
 
             // 2. Approvers in sequential workflow order
+            $templateSigners = $template->fields['workflow_signers'] ?? ($document->template->fields['workflow_signers'] ?? []);
             foreach ($approvals as $approval) {
+                $orderIndex = $approval->approval_order - 1;
+                $signerCfg = (!empty($templateSigners) && isset($templateSigners[$orderIndex])) ? $templateSigners[$orderIndex] : null;
+
+                $showInPdf = true;
+                if ($signerCfg !== null && isset($signerCfg['show_in_pdf'])) {
+                    $showInPdf = (bool) $signerCfg['show_in_pdf'];
+                } elseif ($approval->show_in_pdf !== null) {
+                    $showInPdf = (bool) $approval->show_in_pdf;
+                }
+
+                if (!$showInPdf) {
+                    continue;
+                }
+
+                $customLabel = null;
+                if (!empty($signerCfg['pdf_label'])) {
+                    $customLabel = $signerCfg['pdf_label'];
+                } elseif (!empty($approval->pdf_label)) {
+                    $customLabel = $approval->pdf_label;
+                }
+
+                $roleTitle = $customLabel ? format_acronyms($customLabel) : format_acronyms($approval->approver?->position ?? ($approval->role_label ?? 'Approver'));
+
                 $allSigners->push([
-                    'role' => format_acronyms($approval->approver?->position ?? ($approval->role_label ?? 'Approver')),
+                    'role' => $roleTitle,
                     'name' => format_acronyms($approval->approver?->name ?? '-'),
                     'is_signed' => $approval->status === 'approved' && $verificationUrl,
                     'status' => $approval->status,
@@ -1585,9 +1609,33 @@
                     ]);
 
                     // 2. Approvers in sequential workflow order
+                    $templateSigners = $template->fields['workflow_signers'] ?? ($document->template->fields['workflow_signers'] ?? []);
                     foreach ($approvals as $approval) {
+                        $orderIndex = $approval->approval_order - 1;
+                        $signerCfg = (!empty($templateSigners) && isset($templateSigners[$orderIndex])) ? $templateSigners[$orderIndex] : null;
+
+                        $showInPdf = true;
+                        if ($signerCfg !== null && isset($signerCfg['show_in_pdf'])) {
+                            $showInPdf = (bool) $signerCfg['show_in_pdf'];
+                        } elseif ($approval->show_in_pdf !== null) {
+                            $showInPdf = (bool) $approval->show_in_pdf;
+                        }
+
+                        if (!$showInPdf) {
+                            continue;
+                        }
+
+                        $customLabel = null;
+                        if (!empty($signerCfg['pdf_label'])) {
+                            $customLabel = $signerCfg['pdf_label'];
+                        } elseif (!empty($approval->pdf_label)) {
+                            $customLabel = $approval->pdf_label;
+                        }
+
+                        $roleTitle = $customLabel ? format_acronyms($customLabel) : format_acronyms($approval->approver?->position ?? ($approval->role_label ?? 'Approver'));
+
                         $allSigners->push([
-                            'role' => format_acronyms($approval->approver?->position ?? ($approval->role_label ?? 'Approver')),
+                            'role' => $roleTitle,
                             'name' => $approval->approver ? format_acronyms($approval->approver->name) : '-',
                             'nip' => $approval->approver?->employee_id ?? null,
                             'is_signed' => $approval->status === 'approved' && $verificationUrl,

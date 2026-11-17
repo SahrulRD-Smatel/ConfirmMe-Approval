@@ -22,21 +22,38 @@
     <form action="{{ isset($template) ? route('admin.templates.update', $template) : route('admin.templates.store') }}"
         method="POST" class="mx-auto max-w-7xl space-y-6" x-data="{
             approvalType: '{{ old('approval_type', $template->approval_type ?? 'only') }}',
-            workflows: {{ Js::from(old('workflow', isset($template) ? array_values((array) ($template->workflow ?? [])) : [])) }},
+            workflows: @php
+                $rawWorkflows = old('workflow', isset($template) ? array_values((array) ($template->workflow ?? [])) : []);
+                $rawSigners = old('fields.workflow_signers', isset($template) ? ($template->fields['workflow_signers'] ?? []) : []);
+                $combinedWorkflows = [];
+                foreach ($rawWorkflows as $i => $w) {
+                    $combinedWorkflows[] = [
+                        'target' => is_array($w) ? ($w['target'] ?? '') : (string)$w,
+                        'show_in_pdf' => isset($rawSigners[$i]['show_in_pdf']) ? (bool)$rawSigners[$i]['show_in_pdf'] : true,
+                        'pdf_label' => $rawSigners[$i]['pdf_label'] ?? '',
+                    ];
+                }
+                echo Js::from($combinedWorkflows);
+            @endphp,
             showAdvancedDefaults: {{ (isset($template) && (!empty($fields['title']) || !empty($fields['description']) || !empty($fields['document_category']) || !empty($fields['terms_and_conditions']) || !empty($fields['priority']) || !empty($fields['related_department']) || !empty($fields['vendor_name']) || !empty($fields['budget_code']) || !empty($fields['loan_type']))) ? 'true' : 'false' }},
             init() {
                 if (!Array.isArray(this.workflows)) {
                     this.workflows = Object.values(this.workflows || {});
                 }
-                this.workflows = this.workflows.map(w => {
-                    if (w && !w.startsWith('role:') && !w.startsWith('user:')) {
-                        return 'role:' + w;
+                this.workflows = this.workflows.map(item => {
+                    let target = typeof item === 'object' && item !== null ? (item.target || '') : (item || '');
+                    if (target && !target.startsWith('role:') && !target.startsWith('user:')) {
+                        target = 'role:' + target;
                     }
-                    return w;
+                    return {
+                        target: target,
+                        show_in_pdf: (typeof item === 'object' && item !== null && 'show_in_pdf' in item) ? Boolean(item.show_in_pdf) : true,
+                        pdf_label: (typeof item === 'object' && item !== null && 'pdf_label' in item) ? (item.pdf_label || '') : '',
+                    };
                 });
             },
             addWorkflow() {
-                this.workflows.push('');
+                this.workflows.push({ target: '', show_in_pdf: true, pdf_label: '' });
             },
             removeWorkflow(index) {
                 this.workflows.splice(index, 1);
@@ -56,7 +73,7 @@
                 }
             }
         }"
-        @submit="if(workflows.length === 0) { window.showAlert('{{ __('Harap tambahkan minimal 1 approver pada Susunan Approver!') }}', 'warning'); $event.preventDefault(); }">
+        @submit="if(workflows.length === 0 || workflows.every(w => !w.target)) { window.showAlert('{{ __('Harap tentukan minimal 1 approver pada Susunan Approver!') }}', 'warning'); $event.preventDefault(); }">
         @csrf
         @if(isset($template)) @method('PUT') @endif
 
@@ -349,44 +366,64 @@
 
                     <div class="space-y-3" x-show="workflows.length > 0">
                         <template x-for="(role, index) in workflows" :key="index">
-                            <div class="flex items-center gap-3 p-3 bg-gray-50/80 dark:bg-gray-800 border border-gray-200/80 dark:border-gray-700/80 rounded-xl relative group">
-                                <div class="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center shrink-0">
-                                    <span class="text-indigo-600 dark:text-indigo-400 font-bold text-sm" x-text="index + 1"></span>
+                            <div class="p-3.5 bg-gray-50/80 dark:bg-gray-800/80 border border-gray-200/80 dark:border-gray-700/80 rounded-xl space-y-2.5 transition-all">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-7 h-7 rounded-lg bg-primary-50 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 font-bold text-xs flex items-center justify-center shrink-0 border border-primary-200/60 dark:border-primary-800/60">
+                                        <span x-text="index + 1"></span>
+                                    </div>
+
+                                    <div class="flex-1 min-w-0">
+                                        <select x-model="workflows[index].target" name="workflow[]" required
+                                            class="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                                            <option value="" disabled>-- {{ __('Pilih Approver') }} --</option>
+                                            <optgroup label="{{ __('Berdasarkan Role/Jabatan') }}">
+                                                @foreach($roles as $roleData)
+                                                    <option value="role:{{ $roleData->name }}">{{ role_label($roleData->name) }}</option>
+                                                @endforeach
+                                            </optgroup>
+                                            <optgroup label="{{ __('Berdasarkan Spesifik User') }}">
+                                                @foreach($users as $u)
+                                                    @php
+                                                        $position = $u->position ?? 'Tanpa Posisi';
+                                                        $dept = $u->department ?? 'No Dept';
+                                                    @endphp
+                                                    <option value="user:{{ $u->id }}">{{ $u->name }} ({{ $position }} - {{ $dept }})</option>
+                                                @endforeach
+                                            </optgroup>
+                                        </select>
+                                    </div>
+
+                                    <div class="flex items-center gap-1 shrink-0">
+                                        <button type="button" @click="moveWorkflowUp(index)" :class="{'invisible pointer-events-none': index === 0}" class="p-1.5 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200/60 dark:hover:bg-gray-700 rounded-lg transition-colors tooltip" data-tip="{{ __('Geser ke Atas') }}">
+                                            <x-icon name="chevron-up" class="w-4 h-4" />
+                                        </button>
+                                        <button type="button" @click="moveWorkflowDown(index)" :class="{'invisible pointer-events-none': index === workflows.length - 1}" class="p-1.5 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200/60 dark:hover:bg-gray-700 rounded-lg transition-colors tooltip" data-tip="{{ __('Geser ke Bawah') }}">
+                                            <x-icon name="chevron-down" class="w-4 h-4" />
+                                        </button>
+                                        <button type="button" @click="removeWorkflow(index)"
+                                            class="p-1.5 text-gray-400 hover:text-danger-600 hover:bg-danger-50 dark:hover:bg-danger-900/30 rounded-lg transition-colors tooltip ml-1"
+                                            data-tip="{{ __('Hapus') }}">
+                                            <x-icon name="trash" class="w-4 h-4" />
+                                        </button>
+                                    </div>
                                 </div>
 
-                                <div class="flex-1">
-                                    <select x-model="workflows[index]" name="workflow[]" required
-                                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                        <option value="" disabled>-- {{ __('Pilih Approver') }} --</option>
-                                        <optgroup label="{{ __('Berdasarkan Role/Jabatan') }}">
-                                            @foreach($roles as $roleData)
-                                                <option value="role:{{ $roleData->name }}">{{ role_label($roleData->name) }}</option>
-                                            @endforeach
-                                        </optgroup>
-                                        <optgroup label="{{ __('Berdasarkan Spesifik User') }}">
-                                            @foreach($users as $u)
-                                                @php
-                                                    $position = $u->position ?? 'Tanpa Posisi';
-                                                    $dept = $u->department ?? 'No Dept';
-                                                @endphp
-                                                <option value="user:{{ $u->id }}">{{ $u->name }} ({{ $position }} - {{ $dept }})</option>
-                                            @endforeach
-                                        </optgroup>
-                                    </select>
-                                </div>
+                                {{-- Pengaturan Cetak Tanda Tangan di PDF --}}
+                                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 pl-10 pt-2 border-t border-gray-200/60 dark:border-gray-700/60">
+                                    <input type="hidden" :name="'fields[workflow_signers][' + index + '][show_in_pdf]'" value="0">
+                                    <label class="inline-flex items-center gap-2 cursor-pointer select-none shrink-0">
+                                        <input type="checkbox" :name="'fields[workflow_signers][' + index + '][show_in_pdf]'" value="1"
+                                            x-model="workflows[index].show_in_pdf"
+                                            class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 h-4 w-4">
+                                        <span class="text-xs font-medium text-gray-700 dark:text-gray-300">{{ __('Tampilkan TTD di PDF') }}</span>
+                                    </label>
 
-                                <div class="flex items-center gap-1 shrink-0">
-                                    <button type="button" @click="moveWorkflowUp(index)" :class="{'invisible pointer-events-none': index === 0}" class="p-2 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition-colors tooltip" data-tip="{{ __('Geser ke Atas') }}">
-                                        <x-icon name="chevron-up" class="w-5 h-5" />
-                                    </button>
-                                    <button type="button" @click="moveWorkflowDown(index)" :class="{'invisible pointer-events-none': index === workflows.length - 1}" class="p-2 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition-colors tooltip" data-tip="{{ __('Geser ke Bawah') }}">
-                                        <x-icon name="chevron-down" class="w-5 h-5" />
-                                    </button>
-                                    <button type="button" @click="removeWorkflow(index)"
-                                        class="p-2 text-gray-400 hover:text-danger-500 hover:bg-danger-50 rounded-xl transition-colors tooltip ml-1"
-                                        data-tip="{{ __('Hapus') }}">
-                                        <x-icon name="trash" class="w-5 h-5" />
-                                    </button>
+                                    <div class="flex-1" x-show="workflows[index].show_in_pdf">
+                                        <input type="text" :name="'fields[workflow_signers][' + index + '][pdf_label]'"
+                                            x-model="workflows[index].pdf_label"
+                                            placeholder="{{ __('Label Jabatan di PDF (Opsional, cth: Atasan Langsung / Purchasing / IT Internal)') }}"
+                                            class="block w-full px-2.5 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-primary-500">
+                                    </div>
                                 </div>
                             </div>
                         </template>

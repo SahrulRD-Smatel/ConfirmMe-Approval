@@ -585,6 +585,13 @@ class DatabaseSeeder extends Seeder
                     'priority' => 'normal',
                     'document_category' => 'peminjaman_aset',
                     'notify_roles' => ['role:ga'],
+                    'workflow_signers' => [
+                        ['show_in_pdf' => true, 'pdf_label' => 'Atasan Langsung'],
+                        ['show_in_pdf' => false, 'pdf_label' => null],
+                        ['show_in_pdf' => true, 'pdf_label' => null],
+                        ['show_in_pdf' => true, 'pdf_label' => null],
+                        ['show_in_pdf' => false, 'pdf_label' => null],
+                    ],
                     'dynamic_fields' => [
                         ['name' => 'nama_peminjam', 'label' => 'Nama Peminjam', 'type' => 'text', 'required' => true],
                         ['name' => 'nip', 'label' => 'NIP', 'type' => 'text', 'required' => true],
@@ -614,6 +621,12 @@ class DatabaseSeeder extends Seeder
                     'priority' => 'normal',
                     'document_category' => 'lainnya',
                     'notify_roles' => ['role:ga', 'role:admin_operasional'],
+                    'workflow_signers' => [
+                        ['show_in_pdf' => false, 'pdf_label' => null],
+                        ['show_in_pdf' => false, 'pdf_label' => null],
+                        ['show_in_pdf' => true, 'pdf_label' => null],
+                        ['show_in_pdf' => true, 'pdf_label' => null],
+                    ],
                     'dynamic_fields' => [
                         ['name' => 'perusahaan', 'label' => 'Perusahaan', 'type' => 'text', 'required' => true],
                         ['name' => 'dokumen_po_do', 'label' => 'Dokumen P.O / D.O', 'type' => 'select', 'options' => 'Ada, Tidak', 'required' => true],
@@ -637,6 +650,13 @@ class DatabaseSeeder extends Seeder
                     'description' => 'Pengajuan pembelian barang kebutuhan kantor.',
                     'priority' => 'normal',
                     'notify_roles' => ['role:ga'],
+                    'workflow_signers' => [
+                        ['show_in_pdf' => true, 'pdf_label' => 'Purchasing'],
+                        ['show_in_pdf' => false, 'pdf_label' => null],
+                        ['show_in_pdf' => true, 'pdf_label' => null],
+                        ['show_in_pdf' => true, 'pdf_label' => null],
+                        ['show_in_pdf' => true, 'pdf_label' => null],
+                    ],
                     'dynamic_fields' => [
                         ['name' => 'kategori_pembelian', 'label' => 'Kategori Pembelian', 'type' => 'select', 'options' => 'ALAT TULIS KANTOR, KEBUTUHAN P3K, KEBUTUHAN PANTRY, LAINNYA', 'required' => true],
                         ['name' => 'keterangan', 'label' => 'Keterangan/Projek', 'type' => 'text', 'required' => true],
@@ -657,6 +677,11 @@ class DatabaseSeeder extends Seeder
                     'priority' => 'normal',
                     'document_category' => 'lainnya',
                     'notify_roles' => ['role:it_internal'],
+                    'workflow_signers' => [
+                        ['show_in_pdf' => true, 'pdf_label' => 'IT Internal'],
+                        ['show_in_pdf' => false, 'pdf_label' => null],
+                        ['show_in_pdf' => true, 'pdf_label' => 'IT Internal'],
+                    ],
                     'dynamic_fields' => [
                         ['name' => 'jenis_request', 'label' => 'Jenis Request', 'type' => 'select', 'options' => 'Buat Baru, Nonaktifkan Email', 'required' => true],
                         ['name' => 'nama_karyawan', 'label' => 'Nama Karyawan', 'type' => 'text', 'required' => true],
@@ -677,6 +702,12 @@ class DatabaseSeeder extends Seeder
                     'priority' => 'normal',
                     'document_category' => 'lainnya',
                     'notify_roles' => ['role:it_internal'],
+                    'workflow_signers' => [
+                        ['show_in_pdf' => true, 'pdf_label' => 'Atasan'],
+                        ['show_in_pdf' => true, 'pdf_label' => 'IT Internal'],
+                        ['show_in_pdf' => true, 'pdf_label' => null],
+                        ['show_in_pdf' => false, 'pdf_label' => null],
+                    ],
                     'dynamic_fields' => [
                         ['name' => 'jenis_request', 'label' => 'Jenis Request', 'type' => 'select', 'options' => 'Permintaan Baru, Service, Kehilangan', 'required' => true],
                         ['name' => 'nama_hardware', 'label' => 'Nama Hardware', 'type' => 'text', 'required' => true],

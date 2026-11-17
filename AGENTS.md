@@ -77,6 +77,12 @@ Seluruh dokumen Portrait (`document.blade.php`, `purchase-order.blade.php`, `inv
   - `tabel_pengadaan` (Daftar Pengadaan / Pembelian - Landscape).
 - Di controller ([DocumentController.php](file:///f:/Dhani/JOB/ConfirmMe-Approval/app/Http/Controllers/DocumentController.php)), rute print selalu mengarah ke `pdf.document` (kecuali invoice & purchase-order yang merupakan dokumen finansial khusus).
 
+### Sistem Penandatangan Dinamis di PDF (Dynamic Signatory Controls):
+- Admin dapat mengontrol kotak tanda tangan yang tampil di PDF melalui form template (`admin/templates/form.blade.php`):
+  - **Checkbox `show_in_pdf`**: Jika dicentang, kotak tanda tangan & QR barcode dicetak di PDF. Jika tidak dicentang, kotak tanda tangan disembunyikan dari cetakan PDF, namun approver tetap wajib menyetujui dokumen dan langkah persetujuannya tetap tampil utuh di audit trail verifikasi digital (`verify.show`).
+  - **Custom Label `pdf_label`**: Menimpa nama jabatan default penandatangan di PDF (misal: "Atasan Langsung", "Purchasing", "IT Internal", "Atasan"). Jika dikosongkan, sistem menggunakan nama posisi/role asli approver.
+  - **Penyimpanan:** Disimpan dalam JSON template `fields['workflow_signers']` dan disalin ke kolom `show_in_pdf` serta `pdf_label` di tabel `document_approvals`. Engine PDF mengecek template sebagai fallback dinamis untuk dokumen lama.
+
 ---
 
 ## 5. Keamanan Impor Data Tabular (Excel / CSV)

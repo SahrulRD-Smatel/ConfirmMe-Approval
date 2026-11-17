@@ -102,6 +102,13 @@ Struktur tanda tangan resmi mengadopsi kartu berbingkai terstruktur (`sig-card`)
 - **Footer (`sig-card-footer`):** Nama penandatangan dan NIP, border atas 1px.
 - **Grid Adaptif:** Maksimal 3-4 kartu per baris. Jika terdapat 6 penandatangan, otomatis dibagi seimbang menjadi 2 baris x 3 kolom.
 
+### D. Sistem Penandatangan Dinamis di PDF (Dynamic Signatory Controls):
+- Admin dapat mengontrol penandatangan mana saja yang memiliki kotak tanda tangan di dokumen PDF melalui *Admin -> Buat/Edit Template*:
+  - **`show_in_pdf` (Boolean):** Menentukan apakah QR barcode dan kartu tanda tangan penandatangan tersebut dicetak pada PDF atau disembunyikan.
+  - **`pdf_label` (String Nullable):** Menimpa label jabatan di atas kotak tanda tangan (contoh: "Atasan Langsung", "Purchasing", "IT Internal"). Jika kosong, memakai jabatan bawaan user atau role.
+  - **Audit Trail Digital Utuh:** Approver yang di-uncheck (`show_in_pdf: false`) tetap menjalani alur persetujuan dan tetap tercatat secara lengkap pada halaman audit verifikasi digital (`verify.show`).
+  - **Dual-Layer Resolution:** Tersimpan di kolom `document_approvals.show_in_pdf` dan `document_approvals.pdf_label`, dengan fallback dinamis membaca `fields['workflow_signers']` pada template untuk dokumen lama.
+
 ---
 
 ## 5. Keamanan Impor & Ekspor Data Excel/CSV

@@ -62,6 +62,18 @@ class TemplateController extends Controller
             $fields['notify_roles'] = [];
         }
 
+        // Process PDF signatory settings (workflow_signers)
+        $signersInput = $fields['workflow_signers'] ?? [];
+        $cleanSigners = [];
+        foreach ($workflow as $idx => $role) {
+            $cfg = $signersInput[$idx] ?? [];
+            $cleanSigners[] = [
+                'show_in_pdf' => isset($cfg['show_in_pdf']) ? (bool)$cfg['show_in_pdf'] : true,
+                'pdf_label' => !empty($cfg['pdf_label']) ? trim((string)$cfg['pdf_label']) : null,
+            ];
+        }
+        $fields['workflow_signers'] = $cleanSigners;
+
         DocumentTemplate::create([
             'name' => $validated['name'],
             'code' => $validated['code'],
@@ -118,6 +130,18 @@ class TemplateController extends Controller
         } else {
             $fields['notify_roles'] = [];
         }
+
+        // Process PDF signatory settings (workflow_signers)
+        $signersInput = $fields['workflow_signers'] ?? [];
+        $cleanSigners = [];
+        foreach ($workflow as $idx => $role) {
+            $cfg = $signersInput[$idx] ?? [];
+            $cleanSigners[] = [
+                'show_in_pdf' => isset($cfg['show_in_pdf']) ? (bool)$cfg['show_in_pdf'] : true,
+                'pdf_label' => !empty($cfg['pdf_label']) ? trim((string)$cfg['pdf_label']) : null,
+            ];
+        }
+        $fields['workflow_signers'] = $cleanSigners;
 
         // Check if workflow changed or became inactive
         $oldWorkflow = array_values((array) ($template->workflow ?? []));

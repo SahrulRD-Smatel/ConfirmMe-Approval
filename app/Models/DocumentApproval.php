@@ -16,6 +16,8 @@ class DocumentApproval extends Model
         'approver_role',
         'approval_order',
         'status',
+        'show_in_pdf',
+        'pdf_label',
         'comment',
         'approved_amount',
         'action_at',
@@ -25,6 +27,7 @@ class DocumentApproval extends Model
 
     protected $casts = [
         'approval_order' => 'integer',
+        'show_in_pdf' => 'boolean',
         'approved_amount' => 'decimal:2',
         'action_at' => 'datetime',
     ];
