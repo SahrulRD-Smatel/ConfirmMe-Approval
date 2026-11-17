@@ -32,7 +32,8 @@
                 @endcan
 
                 @can('submit', $document)
-                    <form action="{{ route('documents.submit', $document) }}" method="POST" class="inline">
+                    <form action="{{ route('documents.submit', $document) }}" method="POST" class="inline"
+                        onsubmit="confirmAction(event, '{{ __('Kirim dokumen ini untuk proses approval?') }}', { confirmText: '{{ __('Ya, Kirim') }}' })">
                         @csrf
                         <x-ui.button type="submit" icon="paper-airplane" size="sm">
                             {{ __('Kirim untuk Approval') }}
@@ -152,7 +153,8 @@
                     </div>
 
                     <div class="flex flex-col sm:flex-row gap-3">
-                        <form action="{{ route('documents.confirm-amount', $document) }}" method="POST" class="flex-1">
+                        <form action="{{ route('documents.confirm-amount', $document) }}" method="POST" class="flex-1"
+                            onsubmit="confirmAction(event, '{{ __('Konfirmasi setuju dengan nominal baru belanja?') }}', { confirmText: '{{ __('Ya, Setuju') }}' })">
                             @csrf
                             <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-success-600 px-5 py-2.5 text-sm font-bold text-white transition-all hover:bg-success-700 hover:shadow-md">
                                 <x-icon name="check-circle" class="w-5 h-5" />

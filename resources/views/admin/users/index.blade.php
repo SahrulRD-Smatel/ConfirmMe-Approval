@@ -114,7 +114,8 @@
                                             <x-icon name="pencil" class="h-4 w-4" />
                                             <span class="hidden lg:inline">{{ __('Edit') }}</span>
                                         </a>
-                                        <form action="{{ route('admin.users.toggle', $user) }}" method="POST" class="inline">
+                                        <form action="{{ route('admin.users.toggle', $user) }}" method="POST" class="inline"
+                                            onsubmit="confirmAction(event, '{{ $user->is_active ? __('Nonaktifkan user :name? User tidak akan dapat login ke sistem.', ['name' => $user->name]) : __('Aktifkan akun user :name kembali?', ['name' => $user->name]) }}', { isDanger: {{ $user->is_active ? 'true' : 'false' }}, confirmText: '{{ $user->is_active ? __('Ya, Nonaktifkan') : __('Ya, Aktifkan') }}' })">
                                             @csrf
                                             @method('PATCH')
                                             <button type="submit"

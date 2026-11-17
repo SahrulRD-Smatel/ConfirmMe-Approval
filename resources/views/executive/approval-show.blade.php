@@ -165,7 +165,8 @@
                     </div>
                     <div class="p-6 space-y-4">
                         {{-- Approve Form --}}
-                        <form action="{{ route('executive.approvals.approve', $document) }}" method="POST">
+                        <form action="{{ route('executive.approvals.approve', $document) }}" method="POST"
+                            onsubmit="confirmAction(event, '{{ __('Setujui dokumen ini?') }}', { confirmText: '{{ __('Ya, Setujui') }}' })">
                             @csrf
                             <div class="mb-3">
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Catatan (opsional)') }}</label>
@@ -194,7 +195,8 @@
 
                         {{-- Reject Form --}}
                         <form action="{{ route('executive.approvals.reject', $document) }}" method="POST"
-                            x-data="{ showReject: false }">
+                            x-data="{ showReject: false }"
+                            onsubmit="confirmAction(event, '{{ __('Tolak dokumen ini? Dokumen akan dibatalkan.') }}', { isDanger: true, confirmText: '{{ __('Ya, Tolak') }}' })">
                             @csrf
                             <button type="button" @click="showReject = !showReject"
                                 class="w-full flex items-center justify-center gap-2 px-4 py-2.5 border border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 font-medium rounded-xl"
@@ -236,7 +238,8 @@
 
                         {{-- Revise Form --}}
                         <form action="{{ route('executive.approvals.revise', $document) }}" method="POST"
-                            x-data="{ showRevise: false }">
+                            x-data="{ showRevise: false }"
+                            onsubmit="confirmAction(event, '{{ __('Kirim permintaan revisi dokumen ini ke pengaju?') }}', { isDanger: true, confirmText: '{{ __('Ya, Minta Revisi') }}' })">
                             @csrf
                             <button type="button" @click="showRevise = !showRevise"
                                 class="w-full flex items-center justify-center gap-2 px-4 py-2.5 border border-amber-300 dark:border-amber-700 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 font-medium rounded-xl"

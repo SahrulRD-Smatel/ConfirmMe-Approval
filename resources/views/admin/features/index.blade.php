@@ -89,7 +89,8 @@
                             </div>
 
                             <!-- Toggle Switch -->
-                            <form action="{{ route('admin.features.toggle', $feature->key) }}" method="POST" class="shrink-0">
+                            <form action="{{ route('admin.features.toggle', $feature->key) }}" method="POST" class="shrink-0"
+                                onsubmit="confirmAction(event, '{{ $feature->is_active ? __('Nonaktifkan fitur :name?', ['name' => __($feature->name)]) : __('Aktifkan fitur :name?', ['name' => __($feature->name)]) }}', { isDanger: {{ $feature->is_active ? 'true' : 'false' }}, confirmText: '{{ $feature->is_active ? __('Ya, Nonaktifkan') : __('Ya, Aktifkan') }}' })">
                                 @csrf
                                 @method('PATCH')
                                 <button type="submit"
