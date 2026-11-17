@@ -19,7 +19,8 @@ const sweetAlertExitMotion = {
 };
 
 const sweetAlertClasses = {
-    popup: 'rounded-2xl border border-gray-100 shadow-soft-xl dark:bg-gray-900 dark:border-gray-800',
+    container: 'z-[9999]',
+    popup: 'rounded-3xl border border-gray-200/80 bg-white p-6 shadow-soft-xl dark:border-gray-700 dark:bg-gray-900',
     title: 'text-lg font-bold text-gray-900 dark:text-white',
     htmlContainer: 'text-sm text-gray-600 dark:text-gray-400',
     confirmButton: 'inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-all hover:shadow-md focus:outline-none focus:ring-4',
@@ -28,7 +29,7 @@ const sweetAlertClasses = {
 };
 
 const ensureSweetAlertStyles = () => {
-    // No longer injecting custom CSS, relying on Tailwind classes
+    // Relying on Tailwind classes and customClass configuration
 };
 
 window.Alpine = Alpine;
@@ -42,6 +43,7 @@ window.showAlert = (message, type = 'error') => {
         text: message,
         icon: type,
         buttonsStyling: false,
+        backdrop: 'rgba(3, 7, 18, 0.75)',
         showClass: sweetAlertMotion,
         hideClass: sweetAlertExitMotion,
         customClass: {
@@ -51,27 +53,33 @@ window.showAlert = (message, type = 'error') => {
     });
 };
 
-// Global Confirm Helper
-window.confirmAction = (event, message) => {
+// Global Confirm Helper (Universal Enterprise Dialog)
+window.confirmAction = (event, message, options = {}) => {
     event.preventDefault();
     const form = event.target.closest('form') || event.target;
 
     ensureSweetAlertStyles();
 
+    const isDanger = options.isDanger ?? (typeof message === 'string' && /hapus|delete|tolak|reset/i.test(message));
+    const confirmButtonClass = isDanger
+        ? sweetAlertClasses.confirmButton + ' bg-danger-600 hover:bg-danger-700 focus:ring-danger-500/30'
+        : sweetAlertClasses.confirmButton + ' bg-primary-600 hover:bg-primary-700 focus:ring-primary-500/30';
+
     return Swal.fire({
-        title: 'Konfirmasi',
+        title: options.title || (isDanger ? 'Konfirmasi Tindakan' : 'Konfirmasi'),
         html: message,
-        icon: 'warning',
+        icon: options.icon || (isDanger ? 'warning' : 'question'),
         showCancelButton: true,
         focusCancel: true,
-        confirmButtonText: 'Ya',
-        cancelButtonText: 'Batal',
+        confirmButtonText: options.confirmButtonText || options.confirmText || (isDanger ? 'Ya, Lanjutkan' : 'Ya'),
+        cancelButtonText: options.cancelButtonText || options.cancelText || 'Batal',
         buttonsStyling: false,
+        backdrop: 'rgba(3, 7, 18, 0.75)',
         showClass: sweetAlertMotion,
         hideClass: sweetAlertExitMotion,
         customClass: {
             ...sweetAlertClasses,
-            confirmButton: sweetAlertClasses.confirmButton + ' bg-primary-600 hover:bg-primary-700 focus:ring-primary-500/30'
+            confirmButton: confirmButtonClass,
         },
     }).then((result) => {
         if (result.isConfirmed) {

@@ -125,7 +125,7 @@
                                         </form>
                                         @if((int) auth()->id() !== (int) $user->id)
                                             <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline"
-                                                onsubmit="return confirm('{{ __('Apakah Anda yakin ingin menghapus user :name?', ['name' => $user->name]) }}')">
+                                                onsubmit="confirmAction(event, '{{ __('Apakah Anda yakin ingin menghapus user :name?', ['name' => $user->name]) }}', { isDanger: true, confirmText: '{{ __('Ya, Hapus') }}' })">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit"
