@@ -164,6 +164,20 @@ class User extends Authenticatable
     }
 
     /**
+     * Check how many historical records are linked to this user.
+     */
+    public function getHistoricalRecordsCount(): int
+    {
+        return $this->documents()->count()
+            + $this->approvalActions()->count()
+            + $this->pendingApprovals()->count()
+            + \App\Models\PurchaseOrder::where('created_by', $this->id)->count()
+            + \App\Models\Invoice::where('created_by', $this->id)->count()
+            + \App\Models\EmployeeLoan::where('employee_id', $this->id)->orWhere('created_by', $this->id)->count()
+            + $this->leaveRequests()->count();
+    }
+
+    /**
      * Get effective annual leave balance (accounting for pending annual leaves)
      */
     public function getEffectiveAnnualLeaveBalanceAttribute(): int

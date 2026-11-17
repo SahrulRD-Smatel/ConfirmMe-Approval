@@ -123,6 +123,19 @@
                                                 <span class="hidden lg:inline">{{ $user->is_active ? __('Nonaktifkan') : __('Aktifkan') }}</span>
                                             </button>
                                         </form>
+                                        @if((int) auth()->id() !== (int) $user->id)
+                                            <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline"
+                                                onsubmit="return confirm('{{ __('Apakah Anda yakin ingin menghapus user :name?', ['name' => $user->name]) }}')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                    class="inline-flex h-9 items-center gap-2 rounded-xl border border-transparent px-3 text-xs font-semibold text-danger-700 hover:border-danger-200 hover:bg-danger-50 transition focus:outline-none focus:ring-4 focus:ring-danger-500/10 dark:text-danger-400 dark:hover:bg-danger-900/20"
+                                                    title="{{ __('Hapus User') }}">
+                                                    <x-icon name="trash" class="h-4 w-4" />
+                                                    <span class="hidden lg:inline">{{ __('Hapus') }}</span>
+                                                </button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

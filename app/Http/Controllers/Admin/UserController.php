@@ -17,6 +17,7 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $users = User::with('roles')
+            ->withCount(['documents', 'approvalActions', 'pendingApprovals', 'leaveRequests'])
             ->when($request->filled('search'), function ($q) use ($request) {
                 $q->where(function ($query) use ($request) {
                     $query->where('name', 'like', '%' . $request->search . '%')
@@ -146,15 +147,24 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         if ((int) $user->id === (int) auth()->id()) {
-            return back()->with('error', 'Tidak dapat menghapus akun sendiri!');
+            return back()->with('error', __('Tidak dapat menghapus akun sendiri yang sedang aktif digunakan!'));
+        }
+
+        $historyCount = $user->getHistoricalRecordsCount();
+        if ($historyCount > 0) {
+            return back()->with('error', __(
+                'User ":name" tidak dapat dihapus karena memiliki :count riwayat dokumen atau persetujuan aktif. Untuk menjaga integritas audit trail perusahaan, silakan gunakan tombol Nonaktifkan.',
+                ['name' => $user->name, 'count' => $historyCount]
+            ));
         }
 
         AuditLog::log('deleted', $user);
 
+        $user->roles()->detach();
         $user->delete();
 
         return redirect()->route('admin.users.index')
-            ->with('success', 'User berhasil dihapus!');
+            ->with('success', __('User ":name" berhasil dihapus!', ['name' => $user->name]));
     }
 
     /**
