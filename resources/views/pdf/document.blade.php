@@ -954,6 +954,56 @@
                 $genSignerQr = function(string $url) {
                     return base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(300)->margin(1)->generate($url));
                 };
+
+                $templateSigners = $template->fields['workflow_signers'] ?? ($document->template->fields['workflow_signers'] ?? []);
+                $templateWorkflow = $template ? ($template->workflow ?? []) : [];
+
+                $checkShowInPdf = function($approval) use ($templateSigners, $templateWorkflow) {
+                    if (!$approval) return false;
+                    $orderIdx = $approval->approval_order - 1;
+                    $signerCfg = null;
+                    if (!empty($templateSigners) && isset($templateSigners[$orderIdx])) {
+                        $signerCfg = $templateSigners[$orderIdx];
+                    } elseif (!empty($templateSigners) && !empty($templateWorkflow)) {
+                        $approverRole = $approval->approver_role;
+                        foreach ($templateWorkflow as $wfIndex => $wfRole) {
+                            if ($wfRole === $approverRole || str_replace(['role:', 'hierarchy:'], '', (string)$wfRole) === str_replace(['role:', 'hierarchy:'], '', (string)$approverRole)) {
+                                $signerCfg = $templateSigners[$wfIndex] ?? null;
+                                break;
+                            }
+                        }
+                    }
+
+                    if ($signerCfg !== null && isset($signerCfg['show_in_pdf'])) {
+                        return (bool) $signerCfg['show_in_pdf'];
+                    }
+                    return $approval->show_in_pdf !== null ? (bool)$approval->show_in_pdf : true;
+                };
+
+                $getSignerLabel = function($approval, $defaultLabel) use ($templateSigners, $templateWorkflow) {
+                    if (!$approval) return $defaultLabel;
+                    $orderIdx = $approval->approval_order - 1;
+                    $signerCfg = null;
+                    if (!empty($templateSigners) && isset($templateSigners[$orderIdx])) {
+                        $signerCfg = $templateSigners[$orderIdx];
+                    } elseif (!empty($templateSigners) && !empty($templateWorkflow)) {
+                        $approverRole = $approval->approver_role;
+                        foreach ($templateWorkflow as $wfIndex => $wfRole) {
+                            if ($wfRole === $approverRole || str_replace(['role:', 'hierarchy:'], '', (string)$wfRole) === str_replace(['role:', 'hierarchy:'], '', (string)$approverRole)) {
+                                $signerCfg = $templateSigners[$wfIndex] ?? null;
+                                break;
+                            }
+                        }
+                    }
+
+                    if ($signerCfg !== null && !empty($signerCfg['pdf_label'])) {
+                        return trim($signerCfg['pdf_label']);
+                    }
+                    if (!empty($approval->pdf_label)) {
+                        return trim($approval->pdf_label);
+                    }
+                    return $defaultLabel;
+                };
             @endphp
 
             @if($isStpd)
@@ -990,31 +1040,6 @@
 
                     $isRequesterPemberi = ($creatorNameNorm && $pemberiNorm && str_contains($pemberiNorm, $creatorNameNorm));
                     $pemohonQrCode = $verificationUrl ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'requester'])) : null;
-
-                    $templateSigners = $template->fields['workflow_signers'] ?? ($document->template->fields['workflow_signers'] ?? []);
-                    $templateWorkflow = $template ? ($template->workflow ?? []) : [];
-
-                    $checkShowInPdf = function($approval) use ($templateSigners, $templateWorkflow) {
-                        if (!$approval) return false;
-                        $orderIdx = $approval->approval_order - 1;
-                        $signerCfg = null;
-                        if (!empty($templateSigners) && !empty($templateWorkflow)) {
-                            $approverRole = $approval->approver_role;
-                            foreach ($templateWorkflow as $wfIndex => $wfRole) {
-                                if ($wfRole === $approverRole || str_replace(['role:', 'hierarchy:'], '', (string)$wfRole) === str_replace(['role:', 'hierarchy:'], '', (string)$approverRole)) {
-                                    $signerCfg = $templateSigners[$wfIndex] ?? null;
-                                    break;
-                                }
-                            }
-                        } elseif (!empty($templateSigners) && isset($templateSigners[$orderIdx])) {
-                            $signerCfg = $templateSigners[$orderIdx];
-                        }
-
-                        if ($signerCfg !== null && isset($signerCfg['show_in_pdf'])) {
-                            return (bool) $signerCfg['show_in_pdf'];
-                        }
-                        return $approval->show_in_pdf !== null ? (bool)$approval->show_in_pdf : true;
-                    };
 
                     // Cari approver pemberi tugas & atasan langsung
                     $pemberiApproval = null;
@@ -1223,7 +1248,7 @@
                 {{-- ========================================================================= --}}
                 @php
                     $pemohonNama = $metadata['nama_pemohon'] ?? ($pemohon->name ?? '-');
-                    $divisiDept = $metadata['divisi_dept'] ?? ($pemohon->department->name ?? '-');
+                    $divisiDept = $metadata['divisi_dept'] ?? (is_string($pemohon?->department) ? $pemohon->department : ($pemohon?->department?->name ?? '-'));
                     $kotaTujuan = $metadata['kota_tujuan'] ?? '-';
                     $keperluanVal = $metadata['keperluan'] ?? '-';
                     $tglBerangkat = !empty($metadata['tgl_berangkat']) ? \Carbon\Carbon::parse($metadata['tgl_berangkat'])->translatedFormat('d/m/Y') : '-';
@@ -1239,14 +1264,17 @@
                     $diketahuiName = ($diketahuiApprover && $diketahuiApprover->approver) ? format_acronyms($diketahuiApprover->approver->name) : '...........................';
                     $diketahuiDate = ($diketahuiApprover && $diketahuiApprover->action_at) ? $diketahuiApprover->action_at->translatedFormat('d/m/Y') : '............';
                     $diketahuiQr = ($diketahuiApprover && $checkShowInPdf($diketahuiApprover) && $diketahuiApprover->status === 'approved') ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $diketahuiApprover->id])) : null;
+                    $diketahuiLabel = $getSignerLabel($diketahuiApprover, 'Diketahui');
 
                     $hrdName = ($hrdApprover && $hrdApprover->approver) ? format_acronyms($hrdApprover->approver->name) : ($metadata['hrd_name'] ?? '...........................');
                     $hrdDate = ($hrdApprover && $hrdApprover->action_at) ? $hrdApprover->action_at->translatedFormat('d/m/Y') : '............';
                     $hrdQr = ($hrdApprover && $checkShowInPdf($hrdApprover) && $hrdApprover->status === 'approved') ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $hrdApprover->id])) : null;
+                    $hrdLabel = $getSignerLabel($hrdApprover, 'HRD');
 
                     $financeName = ($financeApprover && $financeApprover->approver) ? format_acronyms($financeApprover->approver->name) : ($metadata['finance_name'] ?? '...........................');
                     $financeDate = ($financeApprover && $financeApprover->action_at) ? $financeApprover->action_at->translatedFormat('d/m/Y') : '............';
                     $financeQr = ($financeApprover && $checkShowInPdf($financeApprover) && $financeApprover->status === 'approved') ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $financeApprover->id])) : null;
+                    $financeLabel = $getSignerLabel($financeApprover, 'Finance');
 
                     $pemohonQr = $verificationUrl ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'requester'])) : null;
                 @endphp
@@ -1320,6 +1348,7 @@
                             }
                         @endphp
                         @foreach($tiketRows as $idx => $tRow)
+                            @php $tRow = (array)$tRow; @endphp
                             <tr>
                                 <td style="border: 1px solid #111; padding: 2px; text-align: center;">{{ $idx + 1 }}</td>
                                 <td style="border: 1px solid #111; padding: 2px; text-align: center;">{{ $tRow['tanggal'] ?? ($tRow['Tanggal'] ?? '') }}</td>
@@ -1403,43 +1432,43 @@
                     <thead>
                         <tr>
                             <th style="width: 25%; border: 1px solid #111; padding: 3.5px; text-align: center; font-size: 9.5px; font-weight: bold; background-color: #f8fafc;">Pemohon</th>
-                            <th style="width: 25%; border: 1px solid #111; padding: 3.5px; text-align: center; font-size: 9.5px; font-weight: bold; background-color: #f8fafc;">Diketahui</th>
-                            <th style="width: 25%; border: 1px solid #111; padding: 3.5px; text-align: center; font-size: 9.5px; font-weight: bold; background-color: #f8fafc;">HRD</th>
-                            <th style="width: 25%; border: 1px solid #111; padding: 3.5px; text-align: center; font-size: 9.5px; font-weight: bold; background-color: #f8fafc;">Finance</th>
+                            <th style="width: 25%; border: 1px solid #111; padding: 3.5px; text-align: center; font-size: 9.5px; font-weight: bold; background-color: #f8fafc;">{{ $diketahuiLabel }}</th>
+                            <th style="width: 25%; border: 1px solid #111; padding: 3.5px; text-align: center; font-size: 9.5px; font-weight: bold; background-color: #f8fafc;">{{ $hrdLabel }}</th>
+                            <th style="width: 25%; border: 1px solid #111; padding: 3.5px; text-align: center; font-size: 9.5px; font-weight: bold; background-color: #f8fafc;">{{ $financeLabel }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td style="border: 1px solid #111; height: 68px; vertical-align: middle; text-align: center; padding: 2px;">
+                            <td style="border: 1px solid #111; height: 76px; vertical-align: middle; text-align: center; padding: 2px;">
                                 @if($pemohonQr)
-                                    <img src="data:image/svg+xml;base64,{{ $pemohonQr }}" style="width: 60px; height: 60px; display: block; margin: 0 auto;" />
+                                    <img src="data:image/svg+xml;base64,{{ $pemohonQr }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
                                     <div style="font-size: 7px; color: #166534; font-weight: bold; margin-top: 1px;">Signed</div>
                                 @else
-                                    <div style="height: 60px;"></div>
+                                    <div style="height: 70px;"></div>
                                 @endif
                             </td>
-                            <td style="border: 1px solid #111; height: 68px; vertical-align: middle; text-align: center; padding: 2px;">
+                            <td style="border: 1px solid #111; height: 76px; vertical-align: middle; text-align: center; padding: 2px;">
                                 @if($diketahuiQr)
-                                    <img src="data:image/svg+xml;base64,{{ $diketahuiQr }}" style="width: 60px; height: 60px; display: block; margin: 0 auto;" />
+                                    <img src="data:image/svg+xml;base64,{{ $diketahuiQr }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
                                     <div style="font-size: 7px; color: #166534; font-weight: bold; margin-top: 1px;">Signed</div>
                                 @else
-                                    <div style="height: 60px;"></div>
+                                    <div style="height: 70px;"></div>
                                 @endif
                             </td>
-                            <td style="border: 1px solid #111; height: 68px; vertical-align: middle; text-align: center; padding: 2px;">
+                            <td style="border: 1px solid #111; height: 76px; vertical-align: middle; text-align: center; padding: 2px;">
                                 @if($hrdQr)
-                                    <img src="data:image/svg+xml;base64,{{ $hrdQr }}" style="width: 60px; height: 60px; display: block; margin: 0 auto;" />
+                                    <img src="data:image/svg+xml;base64,{{ $hrdQr }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
                                     <div style="font-size: 7px; color: #166534; font-weight: bold; margin-top: 1px;">Signed</div>
                                 @else
-                                    <div style="height: 60px;"></div>
+                                    <div style="height: 70px;"></div>
                                 @endif
                             </td>
-                            <td style="border: 1px solid #111; height: 68px; vertical-align: middle; text-align: center; padding: 2px;">
+                            <td style="border: 1px solid #111; height: 76px; vertical-align: middle; text-align: center; padding: 2px;">
                                 @if($financeQr)
-                                    <img src="data:image/svg+xml;base64,{{ $financeQr }}" style="width: 60px; height: 60px; display: block; margin: 0 auto;" />
+                                    <img src="data:image/svg+xml;base64,{{ $financeQr }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
                                     <div style="font-size: 7px; color: #166534; font-weight: bold; margin-top: 1px;">Signed</div>
                                 @else
-                                    <div style="height: 60px;"></div>
+                                    <div style="height: 70px;"></div>
                                 @endif
                             </td>
                         </tr>
