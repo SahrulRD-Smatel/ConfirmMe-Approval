@@ -398,10 +398,25 @@
             }
 
             // 2. Approvers in sequential workflow order
-            $templateSigners = $document ? ($document->documentTemplate->fields['workflow_signers'] ?? (\App\Models\DocumentTemplate::where('code', (string)$document->template)->first()?->fields['workflow_signers'] ?? [])) : [];
+            $resolvedTemplate = $document ? ($document->documentTemplate ?? \App\Models\DocumentTemplate::where('code', (string)$document->template)->first()) : null;
+            $templateSigners = $resolvedTemplate->fields['workflow_signers'] ?? [];
+            $templateWorkflow = $resolvedTemplate->workflow ?? [];
             foreach ($approvals as $approval) {
                 $orderIndex = $approval->approval_order - 1;
-                $signerCfg = (!empty($templateSigners) && isset($templateSigners[$orderIndex])) ? $templateSigners[$orderIndex] : null;
+
+                // Cari konfigurasi signer: prioritas cocokkan by role di workflow template; fallback orderIndex hanya jika template tidak memiliki definisi workflow role
+                $signerCfg = null;
+                if (!empty($templateSigners) && !empty($templateWorkflow)) {
+                    $approverRole = $approval->approver_role;
+                    foreach ($templateWorkflow as $wfIndex => $wfRole) {
+                        if ($wfRole === $approverRole || str_replace('role:', '', (string)$wfRole) === str_replace('role:', '', (string)$approverRole)) {
+                            $signerCfg = $templateSigners[$wfIndex] ?? null;
+                            break;
+                        }
+                    }
+                } elseif (!empty($templateSigners) && isset($templateSigners[$orderIndex])) {
+                    $signerCfg = $templateSigners[$orderIndex];
+                }
 
                 $showInPdf = true;
                 if ($signerCfg !== null && isset($signerCfg['show_in_pdf'])) {
@@ -415,8 +430,9 @@
                 }
 
                 $customLabel = null;
-                if (!empty($signerCfg['pdf_label'])) {
-                    $customLabel = $signerCfg['pdf_label'];
+                if ($signerCfg !== null) {
+                    // Jika konfigurasi template ditemukan: jika diisi custom pakai custom, jika dikosongkan kembali ke jabatan asli
+                    $customLabel = !empty($signerCfg['pdf_label']) ? trim($signerCfg['pdf_label']) : null;
                 } elseif (!empty($approval->pdf_label)) {
                     $customLabel = $approval->pdf_label;
                 }

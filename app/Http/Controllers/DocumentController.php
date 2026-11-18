@@ -787,7 +787,7 @@ class DocumentController extends Controller
         // Render with dynamic page counter in header
         $filename = 'DOC-' . $document->document_number . '.pdf';
 
-        return $this->renderPdfWithPageCounter($viewName, compact('document', 'qrCode', 'orientation'), $filename, $orientation);
+        return $this->renderPdfWithPageCounter($viewName, compact('document', 'qrCode', 'orientation', 'template'), $filename, $orientation);
     }
 
     /**
