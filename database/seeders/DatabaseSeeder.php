@@ -624,18 +624,20 @@ class DatabaseSeeder extends Seeder
                     'workflow_signers' => [
                         ['show_in_pdf' => false, 'pdf_label' => null],
                         ['show_in_pdf' => false, 'pdf_label' => null],
-                        ['show_in_pdf' => true, 'pdf_label' => null],
-                        ['show_in_pdf' => true, 'pdf_label' => null],
+                        ['show_in_pdf' => true, 'pdf_label' => 'Petugas'],
+                        ['show_in_pdf' => true, 'pdf_label' => 'Disetujui'],
                     ],
                     'dynamic_fields' => [
+                        ['name' => 'jenis_transaksi', 'label' => 'Jenis Transaksi (Keluar / Masuk Barang)', 'type' => 'select', 'options' => 'Barang Keluar, Barang Masuk', 'required' => true],
                         ['name' => 'perusahaan', 'label' => 'Perusahaan', 'type' => 'text', 'required' => true],
                         ['name' => 'dokumen_po_do', 'label' => 'Dokumen P.O / D.O', 'type' => 'select', 'options' => 'Ada, Tidak', 'required' => true],
                         ['name' => 'no_po_do', 'label' => 'No. P.O / D.O', 'type' => 'text', 'required' => false],
+                        ['name' => 'items', 'label' => 'Daftar Rincian Barang', 'type' => 'table', 'columns' => 'Nama Barang & Serial Number (SN), Project Awal Barang, Jumlah, Actual Project', 'required' => true],
                         ['name' => 'lokasi_tujuan', 'label' => 'Lokasi Tujuan / Asal Barang', 'type' => 'select', 'options' => 'Gudang Pusat, Gudang Project, Vendor / Supplier, Customer / Site, Kantor Operasional, Lainnya', 'required' => true],
                         ['name' => 'tanggal_keluar_masuk', 'label' => 'Tanggal Keluar / Masuk', 'type' => 'date', 'required' => true],
                         ['name' => 'jam_keluar_masuk', 'label' => 'Jam Keluar / Masuk', 'type' => 'time', 'required' => true],
-                        ['name' => 'alasan', 'label' => 'Alasan (Catatan Petugas)', 'type' => 'textarea', 'required' => false],
-                        ['name' => 'items', 'label' => 'Daftar Barang', 'type' => 'table', 'columns' => 'Nama Barang, Project Awal Barang, Jumlah, Actual Project', 'required' => true]
+                        ['name' => 'kesesuaian_project', 'label' => 'Apakah barang sesuai dengan peruntukkan Project awal?', 'type' => 'select', 'options' => 'Iya, Tidak', 'required' => true],
+                        ['name' => 'alasan', 'label' => 'Alasan (Wajib diisi jika barang tidak sesuai peruntukkan project awal)', 'type' => 'textarea', 'required' => false],
                     ]
                 ]
             ],
