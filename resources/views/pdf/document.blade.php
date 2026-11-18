@@ -817,7 +817,7 @@
                 if (!empty($templateSigners) && !empty($templateWorkflow)) {
                     $approverRole = $approval->approver_role;
                     foreach ($templateWorkflow as $wfIndex => $wfRole) {
-                        if ($wfRole === $approverRole || str_replace('role:', '', (string)$wfRole) === str_replace('role:', '', (string)$approverRole)) {
+                        if ($wfRole === $approverRole || str_replace(['role:', 'hierarchy:'], '', (string)$wfRole) === str_replace(['role:', 'hierarchy:'], '', (string)$approverRole)) {
                             $signerCfg = $templateSigners[$wfIndex] ?? null;
                             break;
                         }
@@ -1634,7 +1634,7 @@
                         if (!empty($templateSigners) && !empty($templateWorkflow)) {
                             $approverRole = $approval->approver_role;
                             foreach ($templateWorkflow as $wfIndex => $wfRole) {
-                                if ($wfRole === $approverRole || str_replace('role:', '', (string)$wfRole) === str_replace('role:', '', (string)$approverRole)) {
+                                if ($wfRole === $approverRole || str_replace(['role:', 'hierarchy:'], '', (string)$wfRole) === str_replace(['role:', 'hierarchy:'], '', (string)$approverRole)) {
                                     $signerCfg = $templateSigners[$wfIndex] ?? null;
                                     break;
                                 }

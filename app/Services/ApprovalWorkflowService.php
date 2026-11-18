@@ -77,8 +77,8 @@ class ApprovalWorkflowService
 
 
             // Skip approval steps at or below requester's role level
-            // Exception: functional roles (finance, hrd, purchasing) and all direktur/presiden roles are never skipped
-            if (!in_array($role, $functionalRoles) && !str_contains($role, 'direktur')) {
+            // Exception: functional roles (finance, hrd, purchasing), all direktur/presiden roles, and dynamic hierarchy roles are never skipped
+            if (!in_array($role, $functionalRoles) && !str_contains($role, 'direktur') && !str_starts_with($role, 'hierarchy:')) {
                 $stepLevel = $hierarchy[$role] ?? 0;
                 if ($stepLevel > 0 && $stepLevel <= $requesterLevel) {
                     continue;
@@ -110,10 +110,9 @@ class ApprovalWorkflowService
         // Set current approver to first in line
         $firstApproval = $document->approvals()->orderBy('approval_order')->first();
         if ($firstApproval) {
-            $roleKey = str_replace('role:', '', $firstApproval->approver_role);
             $document->update([
                 'current_approver_id' => $firstApproval->approver_id,
-                'status' => $this->statusMapping[$roleKey] ?? 'pending',
+                'status' => $this->resolveStepStatus($firstApproval),
             ]);
 
             // Send notification to first approver
@@ -347,10 +346,9 @@ class ApprovalWorkflowService
 
         if ($nextApproval) {
             // Move to next step
-            $roleKey = str_replace('role:', '', $nextApproval->approver_role);
             $document->update([
                 'current_approver_id' => $nextApproval->approver_id,
-                'status' => $this->statusMapping[$roleKey] ?? 'pending',
+                'status' => $this->resolveStepStatus($nextApproval),
             ]);
 
             // Send notification to next approver (TO) + CC previous approvers
@@ -582,6 +580,17 @@ class ApprovalWorkflowService
                 ->first(); // We don't exclude specific users because it's explicitly requested
         }
 
+        // 1.2 Handle dynamic hierarchy assignment (e.g. hierarchy:atasan_langsung, hierarchy:direktur)
+        if (str_starts_with($role, 'hierarchy:')) {
+            $hierarchyType = substr($role, 10);
+            if ($hierarchyType === 'atasan_langsung') {
+                return $this->findDirectSupervisor($document, $excludeIds);
+            }
+            if ($hierarchyType === 'direktur') {
+                return $this->findDivisionDirector($document, $excludeIds);
+            }
+        }
+
         // Backward compatibility and clean up role string
         if (str_starts_with($role, 'role:')) {
             $role = substr($role, 5);
@@ -676,6 +685,175 @@ class ApprovalWorkflowService
             ->where('is_active', true)
             ->whereNotIn('id', $allExcluded)
             ->first();
+    }
+
+    /**
+     * Find the direct supervisor for the document's requester dynamically based on hierarchy.
+     * Escalation chain:
+     * - Staff / lower: Supervisor in dept -> Manager in dept -> Division Director -> Presiden Direktur
+     * - Supervisor: Manager in dept -> Division Director -> Presiden Direktur
+     * - Manager: Division Director -> Presiden Direktur
+     * - Director: Presiden Direktur
+     */
+    protected function findDirectSupervisor(Document $document, array $excludeIds = []): ?User
+    {
+        $requester = $document->user;
+        if (!$requester) {
+            return null;
+        }
+
+        $requesterId = $requester->id;
+        $allExcluded = array_merge([$requesterId], $excludeIds);
+        $dept = $document->department ?: $requester->department;
+        $requesterLevel = $this->getRequesterLevel($requester);
+
+        // 1. If requester is Staff or general level (level <= 1)
+        if ($requesterLevel <= 1) {
+            if ($dept) {
+                // Priority A: Supervisor in the same department
+                $supervisor = User::role('supervisor')
+                    ->where('department', $dept)
+                    ->where('is_active', true)
+                    ->whereNotIn('id', $allExcluded)
+                    ->first();
+                if ($supervisor) {
+                    return $supervisor;
+                }
+
+                // Priority B: Manager in the same department
+                $manager = User::role(['manager', 'manager_hrga'])
+                    ->where('department', $dept)
+                    ->where('is_active', true)
+                    ->whereNotIn('id', $allExcluded)
+                    ->first();
+                if ($manager) {
+                    return $manager;
+                }
+            }
+
+            // Priority C: Division Director
+            $director = $this->findDivisionDirector($document, $excludeIds);
+            if ($director) {
+                return $director;
+            }
+
+            // Priority D: Fallback to any supervisor or manager globally
+            $fallback = User::role(['supervisor', 'manager', 'manager_hrga'])
+                ->where('is_active', true)
+                ->whereNotIn('id', $allExcluded)
+                ->first();
+            if ($fallback) {
+                return $fallback;
+            }
+        }
+
+        // 2. If requester is Supervisor (level == 2)
+        if ($requesterLevel == 2) {
+            if ($dept) {
+                // Priority A: Manager in the same department
+                $manager = User::role(['manager', 'manager_hrga'])
+                    ->where('department', $dept)
+                    ->where('is_active', true)
+                    ->whereNotIn('id', $allExcluded)
+                    ->first();
+                if ($manager) {
+                    return $manager;
+                }
+            }
+
+            // Priority B: Division Director
+            $director = $this->findDivisionDirector($document, $excludeIds);
+            if ($director) {
+                return $director;
+            }
+
+            // Priority C: Fallback to any manager globally
+            $fallback = User::role(['manager', 'manager_hrga'])
+                ->where('is_active', true)
+                ->whereNotIn('id', $allExcluded)
+                ->first();
+            if ($fallback) {
+                return $fallback;
+            }
+        }
+
+        // 3. If requester is Manager (level == 3)
+        if ($requesterLevel == 3) {
+            // Direct supervisor of Manager is the Division Director
+            $director = $this->findDivisionDirector($document, $excludeIds);
+            if ($director) {
+                return $director;
+            }
+
+            // Fallback to Presiden Direktur
+            $presdir = User::role('presiden_direktur')
+                ->where('is_active', true)
+                ->whereNotIn('id', $allExcluded)
+                ->first();
+            if ($presdir) {
+                return $presdir;
+            }
+        }
+
+        // 4. If requester is Direktur (level == 4)
+        if ($requesterLevel == 4) {
+            // Direct supervisor of Director is Presiden Direktur
+            $presdir = User::role('presiden_direktur')
+                ->where('is_active', true)
+                ->whereNotIn('id', $allExcluded)
+                ->first();
+            if ($presdir) {
+                return $presdir;
+            }
+        }
+
+        // 5. Ultimate fallback if unranked or top level
+        return User::role('presiden_direktur')
+            ->where('is_active', true)
+            ->whereNotIn('id', $allExcluded)
+            ->first()
+            ?? $this->findDivisionDirector($document, $excludeIds);
+    }
+
+    /**
+     * Public helper to find direct supervisor for a document
+     */
+    public function findDirectSupervisorForDocument(Document $document, array $excludeIds = []): ?User
+    {
+        return $this->findDirectSupervisor($document, $excludeIds);
+    }
+
+    /**
+     * Public helper to find division director for a document
+     */
+    public function findDivisionDirectorForDocument(Document $document, array $excludeIds = []): ?User
+    {
+        return $this->findDivisionDirector($document, $excludeIds);
+    }
+
+    /**
+     * Resolve document status string for a given approval step
+     */
+    protected function resolveStepStatus(DocumentApproval $approval): string
+    {
+        $roleKey = str_replace(['role:', 'hierarchy:'], '', (string)$approval->approver_role);
+        if (isset($this->statusMapping[$roleKey])) {
+            return $this->statusMapping[$roleKey];
+        }
+
+        // If it's a dynamic hierarchy role (e.g. atasan_langsung), determine status from approver's actual role
+        if ($approval->approver) {
+            $approverRoles = $approval->approver->roles->pluck('name')->toArray();
+            foreach (['presiden_direktur', 'direktur', 'manager', 'supervisor', 'hrd', 'finance'] as $r) {
+                if (in_array($r, $approverRoles) || ($r === 'direktur' && collect($approverRoles)->contains(fn($name) => str_contains($name, 'direktur')))) {
+                    if (isset($this->statusMapping[$r])) {
+                        return $this->statusMapping[$r];
+                    }
+                }
+            }
+        }
+
+        return 'pending';
     }
 
 

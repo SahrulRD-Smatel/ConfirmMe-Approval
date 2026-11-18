@@ -42,7 +42,7 @@
                 }
                 this.workflows = this.workflows.map(item => {
                     let target = typeof item === 'object' && item !== null ? (item.target || '') : (item || '');
-                    if (target && !target.startsWith('role:') && !target.startsWith('user:')) {
+                    if (target && !target.startsWith('role:') && !target.startsWith('user:') && !target.startsWith('hierarchy:')) {
                         target = 'role:' + target;
                     }
                     return {
@@ -376,6 +376,10 @@
                                         <select x-model="workflows[index].target" name="workflow[]" required
                                             class="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
                                             <option value="" disabled>-- {{ __('Pilih Approver') }} --</option>
+                                            <optgroup label="{{ __('Hierarki Dinamis (Berdasarkan Pemohon)') }}">
+                                                <option value="hierarchy:atasan_langsung">{{ __('Atasan Langsung (Dinamis: Staff -> Manager -> Direktur -> Presdir)') }}</option>
+                                                <option value="hierarchy:direktur">{{ __('Direktur Divisi (Dinamis: Sesuai Departemen Pemohon)') }}</option>
+                                            </optgroup>
                                             <optgroup label="{{ __('Berdasarkan Role/Jabatan') }}">
                                                 @foreach($roles as $roleData)
                                                     <option value="role:{{ $roleData->name }}">{{ role_label($roleData->name) }}</option>
@@ -480,6 +484,10 @@
                                     <select x-model="notifiers[index]" name="fields[notify_roles][]" required
                                         class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
                                         <option value="" disabled>-- {{ __('Pilih Role / User') }} --</option>
+                                        <optgroup label="{{ __('Hierarki Dinamis (Berdasarkan Pemohon)') }}">
+                                            <option value="hierarchy:atasan_langsung">{{ __('Atasan Langsung (Dinamis)') }}</option>
+                                            <option value="hierarchy:direktur">{{ __('Direktur Divisi (Dinamis)') }}</option>
+                                        </optgroup>
                                         <optgroup label="{{ __('Berdasarkan Role/Jabatan') }}">
                                             @foreach($roles as $roleData)
                                                 <option value="role:{{ $roleData->name }}">{{ role_label($roleData->name) }}</option>

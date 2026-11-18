@@ -102,7 +102,7 @@ if (!function_exists('role_label')) {
     {
         if (!$role) return '-';
 
-        $role = preg_replace('/^(role:|user:)/', '', trim($role));
+        $role = preg_replace('/^(role:|user:|hierarchy:)/', '', trim($role));
 
         // Use config role_labels if defined
         $configLabels = function_exists('config') ? config('workflow.role_labels', []) : [];
@@ -112,6 +112,8 @@ if (!function_exists('role_label')) {
 
         // Special mappings for non-obvious names
         $labels = [
+            'atasan_langsung' => 'Atasan Langsung',
+            'direktur' => 'Direktur Divisi',
             'admin' => 'Administrator',
             'staff' => 'Staff',
             'supervisor' => 'Supervisor',

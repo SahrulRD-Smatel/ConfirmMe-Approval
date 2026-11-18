@@ -112,9 +112,12 @@ class DocumentApproval extends Model
             return format_acronyms($roleLabels[$this->approver_role]);
         }
 
-        $cleanRole = preg_replace('/^(role:|user:)/', '', (string)$this->approver_role);
+        $cleanRole = preg_replace('/^(role:|user:|hierarchy:)/', '', (string)$this->approver_role);
         if (str_starts_with((string)$this->approver_role, 'user:')) {
             return 'Spesifik User';
+        }
+        if (str_starts_with((string)$this->approver_role, 'hierarchy:')) {
+            return role_label($cleanRole);
         }
 
         if (isset($roleLabels[$cleanRole])) {

@@ -190,6 +190,22 @@ class Document extends Model
                 if ($u) {
                     $users->push($u);
                 }
+            } elseif (str_starts_with($entry, 'hierarchy:')) {
+                $hRole = substr($entry, 10);
+                try {
+                    $wfService = app(\App\Services\ApprovalWorkflowService::class);
+                    if ($hRole === 'atasan_langsung') {
+                        $sup = $wfService->findDirectSupervisorForDocument($this);
+                        if ($sup) {
+                            $users->push($sup);
+                        }
+                    } elseif ($hRole === 'direktur') {
+                        $dir = $wfService->findDivisionDirectorForDocument($this);
+                        if ($dir) {
+                            $users->push($dir);
+                        }
+                    }
+                } catch (\Throwable $e) {}
             } else {
                 $roleName = str_starts_with($entry, 'role:') ? substr($entry, 5) : $entry;
 
