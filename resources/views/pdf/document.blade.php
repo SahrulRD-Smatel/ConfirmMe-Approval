@@ -67,7 +67,7 @@
         @else
             {{-- PORTRAIT STYLES (STANDAR RESMI FORMULIR KERJA - GAMBAR 1) --}}
             @page {
-                margin: 140px 45px 55px 45px !important;
+                margin: 140px 45px 35px 45px !important;
             }
 
             header {
@@ -1247,7 +1247,7 @@
                 {{-- PRESET HR_UMBPD: TIKET & UANG MUKA PERJALANAN DINAS (SESUAI EXCEL LEMBAR 2)--}}
                 {{-- ========================================================================= --}}
                 @php
-                    $pemohonNama = $metadata['nama_pemohon'] ?? ($pemohon->name ?? '-');
+                    $pemohonNama = format_acronyms($metadata['nama_pemohon'] ?? ($pemohon->name ?? '-'));
                     $divisiDept = $metadata['divisi_dept'] ?? (is_string($pemohon?->department) ? $pemohon->department : ($pemohon?->department?->name ?? '-'));
                     $kotaTujuan = $metadata['kota_tujuan'] ?? '-';
                     $keperluanVal = $metadata['keperluan'] ?? '-';
@@ -1280,102 +1280,120 @@
                 @endphp
 
                 <!-- Form Identifier Top Right -->
-                <div style="text-align: right; font-size: 9.5px; font-weight: bold; margin-top: -6px; margin-bottom: 2px; letter-spacing: 0.5px; color: #111;">
+                <div style="text-align: right; font-size: 9px; font-weight: bold; margin-top: -6px; margin-bottom: 2px; letter-spacing: 0.5px; color: #111;">
                     Form 01A/HR-UMBPD/05
                 </div>
 
                 <!-- Document Title -->
-                <div class="doc-title-banner" style="margin-top: 2px; margin-bottom: 10px; font-size: 11.5px; line-height: 1.35;">
+                <div class="doc-title-banner" style="margin-top: 1px; margin-bottom: 8px; font-size: 11px; line-height: 1.3;">
                     PEMESANAN TIKET &amp; PERMINTAAN UANG MUKA<br>PERJALANAN DINAS
                 </div>
 
                 <!-- Info Pemohon Table -->
-                <table class="info-table" style="margin-bottom: 8px;">
+                <table class="info-table" style="margin-bottom: 6px; font-size: 9px;">
                     <tr>
-                        <th style="width: 120px; padding: 2px 0;">Nama Pemohon</th>
-                        <td style="width: 12px; padding: 2px 0;">:</td>
-                        <td style="padding: 2px 0;">{{ $pemohonNama }}</td>
+                        <th style="width: 120px; padding: 1.5px 0; text-align: left; font-weight: bold; color: #111;">Nama Pemohon</th>
+                        <td style="width: 12px; padding: 1.5px 0; text-align: center;">:</td>
+                        <td style="padding: 1.5px 0;">{{ $pemohonNama }}</td>
                     </tr>
                     <tr>
-                        <th style="width: 120px; padding: 2px 0;">Divisi / Dept</th>
-                        <td style="width: 12px; padding: 2px 0;">:</td>
-                        <td style="padding: 2px 0;">{{ $divisiDept }}</td>
+                        <th style="width: 120px; padding: 1.5px 0; text-align: left; font-weight: bold; color: #111;">Divisi / Dept</th>
+                        <td style="width: 12px; padding: 1.5px 0; text-align: center;">:</td>
+                        <td style="padding: 1.5px 0;">{{ $divisiDept }}</td>
                     </tr>
                     <tr>
-                        <th style="width: 120px; padding: 2px 0;">Kota Tujuan</th>
-                        <td style="width: 12px; padding: 2px 0;">:</td>
-                        <td style="padding: 2px 0;">{{ $kotaTujuan }}</td>
+                        <th style="width: 120px; padding: 1.5px 0; text-align: left; font-weight: bold; color: #111;">Kota Tujuan</th>
+                        <td style="width: 12px; padding: 1.5px 0; text-align: center;">:</td>
+                        <td style="padding: 1.5px 0;">{{ $kotaTujuan }}</td>
                     </tr>
                     <tr>
-                        <th style="width: 120px; padding: 2px 0;">Keperluan</th>
-                        <td style="width: 12px; padding: 2px 0;">:</td>
-                        <td style="padding: 2px 0;">{!! nl2br(e($keperluanVal)) !!}</td>
+                        <th style="width: 120px; padding: 1.5px 0; text-align: left; font-weight: bold; color: #111; vertical-align: top;">Keperluan</th>
+                        <td style="width: 12px; padding: 1.5px 0; text-align: center; vertical-align: top;">:</td>
+                        <td style="padding: 1.5px 0; vertical-align: top;">{!! nl2br(e($keperluanVal)) !!}</td>
                     </tr>
                     <tr>
-                        <th style="width: 120px; padding: 2px 0;">Tgl Berangkat</th>
-                        <td style="width: 12px; padding: 2px 0;">:</td>
-                        <td style="padding: 2px 0;">{{ $tglBerangkat }}</td>
+                        <th style="width: 120px; padding: 1.5px 0; text-align: left; font-weight: bold; color: #111;">Tgl Berangkat</th>
+                        <td style="width: 12px; padding: 1.5px 0; text-align: center;">:</td>
+                        <td style="padding: 1.5px 0;">{{ $tglBerangkat }}</td>
                     </tr>
                     <tr>
-                        <th style="width: 120px; padding: 2px 0;">Tgl Kembali</th>
-                        <td style="width: 12px; padding: 2px 0;">:</td>
-                        <td style="padding: 2px 0;">{{ $tglKembali }}</td>
+                        <th style="width: 120px; padding: 1.5px 0; text-align: left; font-weight: bold; color: #111;">Tgl Kembali</th>
+                        <td style="width: 12px; padding: 1.5px 0; text-align: center;">:</td>
+                        <td style="padding: 1.5px 0;">{{ $tglKembali }}</td>
                     </tr>
                 </table>
 
                 <!-- Tabel 1: Pemesanan Tiket (8 Kolom Sesuai Excel) -->
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 2px; font-size: 9px;">
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 6px; font-size: 8.5px;">
                     <thead>
                         <tr style="background-color: #cbd5e1;">
-                            <th style="width: 25px; border: 1px solid #111; padding: 2.5px; text-align: center;">No</th>
-                            <th style="border: 1px solid #111; padding: 2.5px; text-align: center;">Tanggal</th>
-                            <th style="border: 1px solid #111; padding: 2.5px; text-align: center;">Dari</th>
-                            <th style="border: 1px solid #111; padding: 2.5px; text-align: center;">Tujuan</th>
-                            <th style="border: 1px solid #111; padding: 2.5px; text-align: center;">Jam</th>
-                            <th style="border: 1px solid #111; padding: 2.5px; text-align: center;">Jenis Transportasi*</th>
-                            <th style="border: 1px solid #111; padding: 2.5px; text-align: center;">Kelas*</th>
-                            <th style="border: 1px solid #111; padding: 2.5px; text-align: center; width: 90px;">Harga Tiket</th>
+                            <th style="width: 25px; border: 1px solid #111; padding: 2.5px 2px; text-align: center;">No</th>
+                            <th style="border: 1px solid #111; padding: 2.5px 2px; text-align: center;">Tanggal</th>
+                            <th style="border: 1px solid #111; padding: 2.5px 2px; text-align: center;">Dari</th>
+                            <th style="border: 1px solid #111; padding: 2.5px 2px; text-align: center;">Tujuan</th>
+                            <th style="border: 1px solid #111; padding: 2.5px 2px; text-align: center; width: 60px;">Jam</th>
+                            <th style="border: 1px solid #111; padding: 2.5px 2px; text-align: center;">Jenis Transportasi*</th>
+                            <th style="border: 1px solid #111; padding: 2.5px 2px; text-align: center; width: 65px;">Kelas*</th>
+                            <th style="border: 1px solid #111; padding: 2.5px 2px; text-align: center; width: 85px;">Harga Tiket</th>
                         </tr>
                     </thead>
                     <tbody>
                         @php
-                            $tiketRows = $metadata['pemesanan_tiket'] ?? [];
-                            if (!is_array($tiketRows) || count($tiketRows) === 0) {
-                                $tiketRows = [];
+                            $rawTiket = $metadata['pemesanan_tiket'] ?? [];
+                            if (!is_array($rawTiket)) {
+                                $rawTiket = [];
                             }
-                            while (count($tiketRows) < 5) {
+                            $tiketRows = array_values($rawTiket);
+                            while (count($tiketRows) < 4) {
                                 $tiketRows[] = [];
                             }
                         @endphp
                         @foreach($tiketRows as $idx => $tRow)
-                            @php $tRow = (array)$tRow; @endphp
+                            @php
+                                $tRow = (array)$tRow;
+                                $hasData = !empty($tRow['tanggal']) || !empty($tRow['Tanggal']) || !empty($tRow['dari']) || !empty($tRow['Dari']) || !empty($tRow['tujuan']) || !empty($tRow['Tujuan']);
+                                $rowTgl = $tRow['tanggal'] ?? ($tRow['Tanggal'] ?? '');
+                                if (!empty($rowTgl)) {
+                                    try {
+                                        $rowTgl = \Carbon\Carbon::parse($rowTgl)->translatedFormat('d/m/Y');
+                                    } catch (\Throwable $e) {}
+                                }
+                                $rowDari = $tRow['dari'] ?? ($tRow['Dari'] ?? '');
+                                $rowTujuan = $tRow['tujuan'] ?? ($tRow['Tujuan'] ?? '');
+                                $rowJam = $tRow['jam'] ?? ($tRow['Jam'] ?? '');
+                                $rowTransport = $tRow['jenis_transportasi'] ?? ($tRow['Jenis Transportasi'] ?? '');
+                                $rowKelas = $tRow['kelas'] ?? ($tRow['Kelas'] ?? '');
+                                $rowHarga = !empty($tRow['harga_tiket']) ? 'Rp ' . number_format((float)$tRow['harga_tiket'], 0, ',', '.') : ($hasData ? 'Team HR' : '');
+                            @endphp
                             <tr>
                                 <td style="border: 1px solid #111; padding: 2px; text-align: center;">{{ $idx + 1 }}</td>
-                                <td style="border: 1px solid #111; padding: 2px; text-align: center;">{{ $tRow['tanggal'] ?? ($tRow['Tanggal'] ?? '') }}</td>
-                                <td style="border: 1px solid #111; padding: 2px; text-align: center;">{{ $tRow['dari'] ?? ($tRow['Dari'] ?? '') }}</td>
-                                <td style="border: 1px solid #111; padding: 2px; text-align: center;">{{ $tRow['tujuan'] ?? ($tRow['Tujuan'] ?? '') }}</td>
-                                <td style="border: 1px solid #111; padding: 2px; text-align: center;">{{ $tRow['jam'] ?? ($tRow['Jam'] ?? '') }}</td>
-                                <td style="border: 1px solid #111; padding: 2px; text-align: center;">{{ $tRow['jenis_transportasi'] ?? ($tRow['Jenis Transportasi'] ?? '') }}</td>
-                                <td style="border: 1px solid #111; padding: 2px; text-align: center;">{{ $tRow['kelas'] ?? ($tRow['Kelas'] ?? '') }}</td>
-                                <td style="border: 1px solid #111; padding: 2px; text-align: center; font-size: 8px; color: #333;">Team HR</td>
+                                <td style="border: 1px solid #111; padding: 2px; text-align: center;">{{ $rowTgl }}</td>
+                                <td style="border: 1px solid #111; padding: 2px; text-align: center;">{{ $rowDari }}</td>
+                                <td style="border: 1px solid #111; padding: 2px; text-align: center;">{{ $rowTujuan }}</td>
+                                <td style="border: 1px solid #111; padding: 2px; text-align: center;">{{ $rowJam }}</td>
+                                <td style="border: 1px solid #111; padding: 2px; text-align: center;">{{ $rowTransport }}</td>
+                                <td style="border: 1px solid #111; padding: 2px; text-align: center;">{{ $rowKelas }}</td>
+                                <td style="border: 1px solid #111; padding: 2px; text-align: center; font-size: 8px; color: #333;">{{ $rowHarga }}</td>
                             </tr>
                         @endforeach
                         <tr>
                             <td colspan="7" style="border: 1px solid #111; padding: 2px 6px; text-align: right; font-weight: bold;">Total</td>
-                            <td style="border: 1px solid #111; padding: 2px; text-align: right; font-weight: bold; font-size: 8.5px;">Rp0</td>
+                            <td style="border: 1px solid #111; padding: 2px; text-align: right; font-weight: bold; font-size: 8px;">Rp0</td>
+                        </tr>
+                        <tr>
+                            <td colspan="8" style="border: 1px solid #111; padding: 2.5px 6px; font-size: 8.5px;">
+                                <strong>Catatan :</strong> {{ $catatanTiket }}
+                            </td>
                         </tr>
                     </tbody>
                 </table>
-                <div style="border: 1px solid #111; border-top: none; padding: 2.5px 6px; margin-bottom: 8px; font-size: 9px;">
-                    <strong>Catatan :</strong> {{ $catatanTiket }}
-                </div>
 
                 <!-- Tabel 2: Perincian Uang Muka Sesuai Excel -->
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 9px;">
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 6px; font-size: 8.5px;">
                     <thead>
                         <tr style="background-color: #cbd5e1;">
-                            <th colspan="2" style="border: 1px solid #111; padding: 2.5px; text-align: center; font-weight: bold;">Perincian Uang Muka</th>
-                            <th style="border: 1px solid #111; padding: 2.5px; text-align: center; width: 140px; font-weight: bold;">Jumlah (Rp)</th>
+                            <th colspan="2" style="border: 1px solid #111; padding: 2.5px 4px; text-align: center; font-weight: bold;">Perincian Uang Muka</th>
+                            <th style="border: 1px solid #111; padding: 2.5px 4px; text-align: center; width: 140px; font-weight: bold;">Jumlah (Rp)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1409,7 +1427,8 @@
                             <td style="border: 1px solid #111; padding: 2px 6px; text-align: right;">{{ !empty($metadata['um_uang_saku']) ? number_format((float)$metadata['um_uang_saku'], 0, ',', '.') : '-' }}</td>
                         </tr>
                         <tr>
-                            <td style="width: 25px; border: 1px solid #111; padding: 2px 6px;">Insidental x Hr</td>
+                            <td style="width: 25px; border: 1px solid #111; padding: 2px; text-align: center;">5</td>
+                            <td style="border: 1px solid #111; padding: 2px 6px;">Insidental x Hr</td>
                             <td style="border: 1px solid #111; padding: 2px 6px; text-align: right;">{{ !empty($metadata['um_insidental']) ? number_format((float)$metadata['um_insidental'], 0, ',', '.') : '-' }}</td>
                         </tr>
                         <tr>
@@ -1475,11 +1494,11 @@
                         <tr>
                             <td style="border: 1px solid #111; padding: 2.5px; text-align: center; font-size: 8.5px;">
                                 <div style="font-weight: bold;">( {{ $pemohonNama }} )</div>
-                                <div style="margin-top: 1.5px; font-size: 7.5px; color: #333;">Tanggal : {{ $docDate->translatedFormat('d/m/Y') }}</div>
+                                <div style="margin-top: 1.5px; font-size: 7.5px; color: #333;">Tgl : {{ $docDate->translatedFormat('d/m/Y') }}</div>
                             </td>
                             <td style="border: 1px solid #111; padding: 2.5px; text-align: center; font-size: 8.5px;">
                                 <div style="font-weight: bold;">( {{ $diketahuiName }} )</div>
-                                <div style="margin-top: 1.5px; font-size: 7.5px; color: #333;">Tanggal : {{ $diketahuiDate }}</div>
+                                <div style="margin-top: 1.5px; font-size: 7.5px; color: #333;">Tgl : {{ $diketahuiDate }}</div>
                             </td>
                             <td style="border: 1px solid #111; padding: 2.5px; text-align: center; font-size: 8.5px;">
                                 <div style="font-weight: bold;">( {{ $hrdName }} )</div>
@@ -1494,12 +1513,22 @@
                 </table>
 
                 <!-- Footer Legend Sesuai Excel -->
-                <div style="font-size: 8px; line-height: 1.4; color: #333; margin-top: 6px; page-break-inside: avoid;">
-                    <strong>*) Keterangan :</strong><br>
-                    Jenis Transportasi &nbsp;: &nbsp;[BIS] Bis; &nbsp;[PU] Pesawat Udara; &nbsp;[KA] Kereta Api<br>
-                    Kelas &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;[FC] Bisnis; &nbsp;[EKO] Ekonomi<br>
-                    Tanggal perkiraan kembali WAJIB dicantumkan meskipun belum dapat dipastikan.
-                </div>
+                <table style="width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 7.5px; line-height: 1.35; color: #333; page-break-inside: avoid;">
+                    <tr><td colspan="3" style="border: none; padding: 0 0 2px 0; font-weight: bold;">*) Keterangan :</td></tr>
+                    <tr>
+                        <td style="border: none; padding: 0; width: 95px;">Jenis Transportasi</td>
+                        <td style="border: none; padding: 0; width: 10px; text-align: center;">:</td>
+                        <td style="border: none; padding: 0;">[BIS] Bis; &nbsp;&nbsp;[PU] Pesawat Udara; &nbsp;&nbsp;[KA] Kereta Api</td>
+                    </tr>
+                    <tr>
+                        <td style="border: none; padding: 0; width: 95px;">Kelas</td>
+                        <td style="border: none; padding: 0; width: 10px; text-align: center;">:</td>
+                        <td style="border: none; padding: 0;">[FC] Bisnis; &nbsp;&nbsp;[EKO] Ekonomi</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="border: none; padding: 2px 0 0 0; font-style: italic; color: #444;">Tanggal perkiraan kembali WAJIB dicantumkan meskipun belum dapat dipastikan.</td>
+                    </tr>
+                </table>
 
             @else
                 <!-- Document Title -->
