@@ -976,38 +976,100 @@
                     $transportVal = $metadata['jenis_transportasi'] ?? '-';
                     $catatanVal = $metadata['catatan'] ?? ($metadata['catatan_tambahan'] ?? null);
 
-                    $pemberiQr = null;
-                    $penerimaQr = null;
                     $pemberiDate = $docDate->translatedFormat('d/m/Y');
                     $penerimaDate = $docDate->translatedFormat('d/m/Y');
+                    $atasanDate = '............';
+                    $atasanNama = '...........................';
+                    $pemberiQr = null;
+                    $penerimaQr = null;
+                    $atasanQr = null;
 
                     $creatorNameNorm = strtolower(trim($pemohon->name ?? ''));
                     $pemberiNorm = strtolower(trim($pemberiNama));
                     $penerimaNorm = strtolower(trim($penerimaNama));
 
-                    if ($verificationUrl) {
-                        $pemohonQrCode = $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'requester']));
-                        if ($creatorNameNorm && $pemberiNorm && str_contains($pemberiNorm, $creatorNameNorm)) {
-                            $pemberiQr = $pemohonQrCode;
-                        } else {
-                            $penerimaQr = $pemohonQrCode;
+                    $isRequesterPemberi = ($creatorNameNorm && $pemberiNorm && str_contains($pemberiNorm, $creatorNameNorm));
+                    $pemohonQrCode = $verificationUrl ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'requester'])) : null;
+
+                    $templateSigners = $template->fields['workflow_signers'] ?? ($document->template->fields['workflow_signers'] ?? []);
+                    $templateWorkflow = $template ? ($template->workflow ?? []) : [];
+
+                    $checkShowInPdf = function($approval) use ($templateSigners, $templateWorkflow) {
+                        if (!$approval) return false;
+                        $orderIdx = $approval->approval_order - 1;
+                        $signerCfg = null;
+                        if (!empty($templateSigners) && !empty($templateWorkflow)) {
+                            $approverRole = $approval->approver_role;
+                            foreach ($templateWorkflow as $wfIndex => $wfRole) {
+                                if ($wfRole === $approverRole || str_replace(['role:', 'hierarchy:'], '', (string)$wfRole) === str_replace(['role:', 'hierarchy:'], '', (string)$approverRole)) {
+                                    $signerCfg = $templateSigners[$wfIndex] ?? null;
+                                    break;
+                                }
+                            }
+                        } elseif (!empty($templateSigners) && isset($templateSigners[$orderIdx])) {
+                            $signerCfg = $templateSigners[$orderIdx];
+                        }
+
+                        if ($signerCfg !== null && isset($signerCfg['show_in_pdf'])) {
+                            return (bool) $signerCfg['show_in_pdf'];
+                        }
+                        return $approval->show_in_pdf !== null ? (bool)$approval->show_in_pdf : true;
+                    };
+
+                    // Cari approver pemberi tugas & atasan langsung
+                    $pemberiApproval = null;
+                    if (!$isRequesterPemberi && $pemberiNorm) {
+                        $pemberiApproval = $document->approvals->first(function($a) use ($pemberiNorm) {
+                            if (!$a->approver) return false;
+                            $name = strtolower(trim($a->approver->name));
+                            return str_contains($pemberiNorm, $name) || str_contains($name, $pemberiNorm);
+                        });
+                    }
+
+                    if (!$isRequesterPemberi && !$pemberiApproval && $document->approvals->count() >= 2) {
+                        $pemberiApproval = $document->approvals->get(1);
+                    }
+
+                    $atasanApproval = null;
+                    if ($pemberiApproval) {
+                        $atasanApproval = $document->approvals->where('id', '!=', $pemberiApproval->id)->first();
+                    } else {
+                        $atasanApproval = $document->approvals->first();
+                    }
+
+                    // 1. Yang Menugaskan (Pemberi Tugas)
+                    if ($isRequesterPemberi) {
+                        $pemberiQr = $pemohonQrCode;
+                        $pemberiNama = format_acronyms($pemberiNama ?: ($pemohon->name ?? '-'));
+                    } elseif ($pemberiApproval) {
+                        if ($pemberiApproval->approver) {
+                            $pemberiNama = format_acronyms($pemberiApproval->approver->name);
+                        }
+                        if ($pemberiApproval->action_at) {
+                            $pemberiDate = $pemberiApproval->action_at->translatedFormat('d/m/Y');
+                        }
+                        if ($checkShowInPdf($pemberiApproval) && $pemberiApproval->status === 'approved' && $verificationUrl) {
+                            $pemberiQr = $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $pemberiApproval->id]));
                         }
                     }
 
-                    $firstApproved = $document->approvals->where('status', 'approved')->first();
-                    $atasanNama = '...........................';
-                    $atasanDate = '............';
-                    $atasanQr = null;
-
-                    if ($firstApproved && $firstApproved->approver) {
-                        $atasanNama = format_acronyms($firstApproved->approver->name);
-                        $atasanDate = $firstApproved->action_at ? $firstApproved->action_at->translatedFormat('d/m/Y') : $docDate->translatedFormat('d/m/Y');
-                        $atasanQr = $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => $firstApproved->id]));
-                    } elseif ($document->approvals->count() > 0) {
-                        $firstPending = $document->approvals->first();
-                        if ($firstPending && $firstPending->approver) {
-                            $atasanNama = format_acronyms($firstPending->approver->name);
+                    // 2. Atasan Langsung
+                    if ($atasanApproval) {
+                        if ($atasanApproval->approver) {
+                            $atasanNama = format_acronyms($atasanApproval->approver->name);
                         }
+                        if ($atasanApproval->action_at) {
+                            $atasanDate = $atasanApproval->action_at->translatedFormat('d/m/Y');
+                        }
+                        if ($checkShowInPdf($atasanApproval) && $atasanApproval->status === 'approved' && $verificationUrl) {
+                            $atasanQr = $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $atasanApproval->id]));
+                        }
+                    }
+
+                    // 3. Yang Ditugaskan (Penerima Tugas)
+                    if (!$isRequesterPemberi) {
+                        $penerimaQr = $pemohonQrCode;
+                        $penerimaNama = format_acronyms($penerimaNama ?: ($pemohon->name ?? '-'));
                     }
                 @endphp
 
@@ -1176,15 +1238,15 @@
 
                     $diketahuiName = ($diketahuiApprover && $diketahuiApprover->approver) ? format_acronyms($diketahuiApprover->approver->name) : '...........................';
                     $diketahuiDate = ($diketahuiApprover && $diketahuiApprover->action_at) ? $diketahuiApprover->action_at->translatedFormat('d/m/Y') : '............';
-                    $diketahuiQr = ($diketahuiApprover && $diketahuiApprover->status === 'approved') ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => $diketahuiApprover->id])) : null;
+                    $diketahuiQr = ($diketahuiApprover && $checkShowInPdf($diketahuiApprover) && $diketahuiApprover->status === 'approved') ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $diketahuiApprover->id])) : null;
 
                     $hrdName = ($hrdApprover && $hrdApprover->approver) ? format_acronyms($hrdApprover->approver->name) : ($metadata['hrd_name'] ?? '...........................');
                     $hrdDate = ($hrdApprover && $hrdApprover->action_at) ? $hrdApprover->action_at->translatedFormat('d/m/Y') : '............';
-                    $hrdQr = ($hrdApprover && $hrdApprover->status === 'approved') ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => $hrdApprover->id])) : null;
+                    $hrdQr = ($hrdApprover && $checkShowInPdf($hrdApprover) && $hrdApprover->status === 'approved') ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $hrdApprover->id])) : null;
 
                     $financeName = ($financeApprover && $financeApprover->approver) ? format_acronyms($financeApprover->approver->name) : ($metadata['finance_name'] ?? '...........................');
                     $financeDate = ($financeApprover && $financeApprover->action_at) ? $financeApprover->action_at->translatedFormat('d/m/Y') : '............';
-                    $financeQr = ($financeApprover && $financeApprover->status === 'approved') ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => $financeApprover->id])) : null;
+                    $financeQr = ($financeApprover && $checkShowInPdf($financeApprover) && $financeApprover->status === 'approved') ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $financeApprover->id])) : null;
 
                     $pemohonQr = $verificationUrl ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'requester'])) : null;
                 @endphp
