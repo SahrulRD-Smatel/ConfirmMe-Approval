@@ -49,10 +49,16 @@ return new class extends Migration {
                     'required' => true,
                 ],
                 [
-                    'name' => 'lokasi_tujuan',
-                    'label' => 'Lokasi Tujuan / Asal Barang',
+                    'name' => 'tipe_lokasi',
+                    'label' => 'Lokasi Tujuan / Asal (Coret yang tidak perlu)',
                     'type' => 'select',
-                    'options' => 'Gudang Pusat, Gudang Project, Vendor / Supplier, Customer / Site, Kantor Operasional, Lainnya',
+                    'options' => 'Lokasi Tujuan, Lokasi Asal',
+                    'required' => true,
+                ],
+                [
+                    'name' => 'keterangan_lokasi',
+                    'label' => 'Nama / Alamat Lokasi',
+                    'type' => 'text',
                     'required' => true,
                 ],
                 [
