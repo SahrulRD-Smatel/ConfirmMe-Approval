@@ -1279,13 +1279,8 @@
                     $pemohonQr = $verificationUrl ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'requester'])) : null;
                 @endphp
 
-                <!-- Form Identifier Top Right -->
-                <div style="text-align: right; font-size: 9px; font-weight: bold; margin-top: -6px; margin-bottom: 2px; letter-spacing: 0.5px; color: #111;">
-                    Form 01A/HR-UMBPD/05
-                </div>
-
                 <!-- Document Title -->
-                <div class="doc-title-banner" style="margin-top: 1px; margin-bottom: 8px; font-size: 11px; line-height: 1.3;">
+                <div class="doc-title-banner" style="margin-top: 2px; margin-bottom: 8px; font-size: 11px; line-height: 1.3;">
                     PEMESANAN TIKET &amp; PERMINTAAN UANG MUKA<br>PERJALANAN DINAS
                 </div>
 
