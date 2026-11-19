@@ -155,6 +155,13 @@
             </x-ui.card>
         </div>
 
+        {{-- Two-Factor Authenticator (2FA) --}}
+        <x-ui.card class="overflow-hidden !p-0">
+            <div class="p-6 sm:p-8">
+                @include('profile.partials.two-factor-authentication-form')
+            </div>
+        </x-ui.card>
+
         <div class="grid grid-cols-1 items-start gap-6 xl:grid-cols-2">
             <x-ui.card class="overflow-hidden !p-0">
                 <div class="border-b border-gray-200/80 px-6 py-5 dark:border-gray-800/80">

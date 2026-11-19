@@ -33,6 +33,9 @@ class User extends Authenticatable
         'bank_account_number',
         'bank_account_name',
         'division',
+        'two_factor_secret',
+        'two_factor_confirmed_at',
+        'two_factor_recovery_codes',
     ];
 
     /**
@@ -43,6 +46,8 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
     ];
 
     /**
@@ -56,7 +61,17 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'two_factor_confirmed_at' => 'datetime',
+            'two_factor_recovery_codes' => 'array',
         ];
+    }
+
+    /**
+     * Check if user has TOTP Two-Factor Authentication enabled and confirmed.
+     */
+    public function hasTwoFactorEnabled(): bool
+    {
+        return !empty($this->two_factor_secret) && !is_null($this->two_factor_confirmed_at);
     }
 
     /**

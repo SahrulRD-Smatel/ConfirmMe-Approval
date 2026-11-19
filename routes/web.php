@@ -72,6 +72,10 @@ Route::middleware(['auth', 'verified', 'active', 'has_role'])->group(function ()
     Route::delete('/profile/photo', [ProfileController::class, 'destroyPhoto'])->name('profile.photo.destroy');
     Route::patch('/profile/bank', [ProfileController::class, 'updateBank'])->name('profile.bank.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/profile/2fa/enable', [ProfileController::class, 'enableTwoFactor'])->name('profile.2fa.enable');
+    Route::post('/profile/2fa/cancel', [ProfileController::class, 'cancelTwoFactorSetup'])->name('profile.2fa.cancel');
+    Route::post('/profile/2fa/confirm', [ProfileController::class, 'confirmTwoFactor'])->name('profile.2fa.confirm');
+    Route::post('/profile/2fa/disable', [ProfileController::class, 'disableTwoFactor'])->name('profile.2fa.disable');
 
     // Notifications
     Route::prefix('notifications')->name('notifications.')->group(function () {

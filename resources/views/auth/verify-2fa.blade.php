@@ -20,9 +20,21 @@
                 </div>
 
                 <div class="px-6 py-6 sm:px-8">
-                    <p class="text-sm leading-6 text-gray-500 dark:text-gray-400">
-                        {{ __('Masukkan kode OTP 6 digit yang telah dikirim ke email Anda untuk menyetujui dokumen berikut.') }}
-                    </p>
+                    @if(isset($useTotp) && $useTotp)
+                        <div class="mb-4 rounded-xl border border-primary-200/60 bg-primary-50/50 p-3.5 dark:border-primary-900/40 dark:bg-primary-900/20">
+                            <div class="flex items-start gap-2.5">
+                                <x-icon name="device-phone-mobile" class="h-5 w-5 text-primary-600 dark:text-primary-400 shrink-0 mt-0.5" />
+                                <div class="text-xs text-primary-950 dark:text-primary-200 leading-relaxed">
+                                    <span class="font-bold">{{ __('Verifikasi Authenticator:') }}</span>
+                                    {{ __('Buka aplikasi Google Authenticator, Microsoft Authenticator, atau 2FAS di ponsel Anda dan masukkan 6 digit kode yang tampil.') }}
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        <p class="text-sm leading-6 text-gray-500 dark:text-gray-400">
+                            {{ __('Masukkan kode OTP 6 digit yang telah dikirim ke email Anda untuk menyetujui dokumen berikut.') }}
+                        </p>
+                    @endif
 
                     {{-- Document summary --}}
                     <div class="mt-5 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/60">
@@ -83,7 +95,9 @@
 
                         <div>
                             <div class="mb-3 flex items-center justify-between">
-                                <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ __('Kode OTP') }}</label>
+                                <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                    {{ isset($useTotp) && $useTotp ? __('Kode Authenticator') : __('Kode OTP') }}
+                                </label>
                                 <span class="text-xs text-gray-400">{{ __('6 digit') }}</span>
                             </div>
 
@@ -118,25 +132,45 @@
                         </button>
                     </form>
 
-                    {{-- Timer & Resend --}}
-                    <div class="mt-6 space-y-3 border-t border-gray-100 pt-5 text-center dark:border-gray-800">
-                        <div class="flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <span>{{ __('Kode berlaku') }} <span id="countdown" class="font-semibold tabular-nums text-primary-700 dark:text-primary-400">10:00</span></span>
+                    {{-- Timer & Resend / Fallback --}}
+                    @if(isset($useTotp) && $useTotp)
+                        <div class="mt-6 space-y-3 border-t border-gray-100 pt-5 text-center dark:border-gray-800">
+                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                <p>{{ __('Ponsel tertinggal atau aplikasi autentikator tidak dapat diakses?') }}</p>
+                                <form method="POST" action="{{ route('2fa.resend', $document) }}" class="mt-1 inline-block">
+                                    @csrf
+                                    <button type="submit" class="font-semibold text-primary-700 transition-colors hover:text-primary-600 hover:underline dark:text-primary-400 dark:hover:text-primary-300">
+                                        {{ __('Kirim kode cadangan via Email') }}
+                                    </button>
+                                </form>
+                            </div>
                         </div>
+                    @else
+                        <div class="mt-6 space-y-3 border-t border-gray-100 pt-5 text-center dark:border-gray-800">
+                            <div class="flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span>{{ __('Kode berlaku') }} <span id="countdown" class="font-semibold tabular-nums text-primary-700 dark:text-primary-400">10:00</span></span>
+                            </div>
 
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                            {{ __('Tidak menerima kode?') }}
-                            <form method="POST" action="{{ route('2fa.resend', $document) }}" class="mt-1 inline">
-                                @csrf
-                                <button type="submit" class="font-semibold text-primary-700 transition-colors hover:text-primary-600 hover:underline dark:text-primary-400 dark:hover:text-primary-300">
-                                    {{ __('Kirim ulang OTP') }}
-                                </button>
-                            </form>
-                        </p>
-                    </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                <span>{{ __('Tidak menerima kode?') }}</span>
+                                <form method="POST" action="{{ route('2fa.resend', $document) }}" class="mt-1 inline-block">
+                                    @csrf
+                                    <button type="submit" class="font-semibold text-primary-700 transition-colors hover:text-primary-600 hover:underline dark:text-primary-400 dark:hover:text-primary-300">
+                                        {{ __('Kirim ulang OTP') }}
+                                    </button>
+                                </form>
+                            </div>
+
+                            <div class="mt-4 rounded-xl border border-primary-200/60 bg-primary-50/50 p-3 text-left dark:border-primary-900/40 dark:bg-primary-900/10">
+                                <p class="text-xs text-primary-900 dark:text-primary-200">
+                                    <span class="font-bold">{{ __('Tips:') }}</span> {{ __('Hindari keterlambatan email dengan mengaktifkan Authenticator App di menu Profil Anda untuk persetujuan instan tanpa menunggu email.') }}
+                                </p>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
 

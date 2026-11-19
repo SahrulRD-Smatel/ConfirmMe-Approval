@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Document;
 use App\Models\User;
+use App\Services\TotpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Cache;
@@ -15,75 +16,108 @@ use Carbon\Carbon;
 class TwoFactorController extends Controller
 {
     /**
-     * Show 2FA verification page for Direktur/Presiden approval
+     * Show 2FA verification page for approval
      */
     public function show(Request $request, Document $document)
     {
-        // Verify user is a director or presiden and is current approver
         $user = auth()->user();
-        $directorRoles = ['direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional', 'presiden_direktur'];
 
-        // Check if user has director role
-        if (!$user->hasAnyRole($directorRoles)) {
+        // Check if 2FA is required or user has 2FA enabled
+        if (!self::isRequired($document) && !$user->hasTwoFactorEnabled()) {
             return redirect()->route('approvals.index')
-                ->with('error', '2FA hanya diperlukan untuk Direktur.');
+                ->with('error', __('Verifikasi 2FA tidak diperlukan untuk pengguna ini.'));
         }
 
         // Check if user is the current approver
         if ((int) $document->current_approver_id !== (int) $user->id) {
             return redirect()->route('approvals.index')
-                ->with('error', 'Anda bukan approver saat ini untuk dokumen ini atau dokumen sudah di-approve.');
+                ->with('error', __('Anda bukan approver saat ini untuk dokumen ini atau dokumen sudah di-approve.'));
         }
 
-        // Only generate and send OTP if one doesn't already exist in cache
-        $cacheKey = "2fa_otp_{$user->id}_{$document->id}";
-        $existingOtp = Cache::get($cacheKey);
+        $useTotp = $user->hasTwoFactorEnabled();
+        $debugOtp = null;
 
-        if (!$existingOtp) {
-            // No valid OTP exists, generate and send a new one
-            $otp = $this->generateAndSendOtp($user, $document);
-        } else {
-            // OTP still valid, don't resend
-            $otp = $existingOtp;
+        if (!$useTotp) {
+            // Only generate and send Email OTP if one doesn't already exist in cache
+            $cacheKey = "2fa_otp_{$user->id}_{$document->id}";
+            $existingOtp = Cache::get($cacheKey);
+
+            if (!$existingOtp) {
+                $otp = $this->generateAndSendOtp($user, $document);
+            } else {
+                $otp = $existingOtp;
+            }
+
+            $debugOtp = config('app.debug') ? $otp : null;
         }
 
-        // In debug mode (APP_DEBUG=true), pass OTP to view for testing
-        $debugOtp = config('app.debug') ? $otp : null;
-
-        return view('auth.verify-2fa', compact('document', 'debugOtp'));
+        return view('auth.verify-2fa', compact('document', 'debugOtp', 'useTotp'));
     }
 
     /**
-     * Verify OTP and proceed with approval
+     * Verify OTP or TOTP code and proceed with approval
      */
     public function verify(Request $request, Document $document)
     {
         $validated = $request->validate([
-            'otp' => 'required|string|size:6',
+            'otp' => 'required|string',
         ]);
 
         $user = auth()->user();
-        $cacheKey = "2fa_otp_{$user->id}_{$document->id}";
+        $inputCode = trim(str_replace([' ', '-'], '', $validated['otp']));
+        $isValid = false;
 
-        // Try database first, then fallback to cache
-        $storedOtp = $this->getStoredOtp($user, $document);
+        if ($user->hasTwoFactorEnabled()) {
+            // 1. Verify via TOTP Authenticator App (RFC 6238)
+            if (TotpService::verifyCode($user->two_factor_secret, $inputCode)) {
+                $isValid = true;
+            }
 
-        Log::info("2FA Verify: User {$user->id}, Doc {$document->id}, Input OTP: {$validated['otp']}, Stored OTP: " . ($storedOtp ?? 'NULL'));
+            // 2. Or verify via Recovery Code
+            if (!$isValid && !empty($user->two_factor_recovery_codes) && is_array($user->two_factor_recovery_codes)) {
+                $recoveryCodes = $user->two_factor_recovery_codes;
+                $formattedInput = substr($inputCode, 0, 5) . '-' . substr($inputCode, 5);
+                foreach ($recoveryCodes as $idx => $rCode) {
+                    $cleanR = str_replace('-', '', $rCode);
+                    if (hash_equals($cleanR, $inputCode) || hash_equals($rCode, $formattedInput)) {
+                        $isValid = true;
+                        unset($recoveryCodes[$idx]);
+                        $user->update(['two_factor_recovery_codes' => array_values($recoveryCodes)]);
+                        break;
+                    }
+                }
+            }
 
-        if (!$storedOtp || $storedOtp !== $validated['otp']) {
-            Log::warning("2FA Failed: OTP mismatch or expired. User {$user->id}, Doc {$document->id}");
-            return back()->withErrors(['otp' => 'Kode OTP tidak valid atau sudah kadaluarsa.']);
+            // 3. Fallback: Emergency Email OTP if user requested it
+            if (!$isValid) {
+                $storedOtp = $this->getStoredOtp($user, $document);
+                if ($storedOtp && hash_equals($storedOtp, $inputCode)) {
+                    $isValid = true;
+                }
+            }
+        } else {
+            // User uses Email OTP
+            $storedOtp = $this->getStoredOtp($user, $document);
+            if ($storedOtp && hash_equals($storedOtp, $inputCode)) {
+                $isValid = true;
+            }
         }
 
-        // Clear OTP
+        Log::info("2FA Verify: User {$user->id}, Doc {$document->id}, Code: {$inputCode}, Valid: " . ($isValid ? 'YES' : 'NO'));
+
+        if (!$isValid) {
+            Log::warning("2FA Failed: Code mismatch or expired. User {$user->id}, Doc {$document->id}");
+            return back()->withErrors(['otp' => __('Kode verifikasi tidak valid atau sudah kadaluarsa.')]);
+        }
+
+        // Clear OTP & Cache
         $this->clearOtp($user, $document);
-        Cache::forget($cacheKey);
+        Cache::forget("2fa_otp_{$user->id}_{$document->id}");
 
         // Get pending approval data from session
         $pendingApproval = session()->get("pending_approval_{$document->id}");
 
         if ($pendingApproval) {
-            // Process the approval automatically
             try {
                 $workflowService = app(\App\Services\ApprovalWorkflowService::class);
                 $workflowService->processApproval(
@@ -100,38 +134,35 @@ class TwoFactorController extends Controller
                     "Dokumen di-{$pendingApproval['action']} oleh " . $user->name . " (dengan verifikasi 2FA)"
                 );
 
-                // Clear pending approval from session
                 session()->forget("pending_approval_{$document->id}");
 
                 $message = $pendingApproval['action'] === 'approved'
-                    ? 'Dokumen berhasil disetujui!'
-                    : 'Dokumen berhasil ditolak.';
+                    ? __('Dokumen berhasil disetujui!')
+                    : __('Dokumen berhasil ditolak.');
 
-                return redirect()->route('approvals.index')
-                    ->with('success', $message);
-
+                return redirect()->route('approvals.index')->with('success', $message);
             } catch (\Exception $e) {
                 return redirect()->route('approvals.show', $document)
-                    ->with('error', 'Gagal memproses approval: ' . $e->getMessage());
+                    ->with('error', __('Gagal memproses approval: ') . $e->getMessage());
             }
         }
 
-        // Fallback: Set session flag and redirect back (old behavior)
+        // Fallback: Set session flag and redirect back
         session()->put("2fa_verified_{$document->id}", true);
 
         return redirect()->route('approvals.show', $document)
-            ->with('success', 'Verifikasi berhasil! Silakan lanjutkan approval.');
+            ->with('success', __('Verifikasi berhasil! Silakan lanjutkan approval.'));
     }
 
     /**
-     * Resend OTP
+     * Resend OTP / Send Emergency Email OTP
      */
     public function resend(Request $request, Document $document)
     {
         $user = auth()->user();
         $this->generateAndSendOtp($user, $document);
 
-        return back()->with('success', 'Kode OTP baru telah dikirim ke email Anda.');
+        return back()->with('success', __('Kode verifikasi telah dikirim ke email Anda.'));
     }
 
     /**
@@ -139,16 +170,12 @@ class TwoFactorController extends Controller
      */
     protected function generateAndSendOtp($user, Document $document): string
     {
-        $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $otp = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
         $cacheKey = "2fa_otp_{$user->id}_{$document->id}";
         $expiresAt = Carbon::now()->addMinutes(10);
 
-        // Store OTP in BOTH cache and database for reliability
-        // Cache: fast lookup (works on local/Redis)
-        // Database: reliable fallback (works on cPanel shared hosting)
         Cache::put($cacheKey, $otp, $expiresAt);
 
-        // Store in database as backup
         DB::table('users')->where('id', $user->id)->update([
             'otp_code' => $otp,
             'otp_expires_at' => $expiresAt,
@@ -156,7 +183,7 @@ class TwoFactorController extends Controller
 
         Log::info("2FA OTP Generated: User {$user->id}, Doc {$document->id}, OTP: {$otp}, Expires: {$expiresAt}");
 
-        // Send email
+        // Send email non-blocking with 5s timeout
         try {
             $previousTimeout = config('mail.mailers.smtp.timeout');
             config(['mail.mailers.smtp.timeout' => 5]);
@@ -185,14 +212,11 @@ class TwoFactorController extends Controller
     {
         $cacheKey = "2fa_otp_{$user->id}_{$document->id}";
 
-        // Try cache first (fast)
         $cachedOtp = Cache::get($cacheKey);
         if ($cachedOtp) {
-            Log::info("2FA: OTP found in cache for user {$user->id}");
             return $cachedOtp;
         }
 
-        // Fallback to database (reliable on cPanel)
         $dbUser = DB::table('users')
             ->where('id', $user->id)
             ->whereNotNull('otp_code')
@@ -200,11 +224,9 @@ class TwoFactorController extends Controller
             ->first();
 
         if ($dbUser && $dbUser->otp_code) {
-            Log::info("2FA: OTP found in database for user {$user->id} (cache miss)");
             return $dbUser->otp_code;
         }
 
-        Log::warning("2FA: OTP not found in cache or database for user {$user->id}");
         return null;
     }
 
@@ -220,28 +242,38 @@ class TwoFactorController extends Controller
     }
 
     /**
-     * Check if 2FA is required for this approval
+     * Check if 2FA is required for this approval dynamically
      */
     public static function isRequired(Document $document): bool
     {
-        // Check if 2FA feature is enabled globally
         if (!feature_active('feature_2fa_otp')) {
             return false;
         }
 
         $user = auth()->user();
-        $directorRoles = ['direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional', 'presiden_direktur'];
-
-        // Only required for directors and presiden
-        if (!$user->hasAnyRole($directorRoles)) {
+        if (!$user) {
             return false;
         }
 
-        // Check if already verified in this session
         if (session()->has("2fa_verified_{$document->id}")) {
             return false;
         }
 
-        return true;
+        // If user has enabled 2FA Authenticator on their account, it's always required
+        if ($user->hasTwoFactorEnabled()) {
+            return true;
+        }
+
+        // Dynamic Executive / Director check (Zero hardcoding)
+        $roles = $user->getRoleNames()->map(fn($r) => strtolower($r));
+        $hasExecutiveRole = $roles->contains(function ($role) {
+            return str_contains($role, 'direktur') || str_contains($role, 'presiden') || str_contains($role, 'executive');
+        });
+
+        $positionLower = strtolower($user->position ?? '');
+        $hasExecutivePosition = str_contains($positionLower, 'direktur') || str_contains($positionLower, 'presiden');
+
+        return $hasExecutiveRole || $hasExecutivePosition;
     }
 }
+

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Services\TotpService;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,8 +19,21 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        $user = $request->user();
+        $qrSvg = null;
+        $secretKey = null;
+
+        if (!$user->hasTwoFactorEnabled() && session()->has('two_factor_setup_secret')) {
+            $secretKey = session()->get('two_factor_setup_secret');
+            $company = config('app.name', 'ConfirmMe');
+            $qrUri = TotpService::getQrUri($company, $user->email, $secretKey);
+            $qrSvg = QrCode::format('svg')->size(160)->margin(1)->generate($qrUri);
+        }
+
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user' => $user,
+            'qrSvg' => $qrSvg,
+            'secretKey' => $secretKey,
         ]);
     }
 
@@ -99,6 +114,80 @@ class ProfileController extends Controller
         $request->user()->save();
 
         return Redirect::route('profile.edit')->with('status', 'bank-updated');
+    }
+
+    /**
+     * Start Two-Factor Authenticator setup by generating a secret.
+     */
+    public function enableTwoFactor(Request $request): RedirectResponse
+    {
+        $secret = TotpService::generateSecret();
+        session()->put('two_factor_setup_secret', $secret);
+
+        return Redirect::route('profile.edit')->with('status', 'two-factor-setup-started');
+    }
+
+    /**
+     * Cancel Two-Factor Authenticator setup.
+     */
+    public function cancelTwoFactorSetup(Request $request): RedirectResponse
+    {
+        session()->forget('two_factor_setup_secret');
+
+        return Redirect::route('profile.edit');
+    }
+
+    /**
+     * Confirm and activate Two-Factor Authenticator with the first valid 6-digit code.
+     */
+    public function confirmTwoFactor(Request $request): RedirectResponse
+    {
+        $request->validateWithBag('twoFactorConfirm', [
+            'code' => ['required', 'string'],
+        ]);
+
+        $secret = session()->get('two_factor_setup_secret');
+        if (!$secret) {
+            return Redirect::route('profile.edit')->withErrors(['code' => __('Sesi setup autentikator telah kedaluwarsa. Silakan mulai kembali.')], 'twoFactorConfirm');
+        }
+
+        if (!TotpService::verifyCode($secret, $request->code)) {
+            return Redirect::route('profile.edit')->withErrors(['code' => __('Kode autentikator 6 digit tidak cocok. Pastikan jam di ponsel Anda sudah sinkron otomatis.')], 'twoFactorConfirm');
+        }
+
+        $recoveryCodes = TotpService::generateRecoveryCodes();
+        $user = $request->user();
+        $user->update([
+            'two_factor_secret' => $secret,
+            'two_factor_confirmed_at' => now(),
+            'two_factor_recovery_codes' => $recoveryCodes,
+        ]);
+
+        session()->forget('two_factor_setup_secret');
+        session()->flash('recovery_codes', $recoveryCodes);
+
+        return Redirect::route('profile.edit')->with('status', 'two-factor-enabled');
+    }
+
+    /**
+     * Disable Two-Factor Authenticator.
+     */
+    public function disableTwoFactor(Request $request): RedirectResponse
+    {
+        $request->validateWithBag('twoFactorDisable', [
+            'password' => ['required', 'current_password'],
+        ]);
+
+        $user = $request->user();
+        $user->update([
+            'two_factor_secret' => null,
+            'two_factor_confirmed_at' => null,
+            'two_factor_recovery_codes' => null,
+        ]);
+
+        session()->forget('two_factor_setup_secret');
+
+        return Redirect::route('profile.edit')->with('status', 'two-factor-disabled');
     }
 
     /**
