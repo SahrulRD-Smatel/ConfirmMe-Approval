@@ -1373,12 +1373,12 @@
                                 <td style="border: 1px solid #111; padding: 2px; text-align: center;">{{ $rowJam }}</td>
                                 <td style="border: 1px solid #111; padding: 2px; text-align: center;">{{ $rowTransport }}</td>
                                 <td style="border: 1px solid #111; padding: 2px; text-align: center;">{{ $rowKelas }}</td>
-                                <td style="border: 1px solid #111; padding: 2px; text-align: center; font-size: 8px; color: #333;">{{ $rowHarga }}</td>
+                                <td style="border: 1px solid #111; padding: 2px 6px; text-align: right; font-size: 8px; color: #333; font-variant-numeric: tabular-nums;">{{ $rowHarga }}</td>
                             </tr>
                         @endforeach
                         <tr>
                             <td colspan="7" style="border: 1px solid #111; padding: 2px 6px; text-align: right; font-weight: bold;">Total</td>
-                            <td style="border: 1px solid #111; padding: 2px; text-align: right; font-weight: bold; font-size: 8px;">Rp0</td>
+                            <td style="border: 1px solid #111; padding: 2px 6px; text-align: right; font-weight: bold; font-size: 8px; font-variant-numeric: tabular-nums;">Rp0</td>
                         </tr>
                         <tr>
                             <td colspan="8" style="border: 1px solid #111; padding: 2.5px 6px; font-size: 8.5px;">
@@ -1389,6 +1389,25 @@
                 </table>
 
                 <!-- Tabel 2: Perincian Uang Muka Sesuai Excel -->
+                @php
+                    $renderUmCell = function($val, $fallback = '-') {
+                        $cleanVal = is_string($val) ? trim($val) : $val;
+                        $isNumeric = ($cleanVal !== null && $cleanVal !== '' && is_numeric(str_replace(['.', ',', ' '], '', (string)$cleanVal)));
+                        if ($isNumeric) {
+                            $num = (float)str_replace(['.', ','], '', (string)$cleanVal);
+                            return [
+                                'text' => number_format($num, 0, ',', '.'),
+                                'is_nominal' => true,
+                                'style' => 'border: 1px solid #111; padding: 2px 6px; text-align: right; font-variant-numeric: tabular-nums;',
+                            ];
+                        }
+                        return [
+                            'text' => $cleanVal ?: $fallback,
+                            'is_nominal' => false,
+                            'style' => 'border: 1px solid #111; padding: 2px 6px; text-align: right; color: #444; font-size: 8px;',
+                        ];
+                    };
+                @endphp
                 <table style="width: 100%; border-collapse: collapse; margin-bottom: 6px; font-size: 8.5px;">
                     <thead>
                         <tr style="background-color: #cbd5e1;">
@@ -1397,51 +1416,58 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @php $cellUm1 = $renderUmCell($metadata['um_airport_tax'] ?? null, 'Team HR'); @endphp
                         <tr>
                             <td style="width: 25px; border: 1px solid #111; padding: 2px; text-align: center;">1</td>
                             <td style="border: 1px solid #111; padding: 2px 6px;">Airport Tax</td>
-                            <td style="border: 1px solid #111; padding: 2px; text-align: center; color: #444; font-size: 8px;">{{ !empty($metadata['um_airport_tax']) ? number_format((float)$metadata['um_airport_tax'], 0, ',', '.') : 'Team HR' }}</td>
+                            <td style="{{ $cellUm1['style'] }}">{{ $cellUm1['text'] }}</td>
                         </tr>
+                        @php $cellUm2 = $renderUmCell($metadata['um_akomodasi'] ?? null, 'Team HR'); @endphp
                         <tr>
                             <td style="width: 25px; border: 1px solid #111; padding: 2px; text-align: center;">2</td>
                             <td style="border: 1px solid #111; padding: 2px 6px;">Akomodasi (hotel / mess / kel)</td>
-                            <td style="border: 1px solid #111; padding: 2px; text-align: center; color: #444; font-size: 8px;">{{ !empty($metadata['um_akomodasi']) ? number_format((float)$metadata['um_akomodasi'], 0, ',', '.') : 'Team HR' }}</td>
+                            <td style="{{ $cellUm2['style'] }}">{{ $cellUm2['text'] }}</td>
                         </tr>
+                        @php $cellUm3a = $renderUmCell($metadata['um_transport_antar_kota'] ?? null, 'Team HR'); @endphp
                         <tr>
                             <td style="border: 1px solid #111; padding: 2px; text-align: center; vertical-align: top;" rowspan="2">3</td>
                             <td style="border: 1px solid #111; padding: 2px 6px;">
                                 Transportasi :<br>
                                 &nbsp;&nbsp;&nbsp;&nbsp;a.&nbsp;&nbsp;Antar kota (Taxi)
                             </td>
-                            <td style="border: 1px solid #111; padding: 2px; text-align: center; vertical-align: middle; color: #444; font-size: 8px;">{{ !empty($metadata['um_transport_antar_kota']) ? number_format((float)$metadata['um_transport_antar_kota'], 0, ',', '.') : 'Team HR' }}</td>
+                            <td style="{{ $cellUm3a['style'] }} vertical-align: middle;">{{ $cellUm3a['text'] }}</td>
                         </tr>
+                        @php $cellUm3b = $renderUmCell($metadata['um_transport_dalam_kota'] ?? null, '-'); @endphp
                         <tr>
                             <td style="border: 1px solid #111; padding: 2px 6px;">
                                 &nbsp;&nbsp;&nbsp;&nbsp;b.&nbsp;&nbsp;Dalam kota (tujuan & domisili)
                             </td>
-                            <td style="border: 1px solid #111; padding: 2px 6px; text-align: right;">{{ !empty($metadata['um_transport_dalam_kota']) ? number_format((float)$metadata['um_transport_dalam_kota'], 0, ',', '.') : '-' }}</td>
+                            <td style="{{ $cellUm3b['style'] }}">{{ $cellUm3b['text'] }}</td>
                         </tr>
+                        @php $cellUm4 = $renderUmCell($metadata['um_uang_saku'] ?? null, '-'); @endphp
                         <tr>
                             <td style="width: 25px; border: 1px solid #111; padding: 2px; text-align: center;">4</td>
                             <td style="border: 1px solid #111; padding: 2px 6px;">Uang Saku x Hr</td>
-                            <td style="border: 1px solid #111; padding: 2px 6px; text-align: right;">{{ !empty($metadata['um_uang_saku']) ? number_format((float)$metadata['um_uang_saku'], 0, ',', '.') : '-' }}</td>
+                            <td style="{{ $cellUm4['style'] }}">{{ $cellUm4['text'] }}</td>
                         </tr>
+                        @php $cellUm5 = $renderUmCell($metadata['um_insidental'] ?? null, '-'); @endphp
                         <tr>
                             <td style="width: 25px; border: 1px solid #111; padding: 2px; text-align: center;">5</td>
                             <td style="border: 1px solid #111; padding: 2px 6px;">Insidental x Hr</td>
-                            <td style="border: 1px solid #111; padding: 2px 6px; text-align: right;">{{ !empty($metadata['um_insidental']) ? number_format((float)$metadata['um_insidental'], 0, ',', '.') : '-' }}</td>
+                            <td style="{{ $cellUm5['style'] }}">{{ $cellUm5['text'] }}</td>
                         </tr>
+                        @php $cellUm6 = $renderUmCell($metadata['um_biaya_tak_terduga'] ?? null, 'Perhitungan dari Team HR'); @endphp
                         <tr>
                             <td style="width: 25px; border: 1px solid #111; padding: 2px; text-align: center; vertical-align: top;">6</td>
                             <td style="border: 1px solid #111; padding: 2px 6px;">
                                 Lain – lain :<br>
                                 &nbsp;&nbsp;&nbsp;&nbsp;a.&nbsp;&nbsp;Biaya tak terduga didalam kota tujuan
                             </td>
-                            <td style="border: 1px solid #111; padding: 2px; text-align: center; vertical-align: middle; font-size: 8px; color: #444;">{{ !empty($metadata['um_biaya_tak_terduga']) ? number_format((float)$metadata['um_biaya_tak_terduga'], 0, ',', '.') : 'Perhitungan dari Team HR' }}</td>
+                            <td style="{{ $cellUm6['style'] }} vertical-align: middle;">{{ $cellUm6['text'] }}</td>
                         </tr>
                         <tr style="background-color: #f1f5f9; font-weight: bold;">
                             <td colspan="2" style="border: 1px solid #111; padding: 3px 6px; text-align: center; text-transform: uppercase;">TOTAL ( Estimasi dari Pemohon )</td>
-                            <td style="border: 1px solid #111; padding: 3px 6px; text-align: right;">Rp {{ number_format($totalEstimasi, 0, ',', '.') }}</td>
+                            <td style="border: 1px solid #111; padding: 3px 6px; text-align: right; font-variant-numeric: tabular-nums;">Rp {{ number_format($totalEstimasi, 0, ',', '.') }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -1664,7 +1690,10 @@
                                     <tr>
                                         <th style="width: 35px; text-align: center;">No</th>
                                         @foreach($tCols as $col)
-                                            <th>{{ $col }}</th>
+                                            @php
+                                                $isColNumeric = (bool)preg_match('/harga|biaya|nominal|tarif|price|rp|qty|jumlah|kuantitas|total|subtotal|pagu|anggaran/i', $col);
+                                            @endphp
+                                            <th style="{{ $isColNumeric ? 'text-align: right; padding-right: 8px;' : '' }}">{{ $col }}</th>
                                         @endforeach
                                     </tr>
                                 </thead>
@@ -1688,8 +1717,19 @@
                                                     if (is_array($cellVal)) {
                                                         $cellVal = implode(', ', array_filter($cellVal, 'is_scalar'));
                                                     }
+
+                                                    $isColNumeric = (bool)preg_match('/harga|biaya|nominal|tarif|price|rp|qty|jumlah|kuantitas|total|subtotal|pagu|anggaran/i', $col);
+                                                    $isValNumeric = ($cellVal !== '-' && $cellVal !== '' && is_numeric(str_replace(['.', ',', ' '], '', (string)$cellVal)));
+
+                                                    if ($isValNumeric && preg_match('/harga|biaya|nominal|tarif|price|rp|total|subtotal|pagu|anggaran/i', $col)) {
+                                                        $num = (float)str_replace(['.', ','], '', (string)$cellVal);
+                                                        $cellVal = 'Rp ' . number_format($num, 0, ',', '.');
+                                                    } elseif ($isValNumeric && preg_match('/qty|jumlah|kuantitas/i', $col)) {
+                                                        $num = (float)str_replace(['.', ','], '', (string)$cellVal);
+                                                        $cellVal = number_format($num, 0, ',', '.');
+                                                    }
                                                 @endphp
-                                                <td>{{ $cellVal }}</td>
+                                                <td style="{{ ($isColNumeric || $isValNumeric) ? 'text-align: right; padding-right: 8px; font-variant-numeric: tabular-nums;' : '' }}">{{ $cellVal }}</td>
                                             @endforeach
                                         </tr>
                                     @endforeach

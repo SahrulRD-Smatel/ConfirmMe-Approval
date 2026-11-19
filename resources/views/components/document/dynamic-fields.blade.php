@@ -23,7 +23,10 @@
                                                         <tr>
                                                             @php $cols = array_map('trim', explode(',', $field['columns'])); @endphp
                                                             @foreach($cols as $col)
-                                                                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $col }}</th>
+                                                                @php
+                                                                    $isColNum = (bool)preg_match('/harga|biaya|nominal|tarif|price|rp|qty|jumlah|kuantitas|total|subtotal|pagu|anggaran/i', $col);
+                                                                @endphp
+                                                                <th scope="col" class="px-4 py-3 {{ $isColNum ? 'text-right' : 'text-left' }} text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $col }}</th>
                                                             @endforeach
                                                         </tr>
                                                     </thead>
@@ -33,13 +36,16 @@
                                                                 @foreach($cols as $col)
                                                                     @php
                                                                         $cellVal = $row[$col] ?? '-';
-                                                                        if (is_numeric($cellVal) && preg_match('/harga|biaya|nominal|tarif|price|rp/i', $col)) {
-                                                                            $cellVal = 'Rp ' . number_format((float)$cellVal, 0, ',', '.');
-                                                                        } elseif (is_numeric($cellVal) && preg_match('/qty|jumlah|kuantitas/i', $col)) {
-                                                                            $cellVal = number_format((float)$cellVal, 0, ',', '.');
+                                                                        $isColNum = (bool)preg_match('/harga|biaya|nominal|tarif|price|rp|qty|jumlah|kuantitas|total|subtotal|pagu|anggaran/i', $col);
+                                                                        $isValNum = ($cellVal !== '-' && $cellVal !== '' && is_numeric(str_replace(['.', ',', ' '], '', (string)$cellVal)));
+
+                                                                        if ($isValNum && preg_match('/harga|biaya|nominal|tarif|price|rp|total|subtotal/i', $col)) {
+                                                                            $cellVal = 'Rp ' . number_format((float)str_replace(['.', ','], '', (string)$cellVal), 0, ',', '.');
+                                                                        } elseif ($isValNum && preg_match('/qty|jumlah|kuantitas/i', $col)) {
+                                                                            $cellVal = number_format((float)str_replace(['.', ','], '', (string)$cellVal), 0, ',', '.');
                                                                         }
                                                                     @endphp
-                                                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $cellVal }}</td>
+                                                                    <td class="px-4 py-3 whitespace-nowrap text-sm {{ ($isColNum || $isValNum) ? 'text-right font-mono' : 'text-left' }} text-gray-900 dark:text-white">{{ $cellVal }}</td>
                                                                 @endforeach
                                                             </tr>
                                                         @endforeach
