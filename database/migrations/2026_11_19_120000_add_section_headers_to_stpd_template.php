@@ -9,7 +9,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        $stpd = DocumentTemplate::where('code', 'STPD')->first();
+        $stpd = DocumentTemplate::whereIn('code', ['STPD', 'stpd'])->first();
         if ($stpd) {
             $fields = $stpd->fields ?? [];
             $existingDynamic = $fields['dynamic_fields'] ?? [];
