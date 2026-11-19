@@ -55,6 +55,15 @@ class TemplateController extends Controller
             $fields['dynamic_fields'] = array_values(array_filter($fields['dynamic_fields'], function ($df) {
                 return !empty($df['name']) || !empty($df['label']);
             }));
+            foreach ($fields['dynamic_fields'] as $k => &$df) {
+                if (($df['type'] ?? '') === 'section') {
+                    if (empty($df['name'])) {
+                        $df['name'] = 'sec_' . \Illuminate\Support\Str::slug($df['label'] ?? ('section_' . $k), '_');
+                    }
+                    $df['required'] = false;
+                }
+            }
+            unset($df);
         }
         if (isset($fields['notify_roles']) && is_array($fields['notify_roles'])) {
             $fields['notify_roles'] = array_values(array_filter($fields['notify_roles'], fn($r) => !empty($r)));
@@ -124,6 +133,15 @@ class TemplateController extends Controller
             $fields['dynamic_fields'] = array_values(array_filter($fields['dynamic_fields'], function ($df) {
                 return !empty($df['name']) || !empty($df['label']);
             }));
+            foreach ($fields['dynamic_fields'] as $k => &$df) {
+                if (($df['type'] ?? '') === 'section') {
+                    if (empty($df['name'])) {
+                        $df['name'] = 'sec_' . \Illuminate\Support\Str::slug($df['label'] ?? ('section_' . $k), '_');
+                    }
+                    $df['required'] = false;
+                }
+            }
+            unset($df);
         }
         if (isset($fields['notify_roles']) && is_array($fields['notify_roles'])) {
             $fields['notify_roles'] = array_values(array_filter($fields['notify_roles'], fn($r) => !empty($r)));

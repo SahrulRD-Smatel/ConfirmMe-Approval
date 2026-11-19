@@ -1026,6 +1026,51 @@
                     $transportVal = $metadata['jenis_transportasi'] ?? '-';
                     $catatanVal = $metadata['catatan'] ?? ($metadata['catatan_tambahan'] ?? null);
 
+                    // Dynamic section labels (Opsi 1: Dari Dynamic Form Builder)
+                    $secPemberiText = 'Yang bertanda tangan di bawah ini,';
+                    $secPenerimaText = 'Menugaskan,';
+                    $secDinasText = 'Untuk melaksanakan perjalanan dinas';
+
+                    if (!empty($dynamicFields)) {
+                        $sections = array_values(array_filter($dynamicFields, fn($f) => ($f['type'] ?? '') === 'section'));
+                        if (count($sections) >= 1) {
+                            $pFound = null;
+                            foreach ($sections as $s) {
+                                $lblLower = strtolower($s['label'] ?? '');
+                                $nameLower = strtolower($s['name'] ?? '');
+                                if (str_contains($lblLower, 'tanda tangan') || str_contains($lblLower, 'pemberi') || str_contains($nameLower, 'pemberi')) {
+                                    $pFound = $s['label'];
+                                    break;
+                                }
+                            }
+                            $secPemberiText = $pFound ?: ($sections[0]['label'] ?? $secPemberiText);
+                        }
+                        if (count($sections) >= 2) {
+                            $tFound = null;
+                            foreach ($sections as $s) {
+                                $lblLower = strtolower($s['label'] ?? '');
+                                $nameLower = strtolower($s['name'] ?? '');
+                                if (str_contains($lblLower, 'menugaskan') || str_contains($lblLower, 'penerima') || str_contains($nameLower, 'penerima') || str_contains($nameLower, 'menugaskan')) {
+                                    $tFound = $s['label'];
+                                    break;
+                                }
+                            }
+                            $secPenerimaText = $tFound ?: ($sections[1]['label'] ?? $secPenerimaText);
+                        }
+                        if (count($sections) >= 3) {
+                            $dFound = null;
+                            foreach ($sections as $s) {
+                                $lblLower = strtolower($s['label'] ?? '');
+                                $nameLower = strtolower($s['name'] ?? '');
+                                if (str_contains($lblLower, 'dinas') || str_contains($lblLower, 'perjalanan') || str_contains($lblLower, 'laksana') || str_contains($nameLower, 'dinas')) {
+                                    $dFound = $s['label'];
+                                    break;
+                                }
+                            }
+                            $secDinasText = $dFound ?: ($sections[2]['label'] ?? $secDinasText);
+                        }
+                    }
+
                     $pemberiDate = $docDate->translatedFormat('d/m/Y');
                     $penerimaDate = $docDate->translatedFormat('d/m/Y');
                     $atasanDate = '............';
@@ -1104,7 +1149,7 @@
                 </div>
 
                 <!-- Bagian 1: Pemberi Tugas -->
-                <div style="font-size: 11px; margin-bottom: 3px; color: #111;">Yang bertanda tangan di bawah ini,</div>
+                <div style="font-size: 11px; margin-bottom: 3px; color: #111;">{{ $secPemberiText }}</div>
                 <table class="info-table" style="margin-bottom: 10px;">
                     <tr>
                         <th style="width: 140px; padding: 2.5px 0;">Nama</th>
@@ -1124,7 +1169,7 @@
                 </table>
 
                 <!-- Bagian 2: Penerima Tugas -->
-                <div style="font-size: 11px; margin-bottom: 3px; color: #111;">Menugaskan,</div>
+                <div style="font-size: 11px; margin-bottom: 3px; color: #111;">{{ $secPenerimaText }}</div>
                 <table class="info-table" style="margin-bottom: 10px;">
                     <tr>
                         <th style="width: 140px; padding: 2.5px 0;">Nama</th>
@@ -1144,7 +1189,7 @@
                 </table>
 
                 <!-- Bagian 3: Pelaksanaan Dinas -->
-                <div style="font-size: 11px; margin-bottom: 3px; color: #111;">Untuk melaksanakan perjalanan dinas</div>
+                <div style="font-size: 11px; margin-bottom: 3px; color: #111;">{{ $secDinasText }}</div>
                 <table class="info-table" style="margin-bottom: 10px;">
                     <tr>
                         <th style="width: 140px; padding: 2.5px 0;">Tugas</th>
@@ -1671,60 +1716,68 @@
                                 }
                             @endphp
 
-                            <tr style="page-break-inside: avoid;">
-                                <th style="width: 175px;">{{ $fLabel }}</th>
-                                <td style="width: 15px; text-align: left;">:</td>
-                                <td>
-                                    @if($fType === 'textarea')
-                                        {!! nl2br(e($fVal ?: '-')) !!}
-                                    @elseif($fType === 'file' && $fVal)
-                                        @php
-                                            $ext = strtolower(pathinfo($fVal, PATHINFO_EXTENSION));
-                                            $relPath = ltrim(str_replace('public/', '', $fVal), '/');
-                                            $imgPath = storage_path('app/public/' . $relPath);
-                                            if (!file_exists($imgPath)) {
-                                                $imgPath = public_path('storage/' . $relPath);
-                                            }
-                                            if (!file_exists($imgPath)) {
-                                                $imgPath = storage_path('app/' . $relPath);
-                                            }
-                                            $imgDataUri = null;
-                                            if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif']) && file_exists($imgPath)) {
-                                                $mime = ($ext === 'png') ? 'image/png' : 'image/jpeg';
-                                                $imgDataUri = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($imgPath));
-                                            }
-                                        @endphp
-                                        @if($imgDataUri)
-                                            <div class="attachment-box">
-                                                <img src="{{ $imgDataUri }}" class="attachment-img" alt="{{ $fLabel }}" />
-                                            </div>
+                            @if($fType === 'section')
+                                <tr style="page-break-inside: avoid;">
+                                    <td colspan="3" style="padding: 10px 0 3px 0; border: none; font-size: 11px; font-weight: normal; color: #111;">
+                                        {{ $fLabel }}
+                                    </td>
+                                </tr>
+                            @else
+                                <tr style="page-break-inside: avoid;">
+                                    <th style="width: 175px;">{{ $fLabel }}</th>
+                                    <td style="width: 15px; text-align: left;">:</td>
+                                    <td>
+                                        @if($fType === 'textarea')
+                                            {!! nl2br(e($fVal ?: '-')) !!}
+                                        @elseif($fType === 'file' && $fVal)
+                                            @php
+                                                $ext = strtolower(pathinfo($fVal, PATHINFO_EXTENSION));
+                                                $relPath = ltrim(str_replace('public/', '', $fVal), '/');
+                                                $imgPath = storage_path('app/public/' . $relPath);
+                                                if (!file_exists($imgPath)) {
+                                                    $imgPath = public_path('storage/' . $relPath);
+                                                }
+                                                if (!file_exists($imgPath)) {
+                                                    $imgPath = storage_path('app/' . $relPath);
+                                                }
+                                                $imgDataUri = null;
+                                                if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif']) && file_exists($imgPath)) {
+                                                    $mime = ($ext === 'png') ? 'image/png' : 'image/jpeg';
+                                                    $imgDataUri = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($imgPath));
+                                                }
+                                            @endphp
+                                            @if($imgDataUri)
+                                                <div class="attachment-box">
+                                                    <img src="{{ $imgDataUri }}" class="attachment-img" alt="{{ $fLabel }}" />
+                                                </div>
+                                            @else
+                                                <em>{{ basename($fVal) }}</em>
+                                            @endif
                                         @else
-                                            <em>{{ basename($fVal) }}</em>
-                                        @endif
-                                    @else
-                                        @php
-                                            $displayVal = $fVal ?: '-';
-                                            if (is_array($displayVal)) {
-                                                $displayVal = implode(', ', array_filter($displayVal, 'is_scalar'));
-                                            }
-                                            if ($fVal && $fType === 'date' && strtotime($fVal)) {
-                                                $displayVal = \Carbon\Carbon::parse($fVal)->translatedFormat('d/m/Y');
-                                            } elseif ($fVal && $fType === 'time') {
-                                                $displayVal = (strpos($fVal, 'WIB') !== false) ? $fVal : $fVal . ' WIB';
-                                            } elseif ($fVal && $fType === 'number' && is_numeric($fVal)) {
-                                                $displayVal = number_format((float)$fVal, 0, ',', '.');
-                                            }
-                                        @endphp
+                                            @php
+                                                $displayVal = $fVal ?: '-';
+                                                if (is_array($displayVal)) {
+                                                    $displayVal = implode(', ', array_filter($displayVal, 'is_scalar'));
+                                                }
+                                                if ($fVal && $fType === 'date' && strtotime($fVal)) {
+                                                    $displayVal = \Carbon\Carbon::parse($fVal)->translatedFormat('d/m/Y');
+                                                } elseif ($fVal && $fType === 'time') {
+                                                    $displayVal = (strpos($fVal, 'WIB') !== false) ? $fVal : $fVal . ' WIB';
+                                                } elseif ($fVal && $fType === 'number' && is_numeric($fVal)) {
+                                                    $displayVal = number_format((float)$fVal, 0, ',', '.');
+                                                }
+                                            @endphp
 
-                                        {{ $displayVal }}
+                                            {{ $displayVal }}
 
-                                        @if($pairedTime)
-                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                            <strong>{{ $pairedLabel }}:</strong> {{ $pairedTime }} WIB
+                                            @if($pairedTime)
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                <strong>{{ $pairedLabel }}:</strong> {{ $pairedTime }} WIB
+                                            @endif
                                         @endif
-                                    @endif
-                                </td>
-                            </tr>
+                                    </td>
+                                </tr>
+                            @endif
                         @endfor
                     </table>
                 @endif

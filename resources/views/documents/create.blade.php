@@ -435,11 +435,20 @@
                                     <h4 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">{{ __('Informasi Spesifik') }}</h4>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         <template x-for="field in (selectedTemplate?.dynamicFields || [])" :key="field.name">
-                                            <div :class="['textarea', 'table'].includes(field.type) ? 'md:col-span-2' : ''">
-                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                                    <span x-text="field.label"></span>
-                                                    <span x-show="field.required == '1'" class="text-danger-500">*</span>
-                                                </label>
+                                            <div :class="['textarea', 'table', 'section'].includes(field.type) ? 'md:col-span-2' : ''">
+                                                <!-- Section Heading -->
+                                                <template x-if="field.type === 'section'">
+                                                    <div class="pt-3 pb-1 border-b border-gray-200 dark:border-gray-700">
+                                                        <h5 class="text-sm font-bold text-gray-800 dark:text-gray-100 tracking-wide" x-text="field.label"></h5>
+                                                    </div>
+                                                </template>
+
+                                                <template x-if="field.type !== 'section'">
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                            <span x-text="field.label"></span>
+                                                            <span x-show="field.required == '1'" class="text-danger-500">*</span>
+                                                        </label>
                                                 
                                                 <!-- Number -->
                                                 <template x-if="field.type === 'number'">
@@ -572,6 +581,8 @@
                                                                 <x-icon name="plus" class="w-3 h-3" /> {{ __('Tambah Baris') }}
                                                             </button>
                                                         </div>
+                                                    </div>
+                                                </template>
                                                     </div>
                                                 </template>
                                             </div>

@@ -12,7 +12,11 @@
                         @foreach($dynamicFields as $field)
                             @php $fieldName = $field['name']; $fieldValue = $document->metadata[$fieldName] ?? null; @endphp
                             
-                            @if($field['type'] === 'table')
+                            @if($field['type'] === 'section')
+                                <div class="col-span-1 sm:col-span-2 pt-3 pb-1 border-b border-gray-200 dark:border-gray-700">
+                                    <h3 class="text-sm font-bold text-gray-800 dark:text-gray-100 tracking-wide">{{ $field['label'] }}</h3>
+                                </div>
+                            @elseif($field['type'] === 'table')
                                 <div class="col-span-1 sm:col-span-2">
                                     <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">{{ $field['label'] }}</dt>
                                     <dd class="mt-1">

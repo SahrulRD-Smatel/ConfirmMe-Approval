@@ -252,21 +252,28 @@
                                 <div class="space-y-4 p-4">
                                     <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                                         <div>
-                                            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ __('Label Input') }} <span class="text-danger-500">*</span></label>
-                                            <input type="text" x-model="field.label" :name="`fields[dynamic_fields][${index}][label]`" required placeholder="{{ __('Cth: Nama Pengemudi') }}" class="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
-                                            <p class="text-xs text-gray-400 mt-1">{{ __('Nama isian yang dilihat pengaju saat mengisi form.') }}</p>
+                                            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                                                <span x-text="field.type === 'section' ? '{{ __('Teks Judul Bagian / Narasi') }}' : '{{ __('Label Input') }}'"></span> <span class="text-danger-500">*</span>
+                                            </label>
+                                            <input type="text" x-model="field.label" :name="`fields[dynamic_fields][${index}][label]`" required
+                                                :placeholder="field.type === 'section' ? '{{ __('Cth: Yang bertanda tangan di bawah ini, atau Menugaskan,') }}' : '{{ __('Cth: Nama Pengemudi') }}'"
+                                                @input="if(field.type === 'section' && (!field.name || field.name.startsWith('sec_'))) { field.name = 'sec_' + (field.label ? field.label.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_').substring(0, 30) : index); }"
+                                                class="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                                            <p class="text-xs text-gray-400 mt-1" x-text="field.type === 'section' ? '{{ __('Teks pengantar atau judul bagian yang akan dicetak di formulir dan dokumen PDF.') }}' : '{{ __('Nama isian yang dilihat pengaju saat mengisi form.') }}'"></p>
                                         </div>
                                         <div>
                                             <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ __('Field Name (Internal)') }} <span class="text-danger-500">*</span></label>
                                             <input type="text" x-model="field.name" :name="`fields[dynamic_fields][${index}][name]`" required placeholder="cth: nama_pengemudi" class="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
-                                            <p class="text-xs text-gray-400 mt-1">{{ __('Kode unik field ini, dipakai untuk menyisipkan isian ke isi surat. Tanpa spasi, gunakan huruf kecil dan underscore.') }}</p>
+                                            <p class="text-xs text-gray-400 mt-1" x-text="field.type === 'section' ? '{{ __('Kode pengenal unik untuk bagian ini.') }}' : '{{ __('Kode unik field ini, dipakai untuk menyisipkan isian ke isi surat. Tanpa spasi, gunakan huruf kecil dan underscore.') }}'"></p>
                                         </div>
                                     </div>
 
                                     <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                                         <div>
                                             <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ __('Tipe Input') }} <span class="text-danger-500">*</span></label>
-                                            <select x-model="field.type" :name="`fields[dynamic_fields][${index}][type]`" required class="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                                            <select x-model="field.type" :name="`fields[dynamic_fields][${index}][type]`" required
+                                                @change="if(field.type === 'section') { field.required = false; if(!field.name || field.name === 'nama_field') field.name = 'sec_' + (field.label ? field.label.toLowerCase().replace(/[^a-z0-9]/g, '_').substring(0, 25) : index); }"
+                                                class="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
                                                 <option value="text">{{ __('Teks Pendek') }}</option>
                                                 <option value="textarea">{{ __('Teks Panjang') }}</option>
                                                 <option value="number">{{ __('Angka') }}</option>
@@ -275,16 +282,22 @@
                                                 <option value="select">{{ __('Dropdown (Pilihan)') }}</option>
                                                 <option value="file">{{ __('Upload File/Foto') }}</option>
                                                 <option value="table">{{ __('Tabel Dinamis') }}</option>
+                                                <option value="section">{{ __('Judul Bagian / Teks Narasi (Section Heading)') }}</option>
                                             </select>
                                             <p class="text-xs text-gray-400 mt-1">{{ __('Menentukan cara pengaju mengisi field ini.') }}</p>
                                         </div>
                                         <div>
-                                            <span class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ __('Wajib Diisi (Required)') }}</span>
-                                            <label class="flex cursor-pointer items-start gap-2.5 rounded-lg border border-gray-300 px-3 py-2 dark:border-gray-600">
-                                                <input type="hidden" :name="`fields[dynamic_fields][${index}][required]`" value="0">
-                                                <input type="checkbox" x-model="field.required" :name="`fields[dynamic_fields][${index}][required]`" value="1" class="mt-0.5 rounded border-gray-300 text-primary-600 focus:ring-primary-500 w-4 h-4">
-                                                <span class="text-xs leading-relaxed text-gray-500 dark:text-gray-400">{{ __('Aktifkan jika pengaju tidak boleh mengirim pengajuan sebelum field ini diisi.') }}</span>
-                                            </label>
+                                            <div x-show="field.type !== 'section'">
+                                                <span class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ __('Wajib Diisi (Required)') }}</span>
+                                                <label class="flex cursor-pointer items-start gap-2.5 rounded-lg border border-gray-300 px-3 py-2 dark:border-gray-600">
+                                                    <input type="hidden" :name="`fields[dynamic_fields][${index}][required]`" value="0">
+                                                    <input type="checkbox" x-model="field.required" :name="`fields[dynamic_fields][${index}][required]`" value="1" class="mt-0.5 rounded border-gray-300 text-primary-600 focus:ring-primary-500 w-4 h-4">
+                                                    <span class="text-xs leading-relaxed text-gray-500 dark:text-gray-400">{{ __('Aktifkan jika pengaju tidak boleh mengirim pengajuan sebelum field ini diisi.') }}</span>
+                                                </label>
+                                            </div>
+                                            <div x-show="field.type === 'section'" class="flex items-center pt-5">
+                                                <span class="text-xs text-gray-500 dark:text-gray-400 italic">{{ __('Elemen ini berupa judul/teks narasi (tidak memerlukan input dari pengaju).') }}</span>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -304,25 +317,34 @@
 
                                     <div class="rounded-lg border border-dashed border-gray-200 bg-gray-50/70 px-3 py-3 dark:border-gray-700 dark:bg-gray-900/40">
                                         <p class="mb-2 text-[11px] font-semibold uppercase tracking-wider text-gray-400">{{ __('Pratinjau — tampilan untuk pengaju') }}</p>
-                                        <p class="mb-1 text-xs font-medium text-gray-600 dark:text-gray-300">
-                                            <span x-text="field.label || '{{ __('Label Input') }}'"></span> <span x-show="field.required" class="text-danger-500">*</span>
-                                        </p>
-                                        <div x-show="field.type === 'text' || field.type === 'number' || field.type === 'date' || field.type === 'time'" class="flex h-9 items-center rounded-lg border border-gray-200 bg-white px-3 text-xs text-gray-400 dark:border-gray-600 dark:bg-gray-700">
-                                            <span x-show="field.type === 'text'">{{ __('Kotak teks satu baris') }}</span>
-                                            <span x-show="field.type === 'number'">{{ __('Kotak khusus angka') }}</span>
-                                            <span x-show="field.type === 'date'">{{ __('Pemilih tanggal') }}</span>
-                                            <span x-show="field.type === 'time'">{{ __('Pemilih jam (Format 24 Jam WIB)') }}</span>
+                                        
+                                        <!-- Preview for Section Heading -->
+                                        <div x-show="field.type === 'section'" class="rounded-lg bg-white dark:bg-gray-800 p-3 border-l-4 border-primary-600 shadow-sm">
+                                            <p class="text-xs font-bold text-gray-900 dark:text-gray-100" x-text="field.label || '{{ __('Judul Bagian / Teks Narasi') }}'"></p>
+                                            <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-1">{{ __('Teks ini akan tampil sebagai pembatas bagian di form pengajuan dan dicetak di PDF sebagai pengantar kelompok isian.') }}</p>
                                         </div>
-                                        <div x-show="field.type === 'textarea'" class="flex h-16 items-start rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-400 dark:border-gray-600 dark:bg-gray-700">{{ __('Kotak teks panjang (beberapa baris)') }}</div>
-                                        <div x-show="field.type === 'select'" class="flex h-9 items-center justify-between rounded-lg border border-gray-200 bg-white px-3 text-xs text-gray-400 dark:border-gray-600 dark:bg-gray-700">
-                                            <span class="truncate" x-text="field.options ? field.options.split(',')[0].trim() : '{{ __('Pilih salah satu opsi') }}'"></span>
-                                            <x-icon name="chevron-down" class="w-4 h-4 shrink-0" />
-                                        </div>
-                                        <div x-show="field.type === 'file'" class="flex h-9 items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 text-xs text-gray-400 dark:border-gray-600 dark:bg-gray-700">
-                                            <x-icon name="arrow-up-tray" class="w-4 h-4" /> {{ __('Tombol unggah file/foto') }}
-                                        </div>
-                                        <div x-show="field.type === 'table'" class="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-400 dark:border-gray-600 dark:bg-gray-700">
-                                            <span x-text="field.columns ? field.columns.split(',').map(c => c.trim()).join('  ·  ') : '{{ __('Kolom tabel mengikuti isian Kolom Tabel di atas') }}'"></span>
+
+                                        <div x-show="field.type !== 'section'">
+                                            <p class="mb-1 text-xs font-medium text-gray-600 dark:text-gray-300">
+                                                <span x-text="field.label || '{{ __('Label Input') }}'"></span> <span x-show="field.required" class="text-danger-500">*</span>
+                                            </p>
+                                            <div x-show="field.type === 'text' || field.type === 'number' || field.type === 'date' || field.type === 'time'" class="flex h-9 items-center rounded-lg border border-gray-200 bg-white px-3 text-xs text-gray-400 dark:border-gray-600 dark:bg-gray-700">
+                                                <span x-show="field.type === 'text'">{{ __('Kotak teks satu baris') }}</span>
+                                                <span x-show="field.type === 'number'">{{ __('Kotak khusus angka') }}</span>
+                                                <span x-show="field.type === 'date'">{{ __('Pemilih tanggal') }}</span>
+                                                <span x-show="field.type === 'time'">{{ __('Pemilih jam (Format 24 Jam WIB)') }}</span>
+                                            </div>
+                                            <div x-show="field.type === 'textarea'" class="flex h-16 items-start rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-400 dark:border-gray-600 dark:bg-gray-700">{{ __('Kotak teks panjang (beberapa baris)') }}</div>
+                                            <div x-show="field.type === 'select'" class="flex h-9 items-center justify-between rounded-lg border border-gray-200 bg-white px-3 text-xs text-gray-400 dark:border-gray-600 dark:bg-gray-700">
+                                                <span class="truncate" x-text="field.options ? field.options.split(',')[0].trim() : '{{ __('Pilih salah satu opsi') }}'"></span>
+                                                <x-icon name="chevron-down" class="w-4 h-4 shrink-0" />
+                                            </div>
+                                            <div x-show="field.type === 'file'" class="flex h-9 items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 text-xs text-gray-400 dark:border-gray-600 dark:bg-gray-700">
+                                                <x-icon name="arrow-up-tray" class="w-4 h-4" /> {{ __('Tombol unggah file/foto') }}
+                                            </div>
+                                            <div x-show="field.type === 'table'" class="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-400 dark:border-gray-600 dark:bg-gray-700">
+                                                <span x-text="field.columns ? field.columns.split(',').map(c => c.trim()).join('  ·  ') : '{{ __('Kolom tabel mengikuti isian Kolom Tabel di atas') }}'"></span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
