@@ -1,7 +1,7 @@
 @props(['document'])
             {{-- Dynamic Fields Details --}}
             @php
-                $template = \App\Models\DocumentTemplate::where('code', $document->template)->first();
+                $template = $document->documentTemplate ?? ($document->template ? \App\Models\DocumentTemplate::where('code', $document->template)->first() : null);
                 $dynamicFields = $template ? ($template->fields['dynamic_fields'] ?? []) : [];
             @endphp
 
@@ -35,6 +35,18 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                                                        @php
+                                                            $colSums = [];
+                                                            $hasColSums = false;
+                                                            foreach ($cols as $c) {
+                                                                if (preg_match('/harga|biaya|nominal|tarif|price|rp|total|subtotal/i', $c)) {
+                                                                    $colSums[$c] = 0;
+                                                                    $hasColSums = true;
+                                                                } else {
+                                                                    $colSums[$c] = null;
+                                                                }
+                                                            }
+                                                        @endphp
                                                         @foreach($fieldValue as $row)
                                                             <tr>
                                                                 @foreach($cols as $col)
@@ -44,7 +56,11 @@
                                                                         $isValNum = ($cellVal !== '-' && $cellVal !== '' && is_numeric(str_replace(['.', ',', ' '], '', (string)$cellVal)));
 
                                                                         if ($isValNum && preg_match('/harga|biaya|nominal|tarif|price|rp|total|subtotal/i', $col)) {
-                                                                            $cellVal = 'Rp ' . number_format((float)str_replace(['.', ','], '', (string)$cellVal), 0, ',', '.');
+                                                                            $rawNum = (float)str_replace(['.', ','], '', (string)$cellVal);
+                                                                            if (isset($colSums[$col])) {
+                                                                                $colSums[$col] += $rawNum;
+                                                                            }
+                                                                            $cellVal = 'Rp ' . number_format($rawNum, 0, ',', '.');
                                                                         } elseif ($isValNum && preg_match('/qty|jumlah|kuantitas/i', $col)) {
                                                                             $cellVal = number_format((float)str_replace(['.', ','], '', (string)$cellVal), 0, ',', '.');
                                                                         }
@@ -54,6 +70,21 @@
                                                             </tr>
                                                         @endforeach
                                                     </tbody>
+                                                    @if($hasColSums)
+                                                        <tfoot class="bg-gray-100 dark:bg-gray-800 font-bold border-t-2 border-gray-200 dark:border-gray-700">
+                                                            <tr>
+                                                                @foreach($cols as $cIdx => $col)
+                                                                    <td class="px-4 py-3 whitespace-nowrap text-sm {{ $colSums[$col] !== null ? 'text-right font-mono text-gray-900 dark:text-white' : 'text-left text-xs uppercase tracking-wider text-gray-600 dark:text-gray-300' }}">
+                                                                        @if($colSums[$col] !== null)
+                                                                            Rp {{ number_format($colSums[$col], 0, ',', '.') }}
+                                                                        @elseif($cIdx === 0)
+                                                                            {{ __('Total') }}
+                                                                        @endif
+                                                                    </td>
+                                                                @endforeach
+                                                            </tr>
+                                                        </tfoot>
+                                                    @endif
                                                 </table>
                                             </div>
                                         @else
@@ -85,16 +116,24 @@
                                     </dd>
                                 </div>
                             @else
-                                <div>
-                                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ $field['label'] }}</dt>
-                                    <dd class="mt-1 text-sm text-gray-900 dark:text-white font-medium">
+                                @php
+                                    $isTotalField = (bool)preg_match('/(?:^total|total_|_total|jumlah_total|grand_total|biaya_total|total_estimasi|estimasi_total)/i', $field['name']) || (bool)preg_match('/(?:^total|\btotal\b|grand total|jumlah total)/i', $field['label']);
+                                @endphp
+                                <div class="{{ $isTotalField ? 'col-span-1 sm:col-span-2 p-4 rounded-xl border border-primary-200/80 dark:border-primary-900/50 bg-primary-50/40 dark:bg-primary-950/20' : '' }}">
+                                    <dt class="text-sm font-medium {{ $isTotalField ? 'text-primary-900 dark:text-primary-300 font-bold uppercase tracking-wide text-xs flex items-center justify-between' : 'text-gray-500 dark:text-gray-400' }}">
+                                        <span>{{ $field['label'] }}</span>
+                                        @if($isTotalField)
+                                            <span class="inline-flex items-center gap-1 text-[10px] bg-primary-100 text-primary-800 dark:bg-primary-900/60 dark:text-primary-300 px-2 py-0.5 rounded font-semibold">{{ __('Auto-Sum') }}</span>
+                                        @endif
+                                    </dt>
+                                    <dd class="mt-1 text-sm text-gray-900 dark:text-white font-medium {{ $isTotalField ? 'text-lg font-bold text-primary-900 dark:text-primary-100 font-mono' : '' }}">
                                         @if($fieldValue)
                                             @if($field['type'] === 'date')
                                                 {{ \Carbon\Carbon::parse($fieldValue)->translatedFormat('d F Y') }}
                                             @elseif($field['type'] === 'time')
                                                 {{ (strpos($fieldValue, 'WIB') !== false) ? $fieldValue : $fieldValue . ' WIB' }}
                                             @elseif($field['type'] === 'number')
-                                                {{ is_numeric($fieldValue) ? number_format((float)$fieldValue, 0, ',', '.') : $fieldValue }}
+                                                {{ $isTotalField ? 'Rp ' : '' }}{{ is_numeric($fieldValue) ? number_format((float)$fieldValue, 0, ',', '.') : $fieldValue }}
                                             @else
                                                 {{ $fieldValue }}
                                             @endif

@@ -217,7 +217,44 @@
         </div>
 
         <!-- DYNAMIC FIELDS -->
-        <div x-show="selectedTemplate && selectedTemplate.dynamicFields && selectedTemplate.dynamicFields.length > 0" class="rounded-2xl border border-gray-100 bg-gray-50/60 p-4 dark:border-gray-800 dark:bg-gray-800/40 sm:p-5" x-cloak>
+        <div x-show="selectedTemplate && selectedTemplate.dynamicFields && selectedTemplate.dynamicFields.length > 0" 
+             x-data="{
+                numValues: {},
+                init() {
+                    let fields = selectedTemplate?.dynamicFields || [];
+                    fields.forEach(f => {
+                        if (f.type === 'number' && metadata[f.name]) {
+                            this.numValues[f.name] = parseInt(String(metadata[f.name]).replace(/[^\d]/g, '')) || 0;
+                        }
+                    });
+                },
+                isTotalField(f) {
+                    if (!f) return false;
+                    let n = (f.name || '').toLowerCase();
+                    let l = (f.label || '').toLowerCase();
+                    return /(?:^total|total_|_total|jumlah_total|grand_total|biaya_total|total_estimasi|estimasi_total)/i.test(n) ||
+                           /(?:^total|\btotal\b|grand total|jumlah total)/i.test(l);
+                },
+                computeTotal(targetField) {
+                    let fields = selectedTemplate?.dynamicFields || [];
+                    let targetIdx = fields.findIndex(f => f.name === targetField.name);
+                    if (targetIdx === -1) targetIdx = fields.length;
+                    let sum = 0;
+                    for (let i = 0; i < targetIdx; i++) {
+                        let f = fields[i];
+                        if (f.type === 'number' && !this.isTotalField(f)) {
+                            let val = parseInt(this.numValues[f.name] || 0) || 0;
+                            sum += val;
+                        }
+                    }
+                    return sum;
+                },
+                setNum(fieldName, val) {
+                    this.numValues[fieldName] = parseInt(val) || 0;
+                    metadata[fieldName] = parseInt(val) || 0;
+                }
+             }"
+             class="rounded-2xl border border-gray-100 bg-gray-50/60 p-4 dark:border-gray-800 dark:bg-gray-800/40 sm:p-5" x-cloak>
             <h4 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">{{ __('Informasi Spesifik') }}</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <template x-for="field in (selectedTemplate?.dynamicFields || [])" :key="field.name">
@@ -231,23 +268,56 @@
 
                         <template x-if="field.type !== 'section'">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    <span x-text="field.label"></span>
-                                    <span x-show="field.required == '1' || field.required === true" class="text-danger-500">*</span>
-                                </label>
+                                <div class="flex items-center justify-between mb-1">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        <span x-text="field.label"></span>
+                                        <span x-show="field.required == '1' || field.required === true" class="text-danger-500">*</span>
+                                    </label>
+                                    <template x-if="field.type === 'number' && isTotalField(field)">
+                                        <span class="inline-flex items-center gap-1 text-[10px] font-semibold text-primary-700 bg-primary-100/70 dark:bg-primary-900/40 dark:text-primary-300 px-2 py-0.5 rounded-full">
+                                            <x-icon name="calculator" class="w-3 h-3" />
+                                            {{ __('Auto-Jumlah') }}
+                                        </span>
+                                    </template>
+                                </div>
                         
                         <!-- Number -->
                         <template x-if="field.type === 'number'">
                             <div class="relative" x-data="{
-                                valFormatted: metadata[field.name] ? new Intl.NumberFormat('id-ID').format(String(metadata[field.name]).replace(/[^\d]/g, '')) : '',
+                                valFormatted: '',
+                                init() {
+                                    if (isTotalField(field)) {
+                                        this.$watch('numValues', () => {
+                                            let calc = computeTotal(field);
+                                            this.valFormatted = calc > 0 ? new Intl.NumberFormat('id-ID').format(calc) : '';
+                                            metadata[field.name] = calc > 0 ? calc : '';
+                                        }, { deep: true });
+                                        let initial = computeTotal(field);
+                                        if (initial > 0) {
+                                            this.valFormatted = new Intl.NumberFormat('id-ID').format(initial);
+                                            metadata[field.name] = initial;
+                                        } else if (metadata[field.name]) {
+                                            let raw = String(metadata[field.name]).replace(/[^\d]/g, '');
+                                            this.valFormatted = raw ? new Intl.NumberFormat('id-ID').format(raw) : '';
+                                        }
+                                    } else if (metadata[field.name]) {
+                                        let raw = String(metadata[field.name]).replace(/[^\d]/g, '');
+                                        this.valFormatted = raw ? new Intl.NumberFormat('id-ID').format(raw) : '';
+                                        setNum(field.name, raw);
+                                    }
+                                },
                                 formatNum(e) {
                                     let raw = e.target.value.replace(/[^\d]/g, '');
                                     metadata[field.name] = raw;
                                     this.valFormatted = raw ? new Intl.NumberFormat('id-ID').format(raw) : '';
+                                    setNum(field.name, raw);
                                 }
                             }">
-                                <input type="text" x-model="valFormatted" @input="formatNum($event)" inputmode="numeric" :placeholder="field.label" :required="field.required == '1' || field.required === true"
-                                    class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-primary-500/20 font-medium text-sm">
+                                <input type="text" x-model="valFormatted" @input="formatNum($event)" inputmode="numeric" 
+                                    :placeholder="isTotalField(field) ? '{{ __('Otomatis dijumlahkan dari rincian di atas') }}' : field.label" 
+                                    :required="field.required == '1' || field.required === true"
+                                    :class="isTotalField(field) ? 'border-primary-400 bg-primary-50/30 dark:bg-primary-950/20 dark:border-primary-700 font-bold text-primary-900 dark:text-primary-100' : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white'"
+                                    class="block w-full px-4 py-3 border rounded-xl focus:ring-4 focus:ring-primary-500/20 font-medium text-sm">
                                 <input type="hidden" :name="`metadata[${field.name}]`" :value="metadata[field.name]">
                             </div>
                         </template>
@@ -363,14 +433,27 @@
                                     }) : [{}],
                                     addRow() { this.rows.push({}); },
                                     removeRow(rIndex) { if(this.rows.length > 1) this.rows.splice(rIndex, 1); },
-                                    getCols(colsStr) { return colsStr ? (typeof colsStr === 'string' ? colsStr.split(',') : colsStr).map(s=>typeof s==='string'?s.trim():s) : []; }
+                                    getCols(colsStr) { return colsStr ? (typeof colsStr === 'string' ? colsStr.split(',') : colsStr).map(s=>typeof s==='string'?s.trim():s) : []; },
+                                    isNumericCol(col) {
+                                        return /(?:harga|biaya|nominal|tarif|price|subtotal|total|rp)/i.test(col);
+                                    },
+                                    colTotal(col) {
+                                        return this.rows.reduce((sum, row) => {
+                                            let val = row[col] || '';
+                                            let num = parseInt(String(val).replace(/[^\d]/g, '')) || 0;
+                                            return sum + num;
+                                        }, 0);
+                                    },
+                                    hasNumericCol() {
+                                        return this.getCols(field.columns).some(c => this.isNumericCol(c));
+                                    }
                                  }">
                                 <div class="overflow-x-auto">
                                     <table class="min-w-[680px] w-full text-left text-sm">
                                         <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
                                             <tr>
                                                 <template x-for="col in getCols(field.columns)">
-                                                    <th class="px-4 py-3" x-text="col"></th>
+                                                    <th :class="isNumericCol(col) ? 'text-right' : 'text-left'" class="px-4 py-3" x-text="col"></th>
                                                 </template>
                                                 <th class="px-4 py-3 w-16 text-center">{{ __('Aksi') }}</th>
                                             </tr>
@@ -381,10 +464,11 @@
                                                     <template x-for="col in getCols(field.columns)">
                                                         <td class="p-2">
                                                             <input type="text" :name="`metadata[${field.name}][${rIndex}][${col}]`" x-model="row[col]" :placeholder="col" :required="field.required == '1' || field.required === true"
-                                                                @input="if (/harga|biaya|nominal|tarif|price|rp/i.test(col)) {
+                                                                @input="if (isNumericCol(col)) {
                                                                     let raw = $event.target.value.replace(/[^\d]/g, '');
                                                                     row[col] = raw ? new Intl.NumberFormat('id-ID').format(raw) : '';
                                                                 }"
+                                                                :class="isNumericCol(col) ? 'text-right font-mono' : ''"
                                                                 class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                                         </td>
                                                     </template>
@@ -396,6 +480,21 @@
                                                 </tr>
                                             </template>
                                         </tbody>
+                                        <tfoot x-show="hasNumericCol()" class="bg-gray-100 dark:bg-gray-700/80 font-bold border-t-2 border-gray-300 dark:border-gray-600">
+                                            <tr>
+                                                <template x-for="(col, cIdx) in getCols(field.columns)">
+                                                    <td :class="isNumericCol(col) ? 'text-right px-3 py-2.5 font-mono text-sm text-gray-900 dark:text-white' : 'px-3 py-2.5 text-xs text-gray-700 dark:text-gray-300'">
+                                                        <template x-if="isNumericCol(col)">
+                                                            <span>Rp <span x-text="new Intl.NumberFormat('id-ID').format(colTotal(col))"></span></span>
+                                                        </template>
+                                                        <template x-if="!isNumericCol(col) && cIdx === 0">
+                                                            <span class="font-bold text-gray-800 dark:text-gray-200 uppercase tracking-wider text-xs">{{ __('Total') }}</span>
+                                                        </template>
+                                                    </td>
+                                                </template>
+                                                <td class="p-2"></td>
+                                            </tr>
+                                        </tfoot>
                                     </table>
                                 </div>
                                 <div class="p-3 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">

@@ -245,6 +245,46 @@ class DocumentController extends Controller
                     default => null,
                 };
 
+                // Fallback: Check dynamic metadata for any explicit Total or table monetary sums
+                if (empty($estimatedBudget) && !empty($metadata) && is_array($metadata)) {
+                    foreach ($metadata as $mKey => $mVal) {
+                        if (is_scalar($mVal) && is_numeric(str_replace(['.', ',', ' '], '', (string)$mVal))) {
+                            if (preg_match('/(?:^total|total_|_total|jumlah_total|grand_total|biaya_total|total_estimasi|estimasi_total)/i', (string)$mKey)) {
+                                $candidate = (float)str_replace(['.', ',', ' '], '', (string)$mVal);
+                                if ($candidate > 0) {
+                                    $estimatedBudget = $candidate;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (empty($estimatedBudget)) {
+                        foreach ($metadata as $mKey => $mVal) {
+                            if (is_array($mVal) && !empty($mVal)) {
+                                $tableSum = 0;
+                                $hasPrice = false;
+                                foreach ($mVal as $tRow) {
+                                    if (is_array($tRow)) {
+                                        foreach ($tRow as $colName => $colVal) {
+                                            if (preg_match('/harga|biaya|nominal|tarif|price|subtotal|total/i', (string)$colName)) {
+                                                $cleanNum = (float)str_replace(['.', ',', ' '], '', (string)$colVal);
+                                                if ($cleanNum > 0) {
+                                                    $tableSum += $cleanNum;
+                                                    $hasPrice = true;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                if ($hasPrice && $tableSum > 0) {
+                                    $estimatedBudget = ($estimatedBudget ?? 0) + $tableSum;
+                                }
+                            }
+                        }
+                    }
+                }
+
                 $document = Document::create([
                     'title' => $docData['title'],
                     'description' => $docData['description'],
@@ -508,6 +548,46 @@ class DocumentController extends Controller
             'loan' => $request->input('loan_amount', 0) ?: 0,
             default => null,
         };
+
+        // Fallback: Check dynamic metadata for any explicit Total or table monetary sums
+        if (empty($estimatedBudget) && !empty($metadata) && is_array($metadata)) {
+            foreach ($metadata as $mKey => $mVal) {
+                if (is_scalar($mVal) && is_numeric(str_replace(['.', ',', ' '], '', (string)$mVal))) {
+                    if (preg_match('/(?:^total|total_|_total|jumlah_total|grand_total|biaya_total|total_estimasi|estimasi_total)/i', (string)$mKey)) {
+                        $candidate = (float)str_replace(['.', ',', ' '], '', (string)$mVal);
+                        if ($candidate > 0) {
+                            $estimatedBudget = $candidate;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (empty($estimatedBudget)) {
+                foreach ($metadata as $mKey => $mVal) {
+                    if (is_array($mVal) && !empty($mVal)) {
+                        $tableSum = 0;
+                        $hasPrice = false;
+                        foreach ($mVal as $tRow) {
+                            if (is_array($tRow)) {
+                                foreach ($tRow as $colName => $colVal) {
+                                    if (preg_match('/harga|biaya|nominal|tarif|price|subtotal|total/i', (string)$colName)) {
+                                        $cleanNum = (float)str_replace(['.', ',', ' '], '', (string)$colVal);
+                                        if ($cleanNum > 0) {
+                                            $tableSum += $cleanNum;
+                                            $hasPrice = true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if ($hasPrice && $tableSum > 0) {
+                            $estimatedBudget = ($estimatedBudget ?? 0) + $tableSum;
+                        }
+                    }
+                }
+            }
+        }
 
         $document->update([
             'title' => $validated['title'],

@@ -1437,6 +1437,8 @@
                             while (count($tiketRows) < 4) {
                                 $tiketRows[] = [];
                             }
+                            $totalTiketSum = 0;
+                            $hasAnyTiketPrice = false;
                         @endphp
                         @foreach($tiketRows as $idx => $tRow)
                             @php
@@ -1453,7 +1455,25 @@
                                 $rowJam = $tRow['jam'] ?? ($tRow['Jam'] ?? '');
                                 $rowTransport = $tRow['jenis_transportasi'] ?? ($tRow['Jenis Transportasi'] ?? '');
                                 $rowKelas = $tRow['kelas'] ?? ($tRow['Kelas'] ?? '');
-                                $rowHarga = !empty($tRow['harga_tiket']) ? 'Rp ' . number_format((float)$tRow['harga_tiket'], 0, ',', '.') : ($hasData ? 'Team HR' : '');
+
+                                // Dynamic price column lookup
+                                $rowHargaNum = 0;
+                                foreach ($tRow as $k => $v) {
+                                    if (preg_match('/harga|biaya|price|tarif/i', (string)$k)) {
+                                        $cleanNum = (float)str_replace(['.', ',', ' '], '', (string)$v);
+                                        if ($cleanNum > 0) {
+                                            $rowHargaNum = $cleanNum;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if ($rowHargaNum > 0) {
+                                    $totalTiketSum += $rowHargaNum;
+                                    $hasAnyTiketPrice = true;
+                                    $rowHarga = 'Rp ' . number_format($rowHargaNum, 0, ',', '.');
+                                } else {
+                                    $rowHarga = $hasData ? 'Team HR' : '';
+                                }
                             @endphp
                             <tr>
                                 <td style="border: 1px solid #111; padding: 2px; text-align: center;">{{ $idx + 1 }}</td>
@@ -1468,7 +1488,13 @@
                         @endforeach
                         <tr>
                             <td colspan="7" style="border: 1px solid #111; padding: 2px 6px; text-align: right; font-weight: bold;">Total</td>
-                            <td style="border: 1px solid #111; padding: 2px 6px; text-align: right; font-weight: bold; font-size: 8px; font-variant-numeric: tabular-nums;">Rp0</td>
+                            <td style="border: 1px solid #111; padding: 2px 6px; text-align: right; font-weight: bold; font-size: 8px; font-variant-numeric: tabular-nums;">
+                                @if($totalTiketSum > 0)
+                                    Rp {{ number_format($totalTiketSum, 0, ',', '.') }}
+                                @else
+                                    Rp0
+                                @endif
+                            </td>
                         </tr>
                         <tr>
                             <td colspan="8" style="border: 1px solid #111; padding: 2.5px 6px; font-size: 8.5px;">
@@ -1488,12 +1514,14 @@
                             return [
                                 'text' => number_format($num, 0, ',', '.'),
                                 'is_nominal' => true,
+                                'raw_num' => $num,
                                 'style' => 'border: 1px solid #111; padding: 2px 6px; text-align: right; font-variant-numeric: tabular-nums;',
                             ];
                         }
                         return [
                             'text' => $cleanVal ?: $fallback,
                             'is_nominal' => false,
+                            'raw_num' => 0,
                             'style' => 'border: 1px solid #111; padding: 2px 6px; text-align: right; color: #444; font-size: 8px;',
                         ];
                     };
@@ -1555,9 +1583,18 @@
                             </td>
                             <td style="{{ $cellUm6['style'] }} vertical-align: middle;">{{ $cellUm6['text'] }}</td>
                         </tr>
+                        @php
+                            $computedUmTotal = 0;
+                            foreach ([$cellUm1, $cellUm2, $cellUm3a, $cellUm3b, $cellUm4, $cellUm5, $cellUm6] as $c) {
+                                if (!empty($c['is_nominal']) && !empty($c['raw_num'])) {
+                                    $computedUmTotal += $c['raw_num'];
+                                }
+                            }
+                            $finalTotalEstimasi = ($computedUmTotal > 0) ? $computedUmTotal : $totalEstimasi;
+                        @endphp
                         <tr style="background-color: #f1f5f9; font-weight: bold;">
                             <td colspan="2" style="border: 1px solid #111; padding: 3px 6px; text-align: center; text-transform: uppercase;">TOTAL ( Estimasi dari Pemohon )</td>
-                            <td style="border: 1px solid #111; padding: 3px 6px; text-align: right; font-variant-numeric: tabular-nums;">Rp {{ number_format($totalEstimasi, 0, ',', '.') }}</td>
+                            <td style="border: 1px solid #111; padding: 3px 6px; text-align: right; font-variant-numeric: tabular-nums;">Rp {{ number_format($finalTotalEstimasi, 0, ',', '.') }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -1759,16 +1796,35 @@
                                                 if (is_array($displayVal)) {
                                                     $displayVal = implode(', ', array_filter($displayVal, 'is_scalar'));
                                                 }
+                                                $isTotalField = (bool)preg_match('/(?:^total|total_|_total|jumlah_total|grand_total|biaya_total|total_estimasi|estimasi_total)/i', (string)$fName) || (bool)preg_match('/(?:^total|\btotal\b|grand total|jumlah total)/i', (string)$fLabel);
+
                                                 if ($fVal && $fType === 'date' && strtotime($fVal)) {
                                                     $displayVal = \Carbon\Carbon::parse($fVal)->translatedFormat('d/m/Y');
                                                 } elseif ($fVal && $fType === 'time') {
                                                     $displayVal = (strpos($fVal, 'WIB') !== false) ? $fVal : $fVal . ' WIB';
+                                                } elseif ($isTotalField) {
+                                                    if ((!$fVal || $fVal == 0) && !empty($nonTableFields)) {
+                                                        $calcSum = 0;
+                                                        for ($k = 0; $k < $i; $k++) {
+                                                            $prevF = $nonTableFields[$k];
+                                                            if (($prevF['type'] ?? '') === 'number') {
+                                                                $rawP = str_replace(['.', ',', ' '], '', (string)($metadata[$prevF['name']] ?? '0'));
+                                                                if (is_numeric($rawP)) $calcSum += (float)$rawP;
+                                                            }
+                                                        }
+                                                        if ($calcSum > 0) $fVal = $calcSum;
+                                                    }
+                                                    $displayVal = 'Rp ' . number_format((float)$fVal, 0, ',', '.');
                                                 } elseif ($fVal && $fType === 'number' && is_numeric($fVal)) {
                                                     $displayVal = number_format((float)$fVal, 0, ',', '.');
                                                 }
                                             @endphp
 
-                                            {{ $displayVal }}
+                                            @if($isTotalField)
+                                                <strong>{{ $displayVal }}</strong>
+                                            @else
+                                                {{ $displayVal }}
+                                            @endif
 
                                             @if($pairedTime)
                                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -1844,6 +1900,46 @@
                                         </tr>
                                     @endforeach
                                 </tbody>
+                                @php
+                                    $portraitColSums = [];
+                                    $hasPortraitSums = false;
+                                    foreach ($tCols as $c) {
+                                        if (preg_match('/harga|biaya|nominal|tarif|price|rp|total|subtotal/i', (string)$c)) {
+                                            $sum = 0;
+                                            foreach ($tData as $r) {
+                                                $r = (array)$r;
+                                                $val = '-';
+                                                foreach ($r as $k => $v) {
+                                                    if (strtolower(trim((string)$k)) === strtolower(trim((string)$c))) {
+                                                        $val = $v;
+                                                        break;
+                                                    }
+                                                }
+                                                if ($val === '-' && isset($r[$c])) $val = $r[$c];
+                                                $clean = str_replace(['.', ',', ' '], '', (string)$val);
+                                                if (is_numeric($clean)) $sum += (float)$clean;
+                                            }
+                                            $portraitColSums[$c] = $sum;
+                                            $hasPortraitSums = true;
+                                        } else {
+                                            $portraitColSums[$c] = null;
+                                        }
+                                    }
+                                @endphp
+                                @if($hasPortraitSums)
+                                    <tfoot>
+                                        <tr style="background-color: #f1f5f9; font-weight: bold; border-top: 1.5px solid #111;">
+                                            <td style="text-align: center; font-weight: bold; font-size: 8px;">Total</td>
+                                            @foreach($tCols as $cIdx => $col)
+                                                <td style="{{ $portraitColSums[$col] !== null ? 'text-align: right; padding-right: 8px; font-variant-numeric: tabular-nums; font-weight: bold;' : '' }}">
+                                                    @if($portraitColSums[$col] !== null)
+                                                        Rp {{ number_format($portraitColSums[$col], 0, ',', '.') }}
+                                                    @endif
+                                                </td>
+                                            @endforeach
+                                        </tr>
+                                    </tfoot>
+                                @endif
                             </table>
                         </div>
                     @endif
