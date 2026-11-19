@@ -1181,63 +1181,113 @@
                     </div>
                 </div>
 
-                <!-- Bagian 5: Tabel Tanda Tangan 4 Kolom Sesuai Excel -->
+                @php
+                    $stpdBoxes = collect();
+
+                    // 1. Yang Menugaskan (Pemberi Tugas)
+                    $showPemberi = $isRequesterPemberi ? true : ($pemberiApproval ? $checkShowInPdf($pemberiApproval) : true);
+                    if ($showPemberi) {
+                        $stpdBoxes->push([
+                            'title' => $getSignerLabel($pemberiApproval, 'Yang menugaskan'),
+                            'qr' => $pemberiQr,
+                            'name' => $pemberiNama,
+                            'date' => $pemberiDate,
+                            'is_placeholder' => false,
+                        ]);
+                    }
+
+                    // 2. Atasan Langsung
+                    $showAtasan = $atasanApproval ? $checkShowInPdf($atasanApproval) : true;
+                    if ($showAtasan) {
+                        $stpdBoxes->push([
+                            'title' => $getSignerLabel($atasanApproval, 'Atasan Langsung'),
+                            'qr' => $atasanQr,
+                            'name' => $atasanNama,
+                            'date' => $atasanDate,
+                            'is_placeholder' => false,
+                        ]);
+                    }
+
+                    // 3. Other approvers if any beyond Pemberi & Atasan
+                    $handledIds = array_filter([$pemberiApproval?->id, $atasanApproval?->id]);
+                    foreach ($document->approvals as $extraAppr) {
+                        if (in_array($extraAppr->id, $handledIds)) {
+                            continue;
+                        }
+                        if (!$checkShowInPdf($extraAppr)) {
+                            continue;
+                        }
+                        $extraQr = ($extraAppr->status === 'approved' && $verificationUrl)
+                            ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $extraAppr->id]))
+                            : null;
+                        $extraName = $extraAppr->approver ? format_acronyms($extraAppr->approver->name) : '...........................';
+                        $extraDate = $extraAppr->action_at ? $extraAppr->action_at->translatedFormat('d/m/Y') : '............';
+                        $extraTitle = $getSignerLabel($extraAppr, format_acronyms($extraAppr->approver?->position ?? 'Approver'));
+                        $stpdBoxes->push([
+                            'title' => $extraTitle,
+                            'qr' => $extraQr,
+                            'name' => $extraName,
+                            'date' => $extraDate,
+                            'is_placeholder' => false,
+                        ]);
+                    }
+
+                    // 4. Pejabat Setempat (Cap / Paraf Cabang)
+                    $stpdBoxes->push([
+                        'title' => 'Pejabat Setempat',
+                        'qr' => null,
+                        'placeholder_text' => '(Cap / Paraf Cabang)',
+                        'name' => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                        'date' => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                        'is_placeholder' => true,
+                    ]);
+
+                    // 5. Yang Ditugaskan (Penerima Tugas / Pemohon)
+                    $stpdBoxes->push([
+                        'title' => 'Yang ditugaskan',
+                        'qr' => $penerimaQr,
+                        'name' => $penerimaNama,
+                        'date' => $penerimaDate,
+                        'is_placeholder' => false,
+                    ]);
+
+                    $stpdBoxCount = $stpdBoxes->count();
+                    $stpdColWidth = $stpdBoxCount > 0 ? round(100 / $stpdBoxCount, 2) . '%' : '25%';
+                @endphp
+
+                <!-- Bagian 5: Tabel Tanda Tangan Dinamis Sesuai Konfigurasi Approver -->
                 <table style="width: 100%; border-collapse: collapse; margin-top: 10px; page-break-inside: avoid;">
                     <thead>
                         <tr>
-                            <th style="width: 25%; border: 1px solid #111; padding: 4px; text-align: center; font-size: 10px; font-weight: bold; background-color: #f8fafc;">Yang menugaskan</th>
-                            <th style="width: 25%; border: 1px solid #111; padding: 4px; text-align: center; font-size: 10px; font-weight: bold; background-color: #f8fafc;">Atasan Langsung</th>
-                            <th style="width: 25%; border: 1px solid #111; padding: 4px; text-align: center; font-size: 10px; font-weight: bold; background-color: #f8fafc;">Pejabat Setempat</th>
-                            <th style="width: 25%; border: 1px solid #111; padding: 4px; text-align: center; font-size: 10px; font-weight: bold; background-color: #f8fafc;">Yang ditugaskan</th>
+                            @foreach($stpdBoxes as $box)
+                                <th style="width: {{ $stpdColWidth }}; border: 1px solid #111; padding: 4px; text-align: center; font-size: 10px; font-weight: bold; background-color: #f8fafc;">
+                                    {{ $box['title'] }}
+                                </th>
+                            @endforeach
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td style="border: 1px solid #111; height: 76px; vertical-align: middle; text-align: center; padding: 3px;">
-                                @if($pemberiQr)
-                                    <img src="data:image/svg+xml;base64,{{ $pemberiQr }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
-                                    <div style="font-size: 7px; color: #166534; font-weight: bold; margin-top: 1px;">Signed</div>
-                                @else
-                                    <div style="height: 70px;"></div>
-                                @endif
-                            </td>
-                            <td style="border: 1px solid #111; height: 76px; vertical-align: middle; text-align: center; padding: 3px;">
-                                @if($atasanQr)
-                                    <img src="data:image/svg+xml;base64,{{ $atasanQr }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
-                                    <div style="font-size: 7px; color: #166534; font-weight: bold; margin-top: 1px;">Signed</div>
-                                @else
-                                    <div style="height: 70px;"></div>
-                                @endif
-                            </td>
-                            <td style="border: 1px solid #111; height: 76px; vertical-align: middle; text-align: center; padding: 3px;">
-                                <div style="height: 70px; color: #999; font-size: 8px; line-height: 70px; font-style: italic;">(Cap / Paraf Cabang)</div>
-                            </td>
-                            <td style="border: 1px solid #111; height: 76px; vertical-align: middle; text-align: center; padding: 3px;">
-                                @if($penerimaQr)
-                                    <img src="data:image/svg+xml;base64,{{ $penerimaQr }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
-                                    <div style="font-size: 7px; color: #166534; font-weight: bold; margin-top: 1px;">Signed</div>
-                                @else
-                                    <div style="height: 70px;"></div>
-                                @endif
-                            </td>
+                            @foreach($stpdBoxes as $box)
+                                <td style="border: 1px solid #111; height: 76px; vertical-align: middle; text-align: center; padding: 3px;">
+                                    @if(!empty($box['qr']))
+                                        <img src="data:image/svg+xml;base64,{{ $box['qr'] }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
+                                        <div style="font-size: 7px; color: #166534; font-weight: bold; margin-top: 1px;">Signed</div>
+                                    @elseif(!empty($box['placeholder_text']))
+                                        <div style="height: 70px; color: #999; font-size: 8px; line-height: 70px; font-style: italic;">{{ $box['placeholder_text'] }}</div>
+                                    @else
+                                        <div style="height: 70px;"></div>
+                                    @endif
+                                </td>
+                            @endforeach
                         </tr>
                         <tr>
-                            <td style="border: 1px solid #111; padding: 3px; text-align: center; font-size: 9px;">
-                                <div style="font-weight: bold;">( {{ $pemberiNama }} )</div>
-                                <div style="margin-top: 2px; font-size: 8px; color: #333;">Tgl : {{ $pemberiDate }}</div>
-                            </td>
-                            <td style="border: 1px solid #111; padding: 3px; text-align: center; font-size: 9px;">
-                                <div style="font-weight: bold;">( {{ $atasanNama }} )</div>
-                                <div style="margin-top: 2px; font-size: 8px; color: #333;">Tgl : {{ $atasanDate }}</div>
-                            </td>
-                            <td style="border: 1px solid #111; padding: 3px; text-align: center; font-size: 9px;">
-                                <div style="font-weight: bold;">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</div>
-                                <div style="margin-top: 2px; font-size: 8px; color: #333;">Tgl : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
-                            </td>
-                            <td style="border: 1px solid #111; padding: 3px; text-align: center; font-size: 9px;">
-                                <div style="font-weight: bold;">( {{ $penerimaNama }} )</div>
-                                <div style="margin-top: 2px; font-size: 8px; color: #333;">Tgl : {{ $penerimaDate }}</div>
-                            </td>
+                            @foreach($stpdBoxes as $box)
+                                <td style="border: 1px solid #111; padding: 3px; text-align: center; font-size: 9px;">
+                                    <div style="font-weight: bold;">( {!! $box['name'] !!} )</div>
+                                    <div style="margin-top: 2px; font-size: 8px; color: #333;">Tgl : {!! $box['date'] !!}</div>
+                                </td>
+                            @endforeach
                         </tr>
                     </tbody>
                 </table>
@@ -1467,68 +1517,80 @@
                     </tbody>
                 </table>
 
-                <!-- Tabel Tanda Tangan 4 Kolom Sesuai Excel -->
+                <!-- Tabel Tanda Tangan Dinamis Sesuai Konfigurasi Approver -->
+                @php
+                    $umbpdBoxes = collect();
+
+                    // 1. Pemohon
+                    $umbpdBoxes->push([
+                        'title' => 'Pemohon',
+                        'qr' => $pemohonQr,
+                        'name' => $pemohonNama,
+                        'date' => $docDate->translatedFormat('d/m/Y'),
+                    ]);
+
+                    // 2. Approvers
+                    $defaultLabels = ['Diketahui', 'HRD', 'Finance'];
+                    foreach ($document->approvals as $idx => $appr) {
+                        if (!$checkShowInPdf($appr)) {
+                            continue;
+                        }
+
+                        $defLabel = $defaultLabels[$idx] ?? ('Approver ' . ($idx + 1));
+                        $apprQr = ($appr->status === 'approved' && $verificationUrl)
+                            ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $appr->id]))
+                            : null;
+                        $apprName = ($appr->approver) ? format_acronyms($appr->approver->name) : '...........................';
+                        $apprDate = ($appr->action_at) ? $appr->action_at->translatedFormat('d/m/Y') : '............';
+                        $apprLabel = $getSignerLabel($appr, $defLabel);
+
+                        $umbpdBoxes->push([
+                            'title' => $apprLabel,
+                            'qr' => $apprQr,
+                            'name' => $apprName,
+                            'date' => $apprDate,
+                        ]);
+                    }
+
+                    if ($document->approvals->isEmpty()) {
+                        $umbpdBoxes->push(['title' => 'Diketahui', 'qr' => null, 'name' => '...........................', 'date' => '............']);
+                        $umbpdBoxes->push(['title' => 'HRD', 'qr' => null, 'name' => '...........................', 'date' => '............']);
+                        $umbpdBoxes->push(['title' => 'Finance', 'qr' => null, 'name' => '...........................', 'date' => '............']);
+                    }
+
+                    $umbpdBoxCount = $umbpdBoxes->count();
+                    $umbpdColWidth = $umbpdBoxCount > 0 ? round(100 / $umbpdBoxCount, 2) . '%' : '25%';
+                @endphp
                 <table style="width: 100%; border-collapse: collapse; margin-top: 8px; page-break-inside: avoid;">
                     <thead>
                         <tr>
-                            <th style="width: 25%; border: 1px solid #111; padding: 3.5px; text-align: center; font-size: 9.5px; font-weight: bold; background-color: #f8fafc;">Pemohon</th>
-                            <th style="width: 25%; border: 1px solid #111; padding: 3.5px; text-align: center; font-size: 9.5px; font-weight: bold; background-color: #f8fafc;">{{ $diketahuiLabel }}</th>
-                            <th style="width: 25%; border: 1px solid #111; padding: 3.5px; text-align: center; font-size: 9.5px; font-weight: bold; background-color: #f8fafc;">{{ $hrdLabel }}</th>
-                            <th style="width: 25%; border: 1px solid #111; padding: 3.5px; text-align: center; font-size: 9.5px; font-weight: bold; background-color: #f8fafc;">{{ $financeLabel }}</th>
+                            @foreach($umbpdBoxes as $box)
+                                <th style="width: {{ $umbpdColWidth }}; border: 1px solid #111; padding: 3.5px; text-align: center; font-size: 9.5px; font-weight: bold; background-color: #f8fafc;">
+                                    {{ $box['title'] }}
+                                </th>
+                            @endforeach
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td style="border: 1px solid #111; height: 76px; vertical-align: middle; text-align: center; padding: 2px;">
-                                @if($pemohonQr)
-                                    <img src="data:image/svg+xml;base64,{{ $pemohonQr }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
-                                    <div style="font-size: 7px; color: #166534; font-weight: bold; margin-top: 1px;">Signed</div>
-                                @else
-                                    <div style="height: 70px;"></div>
-                                @endif
-                            </td>
-                            <td style="border: 1px solid #111; height: 76px; vertical-align: middle; text-align: center; padding: 2px;">
-                                @if($diketahuiQr)
-                                    <img src="data:image/svg+xml;base64,{{ $diketahuiQr }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
-                                    <div style="font-size: 7px; color: #166534; font-weight: bold; margin-top: 1px;">Signed</div>
-                                @else
-                                    <div style="height: 70px;"></div>
-                                @endif
-                            </td>
-                            <td style="border: 1px solid #111; height: 76px; vertical-align: middle; text-align: center; padding: 2px;">
-                                @if($hrdQr)
-                                    <img src="data:image/svg+xml;base64,{{ $hrdQr }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
-                                    <div style="font-size: 7px; color: #166534; font-weight: bold; margin-top: 1px;">Signed</div>
-                                @else
-                                    <div style="height: 70px;"></div>
-                                @endif
-                            </td>
-                            <td style="border: 1px solid #111; height: 76px; vertical-align: middle; text-align: center; padding: 2px;">
-                                @if($financeQr)
-                                    <img src="data:image/svg+xml;base64,{{ $financeQr }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
-                                    <div style="font-size: 7px; color: #166534; font-weight: bold; margin-top: 1px;">Signed</div>
-                                @else
-                                    <div style="height: 70px;"></div>
-                                @endif
-                            </td>
+                            @foreach($umbpdBoxes as $box)
+                                <td style="border: 1px solid #111; height: 76px; vertical-align: middle; text-align: center; padding: 2px;">
+                                    @if(!empty($box['qr']))
+                                        <img src="data:image/svg+xml;base64,{{ $box['qr'] }}" style="width: 70px; height: 70px; display: block; margin: 0 auto;" />
+                                        <div style="font-size: 7px; color: #166534; font-weight: bold; margin-top: 1px;">Signed</div>
+                                    @else
+                                        <div style="height: 70px;"></div>
+                                    @endif
+                                </td>
+                            @endforeach
                         </tr>
                         <tr>
-                            <td style="border: 1px solid #111; padding: 2.5px; text-align: center; font-size: 8.5px;">
-                                <div style="font-weight: bold;">( {{ $pemohonNama }} )</div>
-                                <div style="margin-top: 1.5px; font-size: 7.5px; color: #333;">Tgl : {{ $docDate->translatedFormat('d/m/Y') }}</div>
-                            </td>
-                            <td style="border: 1px solid #111; padding: 2.5px; text-align: center; font-size: 8.5px;">
-                                <div style="font-weight: bold;">( {{ $diketahuiName }} )</div>
-                                <div style="margin-top: 1.5px; font-size: 7.5px; color: #333;">Tgl : {{ $diketahuiDate }}</div>
-                            </td>
-                            <td style="border: 1px solid #111; padding: 2.5px; text-align: center; font-size: 8.5px;">
-                                <div style="font-weight: bold;">( {{ $hrdName }} )</div>
-                                <div style="margin-top: 1.5px; font-size: 7.5px; color: #333;">Tgl : {{ $hrdDate }}</div>
-                            </td>
-                            <td style="border: 1px solid #111; padding: 2.5px; text-align: center; font-size: 8.5px;">
-                                <div style="font-weight: bold;">( {{ $financeName }} )</div>
-                                <div style="margin-top: 1.5px; font-size: 7.5px; color: #333;">Tgl : {{ $financeDate }}</div>
-                            </td>
+                            @foreach($umbpdBoxes as $box)
+                                <td style="border: 1px solid #111; padding: 2.5px; text-align: center; font-size: 8.5px;">
+                                    <div style="font-weight: bold;">( {{ $box['name'] }} )</div>
+                                    <div style="margin-top: 1.5px; font-size: 7.5px; color: #333;">Tgl : {{ $box['date'] }}</div>
+                                </td>
+                            @endforeach
                         </tr>
                     </tbody>
                 </table>
