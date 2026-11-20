@@ -436,10 +436,23 @@
                                         numValues: {},
                                         isTotalField(f) {
                                             if (!f) return false;
-                                            let n = (f.name || '').toLowerCase();
-                                            let l = (f.label || '').toLowerCase();
-                                            return /(?:^total|total_|_total|jumlah_total|grand_total|biaya_total|total_estimasi|estimasi_total)/i.test(n) ||
-                                                   /(?:^total|\btotal\b|grand total|jumlah total)/i.test(l);
+                                            if (f.auto_sum === true || f.is_total === true || f.auto_sum == '1' || f.is_total == '1') return true;
+                                            if (f.auto_sum === false || f.is_total === false || f.auto_sum == '0' || f.is_total == '0') return false;
+
+                                            let n = (f.name || '').toLowerCase().trim();
+                                            let l = (f.label || '').toLowerCase().trim();
+
+                                            // Exclude line items that merely mention (total rp) or (total jam) or allowance/rates
+                                            if (/uang_saku|insidental|per_hari|\bjam\b|\bhari\b|\bpeserta\b|\borang\b|\bcuti\b|\bqty\b|\bkuantitas\b/i.test(n) ||
+                                                /uang\s*saku|insidental|per\s*hari|\bjam\b|\bhari\b|\bpeserta\b|\borang\b|\bcuti\b|\bqty\b|\bkuantitas\b/i.test(l)) {
+                                                return false;
+                                            }
+
+                                            // Must be a grand total / summary field:
+                                            let nameMatches = /^(?:total|grand_total|jumlah_total|total_biaya|total_estimasi|estimasi_total|total_keseluruhan)/i.test(n);
+                                            let labelMatches = /^(?:\d+[\.\)]\s*)?(?:total\b|grand\s*total|jumlah\s*total|jumlah\s*keseluruhan)/i.test(l);
+
+                                            return nameMatches || labelMatches;
                                         },
                                         computeTotal(targetField) {
                                             let fields = selectedTemplate?.dynamicFields || [];

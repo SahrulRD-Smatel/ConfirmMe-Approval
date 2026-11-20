@@ -249,7 +249,9 @@ class DocumentController extends Controller
                 if (empty($estimatedBudget) && !empty($metadata) && is_array($metadata)) {
                     foreach ($metadata as $mKey => $mVal) {
                         if (is_scalar($mVal) && is_numeric(str_replace(['.', ',', ' '], '', (string)$mVal))) {
-                            if (preg_match('/(?:^total|total_|_total|jumlah_total|grand_total|biaya_total|total_estimasi|estimasi_total)/i', (string)$mKey)) {
+                            $mKeyLow = strtolower(trim((string)$mKey));
+                            $isExcludedKey = (bool)preg_match('/uang_saku|insidental|per_hari|\bjam\b|\bhari\b|\bpeserta\b|\borang\b|\bcuti\b|\bqty\b|\bkuantitas\b/i', $mKeyLow);
+                            if (!$isExcludedKey && preg_match('/^(?:total|grand_total|jumlah_total|total_biaya|total_estimasi|estimasi_total|total_keseluruhan)/i', $mKeyLow)) {
                                 $candidate = (float)str_replace(['.', ',', ' '], '', (string)$mVal);
                                 if ($candidate > 0) {
                                     $estimatedBudget = $candidate;
@@ -553,7 +555,9 @@ class DocumentController extends Controller
         if (empty($estimatedBudget) && !empty($metadata) && is_array($metadata)) {
             foreach ($metadata as $mKey => $mVal) {
                 if (is_scalar($mVal) && is_numeric(str_replace(['.', ',', ' '], '', (string)$mVal))) {
-                    if (preg_match('/(?:^total|total_|_total|jumlah_total|grand_total|biaya_total|total_estimasi|estimasi_total)/i', (string)$mKey)) {
+                    $mKeyLow = strtolower(trim((string)$mKey));
+                    $isExcludedKey = (bool)preg_match('/uang_saku|insidental|per_hari|\bjam\b|\bhari\b|\bpeserta\b|\borang\b|\bcuti\b|\bqty\b|\bkuantitas\b/i', $mKeyLow);
+                    if (!$isExcludedKey && preg_match('/^(?:total|grand_total|jumlah_total|total_biaya|total_estimasi|estimasi_total|total_keseluruhan)/i', $mKeyLow)) {
                         $candidate = (float)str_replace(['.', ',', ' '], '', (string)$mVal);
                         if ($candidate > 0) {
                             $estimatedBudget = $candidate;

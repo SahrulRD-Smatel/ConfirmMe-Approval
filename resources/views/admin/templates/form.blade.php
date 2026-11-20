@@ -308,6 +308,18 @@
                                         <p class="text-xs text-gray-400 mt-1">{{ __('Pengaju memilih satu dari opsi yang Anda tulis di sini.') }}</p>
                                     </div>
 
+                                    <!-- Options for Number: Auto-Sum Toggle -->
+                                    <div x-show="field.type === 'number'" class="rounded-lg border border-primary-100 bg-primary-50/50 p-3 dark:border-primary-900/40 dark:bg-primary-900/10">
+                                        <div class="flex items-start gap-2.5">
+                                            <input type="hidden" :name="`fields[dynamic_fields][${index}][auto_sum]`" value="0">
+                                            <input type="checkbox" x-model="field.auto_sum" :name="`fields[dynamic_fields][${index}][auto_sum]`" value="1" class="mt-0.5 rounded border-gray-300 text-primary-600 focus:ring-primary-500 w-4 h-4">
+                                            <div>
+                                                <span class="block text-xs font-semibold text-gray-800 dark:text-gray-200">{{ __('Jadikan Field Ini Total Penjumlahan Otomatis (Auto-Sum)') }}</span>
+                                                <span class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{{ __('Jika dicentang, field ini otomatis menghitung total penjumlahan seluruh isian angka rincian di atasnya saat pengaju mengisi form.') }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <!-- Columns for Table -->
                                     <div x-show="field.type === 'table'" class="rounded-lg border border-primary-100 bg-primary-50/50 p-3 dark:border-primary-900/40 dark:bg-primary-900/10">
                                         <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ __('Kolom Tabel') }} <span class="text-gray-400 font-normal">({{ __('Pisahkan dengan koma') }})</span></label>

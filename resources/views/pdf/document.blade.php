@@ -1796,7 +1796,18 @@
                                                 if (is_array($displayVal)) {
                                                     $displayVal = implode(', ', array_filter($displayVal, 'is_scalar'));
                                                 }
-                                                $isTotalField = (bool)preg_match('/(?:^total|total_|_total|jumlah_total|grand_total|biaya_total|total_estimasi|estimasi_total)/i', (string)$fName) || (bool)preg_match('/(?:^total|\btotal\b|grand total|jumlah total)/i', (string)$fLabel);
+                                                $fNameLow = strtolower(trim((string)$fName));
+                                                $fLabelLow = strtolower(trim((string)$fLabel));
+                                                $isExcluded = (bool)preg_match('/uang_saku|insidental|per_hari|\bjam\b|\bhari\b|\bpeserta\b|\borang\b|\bcuti\b|\bqty\b|\bkuantitas\b/i', $fNameLow) ||
+                                                              (bool)preg_match('/uang\s*saku|insidental|per\s*hari|\bjam\b|\bhari\b|\bpeserta\b|\borang\b|\bcuti\b|\bqty\b|\bkuantitas\b/i', $fLabelLow);
+
+                                                $isTotalField = false;
+                                                if (!empty($field['auto_sum']) || !empty($field['is_total'])) {
+                                                    $isTotalField = true;
+                                                } elseif (!$isExcluded) {
+                                                    $isTotalField = (bool)preg_match('/^(?:total|grand_total|jumlah_total|total_biaya|total_estimasi|estimasi_total|total_keseluruhan)/i', $fNameLow) ||
+                                                                    (bool)preg_match('/^(?:\d+[\.\)]\s*)?(?:total\b|grand\s*total|jumlah\s*total|jumlah\s*keseluruhan)/i', $fLabelLow);
+                                                }
 
                                                 if ($fVal && $fType === 'date' && strtotime($fVal)) {
                                                     $displayVal = \Carbon\Carbon::parse($fVal)->translatedFormat('d/m/Y');
