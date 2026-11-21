@@ -1590,7 +1590,7 @@
                                     $computedUmTotal += $c['raw_num'];
                                 }
                             }
-                            $finalTotalEstimasi = ($computedUmTotal > 0) ? $computedUmTotal : $totalEstimasi;
+                            $finalTotalEstimasi = ($totalEstimasi > 0) ? $totalEstimasi : $computedUmTotal;
                         @endphp
                         <tr style="background-color: #f1f5f9; font-weight: bold;">
                             <td colspan="2" style="border: 1px solid #111; padding: 3px 6px; text-align: center; text-transform: uppercase;">TOTAL ( Estimasi dari Pemohon )</td>
@@ -1819,6 +1819,17 @@
                                                         for ($k = 0; $k < $i; $k++) {
                                                             $prevF = $nonTableFields[$k];
                                                             if (($prevF['type'] ?? '') === 'number') {
+                                                                $prevNameLow = strtolower(trim((string)($prevF['name'] ?? '')));
+                                                                $prevLabelLow = strtolower(trim((string)($prevF['label'] ?? '')));
+                                                                if (preg_match('/umur|usia|\banak\b|persen|percent/i', $prevNameLow) ||
+                                                                    preg_match('/umur|usia|\banak\b|persen/i', $prevLabelLow)) {
+                                                                    continue;
+                                                                }
+                                                                if (!empty($prevF['auto_sum']) || !empty($prevF['is_total']) ||
+                                                                    preg_match('/^(?:total|grand_total|jumlah_total|total_biaya|total_estimasi|estimasi_total|total_keseluruhan)/i', $prevNameLow) ||
+                                                                    preg_match('/^(?:\d+[\.\)]\s*)?(?:total\b|grand\s*total|jumlah\s*total|jumlah\s*keseluruhan)/i', $prevLabelLow)) {
+                                                                    continue;
+                                                                }
                                                                 $rawP = str_replace(['.', ',', ' '], '', (string)($metadata[$prevF['name']] ?? '0'));
                                                                 if (is_numeric($rawP)) $calcSum += (float)$rawP;
                                                             }

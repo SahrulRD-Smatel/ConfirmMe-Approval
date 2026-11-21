@@ -256,6 +256,11 @@
                     for (let i = 0; i < targetIdx; i++) {
                         let f = fields[i];
                         if (f.type === 'number' && !this.isTotalField(f)) {
+                            let fn = (f.name || '').toLowerCase();
+                            let fl = (f.label || '').toLowerCase();
+                            if (/umur|usia|\banak\b|persen|percent/i.test(fn) || /umur|usia|\banak\b|persen/i.test(fl)) {
+                                continue;
+                            }
                             let val = parseInt(this.numValues[f.name] || 0) || 0;
                             sum += val;
                         }
@@ -263,8 +268,11 @@
                     return sum;
                 },
                 setNum(fieldName, val) {
-                    this.numValues[fieldName] = parseInt(val) || 0;
-                    metadata[fieldName] = parseInt(val) || 0;
+                    let parsed = parseInt(val) || 0;
+                    if (this.numValues[fieldName] !== parsed) {
+                        this.numValues[fieldName] = parsed;
+                    }
+                    metadata[fieldName] = parsed;
                 }
              }"
              class="rounded-2xl border border-gray-100 bg-gray-50/60 p-4 dark:border-gray-800 dark:bg-gray-800/40 sm:p-5" x-cloak>
@@ -280,17 +288,24 @@
                         </template>
 
                         <template x-if="field.type !== 'section'">
-                            <div>
+                            <div x-data="{
+                                isAutoLocked: true
+                            }">
                                 <div class="flex items-center justify-between mb-1">
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                         <span x-text="field.label"></span>
                                         <span x-show="field.required == '1' || field.required === true" class="text-danger-500">*</span>
                                     </label>
                                     <template x-if="field.type === 'number' && isTotalField(field)">
-                                        <span class="inline-flex items-center gap-1 text-[10px] font-semibold text-primary-700 bg-primary-100/70 dark:bg-primary-900/40 dark:text-primary-300 px-2 py-0.5 rounded-full">
-                                            <x-icon name="calculator" class="w-3 h-3" />
-                                            {{ __('Auto-Jumlah') }}
-                                        </span>
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="inline-flex items-center gap-1 text-[10px] font-semibold text-primary-700 bg-primary-100/70 dark:bg-primary-900/40 dark:text-primary-300 px-2 py-0.5 rounded-full">
+                                                <x-icon name="calculator" class="w-3 h-3" />
+                                                <span x-text="isAutoLocked ? '{{ __('Auto-Jumlah') }}' : '{{ __('Manual') }}'"></span>
+                                            </span>
+                                            <button type="button" @click="isAutoLocked = !isAutoLocked" class="text-[10px] text-gray-400 hover:text-primary-600 underline cursor-pointer">
+                                                <span x-text="isAutoLocked ? '{{ __('Ubah Manual') }}' : '{{ __('Kunci Otomatis') }}'"></span>
+                                            </button>
+                                        </div>
                                     </template>
                                 </div>
                         
@@ -301,6 +316,7 @@
                                 init() {
                                     if (isTotalField(field)) {
                                         this.$watch('numValues', () => {
+                                            if (!this.isAutoLocked) return;
                                             let calc = computeTotal(field);
                                             this.valFormatted = calc > 0 ? new Intl.NumberFormat('id-ID').format(calc) : '';
                                             metadata[field.name] = calc > 0 ? calc : '';
@@ -323,13 +339,16 @@
                                     let raw = e.target.value.replace(/[^\d]/g, '');
                                     metadata[field.name] = raw;
                                     this.valFormatted = raw ? new Intl.NumberFormat('id-ID').format(raw) : '';
-                                    setNum(field.name, raw);
+                                    if (!isTotalField(field)) {
+                                        setNum(field.name, raw);
+                                    }
                                 }
                             }">
                                 <input type="text" x-model="valFormatted" @input="formatNum($event)" inputmode="numeric" 
+                                    :readonly="isTotalField(field) && isAutoLocked"
                                     :placeholder="isTotalField(field) ? '{{ __('Otomatis dijumlahkan dari rincian di atas') }}' : field.label" 
                                     :required="field.required == '1' || field.required === true"
-                                    :class="isTotalField(field) ? 'border-primary-400 bg-primary-50/30 dark:bg-primary-950/20 dark:border-primary-700 font-bold text-primary-900 dark:text-primary-100' : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white'"
+                                    :class="isTotalField(field) ? 'border-primary-400 bg-primary-50/30 dark:bg-primary-950/20 dark:border-primary-700 font-bold text-primary-900 dark:text-primary-100 cursor-default' : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white'"
                                     class="block w-full px-4 py-3 border rounded-xl focus:ring-4 focus:ring-primary-500/20 font-medium text-sm">
                                 <input type="hidden" :name="`metadata[${field.name}]`" :value="metadata[field.name]">
                             </div>
