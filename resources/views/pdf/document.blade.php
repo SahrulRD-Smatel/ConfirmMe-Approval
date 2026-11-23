@@ -1071,76 +1071,10 @@
                         }
                     }
 
-                    $pemberiDate = $docDate->translatedFormat('d/m/Y');
                     $penerimaDate = $docDate->translatedFormat('d/m/Y');
-                    $atasanDate = '............';
-                    $atasanNama = '...........................';
-                    $pemberiQr = null;
-                    $penerimaQr = null;
-                    $atasanQr = null;
-
-                    $creatorNameNorm = strtolower(trim($pemohon->name ?? ''));
-                    $pemberiNorm = strtolower(trim($pemberiNama));
-                    $penerimaNorm = strtolower(trim($penerimaNama));
-
-                    $isRequesterPemberi = ($creatorNameNorm && $pemberiNorm && str_contains($pemberiNorm, $creatorNameNorm));
                     $pemohonQrCode = $verificationUrl ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'requester'])) : null;
-
-                    // Cari approver pemberi tugas & atasan langsung
-                    $pemberiApproval = null;
-                    if (!$isRequesterPemberi && $pemberiNorm) {
-                        $pemberiApproval = $document->approvals->first(function($a) use ($pemberiNorm) {
-                            if (!$a->approver) return false;
-                            $name = strtolower(trim($a->approver->name));
-                            return str_contains($pemberiNorm, $name) || str_contains($name, $pemberiNorm);
-                        });
-                    }
-
-                    if (!$isRequesterPemberi && !$pemberiApproval && $document->approvals->count() >= 2) {
-                        $pemberiApproval = $document->approvals->get(1);
-                    }
-
-                    $atasanApproval = null;
-                    if ($pemberiApproval) {
-                        $atasanApproval = $document->approvals->where('id', '!=', $pemberiApproval->id)->first();
-                    } else {
-                        $atasanApproval = $document->approvals->first();
-                    }
-
-                    // 1. Yang Menugaskan (Pemberi Tugas)
-                    if ($isRequesterPemberi) {
-                        $pemberiQr = $pemohonQrCode;
-                        $pemberiNama = format_acronyms($pemberiNama ?: ($pemohon->name ?? '-'));
-                    } elseif ($pemberiApproval) {
-                        if ($pemberiApproval->approver) {
-                            $pemberiNama = format_acronyms($pemberiApproval->approver->name);
-                        }
-                        if ($pemberiApproval->action_at) {
-                            $pemberiDate = $pemberiApproval->action_at->translatedFormat('d/m/Y');
-                        }
-                        if ($checkShowInPdf($pemberiApproval) && $pemberiApproval->status === 'approved' && $verificationUrl) {
-                            $pemberiQr = $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $pemberiApproval->id]));
-                        }
-                    }
-
-                    // 2. Atasan Langsung
-                    if ($atasanApproval) {
-                        if ($atasanApproval->approver) {
-                            $atasanNama = format_acronyms($atasanApproval->approver->name);
-                        }
-                        if ($atasanApproval->action_at) {
-                            $atasanDate = $atasanApproval->action_at->translatedFormat('d/m/Y');
-                        }
-                        if ($checkShowInPdf($atasanApproval) && $atasanApproval->status === 'approved' && $verificationUrl) {
-                            $atasanQr = $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $atasanApproval->id]));
-                        }
-                    }
-
-                    // 3. Yang Ditugaskan (Penerima Tugas)
-                    if (!$isRequesterPemberi) {
-                        $penerimaQr = $pemohonQrCode;
-                        $penerimaNama = format_acronyms($penerimaNama ?: ($pemohon->name ?? '-'));
-                    }
+                    $penerimaNama = format_acronyms($penerimaNama ?: ($pemohon->name ?? '-'));
+                    $pemberiNama = format_acronyms($pemberiNama ?: '-');
                 @endphp
 
                 <!-- Document Title -->
@@ -1229,75 +1163,70 @@
                 @php
                     $stpdBoxes = collect();
 
-                    // 1. Yang Menugaskan (Pemberi Tugas)
-                    $showPemberi = $isRequesterPemberi ? true : ($pemberiApproval ? $checkShowInPdf($pemberiApproval) : true);
-                    if ($showPemberi) {
-                        $stpdBoxes->push([
-                            'title' => $getSignerLabel($pemberiApproval, 'Yang menugaskan'),
-                            'qr' => $pemberiQr,
-                            'name' => $pemberiNama,
-                            'date' => $pemberiDate,
-                            'is_placeholder' => false,
-                        ]);
-                    }
+                    // 1. Approvers dynamically resolved from document approvals
+                    $defaultStpdLabels = $document->approvals->count() === 1
+                        ? ['Atasan Langsung']
+                        : ['Yang menugaskan', 'Atasan Langsung', 'Direktur'];
 
-                    // 2. Atasan Langsung
-                    $showAtasan = $atasanApproval ? $checkShowInPdf($atasanApproval) : true;
-                    if ($showAtasan) {
-                        $stpdBoxes->push([
-                            'title' => $getSignerLabel($atasanApproval, 'Atasan Langsung'),
-                            'qr' => $atasanQr,
-                            'name' => $atasanNama,
-                            'date' => $atasanDate,
-                            'is_placeholder' => false,
-                        ]);
-                    }
-
-                    // 3. Other approvers if any beyond Pemberi & Atasan
-                    $handledIds = array_filter([$pemberiApproval?->id, $atasanApproval?->id]);
-                    foreach ($document->approvals as $extraAppr) {
-                        if (in_array($extraAppr->id, $handledIds)) {
+                    foreach ($document->approvals as $idx => $appr) {
+                        if (!$checkShowInPdf($appr)) {
                             continue;
                         }
-                        if (!$checkShowInPdf($extraAppr)) {
-                            continue;
-                        }
-                        $extraQr = ($extraAppr->status === 'approved' && $verificationUrl)
-                            ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $extraAppr->id]))
+
+                        $defLabel = $defaultStpdLabels[$idx] ?? ('Approver ' . ($idx + 1));
+                        $apprQr = ($appr->status === 'approved' && $verificationUrl)
+                            ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $appr->id]))
                             : null;
-                        $extraName = $extraAppr->approver ? format_acronyms($extraAppr->approver->name) : '...........................';
-                        $extraDate = $extraAppr->action_at ? $extraAppr->action_at->translatedFormat('d/m/Y') : '............';
-                        $extraTitle = $getSignerLabel($extraAppr, format_acronyms($extraAppr->approver?->position ?? 'Approver'));
+                        $apprName = ($appr->approver) ? format_acronyms($appr->approver->name) : '...........................';
+                        $apprDate = ($appr->action_at) ? $appr->action_at->translatedFormat('d/m/Y') : '............';
+                        $apprLabel = $getSignerLabel($appr, $defLabel);
+
                         $stpdBoxes->push([
-                            'title' => $extraTitle,
-                            'qr' => $extraQr,
-                            'name' => $extraName,
-                            'date' => $extraDate,
+                            'title' => $apprLabel,
+                            'qr' => $apprQr,
+                            'name' => $apprName,
+                            'date' => $apprDate,
                             'is_placeholder' => false,
                         ]);
                     }
 
-                    // 4. Pejabat Setempat (Cap / Paraf Cabang)
-                    $stpdBoxes->push([
-                        'title' => 'Pejabat Setempat',
-                        'qr' => null,
-                        'placeholder_text' => '(Cap / Paraf Cabang)',
-                        'name' => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                        'date' => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                        'is_placeholder' => true,
-                    ]);
+                    // Fallback for draft preview before submission if no approvals exist yet
+                    if ($document->approvals->isEmpty()) {
+                        $stpdBoxes->push([
+                            'title' => 'Atasan Langsung',
+                            'qr' => null,
+                            'name' => '...........................',
+                            'date' => '............',
+                            'is_placeholder' => false,
+                        ]);
+                    }
 
-                    // 5. Yang Ditugaskan (Penerima Tugas / Pemohon)
+                    // Optional: Pejabat Setempat (ONLY if explicitly enabled in template settings)
+                    $showPejabatSetempat = !empty($template->fields['show_pejabat_setempat']) 
+                                        || !empty($document->template->fields['show_pejabat_setempat'])
+                                        || !empty($metadata['show_pejabat_setempat']);
+                    if ($showPejabatSetempat) {
+                        $stpdBoxes->push([
+                            'title' => 'Pejabat Setempat',
+                            'qr' => null,
+                            'placeholder_text' => '(Cap / Paraf Cabang)',
+                            'name' => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                            'date' => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                            'is_placeholder' => true,
+                        ]);
+                    }
+
+                    // 2. Yang Ditugaskan (Penerima Tugas / Pemohon) - Always on the right
                     $stpdBoxes->push([
                         'title' => 'Yang ditugaskan',
-                        'qr' => $penerimaQr,
+                        'qr' => $pemohonQrCode,
                         'name' => $penerimaNama,
                         'date' => $penerimaDate,
                         'is_placeholder' => false,
                     ]);
 
                     $stpdBoxCount = $stpdBoxes->count();
-                    $stpdColWidth = $stpdBoxCount > 0 ? round(100 / $stpdBoxCount, 2) . '%' : '25%';
+                    $stpdColWidth = $stpdBoxCount > 0 ? round(100 / $stpdBoxCount, 2) . '%' : '50%';
                 @endphp
 
                 <!-- Bagian 5: Tabel Tanda Tangan Dinamis Sesuai Konfigurasi Approver -->
@@ -1351,25 +1280,6 @@
                     $catatanTiket = $metadata['catatan_tiket'] ?? '-';
 
                     $totalEstimasi = !empty($metadata['total_estimasi_pemohon']) ? (float)$metadata['total_estimasi_pemohon'] : 0;
-
-                    $diketahuiApprover = $document->approvals->get(0);
-                    $hrdApprover = $document->approvals->get(1);
-                    $financeApprover = $document->approvals->get(2);
-
-                    $diketahuiName = ($diketahuiApprover && $diketahuiApprover->approver) ? format_acronyms($diketahuiApprover->approver->name) : '...........................';
-                    $diketahuiDate = ($diketahuiApprover && $diketahuiApprover->action_at) ? $diketahuiApprover->action_at->translatedFormat('d/m/Y') : '............';
-                    $diketahuiQr = ($diketahuiApprover && $checkShowInPdf($diketahuiApprover) && $diketahuiApprover->status === 'approved') ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $diketahuiApprover->id])) : null;
-                    $diketahuiLabel = $getSignerLabel($diketahuiApprover, 'Diketahui');
-
-                    $hrdName = ($hrdApprover && $hrdApprover->approver) ? format_acronyms($hrdApprover->approver->name) : ($metadata['hrd_name'] ?? '...........................');
-                    $hrdDate = ($hrdApprover && $hrdApprover->action_at) ? $hrdApprover->action_at->translatedFormat('d/m/Y') : '............';
-                    $hrdQr = ($hrdApprover && $checkShowInPdf($hrdApprover) && $hrdApprover->status === 'approved') ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $hrdApprover->id])) : null;
-                    $hrdLabel = $getSignerLabel($hrdApprover, 'HRD');
-
-                    $financeName = ($financeApprover && $financeApprover->approver) ? format_acronyms($financeApprover->approver->name) : ($metadata['finance_name'] ?? '...........................');
-                    $financeDate = ($financeApprover && $financeApprover->action_at) ? $financeApprover->action_at->translatedFormat('d/m/Y') : '............';
-                    $financeQr = ($financeApprover && $checkShowInPdf($financeApprover) && $financeApprover->status === 'approved') ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $financeApprover->id])) : null;
-                    $financeLabel = $getSignerLabel($financeApprover, 'Finance');
 
                     $pemohonQr = $verificationUrl ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'requester'])) : null;
                 @endphp
