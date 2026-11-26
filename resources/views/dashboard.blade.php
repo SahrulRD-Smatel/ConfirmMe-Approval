@@ -266,11 +266,11 @@
                             @forelse($whosOff as $leave)
                                 <div class="timeline-item py-2.5">
                                     <div class="flex items-center gap-3">
-                                        <img src="{{ $leave->user->avatar_url }}" alt="{{ $leave->user->name }}"
+                                        <img src="{{ $leave->user?->avatar_url ?? 'https://ui-avatars.com/api/?name=Karyawan&background=1E40AF&color=fff' }}" alt="{{ $leave->user?->name ?? __('Karyawan') }}"
                                             class="w-8 h-8 rounded-full object-cover ring-2 ring-white shadow-sm">
                                         <div class="min-w-0">
                                             <p class="text-sm font-medium text-gray-900 truncate">
-                                                {{ $leave->user->name }}
+                                                {{ $leave->user?->name ?? __('Karyawan') }}
                                             </p>
                                             <p class="text-[11px] text-gray-400">{{ ucfirst($leave->type) }}</p>
                                         </div>
@@ -329,7 +329,7 @@
                                 <div class="flex items-center justify-between gap-3 px-4 py-3">
                                     <div class="flex min-w-0 items-center gap-2.5">
                                         <div class="relative shrink-0">
-                                            <img src="{{ $announcement->creator->avatar_url }}"
+                                            <img src="{{ $announcement->creator?->avatar_url ?? 'https://ui-avatars.com/api/?name=Admin&background=1E40AF&color=fff' }}"
                                                 class="h-9 w-9 rounded-full border-2 border-gray-100 object-cover shadow-sm dark:border-gray-700"
                                                 loading="lazy" decoding="async">
                                             @if($announcement->type === 'urgent' || $announcement->type === 'danger')
@@ -341,7 +341,7 @@
                                         </div>
                                         <div class="min-w-0">
                                             <h4 class="flex min-w-0 items-center gap-1.5 text-xs font-bold leading-tight text-gray-900 dark:text-white">
-                                                <span class="truncate">{{ $announcement->creator->name }}</span>
+                                                <span class="truncate">{{ $announcement->creator?->name ?? __('Admin') }}</span>
                                                 @if($announcement->type !== 'info')
                                                     <span class="shrink-0 rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase
                                                         {{ match ($announcement->type) {
@@ -685,7 +685,7 @@
                                                         {{ $document->title }}
                                                     </p>
                                                     <p class="text-xs text-gray-500 mt-0.5">
-                                                        {{ __('dari') }} {{ $document->user->name }}
+                                                        {{ __('dari') }} {{ $document->user?->name ?? '-' }}
                                                     </p>
                                                 </div>
                                                 <x-ui.badge :status="$document->priority_color" size="sm">
