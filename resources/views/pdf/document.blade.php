@@ -1724,7 +1724,7 @@
                                                 } elseif ($fVal && $fType === 'time') {
                                                     $displayVal = (strpos($fVal, 'WIB') !== false) ? $fVal : $fVal . ' WIB';
                                                 } elseif ($isTotalField) {
-                                                    if ((!$fVal || $fVal == 0) && !empty($nonTableFields)) {
+                                                    if ((empty($fVal) || $fVal === '-' || (float)str_replace(['.', ',', ' '], '', (string)$fVal) == 0) && !empty($nonTableFields)) {
                                                         $calcSum = 0;
                                                         for ($k = 0; $k < $i; $k++) {
                                                             $prevF = $nonTableFields[$k];

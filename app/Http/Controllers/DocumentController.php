@@ -245,6 +245,55 @@ class DocumentController extends Controller
                     default => null,
                 };
 
+                // Fallback: Check dynamic metadata and calculate any empty auto-sum fields
+                $templateModel = !empty($docData['template']) 
+                    ? \App\Models\DocumentTemplate::where('code', $docData['template'])->first() 
+                    : null;
+                $dynFields = $templateModel ? ($templateModel->fields['dynamic_fields'] ?? []) : [];
+
+                if (!empty($dynFields) && is_array($metadata)) {
+                    foreach ($dynFields as $dIdx => $dField) {
+                        $dName = $dField['name'] ?? '';
+                        $dNameLow = strtolower(trim((string)$dName));
+                        $dLabelLow = strtolower(trim((string)($dField['label'] ?? '')));
+                        $isExcluded = (bool)preg_match('/uang_saku|insidental|per_hari|\bjam\b|\bhari\b|\bpeserta\b|\borang\b|\bcuti\b|\bqty\b|\bkuantitas\b/i', $dNameLow) ||
+                                      (bool)preg_match('/uang\s*saku|insidental|per\s*hari|\bjam\b|\bhari\b|\bpeserta\b|\borang\b|\bcuti\b|\bqty\b|\bkuantitas\b/i', $dLabelLow);
+                        
+                        $isTotalField = false;
+                        if (!empty($dField['auto_sum']) || !empty($dField['is_total'])) {
+                            $isTotalField = true;
+                        } elseif (!$isExcluded) {
+                            $isTotalField = (bool)preg_match('/^(?:total|grand_total|jumlah_total|total_biaya|total_estimasi|estimasi_total|total_keseluruhan)/i', $dNameLow) ||
+                                            (bool)preg_match('/^(?:\d+[\.\)]\s*)?(?:total\b|grand\s*total|jumlah\s*total|jumlah\s*keseluruhan)/i', $dLabelLow);
+                        }
+
+                        if ($isTotalField) {
+                            $currentVal = $metadata[$dName] ?? null;
+                            if (empty($currentVal) || $currentVal === '-' || (float)str_replace(['.', ',', ' '], '', (string)$currentVal) == 0) {
+                                $calcSum = 0;
+                                for ($k = 0; $k < $dIdx; $k++) {
+                                    $prevF = $dynFields[$k] ?? null;
+                                    if (!$prevF || ($prevF['type'] ?? '') !== 'number') continue;
+                                    $prevNameLow = strtolower(trim((string)($prevF['name'] ?? '')));
+                                    $prevLabelLow = strtolower(trim((string)($prevF['label'] ?? '')));
+                                    if (preg_match('/umur|usia|\banak\b|persen|percent/i', $prevNameLow) || preg_match('/umur|usia|\banak\b|persen/i', $prevLabelLow)) continue;
+                                    if (!empty($prevF['auto_sum']) || !empty($prevF['is_total']) ||
+                                        preg_match('/^(?:total|grand_total|jumlah_total|total_biaya|total_estimasi|estimasi_total|total_keseluruhan)/i', $prevNameLow) ||
+                                        preg_match('/^(?:\d+[\.\)]\s*)?(?:total\b|grand\s*total|jumlah\s*total|jumlah\s*keseluruhan)/i', $prevLabelLow)) continue;
+                                    
+                                    $rawP = str_replace(['.', ',', ' '], '', (string)($metadata[$prevF['name']] ?? '0'));
+                                    if (is_numeric($rawP)) {
+                                        $calcSum += (float)$rawP;
+                                    }
+                                }
+                                if ($calcSum > 0) {
+                                    $metadata[$dName] = $calcSum;
+                                }
+                            }
+                        }
+                    }
+                }
+
                 // Fallback: Check dynamic metadata for any explicit Total or table monetary sums
                 if (empty($estimatedBudget) && !empty($metadata) && is_array($metadata)) {
                     foreach ($metadata as $mKey => $mVal) {
@@ -550,6 +599,55 @@ class DocumentController extends Controller
             'loan' => $request->input('loan_amount', 0) ?: 0,
             default => null,
         };
+
+        // Fallback: Check dynamic metadata and calculate any empty auto-sum fields
+        $templateModel = !empty($document->template) 
+            ? \App\Models\DocumentTemplate::where('code', $document->template)->first() 
+            : null;
+        $dynFields = $templateModel ? ($templateModel->fields['dynamic_fields'] ?? []) : [];
+
+        if (!empty($dynFields) && is_array($metadata)) {
+            foreach ($dynFields as $dIdx => $dField) {
+                $dName = $dField['name'] ?? '';
+                $dNameLow = strtolower(trim((string)$dName));
+                $dLabelLow = strtolower(trim((string)($dField['label'] ?? '')));
+                $isExcluded = (bool)preg_match('/uang_saku|insidental|per_hari|\bjam\b|\bhari\b|\bpeserta\b|\borang\b|\bcuti\b|\bqty\b|\bkuantitas\b/i', $dNameLow) ||
+                              (bool)preg_match('/uang\s*saku|insidental|per\s*hari|\bjam\b|\bhari\b|\bpeserta\b|\borang\b|\bcuti\b|\bqty\b|\bkuantitas\b/i', $dLabelLow);
+                
+                $isTotalField = false;
+                if (!empty($dField['auto_sum']) || !empty($dField['is_total'])) {
+                    $isTotalField = true;
+                } elseif (!$isExcluded) {
+                    $isTotalField = (bool)preg_match('/^(?:total|grand_total|jumlah_total|total_biaya|total_estimasi|estimasi_total|total_keseluruhan)/i', $dNameLow) ||
+                                    (bool)preg_match('/^(?:\d+[\.\)]\s*)?(?:total\b|grand\s*total|jumlah\s*total|jumlah\s*keseluruhan)/i', $dLabelLow);
+                }
+
+                if ($isTotalField) {
+                    $currentVal = $metadata[$dName] ?? null;
+                    if (empty($currentVal) || $currentVal === '-' || (float)str_replace(['.', ',', ' '], '', (string)$currentVal) == 0) {
+                        $calcSum = 0;
+                        for ($k = 0; $k < $dIdx; $k++) {
+                            $prevF = $dynFields[$k] ?? null;
+                            if (!$prevF || ($prevF['type'] ?? '') !== 'number') continue;
+                            $prevNameLow = strtolower(trim((string)($prevF['name'] ?? '')));
+                            $prevLabelLow = strtolower(trim((string)($prevF['label'] ?? '')));
+                            if (preg_match('/umur|usia|\banak\b|persen|percent/i', $prevNameLow) || preg_match('/umur|usia|\banak\b|persen/i', $prevLabelLow)) continue;
+                            if (!empty($prevF['auto_sum']) || !empty($prevF['is_total']) ||
+                                preg_match('/^(?:total|grand_total|jumlah_total|total_biaya|total_estimasi|estimasi_total|total_keseluruhan)/i', $prevNameLow) ||
+                                preg_match('/^(?:\d+[\.\)]\s*)?(?:total\b|grand\s*total|jumlah\s*total|jumlah\s*keseluruhan)/i', $prevLabelLow)) continue;
+                            
+                            $rawP = str_replace(['.', ',', ' '], '', (string)($metadata[$prevF['name']] ?? '0'));
+                            if (is_numeric($rawP)) {
+                                $calcSum += (float)$rawP;
+                            }
+                        }
+                        if ($calcSum > 0) {
+                            $metadata[$dName] = $calcSum;
+                        }
+                    }
+                }
+            }
+        }
 
         // Fallback: Check dynamic metadata for any explicit Total or table monetary sums
         if (empty($estimatedBudget) && !empty($metadata) && is_array($metadata)) {

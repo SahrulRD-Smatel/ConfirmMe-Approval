@@ -129,6 +129,35 @@
                                         $isTotalField = (bool)preg_match('/^(?:total|grand_total|jumlah_total|total_biaya|total_estimasi|estimasi_total|total_keseluruhan)/i', $fNameLow) ||
                                                         (bool)preg_match('/^(?:\d+[\.\)]\s*)?(?:total\b|grand\s*total|jumlah\s*total|jumlah\s*keseluruhan)/i', $fLabelLow);
                                     }
+
+                                    // Dynamic Fallback: Jika ini total field dan nilainya kosong/0/dash, hitung otomatis dari field angka sebelumnya
+                                    if ($isTotalField && (empty($fieldValue) || $fieldValue === '-' || (float)str_replace(['.', ',', ' '], '', (string)$fieldValue) == 0)) {
+                                        $calcSum = 0;
+                                        for ($k = 0; $k < $loop->index; $k++) {
+                                            $prevField = $dynamicFields[$k] ?? null;
+                                            if (!$prevField || ($prevField['type'] ?? '') !== 'number') {
+                                                continue;
+                                            }
+                                            $prevNameLow = strtolower(trim((string)($prevField['name'] ?? '')));
+                                            $prevLabelLow = strtolower(trim((string)($prevField['label'] ?? '')));
+                                            if (preg_match('/umur|usia|\banak\b|persen|percent/i', $prevNameLow) ||
+                                                preg_match('/umur|usia|\banak\b|persen/i', $prevLabelLow)) {
+                                                continue;
+                                            }
+                                            if (!empty($prevField['auto_sum']) || !empty($prevField['is_total']) ||
+                                                preg_match('/^(?:total|grand_total|jumlah_total|total_biaya|total_estimasi|estimasi_total|total_keseluruhan)/i', $prevNameLow) ||
+                                                preg_match('/^(?:\d+[\.\)]\s*)?(?:total\b|grand\s*total|jumlah\s*total|jumlah\s*keseluruhan)/i', $prevLabelLow)) {
+                                                continue;
+                                            }
+                                            $prevValRaw = str_replace(['.', ',', ' '], '', (string)($document->metadata[$prevField['name']] ?? '0'));
+                                            if (is_numeric($prevValRaw)) {
+                                                $calcSum += (float)$prevValRaw;
+                                            }
+                                        }
+                                        if ($calcSum > 0) {
+                                            $fieldValue = $calcSum;
+                                        }
+                                    }
                                 @endphp
                                 <div class="{{ $isTotalField ? 'col-span-1 sm:col-span-2 p-4 rounded-xl border border-primary-200/80 dark:border-primary-900/50 bg-primary-50/40 dark:bg-primary-950/20' : '' }}">
                                     <dt class="text-sm font-medium {{ $isTotalField ? 'text-primary-900 dark:text-primary-300 font-bold uppercase tracking-wide text-xs flex items-center justify-between' : 'text-gray-500 dark:text-gray-400' }}">
@@ -143,7 +172,7 @@
                                                 {{ \Carbon\Carbon::parse($fieldValue)->translatedFormat('d F Y') }}
                                             @elseif($field['type'] === 'time')
                                                 {{ (strpos($fieldValue, 'WIB') !== false) ? $fieldValue : $fieldValue . ' WIB' }}
-                                            @elseif($field['type'] === 'number')
+                                            @elseif($field['type'] === 'number' || $isTotalField)
                                                 {{ $isTotalField ? 'Rp ' : '' }}{{ is_numeric($fieldValue) ? number_format((float)$fieldValue, 0, ',', '.') : $fieldValue }}
                                             @else
                                                 {{ $fieldValue }}

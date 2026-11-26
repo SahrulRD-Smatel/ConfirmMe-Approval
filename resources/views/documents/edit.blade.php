@@ -21,7 +21,7 @@
     @endphp
 
     <form action="{{ route('documents.update', $document) }}" method="POST" enctype="multipart/form-data"
-        class="space-y-7" x-data="{ 
+        class="space-y-7" @submit="window.dispatchEvent(new CustomEvent('recompute-totals'))" x-data="{ 
               approvalType: '{{ old('approval_type', $document->approval_type) }}',
               selectedTemplate: {
                   code: '{{ $document->template }}',
@@ -269,10 +269,9 @@
                 },
                 setNum(fieldName, val) {
                     let parsed = parseInt(val) || 0;
-                    if (this.numValues[fieldName] !== parsed) {
-                        this.numValues[fieldName] = parsed;
-                    }
+                    this.numValues[fieldName] = parsed;
                     metadata[fieldName] = parsed;
+                    window.dispatchEvent(new CustomEvent('recompute-totals'));
                 }
              }"
              class="rounded-2xl border border-gray-100 bg-gray-50/60 p-4 dark:border-gray-800 dark:bg-gray-800/40 sm:p-5" x-cloak>
@@ -302,7 +301,7 @@
                                                 <x-icon name="calculator" class="w-3 h-3" />
                                                 <span x-text="isAutoLocked ? '{{ __('Auto-Jumlah') }}' : '{{ __('Manual') }}'"></span>
                                             </span>
-                                            <button type="button" @click="isAutoLocked = !isAutoLocked" class="text-[10px] text-gray-400 hover:text-primary-600 underline cursor-pointer">
+                                            <button type="button" @click="isAutoLocked = !isAutoLocked; if (isAutoLocked) window.dispatchEvent(new CustomEvent('recompute-totals'))" class="text-[10px] text-gray-400 hover:text-primary-600 underline cursor-pointer">
                                                 <span x-text="isAutoLocked ? '{{ __('Ubah Manual') }}' : '{{ __('Kunci Otomatis') }}'"></span>
                                             </button>
                                         </div>
@@ -313,19 +312,16 @@
                         <template x-if="field.type === 'number'">
                             <div class="relative" x-data="{
                                 valFormatted: '',
+                                recalc() {
+                                    if (!isTotalField(field) || !this.isAutoLocked) return;
+                                    let calc = computeTotal(field);
+                                    this.valFormatted = calc > 0 ? new Intl.NumberFormat('id-ID').format(calc) : '';
+                                    metadata[field.name] = calc > 0 ? calc : '';
+                                },
                                 init() {
                                     if (isTotalField(field)) {
-                                        this.$watch('numValues', () => {
-                                            if (!this.isAutoLocked) return;
-                                            let calc = computeTotal(field);
-                                            this.valFormatted = calc > 0 ? new Intl.NumberFormat('id-ID').format(calc) : '';
-                                            metadata[field.name] = calc > 0 ? calc : '';
-                                        }, { deep: true });
-                                        let initial = computeTotal(field);
-                                        if (initial > 0) {
-                                            this.valFormatted = new Intl.NumberFormat('id-ID').format(initial);
-                                            metadata[field.name] = initial;
-                                        } else if (metadata[field.name]) {
+                                        this.recalc();
+                                        if (!this.valFormatted && metadata[field.name]) {
                                             let raw = String(metadata[field.name]).replace(/[^\d]/g, '');
                                             this.valFormatted = raw ? new Intl.NumberFormat('id-ID').format(raw) : '';
                                         }
@@ -343,7 +339,8 @@
                                         setNum(field.name, raw);
                                     }
                                 }
-                            }">
+                            }"
+                            @recompute-totals.window="recalc()">
                                 <input type="text" x-model="valFormatted" @input="formatNum($event)" inputmode="numeric" 
                                     :readonly="isTotalField(field) && isAutoLocked"
                                     :placeholder="isTotalField(field) ? '{{ __('Otomatis dijumlahkan dari rincian di atas') }}' : field.label" 

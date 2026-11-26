@@ -225,7 +225,7 @@
                 <p class="max-w-2xl text-sm leading-6 text-gray-500 dark:text-gray-400">{{ __('Tinjau modul terpilih, lengkapi setiap dokumen, lalu kirim seluruh pengajuan dari satu ruang kerja.') }}</p>
             </div>
 
-            <form action="{{ route('documents.store') }}" method="POST" enctype="multipart/form-data" class="space-y-7">
+            <form action="{{ route('documents.store') }}" method="POST" enctype="multipart/form-data" class="space-y-7" @submit="window.dispatchEvent(new CustomEvent('recompute-totals'))">
                 @csrf
 
                 <div class="mb-6 rounded-[1.75rem] border border-primary-200/80 bg-primary-50/80 p-5 shadow-sm dark:border-primary-800/70 dark:bg-primary-900/20">
@@ -475,9 +475,8 @@
                                         },
                                         setNum(fieldName, val) {
                                             let parsed = parseInt(val) || 0;
-                                            if (this.numValues[fieldName] !== parsed) {
-                                                this.numValues[fieldName] = parsed;
-                                            }
+                                            this.numValues[fieldName] = parsed;
+                                            window.dispatchEvent(new CustomEvent('recompute-totals'));
                                         }
                                      }"
                                      class="rounded-2xl border border-gray-100 bg-gray-50/60 p-4 dark:border-gray-800 dark:bg-gray-800/40 sm:p-5">
@@ -507,7 +506,7 @@
                                                                         <x-icon name="calculator" class="w-3 h-3" />
                                                                         <span x-text="isAutoLocked ? '{{ __('Auto-Jumlah') }}' : '{{ __('Manual') }}'"></span>
                                                                     </span>
-                                                                    <button type="button" @click="isAutoLocked = !isAutoLocked" class="text-[10px] text-gray-400 hover:text-primary-600 underline cursor-pointer">
+                                                                    <button type="button" @click="isAutoLocked = !isAutoLocked; if (isAutoLocked) window.dispatchEvent(new CustomEvent('recompute-totals'))" class="text-[10px] text-gray-400 hover:text-primary-600 underline cursor-pointer">
                                                                         <span x-text="isAutoLocked ? '{{ __('Ubah Manual') }}' : '{{ __('Kunci Otomatis') }}'"></span>
                                                                     </button>
                                                                 </div>
@@ -519,19 +518,15 @@
                                                     <div class="relative" x-data="{
                                                         numVal: '',
                                                         rawVal: '',
+                                                        recalc() {
+                                                            if (!isTotalField(field) || !this.isAutoLocked) return;
+                                                            let calc = computeTotal(field);
+                                                            this.rawVal = calc > 0 ? String(calc) : '';
+                                                            this.numVal = calc > 0 ? new Intl.NumberFormat('id-ID').format(calc) : '';
+                                                        },
                                                         init() {
                                                             if (isTotalField(field)) {
-                                                                this.$watch('numValues', () => {
-                                                                    if (!this.isAutoLocked) return;
-                                                                    let calc = computeTotal(field);
-                                                                    this.rawVal = calc > 0 ? String(calc) : '';
-                                                                    this.numVal = calc > 0 ? new Intl.NumberFormat('id-ID').format(calc) : '';
-                                                                }, { deep: true });
-                                                                let initial = computeTotal(field);
-                                                                if (initial > 0) {
-                                                                    this.rawVal = String(initial);
-                                                                    this.numVal = new Intl.NumberFormat('id-ID').format(initial);
-                                                                }
+                                                                this.recalc();
                                                             }
                                                         },
                                                         formatNum(e) {
@@ -542,7 +537,8 @@
                                                                 setNum(field.name, raw);
                                                             }
                                                         }
-                                                    }">
+                                                    }"
+                                                    @recompute-totals.window="recalc()">
                                                         <input type="text" x-model="numVal" @input="formatNum($event)" inputmode="numeric" 
                                                             :readonly="isTotalField(field) && isAutoLocked"
                                                             :placeholder="isTotalField(field) ? '{{ __('Otomatis dijumlahkan dari rincian di atas') }}' : field.label" 
