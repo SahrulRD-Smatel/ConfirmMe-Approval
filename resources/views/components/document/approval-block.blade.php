@@ -52,7 +52,7 @@
             $label = $isLast ? (($type === 'loan') ? __('Final Approval') : __('Approved')) : __('Reviewed');
             
             // Format role name for display
-            $roleName = format_acronyms($approval->approver?->position ?? $approval->role_label ?? 'Approver');
+            $roleName = format_acronyms($approval->pdf_label ?? $approval->approver?->position ?? $approval->role_label ?? 'Approver');
 
             $columns[] = [
                 'is_requester' => false,
@@ -84,7 +84,7 @@
             <thead>
                 <tr>
                     @foreach($columns as $col)
-                        <th class="border border-gray-200 px-2 py-2 text-center bg-gray-50/80 font-semibold print:bg-white" style="min-width: 125px;">
+                        <th class="border border-gray-200 px-2 py-2 text-center bg-gray-50/80 font-semibold print:bg-white" style="min-width: 155px;">
                             {{ $col['label'] }}
                         </th>
                     @endforeach
@@ -102,9 +102,17 @@
                             @endphp
                             
                             @if($isRequester)
-                                {{-- Requester always shows checkmark --}}
+                                {{-- Requester checkmark / signature --}}
+                                @php
+                                    $requesterUrl = $document?->approval_hash
+                                        ? route('verify.show', ['hash' => $document->approval_hash, 'signer' => 'requester'])
+                                        : null;
+                                @endphp
                                 <div class="flex flex-col items-center justify-center h-full">
-                                    <div class="w-[70px] h-[70px] bg-green-50 rounded-lg border border-green-200 inline-flex flex-col items-center justify-center">
+                                    @if($requesterUrl)
+                                        <a href="{{ $requesterUrl }}" target="_blank" rel="noopener noreferrer" title="{{ __('Verifikasi Pengajuan Pemohon') }}" class="group block">
+                                    @endif
+                                    <div class="w-[70px] h-[70px] bg-green-50 rounded-lg border border-green-200 inline-flex flex-col items-center justify-center group-hover:border-green-400 transition-colors">
                                         <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mb-0.5">
                                             <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -112,6 +120,9 @@
                                         </div>
                                         <span class="text-[9px] text-green-700 font-bold uppercase tracking-wider">{{ __('Dibuat') }}</span>
                                     </div>
+                                    @if($requesterUrl)
+                                        </a>
+                                    @endif
                                     <span class="text-[10px] text-green-600 font-medium mt-1">{{ __('Created') }}</span>
                                 </div>
                             @elseif($isApproved && $approval->action_at)
@@ -120,11 +131,16 @@
                                     @php
                                         $isLastStep = ($loop->index === count($columns) - 1);
                                         $showQr = $verificationUrl && ($isLastStep ? $isFullyApproved : true);
+                                        $signerUrl = ($document?->approval_hash && $approval)
+                                            ? route('verify.show', ['hash' => $document->approval_hash, 'step' => $approval->id])
+                                            : $verificationUrl;
                                     @endphp
-                                    @if($showQr)
-                                        <div class="w-[70px] h-[70px] bg-white p-0.5 rounded-lg border border-gray-200 inline-flex items-center justify-center overflow-hidden shadow-2xs">
-                                            {!! QrCode::format('svg')->size(70)->margin(1)->generate($verificationUrl) !!}
-                                        </div>
+                                    @if($showQr && $signerUrl)
+                                        <a href="{{ $signerUrl }}" target="_blank" rel="noopener noreferrer" title="{{ __('Verifikasi Tanda Tangan Digital') }}" class="group block">
+                                            <div class="w-[70px] h-[70px] bg-white p-0.5 rounded-lg border border-gray-200 inline-flex items-center justify-center overflow-hidden shadow-2xs group-hover:border-primary-500 transition-colors [&>svg]:w-full [&>svg]:h-full [&>svg]:block">
+                                                {!! QrCode::format('svg')->size(70)->margin(1)->generate($signerUrl) !!}
+                                            </div>
+                                        </a>
                                     @else
                                         <div class="w-[70px] h-[70px] bg-green-50 rounded-lg border border-green-200 inline-flex flex-col items-center justify-center">
                                             <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mb-0.5">
@@ -242,9 +258,11 @@
     @if($isFullyApproved && $verificationUrl)
         <div class="mt-4 p-3 rounded-2xl border border-success-200 bg-success-50/80 flex items-center gap-3 print:bg-white print:border-green-400">
             <div class="flex-shrink-0">
-                <div class="w-[70px] h-[70px] bg-white p-0.5 rounded-lg border border-green-300 inline-flex items-center justify-center overflow-hidden shadow-2xs">
-                    {!! QrCode::format('svg')->size(70)->margin(1)->generate($verificationUrl) !!}
-                </div>
+                <a href="{{ $verificationUrl }}" target="_blank" rel="noopener noreferrer" title="{{ __('Buka Halaman Verifikasi') }}" class="group block">
+                    <div class="w-[70px] h-[70px] bg-white p-0.5 rounded-lg border border-green-300 inline-flex items-center justify-center overflow-hidden shadow-2xs group-hover:border-green-500 transition-colors [&>svg]:w-full [&>svg]:h-full [&>svg]:block">
+                        {!! QrCode::format('svg')->size(70)->margin(1)->generate($verificationUrl) !!}
+                    </div>
+                </a>
             </div>
             <div class="text-xs">
                 <p class="font-semibold text-green-800 flex items-center gap-1.5">
@@ -252,7 +270,11 @@
                     <span>{{ __('Dokumen Sah - Terverifikasi Digital') }}</span>
                 </p>
                 <p class="text-green-600 mt-1">{{ __('Scan QR Code untuk verifikasi keaslian dokumen.') }}</p>
-                <p class="text-green-500 mt-1 text-[10px] break-all">{{ $verificationUrl }}</p>
+                <p class="text-green-500 mt-1 text-[10px] break-all">
+                    <a href="{{ $verificationUrl }}" target="_blank" rel="noopener noreferrer" class="hover:underline">
+                        {{ $verificationUrl }}
+                    </a>
+                </p>
             </div>
         </div>
     @endif

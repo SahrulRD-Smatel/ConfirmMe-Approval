@@ -36,7 +36,10 @@ class VerificationController extends Controller
         // Check if specific step or signer was scanned
         $scannedApproval = null;
         if (request()->filled('step')) {
-            $scannedApproval = $document->approvals->where('id', request('step'))->first();
+            $stepVal = request('step');
+            $scannedApproval = $document->approvals->first(function ($a) use ($stepVal) {
+                return (string) $a->id === (string) $stepVal || (string) $a->approval_order === (string) $stepVal;
+            });
         }
 
         $scannedSigner = request('signer'); // 'requester', 'mengetahui', 'finance'
