@@ -51,8 +51,9 @@
             $isLast = ($index === $totalApprovals - 1);
             $label = $isLast ? (($type === 'loan') ? __('Final Approval') : __('Approved')) : __('Reviewed');
             
-            // Format role name for display
-            $roleName = format_acronyms($approval->pdf_label ?? $approval->approver?->position ?? $approval->role_label ?? 'Approver');
+            // Format role name for display (prioritize non-empty custom label, then approver's actual position)
+            $customLabel = !empty($approval->pdf_label) ? trim($approval->pdf_label) : null;
+            $roleName = format_acronyms($customLabel ?? ($approval->approver?->position ?? ($approval->role_label ?? 'Approver')));
 
             $columns[] = [
                 'is_requester' => false,

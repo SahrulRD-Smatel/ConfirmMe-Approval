@@ -120,7 +120,7 @@
                                 </span>
                                 <h3 class="mt-1 text-base font-bold text-gray-900">{{ $scannedApproval->approver?->name ?? 'Approver' }}</h3>
                                 <p class="text-xs text-gray-600">
-                                    {{ format_acronyms($scannedApproval->pdf_label ?? $scannedApproval->approver?->position ?? $scannedApproval->role_label) }}
+                                    {{ format_acronyms((!empty($scannedApproval->pdf_label) ? trim($scannedApproval->pdf_label) : null) ?? ($scannedApproval->approver?->position ?? ($scannedApproval->role_label ?? 'Approver'))) }}
                                     @if($scannedApproval->approver?->employee_id)
                                         &bull; NIP. {{ $scannedApproval->approver->employee_id }}
                                     @endif

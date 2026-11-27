@@ -422,6 +422,8 @@ class ApprovalWorkflowService
             $approvedBudget = $document->approvals()
                 ->whereNotNull('approved_amount')
                 ->min('approved_amount') ?? $document->estimated_budget;
+        } elseif ((float)($document->estimated_budget ?? 0) > 0) {
+            $approvedBudget = (float) $document->estimated_budget;
         }
 
         // For LOAN type: use finance-approved amount if available, otherwise fallback to metadata loan_amount
