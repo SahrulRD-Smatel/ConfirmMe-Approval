@@ -260,11 +260,12 @@ class DocumentController extends Controller
                                       (bool)preg_match('/uang\s*saku|insidental|per\s*hari|\bjam\b|\bhari\b|\bpeserta\b|\borang\b|\bcuti\b|\bqty\b|\bkuantitas\b/i', $dLabelLow);
                         
                         $isTotalField = false;
-                        if (!empty($dField['auto_sum']) || !empty($dField['is_total'])) {
+                        if (isset($dField['auto_sum'])) {
+                            $isTotalField = (bool)$dField['auto_sum'];
+                        } elseif (!empty($dField['is_total'])) {
                             $isTotalField = true;
-                        } elseif (isset($dField['auto_sum']) && ($dField['auto_sum'] === false || $dField['auto_sum'] === '0' || $dField['auto_sum'] === 0)) {
-                            $isTotalField = false;
                         } elseif (!$isExcluded) {
+                            // Fallback hanya untuk template lama yang belum memiliki konfigurasi auto_sum
                             $isTotalField = (bool)preg_match('/^(?:total|grand_total|jumlah_total|total_biaya|total_estimasi|estimasi_total|total_keseluruhan)/i', $dNameLow) ||
                                             (bool)preg_match('/^(?:\d+[\.\)]\s*)?(?:total\b|grand\s*total|jumlah\s*total|jumlah\s*keseluruhan)/i', $dLabelLow);
                         }
@@ -638,11 +639,12 @@ class DocumentController extends Controller
                               (bool)preg_match('/uang\s*saku|insidental|per\s*hari|\bjam\b|\bhari\b|\bpeserta\b|\borang\b|\bcuti\b|\bqty\b|\bkuantitas\b/i', $dLabelLow);
                 
                 $isTotalField = false;
-                if (!empty($dField['auto_sum']) || !empty($dField['is_total'])) {
+                if (isset($dField['auto_sum'])) {
+                    $isTotalField = (bool)$dField['auto_sum'];
+                } elseif (!empty($dField['is_total'])) {
                     $isTotalField = true;
-                } elseif (isset($dField['auto_sum']) && ($dField['auto_sum'] === false || $dField['auto_sum'] === '0' || $dField['auto_sum'] === 0)) {
-                    $isTotalField = false;
                 } elseif (!$isExcluded) {
+                    // Fallback hanya untuk template lama yang belum memiliki konfigurasi auto_sum
                     $isTotalField = (bool)preg_match('/^(?:total|grand_total|jumlah_total|total_biaya|total_estimasi|estimasi_total|total_keseluruhan)/i', $dNameLow) ||
                                     (bool)preg_match('/^(?:\d+[\.\)]\s*)?(?:total\b|grand\s*total|jumlah\s*total|jumlah\s*keseluruhan)/i', $dLabelLow);
                 }

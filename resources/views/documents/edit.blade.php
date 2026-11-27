@@ -242,8 +242,12 @@
                 },
                 isTotalField(f) {
                     if (!f) return false;
-                    if (f.auto_sum === true || f.is_total === true || f.auto_sum == '1' || f.is_total == '1') return true;
-                    if (f.auto_sum === false || f.is_total === false || f.auto_sum == '0' || f.is_total == '0') return false;
+                    if (typeof f.auto_sum !== 'undefined' && f.auto_sum !== null) {
+                        return Boolean(f.auto_sum === true || f.auto_sum === 1 || f.auto_sum === '1' || f.auto_sum === 'true');
+                    }
+                    if (typeof f.is_total !== 'undefined' && f.is_total !== null) {
+                        return Boolean(f.is_total === true || f.is_total === 1 || f.is_total === '1' || f.is_total === 'true');
+                    }
 
                     let n = (f.name || '').toLowerCase().trim();
                     let l = (f.label || '').toLowerCase().trim();

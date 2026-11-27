@@ -123,11 +123,12 @@
                                                   (bool)preg_match('/uang\s*saku|insidental|per\s*hari|\bjam\b|\bhari\b|\bpeserta\b|\borang\b|\bcuti\b|\bqty\b|\bkuantitas\b/i', $fLabelLow);
 
                                     $isTotalField = false;
-                                    if (!empty($field['auto_sum']) || !empty($field['is_total'])) {
+                                    if (isset($field['auto_sum'])) {
+                                        $isTotalField = (bool)$field['auto_sum'];
+                                    } elseif (!empty($field['is_total'])) {
                                         $isTotalField = true;
-                                    } elseif (isset($field['auto_sum']) && ($field['auto_sum'] === false || $field['auto_sum'] === '0' || $field['auto_sum'] === 0)) {
-                                        $isTotalField = false;
                                     } elseif (!$isExcluded) {
+                                        // Fallback hanya untuk template lama yang belum memiliki konfigurasi auto_sum
                                         $isTotalField = (bool)preg_match('/^(?:total|grand_total|jumlah_total|total_biaya|total_estimasi|estimasi_total|total_keseluruhan)/i', $fNameLow) ||
                                                         (bool)preg_match('/^(?:\d+[\.\)]\s*)?(?:total\b|grand\s*total|jumlah\s*total|jumlah\s*keseluruhan)/i', $fLabelLow);
                                     }
