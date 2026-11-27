@@ -96,6 +96,19 @@ class ApprovalWorkflowService
                 $pdfLabel = !empty($stepSigner['pdf_label']) ? trim($stepSigner['pdf_label']) : null;
                 $canEdit = isset($stepSigner['can_edit']) ? (bool)$stepSigner['can_edit'] : false;
 
+                // Check if this approver is also specifically targeted in any other step in the workflow with can_edit = true
+                if (!$canEdit) {
+                    foreach ($workflow as $wIdx => $wRole) {
+                        if ($wRole === 'user:' . $approver->id) {
+                            $targetCfg = $signerConfigs[$wIdx] ?? null;
+                            if (!empty($targetCfg['can_edit'])) {
+                                $canEdit = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
                 DocumentApproval::create([
                     'document_id' => $document->id,
                     'approver_id' => $approver->id,
@@ -108,6 +121,33 @@ class ApprovalWorkflowService
                 ]);
                 $assignedApproverIds[] = $approver->id;
                 $order++;
+            } else {
+                // If this step could not be assigned because the user was ALREADY assigned in an earlier step:
+                // Inherit can_edit = true and custom pdf_label onto the existing approval record for that approver
+                $stepSigner = $signerConfigs[$index] ?? null;
+                $stepCanEdit = isset($stepSigner['can_edit']) ? (bool)$stepSigner['can_edit'] : false;
+                $stepPdfLabel = !empty($stepSigner['pdf_label']) ? trim($stepSigner['pdf_label']) : null;
+
+                if ($stepCanEdit || $stepPdfLabel) {
+                    $matchedUser = $this->findApproverForRole($role, $document, []);
+                    if ($matchedUser && in_array($matchedUser->id, $assignedApproverIds)) {
+                        $existingApproval = DocumentApproval::where('document_id', $document->id)
+                            ->where('approver_id', $matchedUser->id)
+                            ->first();
+                        if ($existingApproval) {
+                            $updates = [];
+                            if ($stepCanEdit && !$existingApproval->can_edit) {
+                                $updates['can_edit'] = true;
+                            }
+                            if ($stepPdfLabel && empty($existingApproval->pdf_label)) {
+                                $updates['pdf_label'] = $stepPdfLabel;
+                            }
+                            if (!empty($updates)) {
+                                $existingApproval->update($updates);
+                            }
+                        }
+                    }
+                }
             }
         }
 

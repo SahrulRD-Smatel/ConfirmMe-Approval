@@ -389,10 +389,23 @@ class Document extends Model
 
         if ($template && !empty($template->fields['workflow_signers']) && $approval) {
             $signers = $template->fields['workflow_signers'];
-            // Match by approval_order - 1 (0-indexed in workflow)
-            $orderIdx = (int) $approval->approval_order - 1;
-            if (isset($signers[$orderIdx]['can_edit'])) {
-                return (bool) $signers[$orderIdx]['can_edit'];
+            $workflow = $template->workflow ?? [];
+
+            // Match by user ID explicitly targeted in workflow
+            foreach ($workflow as $wfIdx => $wfRole) {
+                if ($wfRole === 'user:' . $approval->approver_id && !empty($signers[$wfIdx]['can_edit'])) {
+                    return true;
+                }
+            }
+
+            // Match by approver role in workflow
+            foreach ($workflow as $wfIdx => $wfRole) {
+                if ($wfRole === $approval->approver_role || 
+                    str_replace(['role:', 'hierarchy:'], '', (string)$wfRole) === str_replace(['role:', 'hierarchy:'], '', (string)$approval->approver_role)) {
+                    if (!empty($signers[$wfIdx]['can_edit'])) {
+                        return true;
+                    }
+                }
             }
         }
 

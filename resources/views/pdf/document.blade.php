@@ -810,27 +810,25 @@
             $templateSigners = $template->fields['workflow_signers'] ?? ($document->template->fields['workflow_signers'] ?? []);
             $templateWorkflow = $template ? ($template->workflow ?? []) : [];
             foreach ($approvals as $approval) {
-                $orderIndex = $approval->approval_order - 1;
-
-                // Cari konfigurasi signer: prioritas cocokkan by role di workflow template; fallback orderIndex hanya jika template tidak memiliki definisi workflow role
+                // Cari konfigurasi signer: prioritas cocokkan by role / user di workflow template
                 $signerCfg = null;
                 if (!empty($templateSigners) && !empty($templateWorkflow)) {
                     $approverRole = $approval->approver_role;
                     foreach ($templateWorkflow as $wfIndex => $wfRole) {
-                        if ($wfRole === $approverRole || str_replace(['role:', 'hierarchy:'], '', (string)$wfRole) === str_replace(['role:', 'hierarchy:'], '', (string)$approverRole)) {
+                        if ($wfRole === $approverRole || 
+                            str_replace(['role:', 'hierarchy:'], '', (string)$wfRole) === str_replace(['role:', 'hierarchy:'], '', (string)$approverRole) ||
+                            (string)$wfRole === 'user:' . $approval->approver_id) {
                             $signerCfg = $templateSigners[$wfIndex] ?? null;
                             break;
                         }
                     }
-                } elseif (!empty($templateSigners) && isset($templateSigners[$orderIndex])) {
-                    $signerCfg = $templateSigners[$orderIndex];
                 }
 
                 $showInPdf = true;
-                if ($signerCfg !== null && isset($signerCfg['show_in_pdf'])) {
-                    $showInPdf = (bool) $signerCfg['show_in_pdf'];
-                } elseif ($approval->show_in_pdf !== null) {
+                if ($approval->show_in_pdf !== null) {
                     $showInPdf = (bool) $approval->show_in_pdf;
+                } elseif ($signerCfg !== null && isset($signerCfg['show_in_pdf'])) {
+                    $showInPdf = (bool) $signerCfg['show_in_pdf'];
                 }
 
                 if (!$showInPdf) {
@@ -838,11 +836,10 @@
                 }
 
                 $customLabel = null;
-                if ($signerCfg !== null) {
-                    // Jika konfigurasi template ditemukan: jika diisi custom pakai custom, jika dikosongkan kembali ke jabatan asli
-                    $customLabel = !empty($signerCfg['pdf_label']) ? trim($signerCfg['pdf_label']) : null;
-                } elseif (!empty($approval->pdf_label)) {
-                    $customLabel = $approval->pdf_label;
+                if (!empty($approval->pdf_label)) {
+                    $customLabel = trim($approval->pdf_label);
+                } elseif ($signerCfg !== null && !empty($signerCfg['pdf_label'])) {
+                    $customLabel = trim($signerCfg['pdf_label']);
                 }
 
                 $roleTitle = $customLabel ? format_acronyms($customLabel) : format_acronyms($approval->approver?->position ?? ($approval->role_label ?? 'Approver'));
@@ -960,14 +957,17 @@
 
                 $checkShowInPdf = function($approval) use ($templateSigners, $templateWorkflow) {
                     if (!$approval) return false;
-                    $orderIdx = $approval->approval_order - 1;
+                    if ($approval->show_in_pdf !== null) {
+                        return (bool) $approval->show_in_pdf;
+                    }
+
                     $signerCfg = null;
-                    if (!empty($templateSigners) && isset($templateSigners[$orderIdx])) {
-                        $signerCfg = $templateSigners[$orderIdx];
-                    } elseif (!empty($templateSigners) && !empty($templateWorkflow)) {
+                    if (!empty($templateSigners) && !empty($templateWorkflow)) {
                         $approverRole = $approval->approver_role;
                         foreach ($templateWorkflow as $wfIndex => $wfRole) {
-                            if ($wfRole === $approverRole || str_replace(['role:', 'hierarchy:'], '', (string)$wfRole) === str_replace(['role:', 'hierarchy:'], '', (string)$approverRole)) {
+                            if ($wfRole === $approverRole || 
+                                str_replace(['role:', 'hierarchy:'], '', (string)$wfRole) === str_replace(['role:', 'hierarchy:'], '', (string)$approverRole) ||
+                                (string)$wfRole === 'user:' . $approval->approver_id) {
                                 $signerCfg = $templateSigners[$wfIndex] ?? null;
                                 break;
                             }
@@ -977,19 +977,25 @@
                     if ($signerCfg !== null && isset($signerCfg['show_in_pdf'])) {
                         return (bool) $signerCfg['show_in_pdf'];
                     }
-                    return $approval->show_in_pdf !== null ? (bool)$approval->show_in_pdf : true;
+                    return true;
                 };
 
                 $getSignerLabel = function($approval, $defaultLabel) use ($templateSigners, $templateWorkflow) {
                     if (!$approval) return $defaultLabel;
-                    $orderIdx = $approval->approval_order - 1;
+
+                    // 1. First priority: Check stored custom pdf_label on DocumentApproval record
+                    if (!empty($approval->pdf_label)) {
+                        return trim($approval->pdf_label);
+                    }
+
+                    // 2. Second priority: Match template signer config by role/user
                     $signerCfg = null;
-                    if (!empty($templateSigners) && isset($templateSigners[$orderIdx])) {
-                        $signerCfg = $templateSigners[$orderIdx];
-                    } elseif (!empty($templateSigners) && !empty($templateWorkflow)) {
+                    if (!empty($templateSigners) && !empty($templateWorkflow)) {
                         $approverRole = $approval->approver_role;
                         foreach ($templateWorkflow as $wfIndex => $wfRole) {
-                            if ($wfRole === $approverRole || str_replace(['role:', 'hierarchy:'], '', (string)$wfRole) === str_replace(['role:', 'hierarchy:'], '', (string)$approverRole)) {
+                            if ($wfRole === $approverRole || 
+                                str_replace(['role:', 'hierarchy:'], '', (string)$wfRole) === str_replace(['role:', 'hierarchy:'], '', (string)$approverRole) ||
+                                (string)$wfRole === 'user:' . $approval->approver_id) {
                                 $signerCfg = $templateSigners[$wfIndex] ?? null;
                                 break;
                             }
@@ -999,9 +1005,16 @@
                     if ($signerCfg !== null && !empty($signerCfg['pdf_label'])) {
                         return trim($signerCfg['pdf_label']);
                     }
-                    if (!empty($approval->pdf_label)) {
-                        return trim($approval->pdf_label);
+
+                    // 3. Third priority: Approver's actual job title / position from database
+                    if (!empty($approval->approver?->position)) {
+                        return format_acronyms($approval->approver->position);
                     }
+
+                    if (!empty($approval->role_label) && $approval->role_label !== 'Approver') {
+                        return format_acronyms($approval->role_label);
+                    }
+
                     return $defaultLabel;
                 };
             @endphp
@@ -1164,16 +1177,12 @@
                     $stpdBoxes = collect();
 
                     // 1. Approvers dynamically resolved from document approvals
-                    $defaultStpdLabels = $document->approvals->count() === 1
-                        ? ['Atasan Langsung']
-                        : ['Yang menugaskan', 'Atasan Langsung', 'Direktur'];
-
                     foreach ($document->approvals as $idx => $appr) {
                         if (!$checkShowInPdf($appr)) {
                             continue;
                         }
 
-                        $defLabel = $defaultStpdLabels[$idx] ?? ('Approver ' . ($idx + 1));
+                        $defLabel = format_acronyms($appr->approver?->position ?? ($appr->role_label ?? ('Approver ' . ($idx + 1))));
                         $apprQr = ($appr->status === 'approved' && $verificationUrl)
                             ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $appr->id]))
                             : null;
@@ -1522,13 +1531,12 @@
                     ]);
 
                     // 2. Approvers
-                    $defaultLabels = ['Diketahui', 'HRD', 'Finance'];
                     foreach ($document->approvals as $idx => $appr) {
                         if (!$checkShowInPdf($appr)) {
                             continue;
                         }
 
-                        $defLabel = $defaultLabels[$idx] ?? ('Approver ' . ($idx + 1));
+                        $defLabel = format_acronyms($appr->approver?->position ?? ($appr->role_label ?? ('Approver ' . ($idx + 1))));
                         $apprQr = ($appr->status === 'approved' && $verificationUrl)
                             ? $genSignerQr(route('verify.show', ['hash' => $document->approval_hash, 'step' => $appr->id]))
                             : null;
@@ -1957,27 +1965,25 @@
                     $templateSigners = $template->fields['workflow_signers'] ?? ($document->template->fields['workflow_signers'] ?? []);
                     $templateWorkflow = $template ? ($template->workflow ?? []) : [];
                     foreach ($approvals as $approval) {
-                        $orderIndex = $approval->approval_order - 1;
-
-                        // Cari konfigurasi signer: prioritas cocokkan by role di workflow template; fallback orderIndex hanya jika template tidak memiliki definisi workflow role
+                        // Cari konfigurasi signer: prioritas cocokkan by role / user di workflow template
                         $signerCfg = null;
                         if (!empty($templateSigners) && !empty($templateWorkflow)) {
                             $approverRole = $approval->approver_role;
                             foreach ($templateWorkflow as $wfIndex => $wfRole) {
-                                if ($wfRole === $approverRole || str_replace(['role:', 'hierarchy:'], '', (string)$wfRole) === str_replace(['role:', 'hierarchy:'], '', (string)$approverRole)) {
+                                if ($wfRole === $approverRole || 
+                                    str_replace(['role:', 'hierarchy:'], '', (string)$wfRole) === str_replace(['role:', 'hierarchy:'], '', (string)$approverRole) ||
+                                    (string)$wfRole === 'user:' . $approval->approver_id) {
                                     $signerCfg = $templateSigners[$wfIndex] ?? null;
                                     break;
                                 }
                             }
-                        } elseif (!empty($templateSigners) && isset($templateSigners[$orderIndex])) {
-                            $signerCfg = $templateSigners[$orderIndex];
                         }
 
                         $showInPdf = true;
-                        if ($signerCfg !== null && isset($signerCfg['show_in_pdf'])) {
-                            $showInPdf = (bool) $signerCfg['show_in_pdf'];
-                        } elseif ($approval->show_in_pdf !== null) {
+                        if ($approval->show_in_pdf !== null) {
                             $showInPdf = (bool) $approval->show_in_pdf;
+                        } elseif ($signerCfg !== null && isset($signerCfg['show_in_pdf'])) {
+                            $showInPdf = (bool) $signerCfg['show_in_pdf'];
                         }
 
                         if (!$showInPdf) {
@@ -1985,11 +1991,10 @@
                         }
 
                         $customLabel = null;
-                        if ($signerCfg !== null) {
-                            // Jika konfigurasi template ditemukan: jika diisi custom pakai custom, jika dikosongkan kembali ke jabatan asli
-                            $customLabel = !empty($signerCfg['pdf_label']) ? trim($signerCfg['pdf_label']) : null;
-                        } elseif (!empty($approval->pdf_label)) {
-                            $customLabel = $approval->pdf_label;
+                        if (!empty($approval->pdf_label)) {
+                            $customLabel = trim($approval->pdf_label);
+                        } elseif ($signerCfg !== null && !empty($signerCfg['pdf_label'])) {
+                            $customLabel = trim($signerCfg['pdf_label']);
                         }
 
                         $roleTitle = $customLabel ? format_acronyms($customLabel) : format_acronyms($approval->approver?->position ?? ($approval->role_label ?? 'Approver'));

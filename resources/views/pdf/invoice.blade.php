@@ -402,27 +402,25 @@
             $templateSigners = $resolvedTemplate->fields['workflow_signers'] ?? [];
             $templateWorkflow = $resolvedTemplate->workflow ?? [];
             foreach ($approvals as $approval) {
-                $orderIndex = $approval->approval_order - 1;
-
-                // Cari konfigurasi signer: prioritas cocokkan by role di workflow template; fallback orderIndex hanya jika template tidak memiliki definisi workflow role
+                // Cari konfigurasi signer: prioritas cocokkan by role / user di workflow template
                 $signerCfg = null;
                 if (!empty($templateSigners) && !empty($templateWorkflow)) {
                     $approverRole = $approval->approver_role;
                     foreach ($templateWorkflow as $wfIndex => $wfRole) {
-                        if ($wfRole === $approverRole || str_replace(['role:', 'hierarchy:'], '', (string)$wfRole) === str_replace(['role:', 'hierarchy:'], '', (string)$approverRole)) {
+                        if ($wfRole === $approverRole || 
+                            str_replace(['role:', 'hierarchy:'], '', (string)$wfRole) === str_replace(['role:', 'hierarchy:'], '', (string)$approverRole) ||
+                            (string)$wfRole === 'user:' . $approval->approver_id) {
                             $signerCfg = $templateSigners[$wfIndex] ?? null;
                             break;
                         }
                     }
-                } elseif (!empty($templateSigners) && isset($templateSigners[$orderIndex])) {
-                    $signerCfg = $templateSigners[$orderIndex];
                 }
 
                 $showInPdf = true;
-                if ($signerCfg !== null && isset($signerCfg['show_in_pdf'])) {
-                    $showInPdf = (bool) $signerCfg['show_in_pdf'];
-                } elseif ($approval->show_in_pdf !== null) {
+                if ($approval->show_in_pdf !== null) {
                     $showInPdf = (bool) $approval->show_in_pdf;
+                } elseif ($signerCfg !== null && isset($signerCfg['show_in_pdf'])) {
+                    $showInPdf = (bool) $signerCfg['show_in_pdf'];
                 }
 
                 if (!$showInPdf) {
@@ -430,11 +428,10 @@
                 }
 
                 $customLabel = null;
-                if ($signerCfg !== null) {
-                    // Jika konfigurasi template ditemukan: jika diisi custom pakai custom, jika dikosongkan kembali ke jabatan asli
-                    $customLabel = !empty($signerCfg['pdf_label']) ? trim($signerCfg['pdf_label']) : null;
-                } elseif (!empty($approval->pdf_label)) {
-                    $customLabel = $approval->pdf_label;
+                if (!empty($approval->pdf_label)) {
+                    $customLabel = trim($approval->pdf_label);
+                } elseif ($signerCfg !== null && !empty($signerCfg['pdf_label'])) {
+                    $customLabel = trim($signerCfg['pdf_label']);
                 }
 
                 $roleTitle = $customLabel ? format_acronyms($customLabel) : format_acronyms($approval->approver?->position ?? ($approval->role_label ?? 'Approver'));

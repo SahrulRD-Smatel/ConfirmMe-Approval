@@ -290,7 +290,7 @@
                         </button>
                     </div>
 
-                    @if($document->canApproverEdit(auth()->user()) || auth()->user()->can('manage-documents'))
+                    @if($document->canApproverEdit(auth()->user()))
                         <div class="pt-4 border-t border-gray-100 dark:border-gray-800">
                             <x-ui.button href="{{ route('documents.edit', $document) }}" variant="secondary" icon="pencil" class="w-full justify-center">
                                 {{ __('Edit / Sesuaikan Rincian Dokumen') }}

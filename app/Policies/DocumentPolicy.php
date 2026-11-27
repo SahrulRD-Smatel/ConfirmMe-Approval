@@ -116,8 +116,8 @@ class DocumentPolicy
             }
         } catch (\Throwable $e) {}
 
-        // 2. Admin / Management with document permissions
-        if ($user->can('manage-documents') || $user->can('view-all-documents')) {
+        // 2. Admin / Management with document management permissions
+        if ($user->can('manage-documents')) {
             if (!in_array($document->status, ['completed', 'rejected'])) {
                 return true;
             }
