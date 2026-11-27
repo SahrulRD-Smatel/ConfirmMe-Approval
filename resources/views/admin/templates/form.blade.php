@@ -162,10 +162,16 @@
 
                 {{-- 2. DYNAMIC FORM BUILDER --}}
                 <x-ui.card class="rounded-2xl border-gray-200/80 p-5 shadow-soft-lg shadow-gray-900/[0.025] dark:border-gray-800/80 sm:p-6" x-data="{
-                    dynamicFields: {{ Js::from($fields['dynamic_fields'] ?? []) }},
+                    dynamicFields: ({{ Js::from($fields['dynamic_fields'] ?? []) }}).map(f => ({
+                        ...f,
+                        required: Boolean(f.required === true || f.required === 1 || f.required === '1' || f.required === 'true'),
+                        auto_sum: Boolean(f.auto_sum === true || f.auto_sum === 1 || f.auto_sum === '1' || f.auto_sum === 'true')
+                    })),
                     init() {
                         this.dynamicFields.forEach(f => {
                             if (!f.id) f.id = Date.now().toString() + Math.random().toString(36).substr(2, 5);
+                            f.required = Boolean(f.required === true || f.required === 1 || f.required === '1' || f.required === 'true');
+                            f.auto_sum = Boolean(f.auto_sum === true || f.auto_sum === 1 || f.auto_sum === '1' || f.auto_sum === 'true');
                         });
                     },
                     addField() {
@@ -175,6 +181,7 @@
                             label: '',
                             type: 'text',
                             required: true,
+                            auto_sum: false,
                             options: '',
                             columns: ''
                         });
@@ -291,7 +298,7 @@
                                                 <span class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ __('Wajib Diisi (Required)') }}</span>
                                                 <label class="flex cursor-pointer items-start gap-2.5 rounded-lg border border-gray-300 px-3 py-2 dark:border-gray-600">
                                                     <input type="hidden" :name="`fields[dynamic_fields][${index}][required]`" value="0">
-                                                    <input type="checkbox" x-model="field.required" :name="`fields[dynamic_fields][${index}][required]`" value="1" class="mt-0.5 rounded border-gray-300 text-primary-600 focus:ring-primary-500 w-4 h-4">
+                                                    <input type="checkbox" x-model="field.required" :checked="Boolean(field.required)" :name="`fields[dynamic_fields][${index}][required]`" value="1" class="mt-0.5 rounded border-gray-300 text-primary-600 focus:ring-primary-500 w-4 h-4">
                                                     <span class="text-xs leading-relaxed text-gray-500 dark:text-gray-400">{{ __('Aktifkan jika pengaju tidak boleh mengirim pengajuan sebelum field ini diisi.') }}</span>
                                                 </label>
                                             </div>
@@ -312,7 +319,7 @@
                                     <div x-show="field.type === 'number'" class="rounded-lg border border-primary-100 bg-primary-50/50 p-3 dark:border-primary-900/40 dark:bg-primary-900/10">
                                         <div class="flex items-start gap-2.5">
                                             <input type="hidden" :name="`fields[dynamic_fields][${index}][auto_sum]`" value="0">
-                                            <input type="checkbox" x-model="field.auto_sum" :name="`fields[dynamic_fields][${index}][auto_sum]`" value="1" class="mt-0.5 rounded border-gray-300 text-primary-600 focus:ring-primary-500 w-4 h-4">
+                                            <input type="checkbox" x-model="field.auto_sum" :checked="Boolean(field.auto_sum)" :name="`fields[dynamic_fields][${index}][auto_sum]`" value="1" class="mt-0.5 rounded border-gray-300 text-primary-600 focus:ring-primary-500 w-4 h-4">
                                             <div>
                                                 <span class="block text-xs font-semibold text-gray-800 dark:text-gray-200">{{ __('Jadikan Field Ini Total Penjumlahan Otomatis (Auto-Sum)') }}</span>
                                                 <span class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{{ __('Jika dicentang, field ini otomatis menghitung total penjumlahan seluruh isian angka rincian di atasnya saat pengaju mengisi form.') }}</span>
@@ -451,7 +458,7 @@
                                     <input type="hidden" :name="'fields[workflow_signers][' + index + '][show_in_pdf]'" value="0">
                                     <label class="inline-flex items-center gap-2 cursor-pointer select-none shrink-0">
                                         <input type="checkbox" :name="'fields[workflow_signers][' + index + '][show_in_pdf]'" value="1"
-                                            x-model="workflows[index].show_in_pdf"
+                                            x-model="workflows[index].show_in_pdf" :checked="Boolean(workflows[index].show_in_pdf)"
                                             class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 h-4 w-4">
                                         <span class="text-xs font-medium text-gray-700 dark:text-gray-300">{{ __('Tampilkan TTD di PDF') }}</span>
                                     </label>

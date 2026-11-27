@@ -262,6 +262,8 @@ class DocumentController extends Controller
                         $isTotalField = false;
                         if (!empty($dField['auto_sum']) || !empty($dField['is_total'])) {
                             $isTotalField = true;
+                        } elseif (isset($dField['auto_sum']) && ($dField['auto_sum'] === false || $dField['auto_sum'] === '0' || $dField['auto_sum'] === 0)) {
+                            $isTotalField = false;
                         } elseif (!$isExcluded) {
                             $isTotalField = (bool)preg_match('/^(?:total|grand_total|jumlah_total|total_biaya|total_estimasi|estimasi_total|total_keseluruhan)/i', $dNameLow) ||
                                             (bool)preg_match('/^(?:\d+[\.\)]\s*)?(?:total\b|grand\s*total|jumlah\s*total|jumlah\s*keseluruhan)/i', $dLabelLow);
@@ -638,6 +640,8 @@ class DocumentController extends Controller
                 $isTotalField = false;
                 if (!empty($dField['auto_sum']) || !empty($dField['is_total'])) {
                     $isTotalField = true;
+                } elseif (isset($dField['auto_sum']) && ($dField['auto_sum'] === false || $dField['auto_sum'] === '0' || $dField['auto_sum'] === 0)) {
+                    $isTotalField = false;
                 } elseif (!$isExcluded) {
                     $isTotalField = (bool)preg_match('/^(?:total|grand_total|jumlah_total|total_biaya|total_estimasi|estimasi_total|total_keseluruhan)/i', $dNameLow) ||
                                     (bool)preg_match('/^(?:\d+[\.\)]\s*)?(?:total\b|grand\s*total|jumlah\s*total|jumlah\s*keseluruhan)/i', $dLabelLow);

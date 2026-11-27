@@ -56,6 +56,8 @@ class TemplateController extends Controller
                 return !empty($df['name']) || !empty($df['label']);
             }));
             foreach ($fields['dynamic_fields'] as $k => &$df) {
+                $df['required'] = !empty($df['required']) && ($df['required'] === '1' || $df['required'] === 1 || $df['required'] === true || $df['required'] === 'true');
+                $df['auto_sum'] = !empty($df['auto_sum']) && ($df['auto_sum'] === '1' || $df['auto_sum'] === 1 || $df['auto_sum'] === true || $df['auto_sum'] === 'true');
                 if (($df['type'] ?? '') === 'section') {
                     if (empty($df['name'])) {
                         $df['name'] = 'sec_' . \Illuminate\Support\Str::slug($df['label'] ?? ('section_' . $k), '_');
@@ -134,6 +136,8 @@ class TemplateController extends Controller
                 return !empty($df['name']) || !empty($df['label']);
             }));
             foreach ($fields['dynamic_fields'] as $k => &$df) {
+                $df['required'] = !empty($df['required']) && ($df['required'] === '1' || $df['required'] === 1 || $df['required'] === true || $df['required'] === 'true');
+                $df['auto_sum'] = !empty($df['auto_sum']) && ($df['auto_sum'] === '1' || $df['auto_sum'] === 1 || $df['auto_sum'] === true || $df['auto_sum'] === 'true');
                 if (($df['type'] ?? '') === 'section') {
                     if (empty($df['name'])) {
                         $df['name'] = 'sec_' . \Illuminate\Support\Str::slug($df['label'] ?? ('section_' . $k), '_');
