@@ -81,6 +81,7 @@ class TemplateController extends Controller
             $cleanSigners[] = [
                 'show_in_pdf' => isset($cfg['show_in_pdf']) ? (bool)$cfg['show_in_pdf'] : true,
                 'pdf_label' => !empty($cfg['pdf_label']) ? trim((string)$cfg['pdf_label']) : null,
+                'can_edit' => !empty($cfg['can_edit']) && ($cfg['can_edit'] === '1' || $cfg['can_edit'] === 1 || $cfg['can_edit'] === true || $cfg['can_edit'] === 'true'),
             ];
         }
         $fields['workflow_signers'] = $cleanSigners;
@@ -161,6 +162,7 @@ class TemplateController extends Controller
             $cleanSigners[] = [
                 'show_in_pdf' => isset($cfg['show_in_pdf']) ? (bool)$cfg['show_in_pdf'] : true,
                 'pdf_label' => !empty($cfg['pdf_label']) ? trim((string)$cfg['pdf_label']) : null,
+                'can_edit' => !empty($cfg['can_edit']) && ($cfg['can_edit'] === '1' || $cfg['can_edit'] === 1 || $cfg['can_edit'] === true || $cfg['can_edit'] === 'true'),
             ];
         }
         $fields['workflow_signers'] = $cleanSigners;

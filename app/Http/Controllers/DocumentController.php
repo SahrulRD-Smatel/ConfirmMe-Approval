@@ -484,13 +484,12 @@ class DocumentController extends Controller
     {
         $this->authorize('update', $document);
 
-        $isCurrentApprover = (int) $document->current_approver_id === (int) auth()->id();
-        $isApproverEdit = $isCurrentApprover && !in_array($document->status, ['draft', 'revision', 'completed', 'rejected']);
+        $isApproverEdit = $document->canApproverEdit(auth()->user());
 
         // Only draft, revision, or active review documents can be edited
         if (!in_array($document->status, ['draft', 'revision']) && !$isApproverEdit && !auth()->user()->can('manage-documents')) {
             return redirect()->route('documents.show', $document)
-                ->with('error', 'Hanya dokumen berstatus Draft, Perlu Revisi, atau yang sedang menunggu review Anda yang dapat diedit.');
+                ->with('error', 'Hanya dokumen berstatus Draft, Perlu Revisi, atau yang sedang menunggu review Anda dengan izin penyesuaian yang dapat diedit.');
         }
 
         // Fetch active templates, ensuring the document's current template is always included
@@ -509,8 +508,7 @@ class DocumentController extends Controller
     {
         $this->authorize('update', $document);
 
-        $isCurrentApprover = (int) $document->current_approver_id === (int) auth()->id();
-        $isApproverEdit = $isCurrentApprover && !in_array($document->status, ['draft', 'revision', 'completed', 'rejected']);
+        $isApproverEdit = $document->canApproverEdit(auth()->user());
 
         if (!in_array($document->status, ['draft', 'revision']) && !$isApproverEdit && !auth()->user()->can('manage-documents')) {
             return redirect()->route('documents.show', $document)

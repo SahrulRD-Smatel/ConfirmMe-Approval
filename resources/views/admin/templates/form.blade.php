@@ -31,6 +31,7 @@
                         'target' => is_array($w) ? ($w['target'] ?? '') : (string)$w,
                         'show_in_pdf' => isset($rawSigners[$i]['show_in_pdf']) ? (bool)$rawSigners[$i]['show_in_pdf'] : true,
                         'pdf_label' => $rawSigners[$i]['pdf_label'] ?? '',
+                        'can_edit' => isset($rawSigners[$i]['can_edit']) ? (bool)$rawSigners[$i]['can_edit'] : false,
                     ];
                 }
                 echo Js::from($combinedWorkflows);
@@ -49,11 +50,12 @@
                         target: target,
                         show_in_pdf: (typeof item === 'object' && item !== null && 'show_in_pdf' in item) ? Boolean(item.show_in_pdf) : true,
                         pdf_label: (typeof item === 'object' && item !== null && 'pdf_label' in item) ? (item.pdf_label || '') : '',
+                        can_edit: (typeof item === 'object' && item !== null && 'can_edit' in item) ? Boolean(item.can_edit) : false,
                     };
                 });
             },
             addWorkflow() {
-                this.workflows.push({ target: '', show_in_pdf: true, pdf_label: '' });
+                this.workflows.push({ target: '', show_in_pdf: true, pdf_label: '', can_edit: false });
             },
             removeWorkflow(index) {
                 this.workflows.splice(index, 1);
@@ -469,6 +471,18 @@
                                             placeholder="{{ __('Label Jabatan di PDF (Opsional, cth: Atasan Langsung / Purchasing / IT Internal)') }}"
                                             class="block w-full px-2.5 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-primary-500">
                                     </div>
+                                </div>
+
+                                {{-- Opsi Izin Edit Rincian Dokumen bagi Approver --}}
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 pl-10 pt-1">
+                                    <input type="hidden" :name="'fields[workflow_signers][' + index + '][can_edit]'" value="0">
+                                    <label class="inline-flex items-center gap-2 cursor-pointer select-none shrink-0">
+                                        <input type="checkbox" :name="'fields[workflow_signers][' + index + '][can_edit]'" value="1"
+                                            x-model="workflows[index].can_edit" :checked="Boolean(workflows[index].can_edit)"
+                                            class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 h-4 w-4">
+                                        <span class="text-xs font-medium text-gray-700 dark:text-gray-300">{{ __('Izinkan Approver Mengedit Rincian Dokumen') }}</span>
+                                    </label>
+                                    <span class="text-[11px] text-gray-400 dark:text-gray-500">({{ __('Approver dapat menyesuaikan harga tiket atau rincian biaya sebelum menyetujui') }})</span>
                                 </div>
                             </div>
                         </template>

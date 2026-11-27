@@ -1444,5 +1444,8 @@
     "Tanda Tangan Elektronik Sah": "Valid Electronic Signature",
     "Waktu Persetujuan": "Approval Time",
     "Tanda Tangan Pemohon Sah": "Valid Requester Signature",
-    "Waktu Pengajuan": "Submission Time"
+    "Waktu Pengajuan": "Submission Time",
+    "Izinkan Approver Mengedit Rincian Dokumen": "Allow Approver to Edit Document Details",
+    "Approver dapat menyesuaikan harga tiket atau rincian biaya sebelum menyetujui": "Approver can adjust ticket prices or expense details before approving",
+    "Hanya dokumen berstatus Draft, Perlu Revisi, atau yang sedang menunggu review Anda dengan izin penyesuaian yang dapat diedit.": "Only documents in Draft, Revision Required, or awaiting your review with adjustment permission can be edited."
 }

@@ -104,8 +104,8 @@ class DocumentPolicy
      */
     public function update(User $user, Document $document): bool
     {
-        // 1. Current active approver can adjust details before approving
-        if ((int) $user->id === (int) ($document->current_approver_id ?? 0) && !in_array($document->status, ['completed', 'rejected', 'draft'])) {
+        // 1. Current active approver can adjust details before approving ONLY if explicitly permitted
+        if ($document->canApproverEdit($user)) {
             return true;
         }
 

@@ -290,7 +290,7 @@
                         </button>
                     </div>
 
-                    @can('update', $document)
+                    @if($document->canApproverEdit(auth()->user()) || auth()->user()->can('manage-documents'))
                         <div class="pt-4 border-t border-gray-100 dark:border-gray-800">
                             <x-ui.button href="{{ route('documents.edit', $document) }}" variant="secondary" icon="pencil" class="w-full justify-center">
                                 {{ __('Edit / Sesuaikan Rincian Dokumen') }}
@@ -299,7 +299,7 @@
                                 {{ __('Approver dapat menyesuaikan harga tiket atau rincian biaya sebelum menyetujui.') }}
                             </p>
                         </div>
-                    @endcan
+                    @endif
 
                     <!-- Confirmation Modal -->
                     <template x-teleport="body">

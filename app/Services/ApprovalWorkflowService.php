@@ -94,6 +94,7 @@ class ApprovalWorkflowService
                 $stepSigner = $signerConfigs[$index] ?? null;
                 $showInPdf = isset($stepSigner['show_in_pdf']) ? (bool)$stepSigner['show_in_pdf'] : true;
                 $pdfLabel = !empty($stepSigner['pdf_label']) ? trim($stepSigner['pdf_label']) : null;
+                $canEdit = isset($stepSigner['can_edit']) ? (bool)$stepSigner['can_edit'] : false;
 
                 DocumentApproval::create([
                     'document_id' => $document->id,
@@ -103,6 +104,7 @@ class ApprovalWorkflowService
                     'status' => 'pending',
                     'show_in_pdf' => $showInPdf,
                     'pdf_label' => $pdfLabel,
+                    'can_edit' => $canEdit,
                 ]);
                 $assignedApproverIds[] = $approver->id;
                 $order++;

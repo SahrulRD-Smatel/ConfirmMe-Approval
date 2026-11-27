@@ -349,6 +349,57 @@ class Document extends Model
     // ==================== HELPERS ====================
 
     /**
+     * Get the current active pending approval record for this document
+     */
+    public function currentApproval(): ?DocumentApproval
+    {
+        return $this->approvals->first(function ($appr) {
+            return $appr->status === 'pending' && (int) $appr->approver_id === (int) $this->current_approver_id;
+        });
+    }
+
+    /**
+     * Check if the current active approver (or specified user) is permitted to edit details
+     */
+    public function canApproverEdit(?User $user = null): bool
+    {
+        $userId = $user ? $user->id : auth()->id();
+        if (!$userId || (int) $userId !== (int) ($this->current_approver_id ?? 0)) {
+            return false;
+        }
+
+        if (in_array($this->status, ['completed', 'rejected', 'draft', 'revision'])) {
+            return false;
+        }
+
+        // 1. Check approval record in database
+        $approval = $this->currentApproval();
+        if ($approval && isset($approval->can_edit)) {
+            if ($approval->can_edit) {
+                return true;
+            }
+        }
+
+        // 2. Fallback to template configuration for older documents or dynamically configured signers
+        $template = $this->documentTemplate ?? null;
+        if (!$template && $this->template) {
+            $rawCode = is_object($this->template) ? ($this->template->code ?? '') : (string)$this->template;
+            $template = DocumentTemplate::where('code', $rawCode)->first();
+        }
+
+        if ($template && !empty($template->fields['workflow_signers']) && $approval) {
+            $signers = $template->fields['workflow_signers'];
+            // Match by approval_order - 1 (0-indexed in workflow)
+            $orderIdx = (int) $approval->approval_order - 1;
+            if (isset($signers[$orderIdx]['can_edit'])) {
+                return (bool) $signers[$orderIdx]['can_edit'];
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Get synchronized estimated budget (falls back to grand total from dynamic metadata/tables)
      */
     public function getEstimatedBudgetAttribute($value): float

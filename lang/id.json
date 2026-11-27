@@ -1442,5 +1442,8 @@
     "Tanda Tangan Elektronik Sah": "Tanda Tangan Elektronik Sah",
     "Waktu Persetujuan": "Waktu Persetujuan",
     "Tanda Tangan Pemohon Sah": "Tanda Tangan Pemohon Sah",
-    "Waktu Pengajuan": "Waktu Pengajuan"
+    "Waktu Pengajuan": "Waktu Pengajuan",
+    "Izinkan Approver Mengedit Rincian Dokumen": "Izinkan Approver Mengedit Rincian Dokumen",
+    "Approver dapat menyesuaikan harga tiket atau rincian biaya sebelum menyetujui": "Approver dapat menyesuaikan harga tiket atau rincian biaya sebelum menyetujui",
+    "Hanya dokumen berstatus Draft, Perlu Revisi, atau yang sedang menunggu review Anda dengan izin penyesuaian yang dapat diedit.": "Hanya dokumen berstatus Draft, Perlu Revisi, atau yang sedang menunggu review Anda dengan izin penyesuaian yang dapat diedit."
 }
