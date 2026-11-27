@@ -142,12 +142,12 @@ Route::middleware(['auth', 'verified', 'active', 'has_role'])->group(function ()
         Route::get('/documents', [TeamController::class, 'documents'])->name('documents');
     });
 
-    // Reports (Role-based - Management level only)
-    Route::prefix('reports')->name('reports.')->group(function () {
+    // Reports (Dynamic - Permissions based)
+    Route::prefix('reports')->name('reports.')->middleware('can:view-reports')->group(function () {
         Route::get('/', [ReportController::class, 'index'])->name('index');
         Route::get('/documents', [ReportController::class, 'documents'])->name('documents');
         Route::get('/finance', [ReportController::class, 'finance'])->name('finance');
-        Route::get('/export', [ReportController::class, 'export'])->name('export');
+        Route::get('/export', [ReportController::class, 'export'])->name('export')->middleware('can:export-reports');
     });
 
     // Finance Routes (Dynamic - Permissions based)

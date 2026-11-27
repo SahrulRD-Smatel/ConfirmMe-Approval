@@ -20,10 +20,12 @@
                     class="hover:scale-105 transition-transform">
                     {{ __('Laporan Keuangan') }}
                 </x-ui.button>
+                @can('export-reports')
                 <x-ui.button href="{{ route('reports.export') }}" variant="secondary" icon="arrow-down-tray"
                     class="hover:scale-105 transition-transform">
                     {{ __('Export PDF') }}
                 </x-ui.button>
+                @endcan
             </div>
         </div>
     </x-slot>

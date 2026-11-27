@@ -74,10 +74,12 @@
                                 class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                                 <x-icon name="eye" class="w-5 h-5" />
                             </a>
+                            @canAny(['create-po', 'manage-purchasing'])
                             <x-ui.button href="{{ route('finance.po.create', ['document_id' => $doc->id]) }}" variant="primary"
                                 icon="plus" size="sm">
                                 {{ __('Generate PO') }}
                             </x-ui.button>
+                            @endcanAny
                         </div>
                     </div>
                 @endforeach
@@ -121,13 +123,15 @@
                             <td class="px-6 py-4 text-right">
                                 <div class="flex flex-wrap items-center justify-end gap-2">
                                     <a href="{{ route('finance.po.show', $po) }}"
-                                        class="text-primary-600 hover:text-primary-800">
+                                        class="text-primary-600 hover:text-primary-800" title="{{ __('Lihat Detail') }}">
                                         <x-icon name="eye" class="w-5 h-5" />
                                     </a>
+                                    @can('print-po')
                                     <a href="{{ route('finance.po.print', $po) }}" target="_blank"
-                                        class="text-green-600 hover:text-green-800">
+                                        class="text-green-600 hover:text-green-800" title="{{ __('Cetak PO') }}">
                                         <x-icon name="printer" class="w-5 h-5" />
                                     </a>
+                                    @endcan
                                 </div>
                             </td>
                         </tr>

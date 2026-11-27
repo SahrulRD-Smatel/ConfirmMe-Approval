@@ -25,6 +25,7 @@
 
             <div class="flex items-center gap-2">
                 @if($po->status === 'draft')
+                    @canAny(['create-po', 'manage-purchasing'])
                     <form action="{{ route('finance.po.issue', $po) }}" method="POST" class="inline">
                         @csrf
                         <x-ui.button type="submit" variant="success" icon="check-circle" size="sm">
@@ -34,6 +35,7 @@
                     <x-ui.button href="{{ route('finance.po.edit', $po) }}" variant="secondary" icon="pencil" size="sm">
                         {{ __('Edit') }}
                     </x-ui.button>
+                    @endcanAny
                 @endif
                 
                 @if($po->status === 'issued')
@@ -42,12 +44,14 @@
                             {{ __('Lihat Invoice') }}
                         </x-ui.button>
                     @else
+                        @can('create-invoice')
                         <form action="{{ route('finance.invoices.from-po', $po) }}" method="POST" class="inline">
                             @csrf
                             <x-ui.button type="submit" variant="primary" icon="document-plus" size="sm">
                                 {{ __('Buat Invoice') }}
                             </x-ui.button>
                         </form>
+                        @endcan
                     @endif
                 @endif
                 
@@ -57,10 +61,12 @@
                     </x-ui.button>
                 @endif
                 
+                @can('print-po')
                 <x-ui.button href="{{ route('finance.po.print', $po) }}" target="_blank" variant="secondary"
                     icon="printer" size="sm">
                     {{ __('Cetak') }}
                 </x-ui.button>
+                @endcan
             </div>
         </div>
     </x-slot>

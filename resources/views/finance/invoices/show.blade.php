@@ -25,17 +25,21 @@
 
             <div class="flex items-center gap-2">
                 @if($invoice->status !== 'paid')
+                    @can('create-invoice')
                     <form action="{{ route('finance.invoices.payment', $invoice) }}" method="POST" class="inline">
                         @csrf
                         <x-ui.button type="submit" variant="success" icon="banknotes" size="sm">
                             {{ __('Tandai Lunas') }}
                         </x-ui.button>
                     </form>
+                    @endcan
                 @endif
+                @can('print-invoice')
                 <x-ui.button href="{{ route('finance.invoices.print', $invoice) }}" target="_blank" variant="secondary"
                     icon="printer" size="sm">
                     {{ __('Cetak') }}
                 </x-ui.button>
+                @endcan
             </div>
         </div>
     </x-slot>
