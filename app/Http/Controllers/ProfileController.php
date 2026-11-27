@@ -51,7 +51,7 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return redirect()->to(route('profile.edit') . '#profile-info')->with('status', 'profile-updated');
     }
 
     /**
@@ -81,7 +81,7 @@ class ProfileController extends Controller
         $user->avatar = $path;
         $user->save();
 
-        return Redirect::route('profile.edit')->with('status', 'photo-updated');
+        return redirect()->to(route('profile.edit') . '#profile-photo')->with('status', 'photo-updated');
     }
 
     /**
@@ -97,7 +97,7 @@ class ProfileController extends Controller
             $user->save();
         }
 
-        return Redirect::route('profile.edit')->with('status', 'photo-deleted');
+        return redirect()->to(route('profile.edit') . '#profile-photo')->with('status', 'photo-deleted');
     }
 
     /**
@@ -114,7 +114,7 @@ class ProfileController extends Controller
         $request->user()->fill($validated);
         $request->user()->save();
 
-        return Redirect::route('profile.edit')->with('status', 'bank-updated');
+        return redirect()->to(route('profile.edit') . '#bank-info')->with('status', 'bank-updated');
     }
 
     /**

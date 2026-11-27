@@ -1,4 +1,12 @@
-<section class="space-y-5">
+<section class="space-y-5"
+    x-data="{}"
+    x-init="
+        if (window.location.hash === '#bank-info' || {{ session('status') === 'bank-updated' || $errors->has('bank_name') || $errors->has('bank_account_number') || $errors->has('bank_account_name') ? 'true' : 'false' }}) {
+            $nextTick(() => {
+                document.getElementById('bank-info')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+        }
+    ">
     <header>
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
             {{ __('Informasi Rekening Bank') }}

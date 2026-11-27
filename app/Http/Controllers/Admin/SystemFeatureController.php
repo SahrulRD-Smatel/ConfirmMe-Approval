@@ -20,6 +20,9 @@ class SystemFeatureController extends Controller
         $feature = DB::table('system_features')->where('key', $key)->first();
 
         if (!$feature) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Fitur tidak ditemukan.'], 404);
+            }
             return back()->with('error', 'Fitur tidak ditemukan.');
         }
 
@@ -34,6 +37,17 @@ class SystemFeatureController extends Controller
         Cache::forget("system_feature_{$key}");
 
         $statusName = $newState ? 'diaktifkan' : 'dinonaktifkan';
-        return back()->with('success', "Fitur {$feature->name} berhasil {$statusName}.");
+        $message = "Fitur {$feature->name} berhasil {$statusName}.";
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'is_active' => $newState,
+                'name' => $feature->name,
+                'message' => $message,
+            ]);
+        }
+
+        return back()->with('success', $message);
     }
 }

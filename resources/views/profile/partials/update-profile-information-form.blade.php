@@ -1,4 +1,12 @@
-<section class="space-y-1">
+<section class="space-y-1"
+    x-data="{}"
+    x-init="
+        if (window.location.hash === '#profile-info' || {{ session('status') === 'profile-updated' || $errors->has('name') || $errors->has('email') ? 'true' : 'false' }}) {
+            $nextTick(() => {
+                document.getElementById('profile-info')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+        }
+    ">
     <header>
         <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
             {{ __('Profile Information') }}

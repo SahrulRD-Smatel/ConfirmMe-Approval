@@ -305,7 +305,7 @@
             @endif
 
             <!-- Comments -->
-            <x-ui.card>
+            <x-ui.card id="comments" class="scroll-mt-6">
                 <h2 class="mb-5 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Komentar & Catatan') }}</h2>
 
                 <div class="space-y-4 mb-6">
@@ -427,4 +427,19 @@
             </div>
         </form>
     </x-modal>
+
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.location.hash === '#comments' || {{ session('success') === 'Komentar berhasil ditambahkan.' ? 'true' : 'false' }}) {
+                const el = document.getElementById('comments');
+                if (el) {
+                    setTimeout(() => {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 120);
+                }
+            }
+        });
+    </script>
+    @endpush
 </x-app-layout>

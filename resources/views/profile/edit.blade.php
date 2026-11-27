@@ -11,7 +11,7 @@
     <div class="mx-auto w-full max-w-6xl space-y-6">
         <div class="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]">
             {{-- Profile Photo Card --}}
-            <x-ui.card class="overflow-hidden !p-0">
+            <x-ui.card id="profile-photo" class="overflow-hidden !p-0 scroll-mt-6">
                 <div class="border-b border-gray-200/80 bg-gray-50/70 px-6 py-6 dark:border-gray-800/80 dark:bg-gray-800/50">
                     <div class="flex items-center gap-3">
                         <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-600 text-white shadow-soft">
@@ -134,7 +134,7 @@
         </div>
 
         <div class="grid grid-cols-1 items-start gap-6 xl:grid-cols-2">
-            <x-ui.card class="overflow-hidden !p-0">
+            <x-ui.card id="profile-info" class="overflow-hidden !p-0 scroll-mt-6">
                 <div class="border-b border-gray-200/80 px-6 py-5 dark:border-gray-800/80">
                     <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400">{{ __('Personal details') }}</p>
                     <h2 class="mt-1 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Informasi profil') }}</h2>
@@ -144,7 +144,7 @@
                 </div>
             </x-ui.card>
 
-            <x-ui.card class="overflow-hidden !p-0">
+            <x-ui.card id="security" class="overflow-hidden !p-0 scroll-mt-6">
                 <div class="border-b border-gray-200/80 px-6 py-5 dark:border-gray-800/80">
                     <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400">{{ __('Security') }}</p>
                     <h2 class="mt-1 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Keamanan akun') }}</h2>
@@ -163,7 +163,7 @@
         </x-ui.card>
 
         <div class="grid grid-cols-1 items-start gap-6 xl:grid-cols-2">
-            <x-ui.card class="overflow-hidden !p-0">
+            <x-ui.card id="bank-info" class="overflow-hidden !p-0 scroll-mt-6">
                 <div class="border-b border-gray-200/80 px-6 py-5 dark:border-gray-800/80">
                     <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400">{{ __('Finance profile') }}</p>
                     <h2 class="mt-1 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Informasi bank') }}</h2>
@@ -173,7 +173,7 @@
                 </div>
             </x-ui.card>
 
-            <x-ui.card class="overflow-hidden border-danger-200/80 !p-0 dark:border-danger-800/60">
+            <x-ui.card id="danger-zone" class="overflow-hidden border-danger-200/80 !p-0 dark:border-danger-800/60 scroll-mt-6">
                 <div class="border-b border-danger-200/70 bg-danger-50/60 px-6 py-5 dark:border-danger-800/60 dark:bg-danger-900/10">
                     <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-danger-600 dark:text-danger-400">{{ __('Danger zone') }}</p>
                     <h2 class="mt-1 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ __('Hapus akun') }}</h2>
@@ -184,4 +184,34 @@
             </x-ui.card>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const hash = window.location.hash;
+            let targetId = hash ? hash.substring(1) : null;
+
+            @if(session('status') === 'profile-updated' || $errors->has('name') || $errors->has('email'))
+                targetId = targetId || 'profile-info';
+            @elseif(session('status') === 'password-updated' || $errors->updatePassword->any())
+                targetId = targetId || 'security';
+            @elseif(session('status') === 'bank-updated' || $errors->has('bank_name') || $errors->has('bank_account_number') || $errors->has('bank_account_name'))
+                targetId = targetId || 'bank-info';
+            @elseif(session('status') === 'photo-updated' || session('status') === 'photo-deleted' || $errors->has('avatar'))
+                targetId = targetId || 'profile-photo';
+            @elseif(session('status') === 'two-factor-confirmed' || session('status') === 'two-factor-disabled' || session('two_factor_setup_secret') || $errors->twoFactorConfirm->any() || $errors->twoFactorDisable->any())
+                targetId = targetId || 'two-factor-auth';
+            @endif
+
+            if (targetId) {
+                const el = document.getElementById(targetId);
+                if (el) {
+                    setTimeout(() => {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 120);
+                }
+            }
+        });
+    </script>
+    @endpush
 </x-app-layout>

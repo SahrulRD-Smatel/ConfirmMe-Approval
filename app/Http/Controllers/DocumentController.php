@@ -1066,7 +1066,7 @@ class DocumentController extends Controller
             'comment' => $validated['comment']
         ]);
         
-        return back()->with('success', 'Komentar berhasil ditambahkan.');
+        return redirect()->to(route('documents.show', $document) . '#comments')->with('success', 'Komentar berhasil ditambahkan.');
     }
 
     /**
