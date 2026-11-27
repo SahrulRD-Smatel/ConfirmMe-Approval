@@ -290,6 +290,17 @@
                         </button>
                     </div>
 
+                    @can('update', $document)
+                        <div class="pt-4 border-t border-gray-100 dark:border-gray-800">
+                            <x-ui.button href="{{ route('documents.edit', $document) }}" variant="secondary" icon="pencil" class="w-full justify-center">
+                                {{ __('Edit / Sesuaikan Rincian Dokumen') }}
+                            </x-ui.button>
+                            <p class="text-[11px] text-gray-500 dark:text-gray-400 text-center mt-1.5">
+                                {{ __('Approver dapat menyesuaikan harga tiket atau rincian biaya sebelum menyetujui.') }}
+                            </p>
+                        </div>
+                    @endcan
+
                     <!-- Confirmation Modal -->
                     <template x-teleport="body">
                         <div x-show="showConfirmModal" x-transition

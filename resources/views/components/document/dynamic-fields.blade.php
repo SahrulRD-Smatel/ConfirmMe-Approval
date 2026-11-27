@@ -130,32 +130,61 @@
                                                         (bool)preg_match('/^(?:\d+[\.\)]\s*)?(?:total\b|grand\s*total|jumlah\s*total|jumlah\s*keseluruhan)/i', $fLabelLow);
                                     }
 
-                                    // Dynamic Fallback: Jika ini total field dan nilainya kosong/0/dash, hitung otomatis dari field angka sebelumnya
-                                    if ($isTotalField && (empty($fieldValue) || $fieldValue === '-' || (float)str_replace(['.', ',', ' '], '', (string)$fieldValue) == 0)) {
-                                        $calcSum = 0;
+                                    // Dynamic Fallback: Jika ini total field, hitung otomatis dari field angka & tabel biaya sebelumnya
+                                    if ($isTotalField) {
+                                        $calcNumberSum = 0;
+                                        $calcTableSum = 0;
                                         for ($k = 0; $k < $loop->index; $k++) {
                                             $prevField = $dynamicFields[$k] ?? null;
-                                            if (!$prevField || ($prevField['type'] ?? '') !== 'number') {
-                                                continue;
+                                            if (!$prevField) continue;
+
+                                            // Field number biasa
+                                            if (($prevField['type'] ?? '') === 'number') {
+                                                $prevNameLow = strtolower(trim((string)($prevField['name'] ?? '')));
+                                                $prevLabelLow = strtolower(trim((string)($prevField['label'] ?? '')));
+                                                if (preg_match('/umur|usia|\banak\b|persen|percent/i', $prevNameLow) ||
+                                                    preg_match('/umur|usia|\banak\b|persen/i', $prevLabelLow)) {
+                                                    continue;
+                                                }
+                                                if (!empty($prevField['auto_sum']) || !empty($prevField['is_total']) ||
+                                                    preg_match('/^(?:total|grand_total|jumlah_total|total_biaya|total_estimasi|estimasi_total|total_keseluruhan)/i', $prevNameLow) ||
+                                                    preg_match('/^(?:\d+[\.\)]\s*)?(?:total\b|grand\s*total|jumlah\s*total|jumlah\s*keseluruhan)/i', $prevLabelLow)) {
+                                                    continue;
+                                                }
+                                                $prevValRaw = str_replace(['.', ',', ' '], '', (string)($document->metadata[$prevField['name']] ?? '0'));
+                                                if (is_numeric($prevValRaw)) {
+                                                    $calcNumberSum += (float)$prevValRaw;
+                                                }
                                             }
-                                            $prevNameLow = strtolower(trim((string)($prevField['name'] ?? '')));
-                                            $prevLabelLow = strtolower(trim((string)($prevField['label'] ?? '')));
-                                            if (preg_match('/umur|usia|\banak\b|persen|percent/i', $prevNameLow) ||
-                                                preg_match('/umur|usia|\banak\b|persen/i', $prevLabelLow)) {
-                                                continue;
-                                            }
-                                            if (!empty($prevField['auto_sum']) || !empty($prevField['is_total']) ||
-                                                preg_match('/^(?:total|grand_total|jumlah_total|total_biaya|total_estimasi|estimasi_total|total_keseluruhan)/i', $prevNameLow) ||
-                                                preg_match('/^(?:\d+[\.\)]\s*)?(?:total\b|grand\s*total|jumlah\s*total|jumlah\s*keseluruhan)/i', $prevLabelLow)) {
-                                                continue;
-                                            }
-                                            $prevValRaw = str_replace(['.', ',', ' '], '', (string)($document->metadata[$prevField['name']] ?? '0'));
-                                            if (is_numeric($prevValRaw)) {
-                                                $calcSum += (float)$prevValRaw;
+
+                                            // Tabel berkolom harga/biaya/nominal (seperti tiket perjalanan)
+                                            if (($prevField['type'] ?? '') === 'table') {
+                                                $tRows = $document->metadata[$prevField['name']] ?? [];
+                                                if (is_array($tRows)) {
+                                                    foreach ($tRows as $tRow) {
+                                                        if (is_array($tRow)) {
+                                                            foreach ($tRow as $colName => $colVal) {
+                                                                if (preg_match('/harga|biaya|nominal|tarif|price|subtotal|total|rp/i', (string)$colName)) {
+                                                                    $cleanTableNum = (float)str_replace(['.', ',', ' '], '', (string)$colVal);
+                                                                    if ($cleanTableNum > 0) {
+                                                                        $calcTableSum += $cleanTableNum;
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
-                                        if ($calcSum > 0) {
-                                            $fieldValue = $calcSum;
+
+                                        $grandCalc = $calcNumberSum + $calcTableSum;
+                                        $currentNum = (float)str_replace(['.', ',', ' '], '', (string)$fieldValue);
+
+                                        // Update jika nilai kosong, 0, strip, atau belum memasukkan tabel biaya sebelumnya
+                                        if (empty($fieldValue) || $fieldValue === '-' || $currentNum == 0 || ($grandCalc > $currentNum && $calcTableSum > 0)) {
+                                            if ($grandCalc > 0) {
+                                                $fieldValue = $grandCalc;
+                                            }
                                         }
                                     }
                                 @endphp
@@ -173,7 +202,15 @@
                                             @elseif($field['type'] === 'time')
                                                 {{ (strpos($fieldValue, 'WIB') !== false) ? $fieldValue : $fieldValue . ' WIB' }}
                                             @elseif($field['type'] === 'number' || $isTotalField)
-                                                {{ $isTotalField ? 'Rp ' : '' }}{{ is_numeric($fieldValue) ? number_format((float)$fieldValue, 0, ',', '.') : $fieldValue }}
+                                                @php
+                                                    $cleanNumStr = str_replace(['.', ',', ' '], '', preg_replace('/^rp\s*/i', '', (string)$fieldValue));
+                                                    $hasRp = str_starts_with(strtoupper(trim((string)$fieldValue)), 'RP');
+                                                @endphp
+                                                @if(is_numeric($cleanNumStr) && $cleanNumStr !== '')
+                                                    {{ ($isTotalField || $hasRp) ? 'Rp ' : '' }}{{ number_format((float)$cleanNumStr, 0, ',', '.') }}
+                                                @else
+                                                    {{ $fieldValue }}
+                                                @endif
                                             @else
                                                 {{ $fieldValue }}
                                             @endif

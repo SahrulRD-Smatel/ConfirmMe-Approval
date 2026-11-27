@@ -269,11 +269,13 @@ class DocumentController extends Controller
 
                         if ($isTotalField) {
                             $currentVal = $metadata[$dName] ?? null;
-                            if (empty($currentVal) || $currentVal === '-' || (float)str_replace(['.', ',', ' '], '', (string)$currentVal) == 0) {
-                                $calcSum = 0;
-                                for ($k = 0; $k < $dIdx; $k++) {
-                                    $prevF = $dynFields[$k] ?? null;
-                                    if (!$prevF || ($prevF['type'] ?? '') !== 'number') continue;
+                            $calcNumberSum = 0;
+                            $calcTableSum = 0;
+                            for ($k = 0; $k < $dIdx; $k++) {
+                                $prevF = $dynFields[$k] ?? null;
+                                if (!$prevF) continue;
+
+                                if (($prevF['type'] ?? '') === 'number') {
                                     $prevNameLow = strtolower(trim((string)($prevF['name'] ?? '')));
                                     $prevLabelLow = strtolower(trim((string)($prevF['label'] ?? '')));
                                     if (preg_match('/umur|usia|\banak\b|persen|percent/i', $prevNameLow) || preg_match('/umur|usia|\banak\b|persen/i', $prevLabelLow)) continue;
@@ -283,11 +285,33 @@ class DocumentController extends Controller
                                     
                                     $rawP = str_replace(['.', ',', ' '], '', (string)($metadata[$prevF['name']] ?? '0'));
                                     if (is_numeric($rawP)) {
-                                        $calcSum += (float)$rawP;
+                                        $calcNumberSum += (float)$rawP;
                                     }
                                 }
-                                if ($calcSum > 0) {
-                                    $metadata[$dName] = $calcSum;
+
+                                if (($prevF['type'] ?? '') === 'table') {
+                                    $tRows = $metadata[$prevF['name']] ?? [];
+                                    if (is_array($tRows)) {
+                                        foreach ($tRows as $tRow) {
+                                            if (is_array($tRow)) {
+                                                foreach ($tRow as $colName => $colVal) {
+                                                    if (preg_match('/harga|biaya|nominal|tarif|price|subtotal|total|rp/i', (string)$colName)) {
+                                                        $cNum = (float)str_replace(['.', ',', ' '], '', (string)$colVal);
+                                                        if ($cNum > 0) $calcTableSum += $cNum;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            $grandCalc = $calcNumberSum + $calcTableSum;
+                            $currNum = (float)str_replace(['.', ',', ' '], '', (string)$currentVal);
+                            if (empty($currentVal) || $currentVal === '-' || $currNum == 0 || ($grandCalc > $currNum && $calcTableSum > 0)) {
+                                if ($grandCalc > 0) {
+                                    $metadata[$dName] = $grandCalc;
+                                    $estimatedBudget = $grandCalc;
                                 }
                             }
                         }
@@ -456,28 +480,22 @@ class DocumentController extends Controller
     {
         $this->authorize('update', $document);
 
-        // Only draft or revision requested documents can be edited
-        if (!in_array($document->status, ['draft', 'revision'])) {
+        $isCurrentApprover = (int) $document->current_approver_id === (int) auth()->id();
+        $isApproverEdit = $isCurrentApprover && !in_array($document->status, ['draft', 'revision', 'completed', 'rejected']);
+
+        // Only draft, revision, or active review documents can be edited
+        if (!in_array($document->status, ['draft', 'revision']) && !$isApproverEdit && !auth()->user()->can('manage-documents')) {
             return redirect()->route('documents.show', $document)
-                ->with('error', 'Hanya dokumen berstatus Draft atau Perlu Revisi yang dapat diedit.');
+                ->with('error', 'Hanya dokumen berstatus Draft, Perlu Revisi, atau yang sedang menunggu review Anda yang dapat diedit.');
         }
 
-        $typeAccess = config('workflow.type_access', []);
-        $userDept = auth()->user()->department;
-        $allowedTypes = [];
-
-        foreach ($typeAccess as $type => $departments) {
-            if (in_array('*', $departments) || in_array($userDept, $departments)) {
-                $allowedTypes[] = $type;
-            }
+        // Fetch active templates, ensuring the document's current template is always included
+        $templates = DocumentTemplate::active()->get();
+        if ($document->documentTemplate && !$templates->contains('id', $document->documentTemplate->id)) {
+            $templates->push($document->documentTemplate);
         }
-        
-        // Fetch active templates
-        $templates = DocumentTemplate::active()
-            ->whereIn('approval_type', $allowedTypes)
-            ->get();
 
-        return view('documents.edit', compact('document', 'templates'));
+        return view('documents.edit', compact('document', 'templates', 'isApproverEdit'));
     }
 
     /**
@@ -487,7 +505,10 @@ class DocumentController extends Controller
     {
         $this->authorize('update', $document);
 
-        if (!in_array($document->status, ['draft', 'revision'])) {
+        $isCurrentApprover = (int) $document->current_approver_id === (int) auth()->id();
+        $isApproverEdit = $isCurrentApprover && !in_array($document->status, ['draft', 'revision', 'completed', 'rejected']);
+
+        if (!in_array($document->status, ['draft', 'revision']) && !$isApproverEdit && !auth()->user()->can('manage-documents')) {
             return redirect()->route('documents.show', $document)
                 ->with('error', 'Dokumen tidak dapat diubah pada status saat ini.');
         }
@@ -624,11 +645,13 @@ class DocumentController extends Controller
 
                 if ($isTotalField) {
                     $currentVal = $metadata[$dName] ?? null;
-                    if (empty($currentVal) || $currentVal === '-' || (float)str_replace(['.', ',', ' '], '', (string)$currentVal) == 0) {
-                        $calcSum = 0;
-                        for ($k = 0; $k < $dIdx; $k++) {
-                            $prevF = $dynFields[$k] ?? null;
-                            if (!$prevF || ($prevF['type'] ?? '') !== 'number') continue;
+                    $calcNumberSum = 0;
+                    $calcTableSum = 0;
+                    for ($k = 0; $k < $dIdx; $k++) {
+                        $prevF = $dynFields[$k] ?? null;
+                        if (!$prevF) continue;
+
+                        if (($prevF['type'] ?? '') === 'number') {
                             $prevNameLow = strtolower(trim((string)($prevF['name'] ?? '')));
                             $prevLabelLow = strtolower(trim((string)($prevF['label'] ?? '')));
                             if (preg_match('/umur|usia|\banak\b|persen|percent/i', $prevNameLow) || preg_match('/umur|usia|\banak\b|persen/i', $prevLabelLow)) continue;
@@ -638,11 +661,33 @@ class DocumentController extends Controller
                             
                             $rawP = str_replace(['.', ',', ' '], '', (string)($metadata[$prevF['name']] ?? '0'));
                             if (is_numeric($rawP)) {
-                                $calcSum += (float)$rawP;
+                                $calcNumberSum += (float)$rawP;
                             }
                         }
-                        if ($calcSum > 0) {
-                            $metadata[$dName] = $calcSum;
+
+                        if (($prevF['type'] ?? '') === 'table') {
+                            $tRows = $metadata[$prevF['name']] ?? [];
+                            if (is_array($tRows)) {
+                                foreach ($tRows as $tRow) {
+                                    if (is_array($tRow)) {
+                                        foreach ($tRow as $colName => $colVal) {
+                                            if (preg_match('/harga|biaya|nominal|tarif|price|subtotal|total|rp/i', (string)$colName)) {
+                                                $cNum = (float)str_replace(['.', ',', ' '], '', (string)$colVal);
+                                                if ($cNum > 0) $calcTableSum += $cNum;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    $grandCalc = $calcNumberSum + $calcTableSum;
+                    $currNum = (float)str_replace(['.', ',', ' '], '', (string)$currentVal);
+                    if (empty($currentVal) || $currentVal === '-' || $currNum == 0 || ($grandCalc > $currNum && $calcTableSum > 0)) {
+                        if ($grandCalc > 0) {
+                            $metadata[$dName] = $grandCalc;
+                            $estimatedBudget = $grandCalc;
                         }
                     }
                 }
@@ -760,6 +805,21 @@ class DocumentController extends Controller
                 }
             }
             $document->update(['metadata' => $metadata]);
+        }
+
+        if ($isApproverEdit) {
+            \App\Models\DocumentComment::create([
+                'document_id' => $document->id,
+                'user_id' => auth()->id(),
+                'comment' => __('Rincian dokumen disesuaikan oleh :name (:role) pada tahap review.', [
+                    'name' => auth()->user()->name,
+                    'role' => auth()->user()->position ?? auth()->user()->getRoleNames()->first() ?? 'Approver',
+                ]),
+                'is_internal' => true,
+            ]);
+
+            return redirect()->route('documents.show', $document)
+                ->with('success', 'Rincian dokumen berhasil diperbarui. Anda sekarang dapat melanjutkan persetujuan.');
         }
 
         return redirect()->route('documents.show', $document)

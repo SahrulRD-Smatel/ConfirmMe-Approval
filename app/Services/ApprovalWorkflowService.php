@@ -575,9 +575,13 @@ class ApprovalWorkflowService
         // 1. Handle specific user assignment (e.g. user:15)
         if (str_starts_with($role, 'user:')) {
             $userId = (int) substr($role, 5);
+            // Requester cannot approve their own document, and an approver cannot be assigned twice
+            if ($userId === (int) $requesterId || in_array($userId, $excludeIds)) {
+                return null;
+            }
             return User::where('id', $userId)
                 ->where('is_active', true)
-                ->first(); // We don't exclude specific users because it's explicitly requested
+                ->first();
         }
 
         // 1.2 Handle dynamic hierarchy assignment (e.g. hierarchy:atasan_langsung, hierarchy:direktur)
@@ -621,12 +625,9 @@ class ApprovalWorkflowService
                 ->whereNotIn('id', $allExcluded)
                 ->first();
 
-            // 4. Ultimate Fallback: if no alternative found, allow duplicate (better than breaking the flow)
+            // 4. Do not assign duplicate approver if already in excludeIds
             if (!$approver && !empty($excludeIds)) {
-                $approver = User::role($role)
-                    ->where('is_active', true)
-                    ->where('id', '!=', $requesterId)
-                    ->first();
+                return null;
             }
 
             return $approver;

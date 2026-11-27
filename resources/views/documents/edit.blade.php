@@ -3,12 +3,14 @@
 
     <x-slot name="header">
         <div class="flex items-center gap-4">
-            <a href="{{ route('documents.show', $document) }}"
+            <a href="{{ ($isApproverEdit ?? false) ? route('approvals.show', $document) : route('documents.show', $document) }}"
                 class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                 <x-icon name="arrow-left" class="w-5 h-5" />
             </a>
             <div>
-                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Edit Dokumen</h1>
+                <h1 class="font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                    {{ ($isApproverEdit ?? false) ? __('Penyesuaian Dokumen (Approver)') : __('Edit Dokumen') }}
+                </h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     {{ $document->document_number }}
                 </p>
@@ -31,6 +33,16 @@
           }">
         @csrf
         @method('PUT')
+
+        @if($isApproverEdit ?? false)
+            <div class="flex items-start gap-3 p-4 rounded-2xl bg-amber-50/90 border border-amber-200 text-amber-900 dark:bg-amber-950/30 dark:border-amber-800 dark:text-amber-200">
+                <x-icon name="information-circle" class="w-5 h-5 flex-shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
+                <div class="text-sm">
+                    <span class="font-bold">{{ __('Mode Penyesuaian Approver') }}:</span>
+                    {{ __('Anda sedang menyesuaikan rincian dokumen sebagai approver/verifikator aktif. Perubahan rincian (seperti tiket atau rincian biaya dinas) akan disimpan dan dicatat dalam riwayat audit dokumen tanpa mengubah urutan workflow.') }}
+                </div>
+            </div>
+        @endif
 
         @php
             $currentTemplate = $templates->where('code', $document->template)->first();
@@ -263,9 +275,18 @@
                             }
                             let val = parseInt(this.numValues[f.name] || 0) || 0;
                             sum += val;
+                        } else if (f.type === 'table') {
+                            let tVal = parseInt(this.tableValues[f.name] || 0) || 0;
+                            sum += tVal;
                         }
                     }
                     return sum;
+                },
+                tableValues: {},
+                setTableNum(tableName, sum) {
+                    let parsed = parseInt(sum) || 0;
+                    this.tableValues[tableName] = parsed;
+                    window.dispatchEvent(new CustomEvent('recompute-totals'));
                 },
                 setNum(fieldName, val) {
                     let parsed = parseInt(val) || 0;
@@ -460,8 +481,19 @@
                                         });
                                         return newR;
                                     }) : [{}],
-                                    addRow() { this.rows.push({}); },
-                                    removeRow(rIndex) { if(this.rows.length > 1) this.rows.splice(rIndex, 1); },
+                                    init() {
+                                        this.syncTableSum();
+                                    },
+                                    syncTableSum() {
+                                        let total = 0;
+                                        let numCols = this.getCols(field.columns).filter(c => this.isNumericCol(c));
+                                        numCols.forEach(col => {
+                                            total += this.colTotal(col);
+                                        });
+                                        setTableNum(field.name, total);
+                                    },
+                                    addRow() { this.rows.push({}); this.syncTableSum(); },
+                                    removeRow(rIndex) { if(this.rows.length > 1) { this.rows.splice(rIndex, 1); this.syncTableSum(); } },
                                     getCols(colsStr) { return colsStr ? (typeof colsStr === 'string' ? colsStr.split(',') : colsStr).map(s=>typeof s==='string'?s.trim():s) : []; },
                                     isNumericCol(col) {
                                         return /(?:harga|biaya|nominal|tarif|price|subtotal|total|rp)/i.test(col);
@@ -496,6 +528,7 @@
                                                                 @input="if (isNumericCol(col)) {
                                                                     let raw = $event.target.value.replace(/[^\d]/g, '');
                                                                     row[col] = raw ? new Intl.NumberFormat('id-ID').format(raw) : '';
+                                                                    syncTableSum();
                                                                 }"
                                                                 :class="isNumericCol(col) ? 'text-right font-mono' : ''"
                                                                 class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
@@ -593,11 +626,11 @@
 
         <!-- Actions -->
         <div class="flex flex-wrap items-center justify-end gap-3">
-            <x-ui.button type="button" variant="secondary" href="{{ route('documents.show', $document) }}">
-                Batal
+            <x-ui.button type="button" variant="secondary" href="{{ ($isApproverEdit ?? false) ? route('approvals.show', $document) : route('documents.show', $document) }}">
+                {{ __('Batal') }}
             </x-ui.button>
             <x-ui.button type="submit" icon="check">
-                Simpan Perubahan
+                {{ ($isApproverEdit ?? false) ? __('Simpan Penyesuaian & Lanjutkan Review') : __('Simpan Perubahan') }}
             </x-ui.button>
         </div>
     </form>

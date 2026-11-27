@@ -349,6 +349,57 @@ class Document extends Model
     // ==================== HELPERS ====================
 
     /**
+     * Get synchronized estimated budget (falls back to grand total from dynamic metadata/tables)
+     */
+    public function getEstimatedBudgetAttribute($value): float
+    {
+        $val = (float) ($value ?? 0);
+
+        if (!empty($this->metadata) && is_array($this->metadata)) {
+            $metaTotal = 0;
+            foreach ($this->metadata as $mKey => $mVal) {
+                if (is_scalar($mVal) && is_numeric(str_replace(['.', ',', ' '], '', (string)$mVal))) {
+                    $mKeyLow = strtolower(trim((string)$mKey));
+                    $isExcludedKey = (bool)preg_match('/uang_saku|insidental|per_hari|\bjam\b|\bhari\b|\bpeserta\b|\borang\b|\bcuti\b|\bqty\b|\bkuantitas\b/i', $mKeyLow);
+                    if (!$isExcludedKey && preg_match('/^(?:total|grand_total|jumlah_total|total_biaya|total_estimasi|estimasi_total|total_keseluruhan)/i', $mKeyLow)) {
+                        $cand = (float)str_replace(['.', ',', ' '], '', (string)$mVal);
+                        if ($cand > $metaTotal) {
+                            $metaTotal = $cand;
+                        }
+                    }
+                }
+            }
+
+            $tableSum = 0;
+            foreach ($this->metadata as $mKey => $mVal) {
+                if (is_array($mVal) && !empty($mVal)) {
+                    foreach ($mVal as $tRow) {
+                        if (is_array($tRow)) {
+                            foreach ($tRow as $colName => $colVal) {
+                                if (preg_match('/harga|biaya|nominal|tarif|price|subtotal|total|rp/i', (string)$colName)) {
+                                    $cNum = (float)str_replace(['.', ',', ' '], '', (string)$colVal);
+                                    if ($cNum > 0) $tableSum += $cNum;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            $grandTotal = $metaTotal;
+            if ($tableSum > 0 && ($metaTotal == 0 || ($metaTotal < ($metaTotal + $tableSum) && $val <= $tableSum))) {
+                $grandTotal = $metaTotal + $tableSum;
+            }
+
+            if ($grandTotal > $val) {
+                return $grandTotal;
+            }
+        }
+
+        return $val;
+    }
+
+    /**
      * Get status label
      */
     public function getStatusLabelAttribute(): string

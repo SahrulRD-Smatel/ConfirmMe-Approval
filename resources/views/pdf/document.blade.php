@@ -1724,31 +1724,60 @@
                                                 } elseif ($fVal && $fType === 'time') {
                                                     $displayVal = (strpos($fVal, 'WIB') !== false) ? $fVal : $fVal . ' WIB';
                                                 } elseif ($isTotalField) {
-                                                    if ((empty($fVal) || $fVal === '-' || (float)str_replace(['.', ',', ' '], '', (string)$fVal) == 0) && !empty($nonTableFields)) {
-                                                        $calcSum = 0;
-                                                        for ($k = 0; $k < $i; $k++) {
-                                                            $prevF = $nonTableFields[$k];
-                                                            if (($prevF['type'] ?? '') === 'number') {
-                                                                $prevNameLow = strtolower(trim((string)($prevF['name'] ?? '')));
-                                                                $prevLabelLow = strtolower(trim((string)($prevF['label'] ?? '')));
-                                                                if (preg_match('/umur|usia|\banak\b|persen|percent/i', $prevNameLow) ||
-                                                                    preg_match('/umur|usia|\banak\b|persen/i', $prevLabelLow)) {
-                                                                    continue;
+                                                    $calcNumberSum = 0;
+                                                    $calcTableSum = 0;
+
+                                                    // Hitung field angka non-tabel
+                                                    for ($k = 0; $k < $i; $k++) {
+                                                        $prevF = $nonTableFields[$k];
+                                                        if (($prevF['type'] ?? '') === 'number') {
+                                                            $prevNameLow = strtolower(trim((string)($prevF['name'] ?? '')));
+                                                            $prevLabelLow = strtolower(trim((string)($prevF['label'] ?? '')));
+                                                            if (preg_match('/umur|usia|\banak\b|persen|percent/i', $prevNameLow) ||
+                                                                preg_match('/umur|usia|\banak\b|persen/i', $prevLabelLow)) {
+                                                                continue;
+                                                            }
+                                                            if (!empty($prevF['auto_sum']) || !empty($prevF['is_total']) ||
+                                                                preg_match('/^(?:total|grand_total|jumlah_total|total_biaya|total_estimasi|estimasi_total|total_keseluruhan)/i', $prevNameLow) ||
+                                                                preg_match('/^(?:\d+[\.\)]\s*)?(?:total\b|grand\s*total|jumlah\s*total|jumlah\s*keseluruhan)/i', $prevLabelLow)) {
+                                                                continue;
+                                                            }
+                                                            $rawP = str_replace(['.', ',', ' '], '', (string)($metadata[$prevF['name']] ?? '0'));
+                                                            if (is_numeric($rawP)) $calcNumberSum += (float)$rawP;
+                                                        }
+                                                    }
+
+                                                    // Hitung tabel berkolom nominal/harga (seperti pemesanan tiket)
+                                                    if (!empty($tableFields)) {
+                                                        foreach ($tableFields as $tF) {
+                                                            $tRows = $metadata[$tF['name']] ?? [];
+                                                            if (is_array($tRows)) {
+                                                                foreach ($tRows as $tRow) {
+                                                                    if (is_array($tRow)) {
+                                                                        foreach ($tRow as $colName => $colVal) {
+                                                                            if (preg_match('/harga|biaya|nominal|tarif|price|subtotal|total|rp/i', (string)$colName)) {
+                                                                                $cNum = (float)str_replace(['.', ',', ' '], '', (string)$colVal);
+                                                                                if ($cNum > 0) $calcTableSum += $cNum;
+                                                                            }
+                                                                        }
+                                                                    }
                                                                 }
-                                                                if (!empty($prevF['auto_sum']) || !empty($prevF['is_total']) ||
-                                                                    preg_match('/^(?:total|grand_total|jumlah_total|total_biaya|total_estimasi|estimasi_total|total_keseluruhan)/i', $prevNameLow) ||
-                                                                    preg_match('/^(?:\d+[\.\)]\s*)?(?:total\b|grand\s*total|jumlah\s*total|jumlah\s*keseluruhan)/i', $prevLabelLow)) {
-                                                                    continue;
-                                                                }
-                                                                $rawP = str_replace(['.', ',', ' '], '', (string)($metadata[$prevF['name']] ?? '0'));
-                                                                if (is_numeric($rawP)) $calcSum += (float)$rawP;
                                                             }
                                                         }
-                                                        if ($calcSum > 0) $fVal = $calcSum;
                                                     }
-                                                    $displayVal = 'Rp ' . number_format((float)$fVal, 0, ',', '.');
-                                                } elseif ($fVal && $fType === 'number' && is_numeric($fVal)) {
-                                                    $displayVal = number_format((float)$fVal, 0, ',', '.');
+
+                                                    $grandCalc = $calcNumberSum + $calcTableSum;
+                                                    $currentNum = (float)str_replace(['.', ',', ' '], '', (string)$fVal);
+
+                                                    if (empty($fVal) || $fVal === '-' || $currentNum == 0 || ($grandCalc > $currentNum && $calcTableSum > 0)) {
+                                                        if ($grandCalc > 0) $fVal = $grandCalc;
+                                                    }
+
+                                                    $cleanFVal = (float)str_replace(['.', ',', ' '], '', preg_replace('/^rp\s*/i', '', (string)$fVal));
+                                                    $displayVal = 'Rp ' . number_format($cleanFVal, 0, ',', '.');
+                                                } elseif ($fVal && $fType === 'number') {
+                                                    $cleanFVal = str_replace(['.', ',', ' '], '', (string)$fVal);
+                                                    $displayVal = is_numeric($cleanFVal) ? number_format((float)$cleanFVal, 0, ',', '.') : $fVal;
                                                 }
                                             @endphp
 

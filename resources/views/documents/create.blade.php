@@ -469,9 +469,18 @@
                                                     }
                                                     let val = parseInt(this.numValues[f.name] || 0) || 0;
                                                     sum += val;
+                                                } else if (f.type === 'table') {
+                                                    let tVal = parseInt(this.tableValues[f.name] || 0) || 0;
+                                                    sum += tVal;
                                                 }
                                             }
                                             return sum;
+                                        },
+                                        tableValues: {},
+                                        setTableNum(tableName, sum) {
+                                            let parsed = parseInt(sum) || 0;
+                                            this.tableValues[tableName] = parsed;
+                                            window.dispatchEvent(new CustomEvent('recompute-totals'));
                                         },
                                         setNum(fieldName, val) {
                                             let parsed = parseInt(val) || 0;
@@ -621,8 +630,19 @@
                                                     <div class="bg-gray-50/50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden"
                                                          x-data="{
                                                             rows: [{}],
-                                                            addRow() { this.rows.push({}); },
-                                                            removeRow(rIndex) { if(this.rows.length > 1) this.rows.splice(rIndex, 1); },
+                                                            init() {
+                                                                this.syncTableSum();
+                                                            },
+                                                            syncTableSum() {
+                                                                let total = 0;
+                                                                let numCols = this.getCols(field.columns).filter(c => this.isNumericCol(c));
+                                                                numCols.forEach(col => {
+                                                                    total += this.colTotal(col);
+                                                                });
+                                                                setTableNum(field.name, total);
+                                                            },
+                                                            addRow() { this.rows.push({}); this.syncTableSum(); },
+                                                            removeRow(rIndex) { if(this.rows.length > 1) { this.rows.splice(rIndex, 1); this.syncTableSum(); } },
                                                             getCols(colsStr) { return colsStr ? colsStr.split(',').map(s=>s.trim()) : []; },
                                                             isNumericCol(col) {
                                                                 return /(?:harga|biaya|nominal|tarif|price|subtotal|total|rp)/i.test(col);
@@ -658,6 +678,7 @@
                                                                                         @input="if (isNumericCol(col)) {
                                                                                             let raw = $event.target.value.replace(/[^\d]/g, '');
                                                                                             row[col] = raw ? new Intl.NumberFormat('id-ID').format(raw) : '';
+                                                                                            syncTableSum();
                                                                                         }"
                                                                                         :class="isNumericCol(col) ? 'text-right font-mono' : ''"
                                                                                         class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">

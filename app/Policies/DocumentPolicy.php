@@ -104,6 +104,11 @@ class DocumentPolicy
      */
     public function update(User $user, Document $document): bool
     {
+        // 1. Current active approver can adjust details before approving
+        if ((int) $user->id === (int) ($document->current_approver_id ?? 0) && !in_array($document->status, ['completed', 'rejected', 'draft'])) {
+            return true;
+        }
+
         // Check if user has edit permission
         try {
             if (!$user->can('edit-document')) {
@@ -111,13 +116,19 @@ class DocumentPolicy
             }
         } catch (\Throwable $e) {}
 
-        // Only owner can update
-        if ((int) $user->id !== (int) $document->user_id) {
-            return false;
+        // 2. Admin / Management with document permissions
+        if ($user->can('manage-documents') || $user->can('view-all-documents')) {
+            if (!in_array($document->status, ['completed', 'rejected'])) {
+                return true;
+            }
         }
 
-        // Only draft, revision, or pending confirmation documents can be updated
-        return in_array($document->status, ['draft', 'revision', 'pending_requester_confirmation']);
+        // 3. Document Owner / Requester
+        if ((int) $user->id === (int) $document->user_id) {
+            return in_array($document->status, ['draft', 'revision', 'pending_requester_confirmation']);
+        }
+
+        return false;
     }
 
     /**
