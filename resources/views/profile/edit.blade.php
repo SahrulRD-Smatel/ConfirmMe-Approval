@@ -156,7 +156,7 @@
         </div>
 
         {{-- Two-Factor Authenticator (2FA) --}}
-        <x-ui.card class="overflow-hidden !p-0">
+        <x-ui.card id="two-factor-auth" class="overflow-hidden !p-0 scroll-mt-6">
             <div class="p-6 sm:p-8">
                 @include('profile.partials.two-factor-authentication-form')
             </div>
