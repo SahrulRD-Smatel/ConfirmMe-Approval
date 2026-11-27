@@ -172,13 +172,6 @@
                 <div x-data="{ 
                     action: null, 
                     showConfirmModal: false,
-                    approvedAmount: {{ 
-                        $document->approvals()
-                            ->where('approver_role', 'finance')
-                            ->where('status', 'approved')
-                            ->whereNotNull('approved_amount')
-                            ->value('approved_amount') ?? $document->estimated_budget ?? 0 
-                    }},
                     approveComment: '',
                     rejectComment: '',
                     reviseComment: ''
@@ -209,24 +202,6 @@
 
                     <!-- Approve Form -->
                     <div x-show="action === 'approve'" x-transition class="space-y-4">
-                        @if((float) $document->estimated_budget > 0)
-                            <div>
-                                {{-- Any approver can edit the approved amount in the dynamic system --}}
-                                <label for="approved_amount"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    {{ __('Jumlah Disetujui') }}
-                                </label>
-                                <div class="relative">
-                                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">Rp</span>
-                                    <input type="text" id="approved_amount"
-                                        value="{{ $document->estimated_budget ?? 0 }}"
-                                        class="currency-input block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20/10"
-                                        inputmode="numeric"
-                                        @currency-change="approvedAmount = $event.detail.value">
-                                </div>
-                            </div>
-                        @endif
-
                         <div>
                             <label for="approve_comment"
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -331,7 +306,6 @@
 
                                         <form action="{{ route('approvals.approve', $document) }}" method="POST">
                                             @csrf
-                                            <input type="hidden" name="approved_amount" :value="approvedAmount">
                                             <input type="hidden" name="comment" :value="approveComment">
 
                                             <div class="flex gap-3">
