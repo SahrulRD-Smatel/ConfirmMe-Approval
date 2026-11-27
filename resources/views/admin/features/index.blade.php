@@ -55,20 +55,20 @@
                             loading: false,
                             async toggle() {
                                 const confirmMsg = this.isActive 
-                                    ? '{{ __('Nonaktifkan fitur :name?', ['name' => __($feature->name)]) }}' 
-                                    : '{{ __('Aktifkan fitur :name?', ['name' => __($feature->name)]) }}';
+                                    ? {!! json_encode(__('Nonaktifkan fitur :name?', ['name' => __($feature->name)])) !!}
+                                    : {!! json_encode(__('Aktifkan fitur :name?', ['name' => __($feature->name)])) !!};
                                 const isDanger = this.isActive;
-                                const confirmBtn = this.isActive ? '{{ __('Ya, Nonaktifkan') }}' : '{{ __('Ya, Aktifkan') }}';
+                                const confirmBtn = this.isActive ? {!! json_encode(__('Ya, Nonaktifkan')) !!} : {!! json_encode(__('Ya, Aktifkan')) !!};
 
                                 if (window.Swal) {
                                     const result = await window.Swal.fire({
-                                        title: '{{ __('Konfirmasi') }}',
+                                        title: {!! json_encode(__('Konfirmasi')) !!},
                                         html: confirmMsg,
                                         icon: isDanger ? 'warning' : 'question',
                                         showCancelButton: true,
                                         focusCancel: true,
                                         confirmButtonText: confirmBtn,
-                                        cancelButtonText: '{{ __('Batal') }}',
+                                        cancelButtonText: {!! json_encode(__('Batal')) !!},
                                         buttonsStyling: false,
                                         backdrop: 'rgba(3, 7, 18, 0.75)',
                                         customClass: {

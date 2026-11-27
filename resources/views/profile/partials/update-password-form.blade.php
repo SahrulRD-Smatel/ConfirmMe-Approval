@@ -1,12 +1,4 @@
-<section class="space-y-1"
-    x-data="{}"
-    x-init="
-        if (window.location.hash === '#security' || {{ session('status') === 'password-updated' || $errors->updatePassword->any() ? 'true' : 'false' }}) {
-            $nextTick(() => {
-                document.getElementById('security')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            });
-        }
-    ">
+<section class="space-y-1">
     <header>
         <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
             {{ __('Update Password') }}

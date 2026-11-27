@@ -120,23 +120,10 @@ class ProfileController extends Controller
     /**
      * Start Two-Factor Authenticator setup by generating a secret.
      */
-    public function enableTwoFactor(Request $request): RedirectResponse|JsonResponse
+    public function enableTwoFactor(Request $request): RedirectResponse
     {
         $secret = TotpService::generateSecret();
         session()->put('two_factor_setup_secret', $secret);
-
-        if ($request->expectsJson() || $request->ajax()) {
-            $company = config('app.name', 'ConfirmMe');
-            $qrUri = TotpService::getQrUri($company, $request->user()->email, $secret);
-            $qrSvg = QrCode::format('svg')->size(160)->margin(1)->generate($qrUri);
-
-            return response()->json([
-                'success' => true,
-                'qrSvg' => (string) $qrSvg,
-                'secretKey' => $secret,
-                'chunkedSecret' => chunk_split($secret, 4, ' '),
-            ]);
-        }
 
         return redirect()->to(route('profile.edit') . '#two-factor-auth')->with('status', 'two-factor-setup-started');
     }
@@ -144,13 +131,9 @@ class ProfileController extends Controller
     /**
      * Cancel Two-Factor Authenticator setup.
      */
-    public function cancelTwoFactorSetup(Request $request): RedirectResponse|JsonResponse
+    public function cancelTwoFactorSetup(Request $request): RedirectResponse
     {
         session()->forget('two_factor_setup_secret');
-
-        if ($request->expectsJson() || $request->ajax()) {
-            return response()->json(['success' => true]);
-        }
 
         return redirect()->to(route('profile.edit') . '#two-factor-auth');
     }

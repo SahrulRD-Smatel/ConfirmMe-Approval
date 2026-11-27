@@ -2,15 +2,7 @@
     $user = Auth::user();
 @endphp
 
-<section class="space-y-1"
-    x-data="{}"
-    x-init="
-        if (window.location.hash === '#profile-photo' || {{ session('status') === 'photo-updated' || session('status') === 'photo-deleted' || $errors->has('avatar') ? 'true' : 'false' }}) {
-            $nextTick(() => {
-                document.getElementById('profile-photo')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            });
-        }
-    ">
+<section class="space-y-1">
     <header>
         <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
             {{ __('Foto Profil') }}
