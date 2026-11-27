@@ -311,11 +311,12 @@ class DocumentController extends Controller
 
                             $grandCalc = $calcNumberSum + $calcTableSum;
                             $currNum = (float)str_replace(['.', ',', ' '], '', (string)$currentVal);
-                            if (empty($currentVal) || $currentVal === '-' || $currNum == 0 || ($grandCalc > $currNum && $calcTableSum > 0)) {
-                                if ($grandCalc > 0) {
-                                    $metadata[$dName] = $grandCalc;
-                                    $estimatedBudget = $grandCalc;
-                                }
+                            if ($grandCalc > 0 && (empty($currentVal) || $currentVal === '-' || $currNum == 0 || ($grandCalc > $currNum && $calcTableSum > 0))) {
+                                $metadata[$dName] = $grandCalc;
+                                $currNum = $grandCalc;
+                            }
+                            if ($currNum > 0) {
+                                $estimatedBudget = $currNum;
                             }
                         }
                     }
@@ -690,11 +691,12 @@ class DocumentController extends Controller
 
                     $grandCalc = $calcNumberSum + $calcTableSum;
                     $currNum = (float)str_replace(['.', ',', ' '], '', (string)$currentVal);
-                    if (empty($currentVal) || $currentVal === '-' || $currNum == 0 || ($grandCalc > $currNum && $calcTableSum > 0)) {
-                        if ($grandCalc > 0) {
-                            $metadata[$dName] = $grandCalc;
-                            $estimatedBudget = $grandCalc;
-                        }
+                    if ($grandCalc > 0 && (empty($currentVal) || $currentVal === '-' || $currNum == 0 || ($grandCalc > $currNum && $calcTableSum > 0))) {
+                        $metadata[$dName] = $grandCalc;
+                        $currNum = $grandCalc;
+                    }
+                    if ($currNum > 0) {
+                        $estimatedBudget = $currNum;
                     }
                 }
             }

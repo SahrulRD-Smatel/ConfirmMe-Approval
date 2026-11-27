@@ -173,6 +173,7 @@ class RoleController extends Controller
      */
     public function edit(Role $role)
     {
+        $role->load('permissions');
         $permGroups = $this->getGroupedPermissions();
         return view('admin.roles.form', compact('role', 'permGroups'));
     }

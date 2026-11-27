@@ -109,7 +109,7 @@
                             @foreach($groupPerms as $permData)
                                 @php 
                                     $permName = $permData['name'];
-                                    $hasPerm = isset($role) ? $role->hasPermissionTo($permName) : false; 
+                                    $hasPerm = isset($role) ? ($role->relationLoaded('permissions') ? $role->permissions->contains('name', $permName) : $role->hasPermissionTo($permName)) : false; 
                                     $badgeLabel = $permData['type'];
                                     $badgeClass = $badgeLabel == 'FITUR' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-400';
                                 @endphp

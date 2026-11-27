@@ -18,7 +18,7 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        abort_unless(auth()->user()->hasRole('finance') || auth()->user()->canAny(['manage-budget', 'create-po', 'create-invoice']), 403, 'Akses dashboard finance terbatas untuk tim pengelola keuangan.');
+        abort_unless(auth()->user()->hasRole('finance') || auth()->user()->canAny(['manage-budget', 'create-po', 'create-invoice', 'manage-purchasing', 'view-finance-documents']), 403, 'Akses dashboard finance terbatas untuk tim pengelola keuangan.');
 
         $currentYear = date('Y');
 
