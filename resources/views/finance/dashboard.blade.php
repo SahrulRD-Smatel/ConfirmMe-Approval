@@ -8,9 +8,11 @@
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Overview Keuangan & Approval') }}</p>
             </div>
             <div class="flex items-center gap-2">
+                @can('manage-budget')
                 <x-ui.button href="{{ route('finance.budgets.index') }}" variant="secondary" icon="banknotes" size="sm">
                     {{ __('Budget') }}
                 </x-ui.button>
+                @endcan
                 <x-ui.button href="{{ route('reports.index') }}" variant="secondary" icon="document-chart-bar"
                     size="sm">
                     {{ __('Laporan') }}
@@ -211,6 +213,7 @@
         {{-- Side Column: Operational --}}
         <div class="space-y-6">
             {{-- Outstanding Invoices Table --}}
+            @can('create-invoice')
             <x-ui.card>
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="font-semibold text-gray-900 dark:text-white">{{ __('Invoice Outstanding') }}</h3>
@@ -224,9 +227,9 @@
                             onclick="window.location='{{ route('finance.invoices.show', $invoice) }}'">
                             <div>
                                 <div class="font-medium text-gray-800 dark:text-gray-200">{{ $invoice->invoice_number }}
-                                </div>
-                                <div class="text-xs text-gray-500">{{ $invoice->due_date->format('d M') }} •
-                                    {{ $invoice->vendor_name }}</div>
+                            </div>
+                            <div class="text-xs text-gray-500">{{ $invoice->due_date->format('d M') }} •
+                                {{ $invoice->vendor_name }}</div>
                             </div>
                             <div class="text-right">
                                 <div class="font-medium {{ $invoice->isOverdue() ? 'text-red-600' : 'text-gray-700' }}">Rp
@@ -239,8 +242,10 @@
                     @endforelse
                 </div>
             </x-ui.card>
+            @endcan
 
             {{-- Pending PO --}}
+            @can('create-po')
             <x-ui.card>
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="font-semibold text-gray-900 dark:text-white">{{ __('Pending Invoice (PO)') }}</h3>
@@ -267,6 +272,7 @@
                     @endforelse
                 </div>
             </x-ui.card>
+            @endcan
 
             {{-- Distribution Stats --}}
             <x-ui.card>

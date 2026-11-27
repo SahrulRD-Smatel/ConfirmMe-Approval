@@ -176,8 +176,8 @@
         <!-- Finance Menu - Dynamic via Permissions -->
         @php
             $hasBudgetAccess = auth()->user()->can('manage-budget');
-            $hasPoAccess = auth()->user()->canAny(['create-po', 'manage-purchasing', 'print-po']);
-            $hasInvoiceAccess = auth()->user()->canAny(['create-invoice', 'print-invoice']);
+            $hasPoAccess = auth()->user()->can('create-po');
+            $hasInvoiceAccess = auth()->user()->can('create-invoice');
             $hasLoanFinanceAccess = feature_active('module_loan') && auth()->user()->canAny(['manage-budget', 'create-invoice', 'manage-purchasing']);
             $canSeeFinanceSection = feature_active('module_finance') && ($hasBudgetAccess || $hasPoAccess || $hasInvoiceAccess || $hasLoanFinanceAccess);
         @endphp
