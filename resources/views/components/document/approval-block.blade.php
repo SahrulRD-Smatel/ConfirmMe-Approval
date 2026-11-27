@@ -84,7 +84,7 @@
             <thead>
                 <tr>
                     @foreach($columns as $col)
-                        <th class="border border-gray-200 px-2 py-2 text-center bg-gray-50/80 font-semibold print:bg-white" style="min-width: 100px;">
+                        <th class="border border-gray-200 px-2 py-2 text-center bg-gray-50/80 font-semibold print:bg-white" style="min-width: 125px;">
                             {{ $col['label'] }}
                         </th>
                     @endforeach
@@ -94,7 +94,7 @@
                 {{-- QR Code / Status Row --}}
                 <tr>
                     @foreach($columns as $col)
-                        <td class="border border-gray-200 px-2 py-3 text-center align-middle" style="height: 100px;">
+                        <td class="border border-gray-200 px-2 py-3 text-center align-middle" style="height: 120px;">
                             @php
                                 $isRequester = $col['is_requester'];
                                 $approval = $col['approval'];
@@ -104,12 +104,15 @@
                             @if($isRequester)
                                 {{-- Requester always shows checkmark --}}
                                 <div class="flex flex-col items-center justify-center h-full">
-                                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-1">
-                                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
+                                    <div class="w-[70px] h-[70px] bg-green-50 rounded-lg border border-green-200 inline-flex flex-col items-center justify-center">
+                                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mb-0.5">
+                                            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                        </div>
+                                        <span class="text-[9px] text-green-700 font-bold uppercase tracking-wider">{{ __('Dibuat') }}</span>
                                     </div>
-                                    <span class="text-[9px] text-green-600 font-medium">{{ __('Created') }}</span>
+                                    <span class="text-[10px] text-green-600 font-medium mt-1">{{ __('Created') }}</span>
                                 </div>
                             @elseif($isApproved && $approval->action_at)
                                 {{-- Approved - Show QR Code --}}
@@ -119,27 +122,33 @@
                                         $showQr = $verificationUrl && ($isLastStep ? $isFullyApproved : true);
                                     @endphp
                                     @if($showQr)
-                                        <div class="bg-white p-1 rounded border border-gray-200">
-                                            {!! QrCode::size(50)->generate($verificationUrl) !!}
+                                        <div class="w-[70px] h-[70px] bg-white p-0.5 rounded-lg border border-gray-200 inline-flex items-center justify-center overflow-hidden shadow-2xs">
+                                            {!! QrCode::format('svg')->size(70)->margin(1)->generate($verificationUrl) !!}
                                         </div>
                                     @else
-                                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                            </svg>
+                                        <div class="w-[70px] h-[70px] bg-green-50 rounded-lg border border-green-200 inline-flex flex-col items-center justify-center">
+                                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mb-0.5">
+                                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                                </svg>
+                                            </div>
+                                            <span class="text-[9px] text-green-700 font-bold uppercase tracking-wider">{{ __('Disetujui') }}</span>
                                         </div>
                                     @endif
-                                    <span class="text-[9px] text-green-600 font-medium mt-1">{{ __('Signed') }}</span>
+                                    <span class="text-[10px] text-green-600 font-medium mt-1">{{ __('Signed') }}</span>
                                 </div>
                             @else
                                 {{-- Pending --}}
                                 <div class="flex flex-col items-center justify-center h-full">
-                                    <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                                        <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
+                                    <div class="w-[70px] h-[70px] bg-gray-50 rounded-lg border border-gray-200 inline-flex flex-col items-center justify-center">
+                                        <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center mb-0.5">
+                                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                        </div>
+                                        <span class="text-[9px] text-gray-500 font-medium uppercase tracking-wider">{{ __('Menunggu') }}</span>
                                     </div>
-                                    <span class="text-[9px] text-gray-400 font-medium mt-1">{{ __('Pending') }}</span>
+                                    <span class="text-[10px] text-gray-400 font-medium mt-1">{{ __('Pending') }}</span>
                                 </div>
                             @endif
                         </td>
@@ -233,7 +242,9 @@
     @if($isFullyApproved && $verificationUrl)
         <div class="mt-4 p-3 rounded-2xl border border-success-200 bg-success-50/80 flex items-center gap-3 print:bg-white print:border-green-400">
             <div class="flex-shrink-0">
-                {!! QrCode::size(60)->generate($verificationUrl) !!}
+                <div class="w-[70px] h-[70px] bg-white p-0.5 rounded-lg border border-green-300 inline-flex items-center justify-center overflow-hidden shadow-2xs">
+                    {!! QrCode::format('svg')->size(70)->margin(1)->generate($verificationUrl) !!}
+                </div>
             </div>
             <div class="text-xs">
                 <p class="font-semibold text-green-800 flex items-center gap-1.5">
