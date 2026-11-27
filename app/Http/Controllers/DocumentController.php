@@ -749,7 +749,7 @@ class DocumentController extends Controller
             'po_category' => $validated['po_category'] ?? 'external',
             'priority' => $validated['priority'],
             'estimated_budget' => $estimatedBudget ?: 0,
-            'template' => $validated['template'] ?? null,
+            'template' => !empty($validated['template']) ? $validated['template'] : $document->template,
             'metadata' => $metadata,
         ]);
 
@@ -824,7 +824,7 @@ class DocumentController extends Controller
                 'is_internal' => true,
             ]);
 
-            return redirect()->route('documents.show', $document)
+            return redirect()->route('approvals.show', $document)
                 ->with('success', 'Rincian dokumen berhasil diperbarui. Anda sekarang dapat melanjutkan persetujuan.');
         }
 
