@@ -69,7 +69,7 @@ class WorkflowSetting extends Model
     public static function getFunctionalRoles(): array
     {
         return static::get('functional_roles', [
-            'finance', 'hrd', 'purchasing',
+            'finance', 'hrd', 'purchasing', 'manager_hrga',
             'direktur_sales', 'direktur_it', 'direktur_operasional',
             'direktur_finance', 'direktur_hr', 'presiden_direktur',
         ]);

@@ -76,10 +76,12 @@ class ApprovalWorkflowService
         foreach ($workflow as $index => $role) {
 
 
+            $cleanRole = str_starts_with($role, 'role:') ? substr($role, 5) : $role;
+
             // Skip approval steps at or below requester's role level
-            // Exception: functional roles (finance, hrd, purchasing), all direktur/presiden roles, and dynamic hierarchy roles are never skipped
-            if (!in_array($role, $functionalRoles) && !str_contains($role, 'direktur') && !str_starts_with($role, 'hierarchy:')) {
-                $stepLevel = $hierarchy[$role] ?? 0;
+            // Exception: functional roles (finance, hrd, purchasing, manager_hrga), all direktur/presiden roles, and dynamic hierarchy roles are never skipped
+            if (!in_array($cleanRole, $functionalRoles) && !in_array($role, $functionalRoles) && !str_contains($role, 'direktur') && !str_starts_with($role, 'hierarchy:')) {
+                $stepLevel = $hierarchy[$role] ?? $hierarchy[$cleanRole] ?? 0;
                 if ($stepLevel > 0 && $stepLevel <= $requesterLevel) {
                     continue;
                 }
