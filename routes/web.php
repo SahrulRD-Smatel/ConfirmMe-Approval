@@ -198,7 +198,6 @@ Route::middleware(['auth', 'verified', 'active', 'has_role'])->group(function ()
         // Workflow Configuration (Dynamic)
         Route::prefix('workflow')->name('workflow.')->middleware('can:manage-workflow')->group(function () {
             Route::get('/', [WorkflowController::class, 'index'])->name('index');
-            Route::post('/type-access', [WorkflowController::class, 'updateTypeAccess'])->name('type-access.update');
             Route::post('/settings', [WorkflowController::class, 'updateSettings'])->name('settings.update');
             Route::post('/reset', [WorkflowController::class, 'resetToDefault'])->name('reset');
         });

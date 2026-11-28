@@ -181,24 +181,6 @@ class ApprovalWorkflowService
     }
 
     /**
-     * Check if document is HR-related (for conditional HRD approval)
-     */
-    protected function isHRRelatedDocument(Document $document): bool
-    {
-        $keywords = WorkflowSetting::getHrdKeywords();
-
-        $searchText = Str::lower($document->title . ' ' . $document->description);
-
-        foreach ($keywords as $keyword) {
-            if (Str::contains($searchText, Str::lower($keyword))) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Process approval action
      */
     public function processApproval(

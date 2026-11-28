@@ -244,7 +244,15 @@ class EmailNotificationService
     protected function isFinanceStage(Document $document): bool
     {
         $nextApprover = $this->getNextApprover($document);
-        return $nextApprover && ($nextApprover->hasRole('finance') || $nextApprover->hasRole('direktur_finance') || $nextApprover->department === 'Finance');
+        if (!$nextApprover) {
+            return false;
+        }
+
+        $dept = strtolower(trim((string)$nextApprover->department));
+
+        return $nextApprover->hasRole('finance')
+            || $nextApprover->hasRole('direktur_finance')
+            || in_array($dept, ['finance', 'keuangan']);
     }
 
     /**
@@ -253,7 +261,16 @@ class EmailNotificationService
     protected function isHRorFinanceStage(Document $document): bool
     {
         $nextApprover = $this->getNextApprover($document);
-        return $nextApprover && ($nextApprover->hasRole('hrd') || $nextApprover->hasRole('direktur_hr') || $nextApprover->department === 'Human Resources' || $this->isFinanceStage($document));
+        if (!$nextApprover) {
+            return false;
+        }
+
+        $dept = strtolower(trim((string)$nextApprover->department));
+
+        return $nextApprover->hasRole('hrd')
+            || $nextApprover->hasRole('direktur_hr')
+            || in_array($dept, ['human resources', 'hrd', 'sdm', 'hr'])
+            || $this->isFinanceStage($document);
     }
 
     /**

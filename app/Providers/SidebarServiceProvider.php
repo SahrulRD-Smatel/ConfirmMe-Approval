@@ -148,7 +148,8 @@ class SidebarServiceProvider extends ServiceProvider
         }
 
         // Manager non-HR
-        $isHR = $user->department === 'Human Resources';
+        $userDept = strtolower(trim((string)$user->department));
+        $isHR = in_array($userDept, ['human resources', 'hrd', 'sdm', 'hr']);
         if ($user->hasRole('manager') && !$isHR) {
             return (clone $baseQuery)
                 ->whereIn('status', ['pending', 'pending_supervisor', 'pending_manager'])
@@ -180,30 +181,26 @@ class SidebarServiceProvider extends ServiceProvider
                 ->count();
         }
 
-        // Division Directors (Finance, IT, Sales, Operasional)
-        if ($user->hasAnyRole(['direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional'])) {
-            $deptMap = [
-                'direktur_finance' => 'Finance',
-                'direktur_it' => 'IT',
-                'direktur_sales' => 'Sales',
-                'direktur_operasional' => 'Operations',
-            ];
-            $myRole = $user->getRoleNames()->first(fn($r) => str_starts_with($r, 'direktur_'));
-            $targetDept = $deptMap[$myRole] ?? null;
-            if ($targetDept) {
+        // Directors (Division Directors, HR Director, etc.)
+        $directorRoles = $user->getRoleNames()->filter(fn($r) => str_starts_with($r, 'direktur_') || $r === 'direktur')->toArray();
+        if (!empty($directorRoles)) {
+            // Find departments mapped dynamically to these director roles in the Department model
+            $managedDepts = \App\Models\Department::allActive()
+                ->whereIn('director_role', $directorRoles)
+                ->pluck('name')
+                ->toArray();
+
+            // Include user's own department if assigned
+            if ($user->department && !in_array($user->department, $managedDepts)) {
+                $managedDepts[] = $user->department;
+            }
+
+            if (!empty($managedDepts)) {
                 return (clone $baseQuery)
                     ->whereIn('status', ['pending', 'pending_manager'])
-                    ->whereHas('user', fn($u) => $u->role('manager')->where('department', $targetDept))
+                    ->whereHas('user', fn($u) => $u->role('manager')->whereIn('department', $managedDepts))
                     ->count();
             }
-        }
-
-        // HR Director
-        if ($user->hasRole('direktur_hr')) {
-            return (clone $baseQuery)
-                ->whereIn('status', ['pending', 'pending_manager'])
-                ->whereHas('user', fn($u) => $u->role('manager')->where('department', 'Human Resources'))
-                ->count();
         }
 
         // Admin
