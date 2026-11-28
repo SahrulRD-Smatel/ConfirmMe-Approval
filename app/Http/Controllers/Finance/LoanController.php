@@ -140,6 +140,8 @@ class LoanController extends Controller
             \Log::warning('Failed to send disbursement notification: ' . $e->getMessage());
         }
 
+        \Illuminate\Support\Facades\Cache::forget("sidebar_badges_" . auth()->id());
+
         return back()->with('success', 'Pinjaman berhasil dicairkan. Nomor: ' . $loan->loan_number);
     }
 

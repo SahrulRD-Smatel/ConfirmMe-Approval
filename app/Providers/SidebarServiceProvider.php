@@ -76,18 +76,24 @@ class SidebarServiceProvider extends ServiceProvider
                         ->count();
                 }
 
-                // Finance specific
-                if ($user->hasRole('finance')) {
-                    $data['pendingPOCount'] = \App\Models\Document::where('status', 'approved')
-                        ->where('approval_type', 'po')
-                        ->whereDoesntHave('purchaseOrder')
-                        ->count();
+                // Finance badges based on permissions matching the sidebar (Zero Hardcoding)
+                if (feature_active('module_finance')) {
+                    if ($user->can('create-po') || $user->hasRole('finance')) {
+                        $data['pendingPOCount'] = \App\Models\Document::where('status', 'approved')
+                            ->where('approval_type', 'po')
+                            ->whereDoesntHave('purchaseOrder')
+                            ->count();
+                    }
 
-                    $data['pendingInvoiceCount'] = \App\Models\Document::where('status', 'approved')
-                        ->where('approval_type', 'invoice')
-                        ->whereDoesntHave('invoice')
-                        ->count();
+                    if ($user->can('create-invoice') || $user->hasRole('finance')) {
+                        $data['pendingInvoiceCount'] = \App\Models\Document::where('status', 'approved')
+                            ->where('approval_type', 'invoice')
+                            ->whereDoesntHave('invoice')
+                            ->count();
+                    }
+                }
 
+                if (feature_active('module_loan') && ($user->canAny(['manage-budget', 'create-invoice', 'manage-purchasing']) || $user->hasRole('finance'))) {
                     $data['pendingLoanCount'] = \App\Models\EmployeeLoan::where('status', 'pending_disbursement')->count();
                 }
 
