@@ -133,10 +133,12 @@
                                     </a>
 
                                     @can('update', $document)
-                                        <a href="{{ route('documents.edit', $document) }}"
-                                            class="text-yellow-600 hover:text-yellow-800 dark:text-yellow-400" title="{{ __('Edit') }}">
-                                            <x-icon name="pencil" class="w-5 h-5" />
-                                        </a>
+                                        @if($document->canEdit() || $document->canApproverEdit(auth()->user()))
+                                            <a href="{{ route('documents.edit', $document) }}"
+                                                class="text-yellow-600 hover:text-yellow-800 dark:text-yellow-400" title="{{ __('Edit') }}">
+                                                <x-icon name="pencil" class="w-5 h-5" />
+                                            </a>
+                                        @endif
                                     @endcan
 
                                     @can('print', $document)
@@ -147,16 +149,18 @@
                                     @endcan
 
                                     @can('delete', $document)
-                                        <form action="{{ route('documents.destroy', $document) }}" method="POST"
-                                            onsubmit="confirmAction(event, '{{ __('Apakah Anda yakin ingin menghapus dokumen ini?') }}')"
-                                            class="inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-800 dark:text-red-400"
-                                                title="{{ __('Hapus') }}">
-                                                <x-icon name="trash" class="w-5 h-5" />
-                                            </button>
-                                        </form>
+                                        @if($document->canDelete())
+                                            <form action="{{ route('documents.destroy', $document) }}" method="POST"
+                                                onsubmit="confirmAction(event, '{{ __('Apakah Anda yakin ingin menghapus dokumen ini?') }}')"
+                                                class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-600 hover:text-red-800 dark:text-red-400"
+                                                    title="{{ __('Hapus') }}">
+                                                    <x-icon name="trash" class="w-5 h-5" />
+                                                </button>
+                                            </form>
+                                        @endif
                                     @endcan
                                 </div>
                             </td>

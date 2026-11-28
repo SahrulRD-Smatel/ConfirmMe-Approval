@@ -574,6 +574,14 @@ class Document extends Model
     }
 
     /**
+     * Check if document can be deleted
+     */
+    public function canDelete(): bool
+    {
+        return in_array($this->status, ['draft', 'rejected']);
+    }
+
+    /**
      * Check if document is in approval process
      */
     public function isInApproval(): bool

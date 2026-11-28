@@ -23,8 +23,13 @@ class AppServiceProvider extends ServiceProvider
     {
         \Carbon\Carbon::setLocale(config('app.locale', 'id'));
 
-        // Super-admin / admin role bypass for all gates and permissions
-        Gate::before(function ($user, $ability) {
+        // Super-admin / admin role bypass for permissions and general gates,
+        // but preserve policy-specific lifecycle checks (update, delete, submit, approve, reject, print)
+        // so that completed/approved/paid documents remain strictly immutable.
+        Gate::before(function ($user, $ability, $arguments = []) {
+            if (in_array($ability, ['update', 'delete', 'submit', 'approve', 'reject', 'print'])) {
+                return null;
+            }
             return $user->hasRole('admin') ? true : null;
         });
 

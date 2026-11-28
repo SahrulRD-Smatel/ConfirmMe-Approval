@@ -25,20 +25,24 @@
 
             <div class="flex items-center gap-2">
                 @can('update', $document)
-                    <x-ui.button href="{{ route('documents.edit', $document) }}" variant="secondary" icon="pencil"
-                        size="sm">
-                        {{ __('Edit') }}
-                    </x-ui.button>
+                    @if($document->canEdit() || $document->canApproverEdit(auth()->user()))
+                        <x-ui.button href="{{ route('documents.edit', $document) }}" variant="secondary" icon="pencil"
+                            size="sm">
+                            {{ __('Edit') }}
+                        </x-ui.button>
+                    @endif
                 @endcan
 
                 @can('submit', $document)
-                    <form action="{{ route('documents.submit', $document) }}" method="POST" class="inline"
-                        onsubmit="confirmAction(event, '{{ __('Kirim dokumen ini untuk proses approval?') }}', { confirmText: '{{ __('Ya, Kirim') }}' })">
-                        @csrf
-                        <x-ui.button type="submit" icon="paper-airplane" size="sm">
-                            {{ __('Kirim untuk Approval') }}
-                        </x-ui.button>
-                    </form>
+                    @if($document->canSubmit())
+                        <form action="{{ route('documents.submit', $document) }}" method="POST" class="inline"
+                            onsubmit="confirmAction(event, '{{ __('Kirim dokumen ini untuk proses approval?') }}', { confirmText: '{{ __('Ya, Kirim') }}' })">
+                            @csrf
+                            <x-ui.button type="submit" icon="paper-airplane" size="sm">
+                                {{ __('Kirim untuk Approval') }}
+                            </x-ui.button>
+                        </form>
+                    @endif
                 @endcan
 
                 @can('print', $document)
@@ -50,10 +54,12 @@
 @endcan
 
                 @can('delete', $document)
-                    <x-ui.button type="button" variant="danger" icon="trash" size="sm" x-data=""
-                        x-on:click.prevent="$dispatch('open-modal', 'confirm-document-deletion')">
-                        {{ __('Hapus') }}
-                    </x-ui.button>
+                    @if($document->canDelete())
+                        <x-ui.button type="button" variant="danger" icon="trash" size="sm" x-data=""
+                            x-on:click.prevent="$dispatch('open-modal', 'confirm-document-deletion')">
+                            {{ __('Hapus') }}
+                        </x-ui.button>
+                    @endif
                 @endcan
 
                 {{-- Generate PO Button - Only for users with create-po permission, approved PO-type documents without existing PO --}}
@@ -403,30 +409,34 @@
             <x-document.activity-log :document="$document" />
         </div>
     </div>
-    <x-modal name="confirm-document-deletion" focusable>
-        <form method="post" action="{{ route('documents.destroy', $document) }}" class="p-6">
-            @csrf
-            @method('delete')
+    @can('delete', $document)
+        @if($document->canDelete())
+            <x-modal name="confirm-document-deletion" focusable>
+                <form method="post" action="{{ route('documents.destroy', $document) }}" class="p-6">
+                    @csrf
+                    @method('delete')
 
-            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                {{ __('Apakah Anda yakin ingin menghapus dokumen ini?') }}
-            </h2>
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                        {{ __('Apakah Anda yakin ingin menghapus dokumen ini?') }}
+                    </h2>
 
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                {{ __('Dokumen yang dihapus tidak dapat dikembalikan.') }}
-            </p>
+                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                        {{ __('Dokumen yang dihapus tidak dapat dikembalikan.') }}
+                    </p>
 
-            <div class="mt-6 flex flex-wrap justify-end gap-3">
-                <x-secondary-button x-on:click="$dispatch('close')">
-                    {{ __('Batal') }}
-                </x-secondary-button>
+                    <div class="mt-6 flex flex-wrap justify-end gap-3">
+                        <x-secondary-button x-on:click="$dispatch('close')">
+                            {{ __('Batal') }}
+                        </x-secondary-button>
 
-                <x-danger-button class="ml-3">
-                    {{ __('Hapus Dokumen') }}
-                </x-danger-button>
-            </div>
-        </form>
-    </x-modal>
+                        <x-danger-button class="ml-3">
+                            {{ __('Hapus Dokumen') }}
+                        </x-danger-button>
+                    </div>
+                </form>
+            </x-modal>
+        @endif
+    @endcan
 
     @push('scripts')
     <script>

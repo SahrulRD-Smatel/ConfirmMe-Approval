@@ -557,10 +557,16 @@ class DocumentController extends Controller
 
         $isApproverEdit = $document->canApproverEdit(auth()->user());
 
-        // Only draft, revision, or active review documents can be edited
-        if (!in_array($document->status, ['draft', 'revision']) && !$isApproverEdit && !auth()->user()->can('manage-documents')) {
+        // Finalized / locked documents can never be edited
+        if ($document->isFinalized()) {
             return redirect()->route('documents.show', $document)
-                ->with('error', 'Hanya dokumen berstatus Draft, Perlu Revisi, atau yang sedang menunggu review Anda dengan izin penyesuaian yang dapat diedit.');
+                ->with('error', __('Dokumen yang telah selesai atau disetujui bersifat final dan tidak dapat diubah.'));
+        }
+
+        // Only draft, revision, pending confirmation, or active review documents can be edited
+        if (!$document->canEdit() && !$isApproverEdit) {
+            return redirect()->route('documents.show', $document)
+                ->with('error', __('Hanya dokumen berstatus Draft, Perlu Revisi, atau yang sedang menunggu review Anda dengan izin penyesuaian yang dapat diedit.'));
         }
 
         // Fetch active templates, ensuring the document's current template is always included
@@ -581,9 +587,15 @@ class DocumentController extends Controller
 
         $isApproverEdit = $document->canApproverEdit(auth()->user());
 
-        if (!in_array($document->status, ['draft', 'revision']) && !$isApproverEdit && !auth()->user()->can('manage-documents')) {
+        // Finalized / locked documents can never be edited
+        if ($document->isFinalized()) {
             return redirect()->route('documents.show', $document)
-                ->with('error', 'Dokumen tidak dapat diubah pada status saat ini.');
+                ->with('error', __('Dokumen yang telah selesai atau disetujui bersifat final dan tidak dapat diubah.'));
+        }
+
+        if (!$document->canEdit() && !$isApproverEdit) {
+            return redirect()->route('documents.show', $document)
+                ->with('error', __('Dokumen tidak dapat diubah pada status saat ini.'));
         }
 
         $rules = [
@@ -947,10 +959,10 @@ class DocumentController extends Controller
      */
     public function submit(Request $request, Document $document)
     {
-        $this->authorize('update', $document);
+        $this->authorize('submit', $document);
 
-        if (!in_array($document->status, ['draft', 'revision'])) {
-            return back()->with('error', 'Hanya dokumen berstatus Draft atau Perlu Revisi yang dapat disubmit.');
+        if (!$document->canSubmit()) {
+            return back()->with('error', __('Hanya dokumen berstatus Draft atau Perlu Revisi yang dapat disubmit.'));
         }
 
         // Handle Resubmit after revision
@@ -1037,8 +1049,8 @@ class DocumentController extends Controller
     {
         $this->authorize('delete', $document);
 
-        if (!in_array($document->status, ['draft', 'rejected'])) {
-            return back()->with('error', 'Hanya dokumen berstatus Draft atau Ditolak yang dapat dihapus.');
+        if (!$document->canDelete()) {
+            return back()->with('error', __('Hanya dokumen berstatus Draft atau Ditolak yang dapat dihapus.'));
         }
 
         // Delete attachments from storage

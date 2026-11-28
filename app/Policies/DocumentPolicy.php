@@ -109,23 +109,26 @@ class DocumentPolicy
             return true;
         }
 
-        // Check if user has edit permission
+        // Finalized / locked documents can never be edited (approved, completed, paid, disbursed, repaying, etc.)
+        if ($document->isFinalized()) {
+            return false;
+        }
+
+        // Only documents in editable states (draft, revision, pending_requester_confirmation) can be edited
+        if (!$document->canEdit()) {
+            return false;
+        }
+
+        // Check if user has edit permission or is admin
         try {
-            if (!$user->can('edit-document')) {
+            if (!$user->can('edit-document') && !$user->hasRole('admin')) {
                 return false;
             }
         } catch (\Throwable $e) {}
 
-        // 2. Admin / Management with document management permissions
-        if ($user->can('manage-documents')) {
-            if (!in_array($document->status, ['completed', 'rejected'])) {
-                return true;
-            }
-        }
-
-        // 3. Document Owner / Requester
-        if ((int) $user->id === (int) $document->user_id) {
-            return in_array($document->status, ['draft', 'revision', 'pending_requester_confirmation']);
+        // User must be owner, or have manage-documents, or be admin
+        if ((int) $user->id === (int) $document->user_id || $user->hasRole('admin') || $user->can('manage-documents')) {
+            return true;
         }
 
         return false;
@@ -136,20 +139,20 @@ class DocumentPolicy
      */
     public function delete(User $user, Document $document): bool
     {
-        // Check if user has delete permission
+        // Only draft or rejected documents can be deleted (never in-progress, approved, completed, or paid documents)
+        if (!$document->canDelete()) {
+            return false;
+        }
+
+        // Check if user has delete permission or is admin
         try {
-            if (!$user->can('delete-document')) {
+            if (!$user->can('delete-document') && !$user->hasRole('admin')) {
                 return false;
             }
         } catch (\Throwable $e) {}
 
-        // Only owner can delete their own documents
-        if ((int) $user->id !== (int) $document->user_id) {
-            return false;
-        }
-
-        // Only draft documents can be deleted (revision documents should be edited, not deleted)
-        return $document->status === 'draft';
+        // Owner or admin/manage-documents can delete draft/rejected documents
+        return (int) $user->id === (int) $document->user_id || $user->hasRole('admin') || $user->can('manage-documents');
     }
 
     /**
@@ -157,18 +160,18 @@ class DocumentPolicy
      */
     public function submit(User $user, Document $document): bool
     {
-        // Check if user has submit permission
-        if (!$user->can('submit-document')) {
-            return false;
-        }
-
-        // Only owner can submit
-        if ((int) $user->id !== (int) $document->user_id) {
-            return false;
-        }
-
         // Only draft, revision, or pending confirmation documents can be submitted
-        return in_array($document->status, ['draft', 'revision', 'pending_requester_confirmation']);
+        if (!$document->canSubmit()) {
+            return false;
+        }
+
+        // Check if user has submit permission or is admin
+        if (!$user->can('submit-document') && !$user->hasRole('admin')) {
+            return false;
+        }
+
+        // Only owner or admin can submit
+        return (int) $user->id === (int) $document->user_id || $user->hasRole('admin');
     }
 
     /**
@@ -176,8 +179,13 @@ class DocumentPolicy
      */
     public function approve(User $user, Document $document): Response|bool
     {
+        // Document must be in pending status to be approved
+        if ($document->status !== 'pending') {
+            return Response::deny("Akses ditolak: Dokumen #{$document->id} saat ini berstatus '{$document->status}', tidak dapat disetujui lagi.");
+        }
+
         // Check if user has approve permission
-        if (!$user->can('approve-document')) {
+        if (!$user->can('approve-document') && !$user->hasRole('admin')) {
             Log::warning('DocumentPolicy::approve denied - missing approve-document permission', [
                 'user_id' => $user->id,
                 'user_roles' => $user->getRoleNames()->toArray(),
@@ -186,8 +194,12 @@ class DocumentPolicy
             return Response::deny("Akses ditolak: Anda tidak memiliki permission 'approve-document'. Role Anda: " . $user->getRoleNames()->implode(', '));
         }
 
-        // Only current approver can approve
+        // Only current approver or admin/user with override permission can approve
         if ((int) $user->id !== (int) $document->current_approver_id) {
+            if ($user->hasRole('admin') || $user->can('manage-users') || $user->can('view-all-documents')) {
+                return true;
+            }
+
             $currentApprover = $document->currentApprover;
             $approverInfo = $currentApprover ? "{$currentApprover->name} (ID: {$currentApprover->id})" : "ID: {$document->current_approver_id}";
 
@@ -211,13 +223,17 @@ class DocumentPolicy
      */
     public function reject(User $user, Document $document): bool
     {
-        // Check if user has reject permission
-        if (!$user->can('reject-document')) {
+        if ($document->status !== 'pending') {
             return false;
         }
 
-        // Only current approver can reject
-        return (int) $user->id === (int) $document->current_approver_id;
+        // Check if user has reject permission
+        if (!$user->can('reject-document') && !$user->hasRole('admin')) {
+            return false;
+        }
+
+        // Current approver or admin/user with override permission can reject
+        return (int) $user->id === (int) $document->current_approver_id || $user->hasRole('admin') || $user->can('manage-users') || $user->can('view-all-documents');
     }
 
     /**
@@ -226,12 +242,12 @@ class DocumentPolicy
     public function print(User $user, Document $document): bool
     {
         // Check if user has print permission
-        if (!$user->can('print-document')) {
+        if (!$user->can('print-document') && !$user->hasRole('admin')) {
             return false;
         }
 
-        // Document must be approved or completed
-        if (!in_array($document->status, ['approved', 'completed', 'paid'])) {
+        // Document must be approved, completed, paid, or in active loan lifecycle
+        if (!in_array($document->status, ['approved', 'completed', 'paid', 'paid_off', 'waiting_disbursement', 'disbursed', 'repaying'])) {
             return false;
         }
 
