@@ -226,10 +226,45 @@ class DocumentController extends Controller
                         $metadata = array_merge($metadata, $invoiceData);
                         break;
                     case 'loan':
+                        $loanAmount = $docData['loan_amount'] ?? 0;
+                        if (!$loanAmount && !empty($metadata)) {
+                            foreach ($metadata as $mKey => $mVal) {
+                                if (is_scalar($mVal) && !is_array($mVal)) {
+                                    $mKeyLow = strtolower(trim((string)$mKey));
+                                    if (preg_match('/loan_amount|jumlah_pengajuan_pinjaman|jumlah_pinjaman|nominal_pinjaman|besar_pinjaman|nilai_pinjaman|pengajuan_pinjaman|^pinjaman$/i', $mKeyLow)) {
+                                        $parsed = (float) preg_replace('/[^\d]/', '', (string)$mVal);
+                                        if ($parsed > 0) {
+                                            $loanAmount = $parsed;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        $installmentCount = $docData['installment_count'] ?? null;
+                        if (!$installmentCount && !empty($metadata)) {
+                            foreach ($metadata as $mKey => $mVal) {
+                                if (is_scalar($mVal)) {
+                                    $mKeyLow = strtolower(trim((string)$mKey));
+                                    if (preg_match('/jangka_waktu|tenor|lama_pinjaman|durasi|cicilan|bulan|installment/i', $mKeyLow)) {
+                                        if (preg_match('/\d+/', (string)$mVal, $matches)) {
+                                            $parsed = (int) $matches[0];
+                                            if ($parsed > 0) {
+                                                $installmentCount = $parsed;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                         $loanData = array_filter([
                             'loan_type' => $docData['loan_type'] ?? null,
-                            'loan_amount' => $docData['loan_amount'] ?? 0,
-                            'installment_count' => $docData['installment_count'] ?? 1,
+                            'loan_amount' => $loanAmount ?: null,
+                            'installment_count' => $installmentCount ?: 1,
+                            'installment_months' => $installmentCount ?: 1,
                             'repayment_start' => $docData['repayment_start'] ?? null,
                             'loan_reason' => $docData['loan_reason'] ?? null,
                         ], fn($val) => $val !== null);
@@ -241,7 +276,7 @@ class DocumentController extends Controller
                 $estimatedBudget = match ($docData['approval_type']) {
                     'po' => (($docData['subtotal'] ?? 0) + ($docData['tax_amount'] ?? 0)),
                     'invoice' => $docData['invoice_amount'] ?? 0,
-                    'loan' => $docData['loan_amount'] ?? 0,
+                    'loan' => $loanAmount ?? ($docData['loan_amount'] ?? 0),
                     default => null,
                 };
 
@@ -328,7 +363,7 @@ class DocumentController extends Controller
                         if (is_scalar($mVal) && is_numeric(str_replace(['.', ',', ' '], '', (string)$mVal))) {
                             $mKeyLow = strtolower(trim((string)$mKey));
                             $isExcludedKey = (bool)preg_match('/uang_saku|insidental|per_hari|\bjam\b|\bhari\b|\bpeserta\b|\borang\b|\bcuti\b|\bqty\b|\bkuantitas\b/i', $mKeyLow);
-                            if (!$isExcludedKey && preg_match('/^(?:total|grand_total|jumlah_total|total_biaya|total_estimasi|estimasi_total|total_keseluruhan)/i', $mKeyLow)) {
+                            if (!$isExcludedKey && preg_match('/^(?:total|grand_total|jumlah_total|total_biaya|total_estimasi|estimasi_total|total_keseluruhan|jumlah_pengajuan_pinjaman|nominal_pinjaman|jumlah_pinjaman|loan_amount)/i', $mKeyLow)) {
                                 $candidate = (float)str_replace(['.', ',', ' '], '', (string)$mVal);
                                 if ($candidate > 0) {
                                     $estimatedBudget = $candidate;
@@ -605,10 +640,45 @@ class DocumentController extends Controller
                 $metadata = array_merge($metadata, $invoiceData);
                 break;
             case 'loan':
+                $loanAmount = $request->input('loan_amount') ?: 0;
+                if (!$loanAmount && !empty($metadata)) {
+                    foreach ($metadata as $mKey => $mVal) {
+                        if (is_scalar($mVal) && !is_array($mVal)) {
+                            $mKeyLow = strtolower(trim((string)$mKey));
+                            if (preg_match('/loan_amount|jumlah_pengajuan_pinjaman|jumlah_pinjaman|nominal_pinjaman|besar_pinjaman|nilai_pinjaman|pengajuan_pinjaman|^pinjaman$/i', $mKeyLow)) {
+                                $parsed = (float) preg_replace('/[^\d]/', '', (string)$mVal);
+                                if ($parsed > 0) {
+                                    $loanAmount = $parsed;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                $installmentCount = $request->input('installment_count');
+                if (!$installmentCount && !empty($metadata)) {
+                    foreach ($metadata as $mKey => $mVal) {
+                        if (is_scalar($mVal)) {
+                            $mKeyLow = strtolower(trim((string)$mKey));
+                            if (preg_match('/jangka_waktu|tenor|lama_pinjaman|durasi|cicilan|bulan|installment/i', $mKeyLow)) {
+                                if (preg_match('/\d+/', (string)$mVal, $matches)) {
+                                    $parsed = (int) $matches[0];
+                                    if ($parsed > 0) {
+                                        $installmentCount = $parsed;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 $loanData = array_filter([
                     'loan_type' => $request->input('loan_type'),
-                    'loan_amount' => $request->input('loan_amount'),
-                    'installment_count' => $request->input('installment_count'),
+                    'loan_amount' => $loanAmount ?: null,
+                    'installment_count' => $installmentCount ?: 1,
+                    'installment_months' => $installmentCount ?: 1,
                     'repayment_start' => $request->input('repayment_start'),
                     'loan_reason' => $request->input('loan_reason'),
                 ], fn($val) => $val !== null);
@@ -619,7 +689,7 @@ class DocumentController extends Controller
         $estimatedBudget = match ($validated['approval_type']) {
             'po' => ($request->input('subtotal', 0) + $request->input('tax_amount', 0)),
             'invoice' => $request->input('invoice_amount', 0) ?: 0,
-            'loan' => $request->input('loan_amount', 0) ?: 0,
+            'loan' => $loanAmount ?? ($request->input('loan_amount', 0) ?: 0),
             default => null,
         };
 
@@ -706,7 +776,7 @@ class DocumentController extends Controller
                 if (is_scalar($mVal) && is_numeric(str_replace(['.', ',', ' '], '', (string)$mVal))) {
                     $mKeyLow = strtolower(trim((string)$mKey));
                     $isExcludedKey = (bool)preg_match('/uang_saku|insidental|per_hari|\bjam\b|\bhari\b|\bpeserta\b|\borang\b|\bcuti\b|\bqty\b|\bkuantitas\b/i', $mKeyLow);
-                    if (!$isExcludedKey && preg_match('/^(?:total|grand_total|jumlah_total|total_biaya|total_estimasi|estimasi_total|total_keseluruhan)/i', $mKeyLow)) {
+                    if (!$isExcludedKey && preg_match('/^(?:total|grand_total|jumlah_total|total_biaya|total_estimasi|estimasi_total|total_keseluruhan|jumlah_pengajuan_pinjaman|nominal_pinjaman|jumlah_pinjaman|loan_amount)/i', $mKeyLow)) {
                         $candidate = (float)str_replace(['.', ',', ' '], '', (string)$mVal);
                         if ($candidate > 0) {
                             $estimatedBudget = $candidate;
@@ -752,6 +822,10 @@ class DocumentController extends Controller
             'template' => !empty($validated['template']) ? $validated['template'] : $document->template,
             'metadata' => $metadata,
         ]);
+
+        if ($document->approval_type === 'loan' && $document->employeeLoan) {
+            $document->employeeLoan->syncFromDocument();
+        }
 
         if ($request->hasFile('attachments')) {
             $files = $request->file('attachments');

@@ -9,6 +9,14 @@ class MyLoanController extends Controller
 {
     public function index(Request $request)
     {
+        // Auto-heal any zero-amount loans for current user
+        EmployeeLoan::forEmployee(auth()->id())
+            ->where('loan_amount', '<=', 0)
+            ->whereNotNull('document_id')
+            ->each(function ($l) {
+                $l->syncFromDocument();
+            });
+
         $loans = EmployeeLoan::with(['document', 'repayments'])
             ->forEmployee(auth()->id())
             ->latest()
@@ -31,6 +39,11 @@ class MyLoanController extends Controller
         // Ensure user can only view their own loans
         if ((int) $loan->employee_id !== (int) auth()->id()) {
             abort(403, 'Anda tidak memiliki akses ke pinjaman ini.');
+        }
+
+        if ($loan->loan_amount <= 0 && $loan->document_id) {
+            $loan->syncFromDocument();
+            $loan->refresh();
         }
 
         $loan->load(['document.attachments', 'repayments.recordedBy', 'disbursedBy']);

@@ -309,6 +309,148 @@ class EmployeeLoan extends Model
      */
     public function getFormattedOutstandingAttribute(): string
     {
-        return 'Rp ' . number_format($this->outstanding_amount, 0, ',', '.');
+        return 'Rp ' . number_format($this->loan_amount > 0 ? $this->outstanding_amount : 0, 0, ',', '.');
+    }
+
+    /**
+     * Synchronize and recalculate loan details from associated document
+     * Useful for recovering loan data created from dynamic form templates
+     */
+    public function syncFromDocument(): bool
+    {
+        $document = $this->document ?: ($this->document_id ? Document::find($this->document_id) : null);
+        if (!$document) {
+            return false;
+        }
+
+        $metadata = is_array($document->metadata) ? $document->metadata : [];
+
+        // 1. Resolve Loan Amount
+        $loanAmount = (float) ($document->approved_budget ?? 0);
+        if ($loanAmount <= 0) {
+            $loanAmount = (float) ($document->estimated_budget ?? 0);
+        }
+
+        if ($loanAmount <= 0 && !empty($metadata)) {
+            // First pass: specific loan amount keys
+            foreach ($metadata as $key => $val) {
+                if (is_scalar($val) && !is_array($val)) {
+                    $keyLow = strtolower(trim((string)$key));
+                    if (preg_match('/loan_amount|jumlah_pengajuan_pinjaman|jumlah_pinjaman|nominal_pinjaman|besar_pinjaman|nilai_pinjaman|pengajuan_pinjaman|^pinjaman$/i', $keyLow)) {
+                        $parsed = (float) preg_replace('/[^\d]/', '', (string)$val);
+                        if ($parsed > 0) {
+                            $loanAmount = $parsed;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // Second pass: any monetary/nominal key
+            if ($loanAmount <= 0) {
+                foreach ($metadata as $key => $val) {
+                    if (is_scalar($val) && !is_array($val)) {
+                        $keyLow = strtolower(trim((string)$key));
+                        if (!preg_match('/tenor|bulan|jangka|lama|cicilan|hari|jam|qty|kuantitas/i', $keyLow) &&
+                            preg_match('/pinjaman|nominal|jumlah|harga|biaya/i', $keyLow)) {
+                            $parsed = (float) preg_replace('/[^\d]/', '', (string)$val);
+                            if ($parsed > 0) {
+                                $loanAmount = $parsed;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // 2. Resolve Tenor / Installment Months
+        $months = 0;
+        if (!empty($metadata['installment_months'])) {
+            $months = (int) $metadata['installment_months'];
+        } elseif (!empty($metadata['installment_count'])) {
+            $months = (int) $metadata['installment_count'];
+        } else {
+            foreach ($metadata as $key => $val) {
+                if (is_scalar($val)) {
+                    $keyLow = strtolower(trim((string)$key));
+                    if (preg_match('/jangka_waktu|tenor|lama_pinjaman|durasi|cicilan|bulan|installment/i', $keyLow)) {
+                        if (preg_match('/\d+/', (string)$val, $matches)) {
+                            $months = (int) $matches[0];
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        if ($months < 1) {
+            $months = 12;
+        }
+
+        // 3. Resolve Bank Information
+        $bankName = $this->bank_name ?: ($metadata['bank_name'] ?? null);
+        $bankNumber = $this->bank_account_number ?: ($metadata['bank_account_number'] ?? $metadata['nomor_rekening'] ?? null);
+        $bankAccountName = $this->bank_account_name ?: ($metadata['bank_account_name'] ?? $metadata['nama_rekening'] ?? null);
+
+        if (!$bankName || !$bankNumber || !$bankAccountName) {
+            foreach ($metadata as $k => $v) {
+                if (is_scalar($v) && !empty($v)) {
+                    $kLow = strtolower((string)$k);
+                    if (!$bankName && preg_match('/bank_name|nama_bank|^bank$/i', $kLow)) {
+                        $bankName = (string)$v;
+                    } elseif (!$bankNumber && preg_match('/bank_account_number|nomor_rekening|no_rek|rekening/i', $kLow)) {
+                        $bankNumber = (string)$v;
+                    } elseif (!$bankAccountName && preg_match('/bank_account_name|nama_rekening|atas_nama/i', $kLow)) {
+                        $bankAccountName = (string)$v;
+                    }
+                }
+            }
+        }
+
+        $bankName = $bankName ?: $document->user?->bank_name;
+        $bankNumber = $bankNumber ?: $document->user?->bank_account_number;
+        $bankAccountName = $bankAccountName ?: ($document->user?->bank_account_name ?: $document->user?->name);
+
+        if ($loanAmount > 0) {
+            $rawMonthly = $loanAmount / $months;
+            $monthlyInstallment = ceil($rawMonthly / 1000) * 1000;
+            $lastInstallment = $loanAmount - ($monthlyInstallment * ($months - 1));
+
+            if ($lastInstallment <= 0) {
+                $monthlyInstallment = floor($loanAmount / $months / 1000) * 1000;
+                $lastInstallment = $loanAmount - ($monthlyInstallment * ($months - 1));
+            }
+
+            $totalPaid = (float) $this->total_paid;
+            $outstanding = max(0, $loanAmount - $totalPaid);
+
+            $this->update([
+                'loan_amount' => $loanAmount,
+                'installment_months' => $months,
+                'monthly_installment' => $monthlyInstallment,
+                'last_installment' => $lastInstallment,
+                'outstanding_amount' => $outstanding,
+                'bank_name' => $bankName,
+                'bank_account_number' => $bankNumber,
+                'bank_account_name' => $bankAccountName,
+            ]);
+
+            // Synchronize document budgets if they were empty
+            $docUpdates = [];
+            if ((float)($document->estimated_budget ?? 0) <= 0) {
+                $docUpdates['estimated_budget'] = $loanAmount;
+            }
+            if ((float)($document->approved_budget ?? 0) <= 0) {
+                $docUpdates['approved_budget'] = $loanAmount;
+            }
+            if (!empty($docUpdates)) {
+                $document->update($docUpdates);
+            }
+
+            return true;
+        }
+
+        return false;
     }
 }

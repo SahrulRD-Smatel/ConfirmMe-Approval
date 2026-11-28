@@ -431,7 +431,7 @@ class ApprovalWorkflowService
             $approvedBudget = (float) $document->estimated_budget;
         }
 
-        // For LOAN type: use finance-approved amount if available, otherwise fallback to metadata loan_amount
+        // For LOAN type: use finance-approved amount if available, otherwise fallback to metadata or dynamic fields
         if ($document->approval_type === 'loan') {
             $financeApprovedAmount = $document->approvals()
                 ->where('approver_role', 'finance')
@@ -439,12 +439,12 @@ class ApprovalWorkflowService
                 ->whereNotNull('approved_amount')
                 ->value('approved_amount');
 
-            if ($financeApprovedAmount !== null) {
+            if ($financeApprovedAmount !== null && (float)$financeApprovedAmount > 0) {
                 // Finance has adjusted the loan amount - use their approved amount
                 $approvedBudget = (float) $financeApprovedAmount;
-            } elseif (isset($document->metadata['loan_amount']) && $approvedBudget === null) {
-                // No finance adjustment - fallback to original loan_amount from metadata
-                $approvedBudget = (float) $document->metadata['loan_amount'];
+            } elseif ($approvedBudget === null || (float)$approvedBudget <= 0) {
+                // Dynamic fallback: extract from metadata
+                $approvedBudget = $this->extractDynamicLoanAmount($document, is_array($document->metadata) ? $document->metadata : []);
             }
         }
 
@@ -494,18 +494,25 @@ class ApprovalWorkflowService
      */
     protected function createEmployeeLoan(Document $document, ?float $approvedAmount): void
     {
-        $loanAmount = $approvedAmount ?? $document->estimated_budget ?? 0;
+        $metadata = is_array($document->metadata) ? $document->metadata : [];
 
-        // Default 12 months if not specified in metadata
-        $installmentMonths = $document->metadata['installment_months'] ?? 12;
+        // 1. Resolve loan amount dynamically
+        $loanAmount = $approvedAmount ?? $document->approved_budget ?? $document->estimated_budget ?? 0;
+        if ($loanAmount <= 0) {
+            $loanAmount = $this->extractDynamicLoanAmount($document, $metadata);
+        }
+
+        // 2. Resolve tenor / installment months dynamically
+        $installmentMonths = $this->extractDynamicInstallmentMonths($metadata);
+
+        // 3. Resolve bank details dynamically
+        $bankDetails = $this->extractDynamicBankDetails($document, $metadata);
 
         // Calculate monthly installment (rounded UP to nearest 1000 for easier payments)
-        // Example: 10,000,000 / 12 = 833,333.33 → ceil to 834,000
         $rawMonthly = $loanAmount / $installmentMonths;
         $monthlyInstallment = ceil($rawMonthly / 1000) * 1000;
 
         // Calculate last installment to cover the remainder (will be smaller)
-        // Last = Total - (Monthly × (Months - 1))
         $lastInstallment = $loanAmount - ($monthlyInstallment * ($installmentMonths - 1));
 
         // If last installment is negative (overpaid from rounding), adjust to 0
@@ -524,11 +531,117 @@ class ApprovalWorkflowService
             'last_installment' => $lastInstallment,
             'outstanding_amount' => $loanAmount,
             'status' => 'pending_disbursement',
-            'bank_account_name' => $document->metadata['bank_account_name'] ?? null,
-            'bank_account_number' => $document->metadata['bank_account_number'] ?? null,
-            'bank_name' => $document->metadata['bank_name'] ?? null,
+            'bank_account_name' => $bankDetails['bank_account_name'],
+            'bank_account_number' => $bankDetails['bank_account_number'],
+            'bank_name' => $bankDetails['bank_name'],
             'created_by' => $document->user_id,
         ]);
+    }
+
+    /**
+     * Dynamically extract loan amount from document metadata
+     */
+    public function extractDynamicLoanAmount(Document $document, array $metadata): float
+    {
+        $loanAmount = (float) ($document->approved_budget ?? 0);
+        if ($loanAmount > 0) {
+            return $loanAmount;
+        }
+
+        $loanAmount = (float) ($document->estimated_budget ?? 0);
+        if ($loanAmount > 0) {
+            return $loanAmount;
+        }
+
+        // Pass 1: exact/common loan amount keys
+        foreach ($metadata as $key => $val) {
+            if (is_scalar($val) && !is_array($val)) {
+                $keyLow = strtolower(trim((string)$key));
+                if (preg_match('/loan_amount|jumlah_pengajuan_pinjaman|jumlah_pinjaman|nominal_pinjaman|besar_pinjaman|nilai_pinjaman|pengajuan_pinjaman|^pinjaman$/i', $keyLow)) {
+                    $parsed = (float) preg_replace('/[^\d]/', '', (string)$val);
+                    if ($parsed > 0) {
+                        return $parsed;
+                    }
+                }
+            }
+        }
+
+        // Pass 2: any monetary field matching pinjaman/nominal/jumlah
+        foreach ($metadata as $key => $val) {
+            if (is_scalar($val) && !is_array($val)) {
+                $keyLow = strtolower(trim((string)$key));
+                if (!preg_match('/tenor|bulan|jangka|lama|cicilan|hari|jam|qty|kuantitas/i', $keyLow) &&
+                    preg_match('/pinjaman|nominal|jumlah|harga|biaya/i', $keyLow)) {
+                    $parsed = (float) preg_replace('/[^\d]/', '', (string)$val);
+                    if ($parsed > 0) {
+                        return $parsed;
+                    }
+                }
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * Dynamically extract installment months from metadata
+     */
+    public function extractDynamicInstallmentMonths(array $metadata): int
+    {
+        if (!empty($metadata['installment_months'])) {
+            return max(1, (int) $metadata['installment_months']);
+        }
+        if (!empty($metadata['installment_count'])) {
+            return max(1, (int) $metadata['installment_count']);
+        }
+
+        foreach ($metadata as $key => $val) {
+            if (is_scalar($val)) {
+                $keyLow = strtolower(trim((string)$key));
+                if (preg_match('/jangka_waktu|tenor|lama_pinjaman|durasi|cicilan|bulan|installment/i', $keyLow)) {
+                    if (preg_match('/\d+/', (string)$val, $matches)) {
+                        $parsed = (int) $matches[0];
+                        if ($parsed > 0) {
+                            return $parsed;
+                        }
+                    }
+                }
+            }
+        }
+
+        return 12; // Standard default
+    }
+
+    /**
+     * Dynamically extract bank details from metadata or user profile
+     */
+    public function extractDynamicBankDetails(Document $document, array $metadata): array
+    {
+        $bankName = $metadata['bank_name'] ?? null;
+        $bankNumber = $metadata['bank_account_number'] ?? $metadata['nomor_rekening'] ?? null;
+        $bankAccountName = $metadata['bank_account_name'] ?? $metadata['nama_rekening'] ?? null;
+
+        if (!$bankName || !$bankNumber || !$bankAccountName) {
+            foreach ($metadata as $k => $v) {
+                if (is_scalar($v) && !empty($v)) {
+                    $kLow = strtolower((string)$k);
+                    if (!$bankName && preg_match('/bank_name|nama_bank|^bank$/i', $kLow)) {
+                        $bankName = (string)$v;
+                    } elseif (!$bankNumber && preg_match('/bank_account_number|nomor_rekening|no_rek|rekening/i', $kLow)) {
+                        $bankNumber = (string)$v;
+                    } elseif (!$bankAccountName && preg_match('/bank_account_name|nama_rekening|atas_nama/i', $kLow)) {
+                        $bankAccountName = (string)$v;
+                    }
+                }
+            }
+        }
+
+        $user = $document->user;
+        return [
+            'bank_name' => $bankName ?: $user?->bank_name,
+            'bank_account_number' => $bankNumber ?: $user?->bank_account_number,
+            'bank_account_name' => $bankAccountName ?: ($user?->bank_account_name ?: $user?->name),
+        ];
     }
 
     /**

@@ -16,6 +16,13 @@ class LoanController extends Controller
      */
     public function index(Request $request)
     {
+        // Auto-heal any zero-amount loans from dynamic documents
+        EmployeeLoan::where('loan_amount', '<=', 0)
+            ->whereNotNull('document_id')
+            ->each(function ($l) {
+                $l->syncFromDocument();
+            });
+
         $query = EmployeeLoan::with(['employee', 'document', 'disbursedBy'])
             ->latest();
 
@@ -89,6 +96,11 @@ class LoanController extends Controller
      */
     public function show(EmployeeLoan $loan)
     {
+        if ($loan->loan_amount <= 0 && $loan->document_id) {
+            $loan->syncFromDocument();
+            $loan->refresh();
+        }
+
         $loan->load(['employee', 'document.attachments', 'disbursedBy', 'repayments.recordedBy']);
 
         return view('finance.loans.show', compact('loan'));
