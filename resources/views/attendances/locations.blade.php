@@ -11,13 +11,6 @@
             <div class="rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400"><span class="font-semibold text-gray-700 dark:text-gray-200">{{ __('Geofence') }}</span><br>{{ __('Validasi berbasis radius GPS') }}</div>
         </div>
 
-        @if(session('success'))
-            <div class="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3">
-                <x-icon name="check-circle" class="w-5 h-5 text-green-500 flex-shrink-0" />
-                <p class="text-sm font-medium text-green-700">{{ session('success') }}</p>
-            </div>
-        @endif
-
         <div class="grid grid-cols-1 gap-5 lg:grid-cols-3">
             {{-- Add New Location --}}
             <x-ui.card>

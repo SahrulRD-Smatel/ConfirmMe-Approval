@@ -137,38 +137,6 @@
             </div>
         @endif
 
-        {{-- Flash Messages --}}
-        @if(session('success'))
-            <div class="card-elevated p-4 border-l-4 border-green-500 bg-green-50">
-                <div class="flex items-center gap-2">
-                    <svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <p class="text-sm text-green-700 font-medium">{{ session('success') }}</p>
-                </div>
-            </div>
-        @endif
-
-        @if(session('error'))
-            <div class="card-elevated p-4 border-l-4 border-red-500 bg-red-50">
-                <div class="flex items-start gap-2">
-                    <svg class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <div>
-                        <p class="text-sm text-red-700 font-medium">{{ session('error') }}</p>
-                        @if(session('import_errors') && count(session('import_errors')) > 0 && !session('import_summary'))
-                            <ul class="mt-2 text-xs text-red-600 list-disc list-inside space-y-0.5 max-h-32 overflow-y-auto">
-                                @foreach(session('import_errors') as $err)
-                                    <li>{{ $err }}</li>
-                                @endforeach
-                            </ul>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        @endif
-
         {{-- Report Table --}}
         <div class="card-elevated overflow-hidden">
             <div class="overflow-x-auto">

@@ -13,23 +13,6 @@
     </x-slot>
 
     <div class="space-y-5">
-        @if(session('success'))
-            <div class="flex items-start gap-3 rounded-2xl border border-success-200/80 bg-success-50/90 px-4 py-3.5 text-sm text-success-700 shadow-sm dark:border-success-800/60 dark:bg-success-900/20 dark:text-success-300">
-                <svg class="mt-0.5 h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>{{ session('success') }}</span>
-            </div>
-        @endif
-        
-        @if(session('error'))
-            <div class="flex items-start gap-3 rounded-2xl border border-danger-200/80 bg-danger-50/90 px-4 py-3.5 text-sm text-danger-700 shadow-sm dark:border-danger-800/60 dark:bg-danger-900/20 dark:text-danger-300">
-                <svg class="mt-0.5 h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>{{ session('error') }}</span>
-            </div>
-        @endif
 
         <section class="overflow-hidden rounded-[1.75rem] border border-gray-200/80 bg-white/95 shadow-soft-lg shadow-gray-900/[0.025] dark:border-gray-800/80 dark:bg-gray-900/95">
             <div class="flex flex-col gap-4 border-b border-gray-200/80 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6 dark:border-gray-800/80">

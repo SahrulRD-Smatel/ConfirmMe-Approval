@@ -11,18 +11,6 @@
     </x-slot>
 
     <div class="space-y-5">
-        {{-- Flash Messages --}}
-        @if(session('success'))
-            <div class="flex items-start gap-3 rounded-2xl border border-green-200/80 bg-green-50/90 px-4 py-3.5 text-sm text-green-700 shadow-sm dark:border-green-800/60 dark:bg-green-900/20 dark:text-green-400">
-                <x-icon name="check-circle" class="mt-0.5 h-5 w-5 shrink-0 text-green-500" />
-                <span>{{ session('success') }}</span>
-            </div>
-        @endif
-        @if(session('error'))
-            <div class="flex items-start gap-3 rounded-2xl border border-red-200/80 bg-red-50/90 px-4 py-3.5 text-sm text-red-700 shadow-sm dark:border-red-800/60 dark:bg-red-900/20 dark:text-red-400">
-                <x-icon name="exclamation-circle" class="mt-0.5 h-5 w-5 shrink-0 text-red-500" />
-                <span>{{ session('error') }}</span>
-            </div>
         @endif
 
         <div class="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(18rem,0.35fr)_minmax(0,1fr)]">
