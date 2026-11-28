@@ -30,7 +30,7 @@ $isCurrency = is_string($value) && str_starts_with(trim($value), 'Rp');
     @endif
     
     <div class="mb-5 flex items-center justify-between gap-3">
-        <p class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide truncate pr-4">{{ $title }}</p>
+        <p class="text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide truncate" title="{{ $title }}">{{ $title }}</p>
         
         @if($icon)
             <div class="flex-shrink-0 rounded-2xl p-3 {{ $iconBg }} bg-opacity-70 shadow-sm">
