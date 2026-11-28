@@ -162,6 +162,11 @@ class EmployeeLoan extends Model
         }
 
         $this->save();
+
+        // Synchronize document status
+        if ($this->document) {
+            $this->document->update(['status' => 'disbursed']);
+        }
     }
 
     /**
@@ -197,6 +202,12 @@ class EmployeeLoan extends Model
         }
 
         $this->save();
+
+        // Synchronize document status
+        if ($this->document) {
+            $targetDocStatus = $this->isPaidOff() ? 'paid' : 'repaying';
+            $this->document->update(['status' => $targetDocStatus]);
+        }
 
         return $repayment;
     }
@@ -444,11 +455,27 @@ class EmployeeLoan extends Model
             if ((float)($document->approved_budget ?? 0) <= 0) {
                 $docUpdates['approved_budget'] = $loanAmount;
             }
+            if ($this->isPaidOff() && $document->status !== 'paid') {
+                $docUpdates['status'] = 'paid';
+            } elseif ($this->status === 'disbursed' && $document->status === 'waiting_disbursement') {
+                $docUpdates['status'] = 'disbursed';
+            } elseif ($this->status === 'repaying' && in_array($document->status, ['waiting_disbursement', 'disbursed'])) {
+                $docUpdates['status'] = 'repaying';
+            }
             if (!empty($docUpdates)) {
                 $document->update($docUpdates);
             }
 
             return true;
+        }
+
+        // Even if loanAmount was already set, ensure document status is synchronized
+        if ($this->isPaidOff() && $document->status !== 'paid') {
+            $document->update(['status' => 'paid']);
+        } elseif ($this->status === 'disbursed' && $document->status === 'waiting_disbursement') {
+            $document->update(['status' => 'disbursed']);
+        } elseif ($this->status === 'repaying' && in_array($document->status, ['waiting_disbursement', 'disbursed'])) {
+            $document->update(['status' => 'repaying']);
         }
 
         return false;

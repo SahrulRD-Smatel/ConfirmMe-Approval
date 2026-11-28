@@ -496,6 +496,23 @@ class DocumentController extends Controller
     {
         $this->authorize('view', $document);
 
+        // Auto-synchronize document status if related to employee loan
+        if ($document->approval_type === 'loan') {
+            $document->load('employeeLoan');
+            if ($loan = $document->employeeLoan) {
+                if ($loan->isPaidOff() && $document->status !== 'paid') {
+                    $document->update(['status' => 'paid']);
+                    $document->status = 'paid';
+                } elseif ($loan->status === 'disbursed' && $document->status === 'waiting_disbursement') {
+                    $document->update(['status' => 'disbursed']);
+                    $document->status = 'disbursed';
+                } elseif ($loan->status === 'repaying' && in_array($document->status, ['waiting_disbursement', 'disbursed'])) {
+                    $document->update(['status' => 'repaying']);
+                    $document->status = 'repaying';
+                }
+            }
+        }
+
         $document->load(['user', 'attachments', 'approvals.approver']);
         
         // Add debugging to see why actions aren't showing

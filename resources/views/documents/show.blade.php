@@ -248,8 +248,8 @@
 
             <x-document.type-details :document="$document" />
             <x-document.dynamic-fields :document="$document" />
-            {{-- Approval Block (Signature Table) - Show for approved/completed documents --}}
-            @if(in_array($document->status, ['approved', 'completed', 'paid', 'presiden_review', 'director_review', 'finance_review']))
+            {{-- Approval Block (Signature Table) - Show for approved/completed/disbursed documents --}}
+            @if(in_array($document->status, ['approved', 'completed', 'paid', 'paid_off', 'waiting_disbursement', 'disbursed', 'repaying', 'presiden_review', 'director_review', 'finance_review']))
                 <x-ui.card class="print:shadow-none print:border-none">
                     <x-document.approval-block :type="$document->approval_type" :document="$document"
                         :approvals="$document->approvals" />

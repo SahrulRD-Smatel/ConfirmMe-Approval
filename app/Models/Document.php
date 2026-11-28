@@ -313,7 +313,7 @@ class Document extends Model
 
     public function scopeCompleted($query)
     {
-        return $query->whereIn('status', ['completed', 'paid']);
+        return $query->whereIn('status', ['completed', 'paid', 'paid_off']);
     }
 
     public function scopeForApprover($query, User $user)
@@ -342,7 +342,7 @@ class Document extends Model
               ->orWhere('approved_budget', '>', 0)
               ->orWhere('original_budget', '>', 0)
               ->orWhere('confirmed_amount', '>', 0)
-              ->orWhereIn('status', ['finance_review', 'waiting_disbursement', 'paid']);
+              ->orWhereIn('status', ['finance_review', 'waiting_disbursement', 'disbursed', 'repaying', 'paid', 'paid_off']);
         });
     }
 
@@ -482,10 +482,13 @@ class Document extends Model
             'finance_review' => 'Review Finance',
             'presiden_review' => 'Review Presiden Direktur',
             'waiting_disbursement' => 'Menunggu Pencairan',
+            'disbursed' => 'Dicairkan',
+            'repaying' => 'Dalam Cicilan',
             'approved' => 'Disetujui',
             'rejected' => 'Ditolak',
             'completed' => 'Selesai',
-            'paid' => 'Dibayar',
+            'paid' => $this->approval_type === 'loan' ? 'Lunas' : 'Dibayar',
+            'paid_off' => 'Lunas',
             default => ucfirst($this->status),
         };
     }
@@ -503,10 +506,11 @@ class Document extends Model
             'hrd_coordinator_review', 'purchasing_review',
             'director_review', 'finance_review', 'presiden_review' => 'yellow',
             'waiting_disbursement' => 'blue',
+            'disbursed' => 'indigo',
+            'repaying' => 'indigo',
             'approved' => 'green',
             'rejected' => 'red',
-            'completed' => 'emerald',
-            'paid' => 'purple',
+            'completed', 'paid', 'paid_off' => 'emerald',
             default => 'gray',
         };
     }
@@ -586,7 +590,7 @@ class Document extends Model
      */
     public function isFinalized(): bool
     {
-        return in_array($this->status, ['approved', 'rejected', 'completed', 'paid', 'waiting_disbursement']);
+        return in_array($this->status, ['approved', 'rejected', 'completed', 'paid', 'paid_off', 'waiting_disbursement', 'disbursed', 'repaying']);
     }
 
     /**
@@ -605,7 +609,7 @@ class Document extends Model
             return true;
         }
 
-        if (in_array($this->status, ['finance_review', 'waiting_disbursement', 'paid'])) {
+        if (in_array($this->status, ['finance_review', 'waiting_disbursement', 'disbursed', 'repaying', 'paid', 'paid_off'])) {
             return true;
         }
 
