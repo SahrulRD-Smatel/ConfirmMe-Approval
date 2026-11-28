@@ -159,16 +159,16 @@ Route::middleware(['auth', 'verified', 'active', 'has_role'])->group(function ()
         Route::resource('budgets', BudgetController::class)->middleware('can:manage-budget');
 
         // Purchase Orders
-        Route::resource('po', PurchaseOrderController::class)->middleware('can:create-po');
-        Route::get('/po/{po}/print', [PurchaseOrderController::class, 'print'])->name('po.print')->middleware('can:print-po|create-po');
-        Route::post('/po/{po}/issue', [PurchaseOrderController::class, 'issue'])->name('po.issue')->middleware('can:create-po');
+        Route::resource('po', PurchaseOrderController::class)->middleware('permission:create-po|manage-purchasing|print-po|view-finance-documents');
+        Route::get('/po/{po}/print', [PurchaseOrderController::class, 'print'])->name('po.print')->middleware('permission:print-po|create-po');
+        Route::post('/po/{po}/issue', [PurchaseOrderController::class, 'issue'])->name('po.issue')->middleware('permission:create-po|manage-purchasing');
 
         // Invoices
-        Route::resource('invoices', InvoiceController::class)->middleware('can:create-invoice');
-        Route::get('/invoices/{invoice}/print', [InvoiceController::class, 'print'])->name('invoices.print')->middleware('can:print-invoice|create-invoice');
+        Route::resource('invoices', InvoiceController::class)->middleware('permission:create-invoice|print-invoice|view-finance-documents');
+        Route::get('/invoices/{invoice}/print', [InvoiceController::class, 'print'])->name('invoices.print')->middleware('permission:print-invoice|create-invoice');
         Route::post('/invoices/{invoice}/payment', [InvoiceController::class, 'recordPayment'])->name('invoices.payment')->middleware('can:create-invoice');
         Route::post('/invoices/{invoice}/cancel', [InvoiceController::class, 'cancel'])->name('invoices.cancel')->middleware('can:create-invoice');
-        Route::post('/po/{po}/create-invoice', [InvoiceController::class, 'createFromPO'])->name('invoices.from-po')->middleware('can:create-invoice');
+        Route::post('/po/{po}/create-invoice', [InvoiceController::class, 'createFromPO'])->name('invoices.from-po')->middleware('permission:create-invoice|create-po');
 
         // Employee Loans
         Route::middleware('feature:module_loan')->group(function () {

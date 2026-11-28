@@ -78,14 +78,14 @@ class SidebarServiceProvider extends ServiceProvider
 
                 // Finance badges based on permissions matching the sidebar (Zero Hardcoding)
                 if (feature_active('module_finance')) {
-                    if ($user->can('create-po') || $user->hasRole('finance')) {
+                    if ($user->canAny(['create-po', 'manage-purchasing', 'view-finance-documents', 'print-po']) || $user->hasRole('finance')) {
                         $data['pendingPOCount'] = \App\Models\Document::where('status', 'approved')
                             ->where('approval_type', 'po')
                             ->whereDoesntHave('purchaseOrder')
                             ->count();
                     }
 
-                    if ($user->can('create-invoice') || $user->hasRole('finance')) {
+                    if ($user->canAny(['create-invoice', 'view-finance-documents', 'print-invoice']) || $user->hasRole('finance')) {
                         $data['pendingInvoiceCount'] = \App\Models\Document::where('status', 'approved')
                             ->where('approval_type', 'invoice')
                             ->whereDoesntHave('invoice')

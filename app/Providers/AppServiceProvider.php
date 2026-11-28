@@ -23,6 +23,11 @@ class AppServiceProvider extends ServiceProvider
     {
         \Carbon\Carbon::setLocale(config('app.locale', 'id'));
 
+        // Super-admin / admin role bypass for all gates and permissions
+        Gate::before(function ($user, $ability) {
+            return $user->hasRole('admin') ? true : null;
+        });
+
         // Membatasi akses dashboard Pulse di lingkungan Production
         Gate::define('viewPulse', function (User $user) {
             return in_array($user->email, [
