@@ -828,10 +828,10 @@ class AttendanceController extends Controller
                 }
             ]);
 
-        // Filter by department
+        // Filter by department (Zero Hardcoding: user with manage-attendance can view all departments, otherwise scope to own department)
         if ($department) {
             $usersQuery->where('department', $department);
-        } elseif ($user->hasRole('manager') && !$user->hasAnyRole(['admin', 'hrd', 'direktur_hr']) && $user->department !== 'Finance') {
+        } elseif (!$user->can('manage-attendance') && $user->department) {
             $usersQuery->where('department', $user->department);
         }
 

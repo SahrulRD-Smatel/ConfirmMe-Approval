@@ -221,7 +221,7 @@
         <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200/80 dark:border-gray-700/80 shadow-soft">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Pinjaman Karyawan') }}</h2>
-                @if(auth()->user()->hasRole('finance'))
+                @if(feature_active('module_loan') && (auth()->user()->canAny(['manage-budget', 'create-invoice', 'manage-purchasing']) || auth()->user()->hasRole('finance')))
                     <x-ui.button href="{{ route('finance.loans.index') }}" variant="secondary" size="xs" icon="arrow-right">
                         {{ __('Kelola') }}
                     </x-ui.button>

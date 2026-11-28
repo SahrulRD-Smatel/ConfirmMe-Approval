@@ -7,28 +7,15 @@
 @php
     use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
-    // Determine requester's actual role title
+    // Determine requester's actual role title dynamically (Zero Hardcoding)
     $requester = $document?->user;
     $requesterTitle = 'Staff'; // default
     if ($requester) {
         if ($requester->position) {
             $requesterTitle = format_acronyms($requester->position);
-        } elseif ($requester->hasRole('presiden_direktur')) {
-            $requesterTitle = 'Presiden Direktur';
-        } elseif ($requester->hasAnyRole(['direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional'])) {
-            $requesterTitle = 'Direktur';
-        } elseif ($requester->hasRole('manager_hrga')) {
-            $requesterTitle = 'Manager HRGA';
-        } elseif ($requester->hasRole('manager')) {
-            $requesterTitle = 'Manager';
-        } elseif ($requester->hasRole('supervisor')) {
-            $requesterTitle = 'Supervisor';
-        } elseif ($requester->hasRole('finance')) {
-            $requesterTitle = 'Finance';
-        } elseif ($requester->hasRole('hrd')) {
-            $requesterTitle = 'HRD';
-        } elseif ($requester->hasRole('ga')) {
-            $requesterTitle = 'Staff GA';
+        } else {
+            $primaryRole = $requester->roles->first()?->name;
+            $requesterTitle = $primaryRole ? role_label($primaryRole) : 'Staff';
         }
     }
 

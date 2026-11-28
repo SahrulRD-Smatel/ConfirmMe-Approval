@@ -256,9 +256,13 @@ class ApprovalController extends Controller
             'comment' => 'nullable|string|max:1000',
         ]);
 
-        // Direktur cannot use bulk approval - must use individual approval with 2FA
-        $direktorRoles = ['direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional', 'presiden_direktur'];
-        if ($user->hasAnyRole($direktorRoles) && $validated['action'] === 'approve') {
+        // Direktur / Executive cannot use bulk approval - must use individual approval with 2FA
+        $roles = $user->getRoleNames()->map(fn($r) => strtolower($r));
+        $isExecutive = $roles->contains(fn($r) => str_contains($r, 'direktur') || str_contains($r, 'presiden') || str_contains($r, 'executive'))
+            || str_contains(strtolower($user->position ?? ''), 'direktur')
+            || str_contains(strtolower($user->position ?? ''), 'presiden');
+
+        if ($isExecutive && $validated['action'] === 'approve') {
             return back()->with('error', 'Direktur tidak dapat menggunakan bulk approval. Silakan setujui dokumen satu per satu dengan verifikasi 2FA.');
         }
 

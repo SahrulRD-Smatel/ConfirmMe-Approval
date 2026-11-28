@@ -731,8 +731,16 @@ class ApprovalWorkflowService
             }
         }
 
-        // Fallback: try to find any active director (excluding requester + assigned)
-        $allDirectorRoles = ['direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional'];
+        // Fallback: try to find any active director dynamically from roles table (excluding requester + assigned)
+        $allDirectorRoles = \Spatie\Permission\Models\Role::where('name', 'LIKE', 'direktur%')
+            ->where('name', '!=', 'direktur')
+            ->pluck('name')
+            ->toArray();
+
+        if (empty($allDirectorRoles)) {
+            $allDirectorRoles = ['direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional'];
+        }
+
         return User::role($allDirectorRoles)
             ->where('is_active', true)
             ->whereNotIn('id', $allExcluded)

@@ -244,7 +244,7 @@ class EmailNotificationService
     protected function isFinanceStage(Document $document): bool
     {
         $nextApprover = $this->getNextApprover($document);
-        return $nextApprover && $nextApprover->hasRole('finance');
+        return $nextApprover && ($nextApprover->hasRole('finance') || $nextApprover->hasRole('direktur_finance') || $nextApprover->department === 'Finance');
     }
 
     /**
@@ -253,7 +253,7 @@ class EmailNotificationService
     protected function isHRorFinanceStage(Document $document): bool
     {
         $nextApprover = $this->getNextApprover($document);
-        return $nextApprover && ($nextApprover->hasRole('hrd') || $nextApprover->hasRole('finance'));
+        return $nextApprover && ($nextApprover->hasRole('hrd') || $nextApprover->hasRole('direktur_hr') || $nextApprover->department === 'Human Resources' || $this->isFinanceStage($document));
     }
 
     /**

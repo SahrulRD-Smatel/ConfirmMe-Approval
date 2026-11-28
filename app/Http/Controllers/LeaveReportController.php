@@ -36,12 +36,12 @@ class LeaveReportController extends Controller
         $query->where('start_date', '<=', $endOfMonth->format('Y-m-d'))
               ->where('end_date', '>=', $startOfMonth->format('Y-m-d'));
 
-        // Filter by department
+        // Filter by department (Zero Hardcoding: user with manage-attendance can view all departments, otherwise scope to own department)
         if ($department) {
             $query->whereHas('user', function ($q) use ($department) {
                 $q->where('department', $department);
             });
-        } elseif ($user->hasRole('manager') && !$user->hasAnyRole(['admin', 'hrd', 'direktur_hr']) && $user->department !== 'Finance') {
+        } elseif (!$user->can('manage-attendance') && $user->department) {
             $query->whereHas('user', function ($q) use ($user) {
                 $q->where('department', $user->department);
             });

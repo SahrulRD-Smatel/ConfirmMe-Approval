@@ -182,20 +182,39 @@ class LeaveRequest extends Model
     public function determineStartingStep(): int
     {
         $user = $this->user;
-
-        if ($user->hasAnyRole(['direktur_hr', 'direktur_finance', 'direktur_it', 'direktur_sales', 'direktur_operasional'])) {
-            return 4; // Direktur → langsung HR final / Presdir
+        if (!$user) {
+            return 1;
         }
 
-        if ($user->hasRole('manager')) {
-            return 3; // Manager → skip atasan & manager step
+        $roles = $user->getRoleNames()->map(fn($r) => strtolower($r));
+        $positionLower = strtolower($user->position ?? '');
+
+        // 1. Direktur / Executive → langsung HR final / Presdir (step 4)
+        $isDirector = $roles->contains(fn($r) => str_contains($r, 'direktur') || str_contains($r, 'presiden'))
+            || str_contains($positionLower, 'direktur')
+            || str_contains($positionLower, 'presiden');
+
+        if ($isDirector) {
+            return 4;
         }
 
-        if ($user->hasRole('supervisor')) {
-            return 2; // Supervisor → skip step 1 (atasan)
+        // 2. Manager → skip atasan & manager step (step 3)
+        $isManager = $roles->contains(fn($r) => str_contains($r, 'manager'))
+            || str_contains($positionLower, 'manager');
+
+        if ($isManager) {
+            return 3;
         }
 
-        return 1; // Staff → mulai dari step 1 (atasan langsung)
+        // 3. Supervisor → skip step 1 atasan langsung (step 2)
+        $isSupervisor = $roles->contains(fn($r) => str_contains($r, 'supervisor'))
+            || str_contains($positionLower, 'supervisor');
+
+        if ($isSupervisor) {
+            return 2;
+        }
+
+        return 1; // Staff / General → mulai dari step 1 (atasan langsung)
     }
 
     /**
