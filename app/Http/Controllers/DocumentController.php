@@ -63,11 +63,20 @@ class DocumentController extends Controller
 
         // Determine which approval types this user can create based on department
         $typeAccess = \App\Models\WorkflowSetting::getTypeAccess();
-        $userDept = auth()->user()->department;
+        $user = auth()->user();
+        $userDept = $user->department;
         $allowedTypes = [];
 
         foreach ($typeAccess as $type => $departments) {
-            if (in_array('*', $departments) || in_array($userDept, $departments)) {
+            $isAllowed = in_array('*', $departments) || in_array($userDept, $departments);
+            if (!$isAllowed) {
+                if ($type === 'invoice' && ($user->can('create-invoice') || in_array(strtolower((string)$userDept), ['finance', 'keuangan']))) {
+                    $isAllowed = true;
+                } elseif (($type === 'po' || $type === 'po_internal') && ($user->can('create-po') || $user->can('manage-purchasing'))) {
+                    $isAllowed = true;
+                }
+            }
+            if ($isAllowed) {
                 $allowedTypes[] = $type;
             }
         }
@@ -165,15 +174,25 @@ class DocumentController extends Controller
                 'documents.*.description.required' => 'Deskripsi dokumen wajib diisi.',
             ]);
 
-            $typeAccess = config('workflow.type_access', []);
-            $userDept = auth()->user()->department;
+            $typeAccess = \App\Models\WorkflowSetting::getTypeAccess();
+            $user = auth()->user();
+            $userDept = $user->department;
             
             // Validate department access for ALL requested documents
             foreach ($validated['documents'] as $docData) {
                 $requestedType = $docData['approval_type'];
                 $allowedDepts = $typeAccess[$requestedType] ?? ['*'];
 
-                if (!in_array('*', $allowedDepts) && !in_array($userDept, $allowedDepts)) {
+                $isAllowed = in_array('*', $allowedDepts) || in_array($userDept, $allowedDepts);
+                if (!$isAllowed) {
+                    if ($requestedType === 'invoice' && ($user->can('create-invoice') || in_array(strtolower((string)$userDept), ['finance', 'keuangan']))) {
+                        $isAllowed = true;
+                    } elseif (($requestedType === 'po' || $requestedType === 'po_internal') && ($user->can('create-po') || $user->can('manage-purchasing'))) {
+                        $isAllowed = true;
+                    }
+                }
+
+                if (!$isAllowed) {
                     abort(403, 'Departemen Anda tidak memiliki akses untuk membuat pengajuan tipe ini.');
                 }
             }

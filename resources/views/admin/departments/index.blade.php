@@ -11,8 +11,6 @@
     </x-slot>
 
     <div class="space-y-5">
-        @endif
-
         <div class="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(18rem,0.35fr)_minmax(0,1fr)]">
             {{-- Add Department Form --}}
             <aside class="lg:sticky lg:top-6">

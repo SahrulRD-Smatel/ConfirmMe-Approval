@@ -242,7 +242,7 @@ Route::middleware(['auth', 'verified', 'active', 'has_role'])->group(function ()
     });
 
     // Attendance Admin (Dynamic - Permissions based)
-    Route::prefix('attendance-admin')->name('attendance-admin.')->middleware(['permission:manage-attendance|view-attendance', 'feature:module_hris'])->group(function () {
+    Route::prefix('attendance-admin')->name('attendance-admin.')->middleware(['permission:manage-attendance|view-attendance|menu-office-locations', 'feature:module_hris'])->group(function () {
         Route::get('/report', [AttendanceController::class, 'report'])->name('report');
         Route::get('/report/export-pdf', [AttendanceController::class, 'exportPdf'])->name('export-pdf');
         Route::get('/report/export-csv', [AttendanceController::class, 'exportCsv'])->name('export-csv');

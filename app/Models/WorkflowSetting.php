@@ -74,4 +74,38 @@ class WorkflowSetting extends Model
             'direktur_finance', 'direktur_hr', 'presiden_direktur',
         ]);
     }
+
+    /**
+     * Get HRD keywords for conditional HRD approval (legacy fallback).
+     */
+    public static function getHrdKeywords(): array
+    {
+        return static::get('hrd_keywords', [
+            'karyawan', 'pegawai', 'sdm', 'hrd', 'rekrutmen', 'phk',
+            'cuti', 'izin', 'lembur', 'gaji', 'tunjangan', 'training',
+            'pelatihan', 'mutasi', 'promosi', 'demosi', 'kontrak kerja',
+        ]);
+    }
+
+    /**
+     * Get type access configuration.
+     */
+    public static function getTypeAccess(): array
+    {
+        return static::get('type_access', config('workflow.type_access', [
+            'only' => ['*'],
+            'po' => ['*'],
+            'po_internal' => ['*'],
+            'invoice' => ['*'],
+            'loan' => ['*'],
+        ]));
+    }
+
+    /**
+     * Get departments list.
+     */
+    public static function getDepartments(): array
+    {
+        return \App\Models\Department::pluck('name')->toArray();
+    }
 }
