@@ -431,7 +431,7 @@
     @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            if (window.location.hash === '#comments' || {{ session('success') === 'Komentar berhasil ditambahkan.' ? 'true' : 'false' }}) {
+            if (window.location.hash === '#comments') {
                 const el = document.getElementById('comments');
                 if (el) {
                     setTimeout(() => {

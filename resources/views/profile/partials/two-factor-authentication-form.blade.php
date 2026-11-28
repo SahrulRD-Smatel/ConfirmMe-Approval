@@ -54,14 +54,7 @@
 
     {{-- State 1: 2FA Already Active --}}
     @if ($user->hasTwoFactorEnabled())
-        <div class="mt-6 space-y-4"
-            x-init="
-                if (window.location.hash === '#two-factor-auth' || {{ (session('status') && str_starts_with(session('status'), 'two-factor')) || session('recovery_codes') ? 'true' : 'false' }}) {
-                    $nextTick(() => {
-                        document.getElementById('two-factor-auth')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    });
-                }
-            ">
+        <div class="mt-6 space-y-4">
             <div class="flex items-center justify-between p-4 rounded-xl border border-emerald-200/80 bg-emerald-50/50 dark:border-emerald-900/40 dark:bg-emerald-950/20">
                 <div class="flex items-center gap-3">
                     <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 text-white">

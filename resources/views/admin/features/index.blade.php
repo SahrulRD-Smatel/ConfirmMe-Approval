@@ -48,90 +48,11 @@
             <!-- Features Grid -->
             <div class="grid grid-cols-1 gap-3 p-4 sm:p-5 lg:grid-cols-2">
                 @foreach($features as $feature)
-                    <article class="group flex min-h-[150px] flex-col overflow-hidden rounded-2xl border border-gray-200/80 bg-gray-50/60 p-4 transition-all duration-300 hover:border-primary-200 hover:bg-white hover:shadow-soft dark:border-gray-800/80 dark:bg-gray-800/40 dark:hover:border-primary-800/70 dark:hover:bg-gray-900"
-                        id="feature-{{ $feature->key }}"
-                        x-data="{
-                            isActive: {{ $feature->is_active ? 'true' : 'false' }},
-                            loading: false,
-                            async toggle() {
-                                const confirmMsg = this.isActive 
-                                    ? {!! json_encode(__('Nonaktifkan fitur :name?', ['name' => __($feature->name)])) !!}
-                                    : {!! json_encode(__('Aktifkan fitur :name?', ['name' => __($feature->name)])) !!};
-                                const isDanger = this.isActive;
-                                const confirmBtn = this.isActive ? {!! json_encode(__('Ya, Nonaktifkan')) !!} : {!! json_encode(__('Ya, Aktifkan')) !!};
-
-                                if (window.Swal) {
-                                    const result = await window.Swal.fire({
-                                        title: {!! json_encode(__('Konfirmasi')) !!},
-                                        html: confirmMsg,
-                                        icon: isDanger ? 'warning' : 'question',
-                                        showCancelButton: true,
-                                        focusCancel: true,
-                                        confirmButtonText: confirmBtn,
-                                        cancelButtonText: {!! json_encode(__('Batal')) !!},
-                                        buttonsStyling: false,
-                                        backdrop: 'rgba(3, 7, 18, 0.75)',
-                                        customClass: {
-                                            popup: 'rounded-3xl border border-gray-200/80 bg-white p-6 shadow-soft-xl dark:border-gray-700 dark:bg-gray-900',
-                                            title: 'text-lg font-bold text-gray-900 dark:text-white',
-                                            htmlContainer: 'text-sm text-gray-600 dark:text-gray-400',
-                                            confirmButton: 'inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold text-white ' + (isDanger ? 'bg-danger-600 hover:bg-danger-700' : 'bg-primary-600 hover:bg-primary-700'),
-                                            cancelButton: 'inline-flex items-center justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-600 dark:hover:bg-gray-700 mr-3',
-                                            actions: 'mt-6 gap-3',
-                                        }
-                                    });
-                                    if (!result.isConfirmed) return;
-                                } else {
-                                    if (!confirm(confirmMsg)) return;
-                                }
-
-                                this.loading = true;
-                                try {
-                                    const response = await fetch('{{ route('admin.features.toggle', $feature->key) }}', {
-                                        method: 'PATCH',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                            'Accept': 'application/json',
-                                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                        }
-                                    });
-                                    const data = await response.json();
-                                    if (data.success) {
-                                        this.isActive = data.is_active;
-                                        if (window.Swal) {
-                                            window.Swal.fire({
-                                                toast: true,
-                                                position: 'top-end',
-                                                icon: 'success',
-                                                title: data.message,
-                                                showConfirmButton: false,
-                                                timer: 3000,
-                                                timerProgressBar: true,
-                                            });
-                                        }
-                                    } else {
-                                        if (window.showAlert) {
-                                            window.showAlert(data.message || '{{ __('Gagal mengubah status fitur.') }}');
-                                        } else {
-                                            alert(data.message || '{{ __('Gagal.') }}');
-                                        }
-                                    }
-                                } catch (err) {
-                                    console.error(err);
-                                    if (window.showAlert) {
-                                        window.showAlert('{{ __('Terjadi kesalahan jaringan.') }}', 'error');
-                                    } else {
-                                        alert('{{ __('Terjadi kesalahan jaringan.') }}');
-                                    }
-                                } finally {
-                                    this.loading = false;
-                                }
-                            }
-                        }">
+                    <article class="group flex min-h-[150px] flex-col overflow-hidden rounded-2xl border border-gray-200/80 bg-gray-50/60 p-4 transition-all duration-300 hover:border-primary-200 hover:bg-white hover:shadow-soft dark:border-gray-800/80 dark:bg-gray-800/40 dark:hover:border-primary-800/70 dark:hover:bg-gray-900 scroll-mt-6"
+                        id="feature-{{ $feature->key }}">
                         <div class="flex items-start justify-between gap-4">
                             <div class="flex min-w-0 items-start gap-3">
-                                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl transition-colors duration-300"
-                                    :class="isActive ? 'bg-primary-100 text-primary-600 dark:bg-primary-900/50 dark:text-primary-400' : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400'">
+                                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl {{ $feature->is_active ? 'bg-primary-100 text-primary-600 dark:bg-primary-900/50 dark:text-primary-400' : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400' }} transition-colors duration-300">
                                     @if(str_contains($feature->key, '2fa'))
                                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
@@ -161,55 +82,53 @@
                                 </div>
                                 <div class="min-w-0">
                                     <h3 class="truncate text-sm font-bold text-gray-900 dark:text-white">{{ __($feature->name) }}</h3>
-                                    <span class="mt-2 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.12em] rounded-full px-2.5 py-1 transition-colors duration-200"
-                                        :class="isActive ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'">
-                                        <span class="h-1.5 w-1.5 rounded-full transition-colors duration-200"
-                                            :class="isActive ? 'bg-green-500' : 'bg-gray-500'"></span>
-                                        <span x-text="isActive ? '{{ __('Aktif') }}' : '{{ __('Nonaktif') }}'">{{ $feature->is_active ? __('Aktif') : __('Nonaktif') }}</span>
+                                    <span class="mt-2 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.12em] {{ $feature->is_active ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300' }} rounded-full px-2.5 py-1">
+                                        <span class="h-1.5 w-1.5 rounded-full {{ $feature->is_active ? 'bg-green-500' : 'bg-gray-500' }}"></span>
+                                        {{ $feature->is_active ? __('Aktif') : __('Nonaktif') }}
                                     </span>
                                 </div>
                             </div>
 
                             <!-- Toggle Switch -->
-                            <div class="shrink-0">
-                                <button type="button"
-                                    @click="toggle()"
-                                    :disabled="loading"
-                                    class="relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-4 focus:ring-primary-600/20 focus:ring-offset-2"
-                                    :class="{
-                                        'bg-primary-600': isActive,
-                                        'bg-gray-200 dark:bg-gray-600': !isActive,
-                                        'opacity-50 cursor-wait': loading
-                                    }"
+                            <form action="{{ route('admin.features.toggle', $feature->key) }}" method="POST" class="shrink-0"
+                                onsubmit="confirmAction(event, '{{ $feature->is_active ? __('Nonaktifkan fitur :name?', ['name' => __($feature->name)]) : __('Aktifkan fitur :name?', ['name' => __($feature->name)]) }}', { isDanger: {{ $feature->is_active ? 'true' : 'false' }}, confirmText: '{{ $feature->is_active ? __('Ya, Nonaktifkan') : __('Ya, Aktifkan') }}' })">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit"
+                                    class="relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-4 focus:ring-primary-600/20 focus:ring-offset-2 {{ $feature->is_active ? 'bg-primary-600' : 'bg-gray-200 dark:bg-gray-600' }}"
                                     role="switch"
-                                    :aria-checked="isActive ? 'true' : 'false'">
+                                    aria-checked="{{ $feature->is_active ? 'true' : 'false' }}">
                                     <span class="sr-only">{{ __('Toggle feature') }}</span>
                                     <span aria-hidden="true"
-                                        class="pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
-                                        :class="isActive ? 'translate-x-5' : 'translate-x-0'">
+                                        class="pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out {{ $feature->is_active ? 'translate-x-5' : 'translate-x-0' }}">
                                     </span>
                                 </button>
-                                <noscript>
-                                    <form action="{{ route('admin.features.toggle', $feature->key) }}" method="POST" class="inline">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit" class="text-xs text-primary-600 underline">Ubah</button>
-                                    </form>
-                                </noscript>
-                            </div>
+                            </form>
                         </div>
                         <p class="mt-4 line-clamp-2 min-h-[2.5rem] text-xs leading-5 text-gray-500 dark:text-gray-400">{{ __($feature->description) }}</p>
                         <div class="mt-auto flex items-center justify-between border-t border-gray-200/70 pt-3 text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400 dark:border-gray-700/70 dark:text-gray-500">
                             <span>{{ __('System feature') }}</span>
-                            <span class="inline-flex items-center gap-1.5">
-                                <span class="h-1.5 w-1.5 rounded-full transition-colors duration-200"
-                                    :class="isActive ? 'bg-green-500' : 'bg-gray-400'"></span>
-                                <span x-text="isActive ? '{{ __('Ready') }}' : '{{ __('Paused') }}'">{{ $feature->is_active ? __('Ready') : __('Paused') }}</span>
-                            </span>
+                            <span class="inline-flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full {{ $feature->is_active ? 'bg-green-500' : 'bg-gray-400' }}"></span>{{ $feature->is_active ? __('Ready') : __('Paused') }}</span>
                         </div>
                     </article>
                 @endforeach
             </div>
         </section>
     </div>
+
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const hash = window.location.hash;
+            if (hash) {
+                const el = document.querySelector(hash);
+                if (el) {
+                    setTimeout(() => {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 100);
+                }
+            }
+        });
+    </script>
+    @endpush
 </x-app-layout>

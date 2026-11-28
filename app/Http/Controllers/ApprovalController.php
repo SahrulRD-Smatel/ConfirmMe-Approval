@@ -214,7 +214,7 @@ class ApprovalController extends Controller
 
         ApprovalLog::log($document, 'commented', 'Komentar ditambahkan');
 
-        return redirect()->to(route('approvals.show', $document) . '#comments')->with('success', 'Komentar berhasil ditambahkan!');
+        return back()->with('success', 'Komentar berhasil ditambahkan!');
     }
 
     /**

@@ -199,7 +199,7 @@
                 targetId = targetId || 'bank-info';
             @elseif(session('status') === 'photo-updated' || session('status') === 'photo-deleted' || $errors->has('avatar'))
                 targetId = targetId || 'profile-photo';
-            @elseif(session('status') === 'two-factor-confirmed' || session('status') === 'two-factor-disabled' || session('two_factor_setup_secret') || $errors->twoFactorConfirm->any() || $errors->twoFactorDisable->any())
+            @elseif(session('status') === 'two-factor-confirmed' || session('status') === 'two-factor-disabled' || session('two_factor_setup_secret') || session('recovery_codes') || $errors->twoFactorConfirm->any() || $errors->twoFactorDisable->any())
                 targetId = targetId || 'two-factor-auth';
             @endif
 
