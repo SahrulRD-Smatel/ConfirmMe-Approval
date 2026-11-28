@@ -44,10 +44,16 @@ class SidebarServiceProvider extends ServiceProvider
                     'pendingInvoiceCount' => 0,
                     'pendingLoanCount' => 0,
                     'unreadNotifCount' => 0,
+                    'revisionCount' => 0,
                 ];
 
                 // Unread notifications count (used in topbar)
                 $data['unreadNotifCount'] = $user->unreadNotifications()->count();
+
+                // Documents needing user's revision or amount confirmation
+                $data['revisionCount'] = \App\Models\Document::where('user_id', $user->id)
+                    ->whereIn('status', ['revision', 'pending_requester_confirmation'])
+                    ->count();
 
                 // Pending approvals for this user (documents assigned to them)
                 $data['pendingApprovalCount'] = $user->pendingApprovals()->count();

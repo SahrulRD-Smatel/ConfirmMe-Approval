@@ -245,8 +245,9 @@ class ApprovalWorkflowService
             $this->rejectDocument($document, $comment);
         }
 
-        // Invalidate sidebar badge cache for current approver
+        // Invalidate sidebar badge cache for current approver and requester
         Cache::forget("sidebar_badges_{$approver->id}");
+        Cache::forget("sidebar_badges_{$document->user_id}");
 
         // Also invalidate for the next approver (if any) so their count updates
         $document->refresh();
@@ -278,6 +279,7 @@ class ApprovalWorkflowService
         // Send notification to requester
         $this->emailNotificationService->sendApprovalNotification($document, 'amount_changed');
         $document->user->notify(new DocumentNotification('amount_changed', $document, "Nominal pengajuan \"{$document->title}\" diubah, mohon konfirmasi."));
+        Cache::forget("sidebar_badges_{$document->user_id}");
     }
 
     /**
@@ -313,6 +315,8 @@ class ApprovalWorkflowService
                 "Nominal ditolak oleh requester. Pengajuan: Rp {$originalAmount}, Disetujui: Rp {$changedAmount}. Requester memilih untuk tidak melanjutkan."
             );
         }
+
+        Cache::forget("sidebar_badges_{$document->user_id}");
     }
 
     /**
@@ -375,6 +379,7 @@ class ApprovalWorkflowService
 
         // 3. Bentuk ulang rantai workflow dari awal
         $this->initializeWorkflow($document);
+        Cache::forget("sidebar_badges_{$document->user_id}");
     }
 
     /**

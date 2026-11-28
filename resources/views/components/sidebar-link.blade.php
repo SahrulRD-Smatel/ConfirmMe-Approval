@@ -10,5 +10,7 @@
     @if($icon)
         <x-icon :name="$icon" class="w-4 h-4 flex-shrink-0" />
     @endif
-    <span x-show="!sidebarCollapsed" x-cloak class="truncate">{{ $slot }}</span>
+    <span x-show="!sidebarCollapsed" x-cloak class="flex flex-1 items-center justify-between min-w-0">
+        {{ $slot }}
+    </span>
 </a>

@@ -99,7 +99,11 @@
                 @if(auth()->user()->can('view-document'))
                     <x-sidebar-link :href="route('documents.index')" :active="request()->routeIs('documents.index')"
                         icon="document-text">
-                        {{ __('Daftar Pengajuan') }}
+                        <span>{{ __('Daftar Pengajuan') }}</span>
+                        @if(($sidebarBadges['revisionCount'] ?? 0) > 0)
+                            <span
+                                class="ml-auto bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $sidebarBadges['revisionCount'] }}</span>
+                        @endif
                     </x-sidebar-link>
                 @endif
                 @if(feature_active('module_loan') && auth()->user()->can('menu-my-loans'))
